@@ -1,0 +1,124 @@
+"Excuse me for my english. Givenned text translated with use the online-service "translate.google.com""
+
+!To install the update program, you must unzip the archive with the replacement of all files.
+
+The Indications:
+	"-" - Correct mistake
+	"+" - Added function
+	"*" - Make-up change
+	"!" - An Important notes on working the program.
+
+Version 3.9.21 Stable Beta (21.09.2012)
+  - Fixed a bug with the crash of the program when you click "Backup".
+  + Implemented functionality for working with the command line. Now, the program provides the following initial options:
+       "/?", "/h", "-h", "-help", "/help" - display the Help window;
+       "/extractdll[:path]" - extract files from program to the specified directory, if a directory is specified, the recovery is a temporary location;
+       "/regdll" - registration of software components (dll and ocx).
+  * The names of subfolders when the backup is no longer contain spaces.
+  * Minor changes in the interface window "Options".
+  * Optimization of the program code.
+  * Updated the modified SFX-module (Oleg Shcherbakov www.7zsfx.info) to version 1.5.0.2485 Beta.
+  * Updated Archiver 7za (Igor Pavlov www.7-zip.org) to version 9.22 Beta.
+
+Version 3.4.10 Final (10.04.2012)
+  + Added handling of missing sections. Coinstallers.
+  + Improved search for drivers on Windows Vista and higher, due to changes in the principle of the catalog DriverStore.
+  + Improved software to correctly identify and work on Windows 8.
+  + Refined components of the progress bar and status bar.
+  - Fixed handling of sections CopyFiles - driver files in the distribution may be with different names than after installation.
+  * It is considered the correct sizing of form elements when the form is resized for Windows Vista and above.
+  * Updated Spanish (Thanks OscurPoet)
+  * Lots of internal optimizations of the program
+   
+Version 3.3.1 PreFinal (01.03.2012)
+  - Fixed handling of security catalog file *. Cat (CatalogFile). Sometimes, the program could not be considered an option from the inf-file
+  - Fixed an error localization service messages, the choice of language programs through the interface
+  - Fixed localization of certain elements of the interface
+  ! Changed some interface elements
+  + Added a partial translation into Spanish (Thanks OscurPoet)
+  + Added a Ukrainian translation (thanks Vsirf and samsobi)
+  + Added Czech translation (thanks Tron)
+  + Added a partial translation into Turkish language (Thanks TiXTOR)
+  ! All language files are converted to Unicode, for a correct display of text.
+  - In the language files (*. Lng) added parameter that determines the code page - "Charset". This parameter is required for the correct display of text in a cell, unsupported Unicode. For example, for Russian Windows codepage 1251, and, accordingly, "Charset = 1251".
+  * Updated the modified SFX-module by Oleg Scherbakov (www.7zsfx.info) to version 1.5.0.2100
+  ! Removed dependency on the control tabctl32.ocx (respectively, the file is removed from the resources of the program and register the component is removed at startup)
+  + Many other changes to the interface and the program code, all I unfortunately do not remember
+  + Added ability to change the name of the archive before you begin.
+    3 options available:
+	- In the name of the archive, in default, the name of the computer
+	- In the name of the archive, in default, the computer model
+	- A custom template that supports the predefined macros:
+		%PCName% - name of the computer
+		%PCModel% - model of the computer/motherboard
+		%OSVer% - operating system version
+		%OSBit% - bit operating system
+		%OSDate% - the current date
+
+Version 2.4.11 PreFinal (11.04.2011)
+  + Added automatic registration of library capicom.dll (version 2.1.0.2) in its absence (the library is often not available on Windows Vista and Windows 7)
+  + The program added to the Customize menu to change most settings through the GUI.
+  * Updated the modified SFX-module (Oleg Shcherbakov www.7zsfx.info) to version 1.5.0.2079
+  * Added configuration file for SFX-module with an English interface
+
+Version 2.3.3 RC1 (03.03.2011)
+  * Changed logic of programs, driver files are first searched in the folder DRVSTORE
+  * The speed of the program increased
+  + Now, copying files is preserving the directory structure of drivers
+  + Added possibility to create SFX-archives with automatic installation of drivers using DPInst.
+    Accordingly, the distribution of the program includes a program DPInst
+    When you create a SFX 7za-file uses a modified module Oleg Shcherbakov (www.7zsfx.info) version 1.5.0.1989, for which he thanks a lot.
+    Configuration file of the module is in a directory ".\Tools\Arc\sfx\"
+  + Added a new option in the settings file DriversBackuper.ini Section [Main] ArchMode = 0
+    Parameter specifies the program, which archiving mode as the default. Can be 0..2.
+  - Fixed up the drivers from the repository DrvStore, if the source contains subdirectories
+  - Fixed error when deleting temporary files
+
+Version 1.12.24 Final (24.12.2010)
+
+  - Fixed a bug where the program crashed when the sampling mode, the backup
+
+Version 1.12.17 Final (17.12.2010)
+
+  - Fixed a bug where the box "Check for Updates" is not closed.
+  * Fixed the settings for the preset folders for backups on the type of system.
+  - Fixed bug of a 64-bit systems - does not recognize system folder sysWOW64.
+  * Name of the directory with the drivers now formed as well as the name of the archive - DP_<computer name>_WNT<version of the system>_<bit system>_<date>.
+  * Added check for existence of the original inf-file.
+  * Added a clean target directory if that directory already exists.
+  * If the backup with that name already exists, it will be removed.
+  * Updated Archiver 7za to version 9.20 Final.
+  + Added check for rare doubles Driver (feature writing data to the registry Windows).
+  * Improved definition of directories such as Custom.
+  * Changed the search procedure cat-file.
+    If there is a cat-file, the inf-file will be renamed under the name of the cat-file.
+  + Added definition of specific parameters of the inf-file: CatalogFile.ntx86; CatalogFile.ntamd64.
+  + Added to the analysis of storage DRVStore.
+    If the driver is found in the directory, then copies all files for this driver, do not even registered in inf-file.
+
+Version 1.11.12 Next Release (12.11.2010)
+
+  - Fixed "Type mismatch" when backing
+  * Now at the time that the backup window "List of drivers' blocked
+  * Changed the dialog to select a directory (function is replaced by the more stable)
+    Added settings to preset folders for backups on the type of system.
+  * Change the operating mode with a block "Select a group of drivers"
+  * Takes into account some of the wishes of users
+
+! Attention! File DriversBackuper.ini need to be removed when the program starts will be creating a new one.
+
+
+Version 1.11.11 Final (11.11.2010)
+
+First public release
+
+Main features:
+• Information about all the drivers installed on your system (for active and inactive devices)
+• Selection of information to the filter
+• Create a backup driver (Structured directory or 7z-archive using the console archiver 7-zip)
+• The check program updates
+• Support multi-language interface
+• Support all Windows, from Windows NT 2000 SP4
+• Debug mode with a record of information in the log file
+• Built-in error handler
+• Register missing components for the normal functioning of the program (MSFLXGRD.OCX, RICHTX32.OCX, vbscript.dll)

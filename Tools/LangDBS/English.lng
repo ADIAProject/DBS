@@ -1,0 +1,254 @@
+[Lang]
+	Name=English
+	TranslatorName=Romeo91
+	TranslatorURL=www.adia-project.net
+	ID=0409;0009;0c09;2809;1009;2409;4009;1809;2009;4409;1409;3409;4809;1c09;2c09;0809;3009;3c09;3809
+        Version=3.9.20
+        Date=20/09/2012
+	Charset=1252
+
+'Support Locale IDs (LCID) by this language file
+'       0009: English
+'       0c09: English (Australia)
+'       2809: English (Belize)
+'       1009: English (Canada)
+'       2409: English (Caribbean)
+'       4009: English (India)
+'       1809: English (Ireland)
+'       2009: English (Jamaica)
+'       4409: English (Malaysia)
+'       1409: English (New Zealand)
+'       3409: English (Philippines)
+'       4809: English (Singapore)
+'       1c09: English (South Africa)
+'       2c09: English (Trinidad)
+'       0809: English (United Kingdom)
+'       0409: English (United States)
+'       3009: English (Zimbabwe)
+'       3c09: English (Hong Kong)
+'       3809: English (Indonesia)
+
+
+' some parametrs support esc-sequences \n \r \t 
+
+[frmMain]
+	frPanelLV=List of found device drivers
+	frBackup=Create a backup of selected drivers
+	frGroup= Select a group of drivers
+	mnuOptions=Options
+	mnuMainAbout=Help
+	mnuLinks=Links
+	mnuHistory=History changes
+	mnuHelp=Help
+	mnuOsZoneNet=Talk program on OsZone.net
+	mnuHomePage=Visit HomePage
+	mnuHomePageForum=Visit forum of the program
+	mnuCheckUpd=Check for program updates
+	mnuDonate=Donate ...
+	mnuLicence=License Agreement ...
+	mnuAbout=About ...
+	mnuModulesVersion=Modules ...
+	mnuMainLang=Language
+	mnuLangStart=Use the selected language when you start (the abolition of Autoselect)
+	mnuReCollectHWID=Scan for hardware changes
+	cmdCheckAll=Select all
+	cmdUnCheckAll=Deselect
+	cmdBreak=Abort execution
+	optGrp1=Microsoft
+	optGrp2=OEM
+	optGrp3=All
+	optGrp4=None
+	chkLiveOnly=Only Live-Drivers
+	chkHideOther=Hide all but a selected group
+	chkCheckAll=Select all from the whole group when choosing
+	cmdStartBackUp=BackUp
+	lblTypeBackUp=Backup Type
+	cmbListTypeBackupElement1=Structured folder with drivers
+	cmbListTypeBackupElement2=7z-driver archive
+	cmbListTypeBackupElement3=7zSFX-archive with automatic installation via DPInst
+	TableHeader1=* Product name *
+	TableHeader2=* Date *
+	TableHeader3=* Version *
+	TableHeader4=* Manufacturer *
+	TableHeader5=* driver class *
+	TableHeader6=* Class Code *
+	TableHeader7=* Inf *
+	TableHeader8=* Section *
+	TableHeader9=* HWID *
+	TableHeader10=* ID Status *
+	frArchName=Name of the archive
+	optArchNamePC=Computer Name
+	optArchModelPC=Computer Model
+	optArchCustom=User Template
+	
+[frmAbout]
+	frmAbout=About ...
+	cmdDonate=Donate ...
+	cmdLicence=License Agreement
+	cmdHomePage=Home
+	cmdOsZoneNet=Discussion OsZone.Net
+	cmdCheckUpd=Updating ...
+	cmdExit=Close
+	lblMailTo=Send E-mail the author of the program
+	lblInfo=This program is designed to create backup copies of device drivers. The program also finds the drivers for the non-living "units." The program can create 7z-archives, which can later be used as the driver packages in the program Drivers Installer Assistant.
+
+[frmLicence]
+	frmLicence=License Agreement
+	chkAgreeLicence=I accept the agreement
+	cmdOK=Accept
+	cmdExit=Close
+
+[frmCheckUpdate]	
+	frmCheckUpdate=Update: a new version of the program
+	cmdUpdate=Download Update
+	cmdHistory=history
+	cmdDonate=Donate
+	cmdExit=Close
+	lblVersion=Latest version
+	frDescription=notation in the history of changes:
+	lblDescription1="-" - Correction of errors in the program
+	lblDescription2="*" - Cosmetic changes
+	lblDescription3="+" - Enhanced functionality
+	lblDescription4="!" - Important Notices
+	lblWait=Loading data from official site. Please wait ....
+	lblVersionList=List of changes for version
+
+[frmDonate]	
+	frmDonate=Donate
+	cmdExit=Close
+
+[frmOptions]
+	frmOptions=Options
+	cmdOK=Save changes
+	cmdExit=Exit without saving
+	frOptions=Options
+        ItemOptions1=Main Options
+        ItemOptions2=Supported OS
+        ItemOptions3=Work Utilities
+        ItemOptions5=Program appearance 
+        ItemOptions6=DPInst starting parametrs
+	frMain=Main Options
+	lblOptionsStart=Actions on program start
+	chkUpdate=Check for updates
+	chkUpdateBeta=Check for the presence of beta-versions of the program.
+	chkHideOtherProcess=Run external process in hide mode
+	lblOptionsTemp=Work with Temporary files
+	chkTempPath=Folder of Temporary files
+	chkRemoveTemp=Delete temporary files
+	lblDebug=Debug mode options 
+	chkDebug=Enable debug mode
+	chkRemoveHistory=Clear old debug file on program start
+	lblRezim=Start mode
+	lblDebugLogPath=Path to log-file:
+	frMainTools=Paths of main utilities (Tools)
+	cmdPathDefault=Set to Default Path
+	frOS=Supported OS
+	cmdAddOS=Add
+	cmdEditOS=Edit
+	cmdDelOS=Delete
+	frDesign=Appearance
+	lblSizeForm=Size of the main window
+	lblFormHeight=Height:
+	lblFormWidth=Width:
+	chkFormMaximaze=Start maximazed
+	chkFormSizeSave=Save forms size on Exit
+	lblSizeButton=Button properties
+	cmdChooseFont=Choose font for button text
+	lblImageMain=Main icons
+	lblFormWidthMin=Minimal values exist for some parameter. If the value is less than minimal, that window will light up to red colour. The program will set default values at its start .
+	AdditionalColorCaption=Additional colors...
+	frDpInstParam=Starting Parameters of DPInst
+	lblParam=Parameter
+	lblDescription=Description of parameter
+	lblLegacyMode=It lets to install unsigned drivers and driver packages that have missing files
+	lblPromptIfDriverIsNotBetter=It displays a dialog box if the new driver does not match better to device than the driver is currently installed on the device
+	lblForceIfDriverIsNotBetter=Forced driver installation on the device even if the driver currently installed on the device matches  better than the new driver
+	lblSuppressAddRemovePrograms=It suppresses the addition of the entries in the window \"Add or Remove Programs"\
+	lblSuppressWizard=It suppresses display of the Wizard ..., but user dialog boxes maybe will be displayed by OS
+	lblQuietInstall=Unattended mode. It suppresses display of the Wizard pages and user dialog boxes usualy displayed by OS 
+	lblScanHardware=Drivers will be copied and installed only for the devices  found in the computer (it will be operated only for PnP devices)
+	lblCmdStringDPInst=Total starting parameters
+        TableOSHeader1=Version
+        TableOSHeader3=DriverPack
+        TableOSHeader5=x64
+	chkSilentDll=Silent registration/update of system components (dll and ocx)
+	ItemOptions4=Name of the archive
+	frArchName=Name of the archive
+	optArchNamePC=Computer Name
+	optArchModelPC=Computer Model
+	optArchCustom=User template
+	lblArchNameStart=Archive name by default
+	lblArchShablon=Template name of the archive
+	lblMacrosType=Available macro
+	lblMacrosParam=Parameter
+	lblMacrosDescription=Description of the parameter
+	lblMacrosPCName=Short name of the computer without the domain suffix
+	lblMacrosPCModel=Computer\motherboard model
+	lblMacrosOSVer=Operating system version as the wnt (5 | 6)
+	lblMacrosOSBit=Architecture, operating system, in the form x (32 | 64)
+	lblMacrosDate=Date backup
+	lblTypeBackUp=Type Backup by Default
+	cmdFutureButton=Your future button
+	chkButtonDisable=Enable/Disable (only for test)
+	lblDebugLogLevel=Debug level
+
+[frmOSEdit]	
+	frmOSEdit=Edit entry
+	lblOSVer=OS Version 
+	lblPathDRP=Path to folder with the DriverPacks
+	chk64bit=64-bit OS Drivers 
+	cmdOK=Apply
+	cmdExit=Close
+
+[frmProgress]
+	frmProgress=Gathering information about the drivers. Please wait ...
+
+[Messages]
+	strMessages1=Backup driver, select the driver from the list and click BackUp!
+	strMessages2=Select the directory where you want to save a backup copy.
+	strMessages3=Collect information on the composition and the driver files for devices PC. Please wait ...
+	strMessages4=Work program you can not
+	strMessages5=Gathering information about your hardware configuration is complete!
+	strMessages6=Not selected driver. select the appropriate driver from the list and click BackUp.
+	strMessages7=One of the program files are missing
+	strMessages8=failed to register the system file. Try to register the file manually, or simply copy it to% windir%\system32\r\n\r\nContinuation of work may lead to other errors. Would you like to continue?
+	strMessages9=Search and save the driver files
+	strMessages10=Backup completed successfully.
+	strMessages11=Source code license file has been changed! it may be a mistake or the result of malicious program changes. Contact the manufacturer or download a new distribution program. Would you like to continue?
+	strMessages12=Error while creating the archive. Backup is not created!
+	strMessages13=Failed to create backup of drivers 7z:
+	strMessages15=you specify a directory to alternative images of icons does not exist. Will use standard images!
+	strMessages16=The program started with a CD\DVD, the process of updating the database impossible
+	strMessages20=Removing files from program fails. Would you like to continue?
+	strMessages21=Extract all files (DLL-OCX) from program completed successfully. \r\n\r\n Would you like to open a directory with files?
+	strMessages22=Extract all files (DLL-OCX) from program completed. \r\n In the extraction procedure errors were found! \r\n\r\n Would you like to open a directory with files?
+	strMessages25=DBS the program provides the following key start \r\n\r\n "/?", "/h", "-h", "-help", "/help" - display the window \r\n\r\n" /extractdll[:path]" - extract files from program to the specified directory, if a directory is specified, the recovery is a temporary directory \r\n\r\n "/regdll" - registration of software components (dll and ocx)
+	strMessages27=The job aborted!!!\r\will parse the aborted on the driver:
+	strMessages33=Failed to start external program:
+	strMessages34=Are you sure you want to exit?
+	strMessages35=Versions supporting modules:\r\n\r\nName module:\t\tFile Version:
+	strMessages36=New settings written!\r\nTo use, you must restart the program.\r\n\r\nWould you like to restart the program now?
+	strMessages37=Are you sure you want to exit without saving the settings?
+	strMessages38=The program works with CD\DVD!\r\nSohranenie settings can not be!
+	strMessages39=Could not load the license agreement. Further work programs impossible. Contact the manufacturer or download a new distribution program.
+	strMessages40=source text file has been changed!!!\r\nForma 'Support Project' will be closed.\r\nPlease the manufacturer or download a new distribution program.
+	strMessages41=Could not load file donate.rtf. Contact the manufacturer or download a new distribution program.
+	strMessages42=Copying file has failed!
+	strMessages43=Attention! The file is read-only, write to the file impossible. To save the need to remove the attribute from the file and try again.
+	strMessages44=Can not create temporary file in the directory:
+	strMessages45=An error occurred while writing data to a file:
+	strMessages53=Internet Connection is not installed or the server is unavailable
+	strMessages54=Failed to start update check
+	strMessages55=The server encountered an old version! Very strange:)\r\nThis is all you have unofficial release obtained from the author's program for testing.\r\n\r\nWould you like open the form to update the program?
+	strMessages56=New versions of the program is not found.\r\n\r\nWould you like to open the form to update the program?
+	strMessages58=Checking for updates of the program ...
+	strMessages59=Download complete program!
+	strMessages66=processing aborted. Runtime:
+	strMessages67=Process all drivers finished. Runtime:
+	strMessages81=Go and delete temporary files. Please wait ....
+	strMessages82=Goes delete files in the destination directory. Please wait ....
+	strMessages97=Create archive:
+	strMessages102=An error occurred when comparing the versions of the program. Refer to the manufacturer.
+	strMessages106=The current version of the component is older than that used by the program.\r\nIt is recommended to install the update!\r\n\r\nNOTE! The update may affect other programs that use this component!\r\n\r\nWould you like to upgrade?
+	strMessages107=Perhaps you are using, version of "Drivers BackUp Solution" out of date!\r\n\rClick here to check updates " 
+	strMessages108=of

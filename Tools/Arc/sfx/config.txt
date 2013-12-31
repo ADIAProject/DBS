@@ -1,0 +1,16 @@
+﻿;!@Install@!UTF-8!
+;Текст_в_кодировке_UTF-8
+Title="Drivers Installer (Created by Drivers BackUp Solution v.3.9.20)"
+BeginPrompt="Вы хотите установить все драйвера из архива?"
+ExtractTitle="Распаковка файлов..."
+ExtractDialogText="Подождите пожалуйста..."
+ExtractCancelText="Отменить распаковку и установку драйверов"
+GUIMode="0"
+OverwriteMode="0"
+GUIFlags="2+4+8+16+32+2048+4096"
+MiscFlags="4"
+FinishMessage="Установка драйверов завершена!"
+RunProgram="x86:hidcon:cmd /c DPInst.exe /LM /P /SH"
+RunProgram="x64:hidcon:cmd /c DPInst64.exe /LM /P /SH"
+; This SFX archive was created by using Modified 7za-SFX Module (Oleg Scherbakov - http://7zsfx.info)
+;!@InstallEnd@!
