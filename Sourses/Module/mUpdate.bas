@@ -1,192 +1,292 @@
 Attribute VB_Name = "mUpdate"
 Option Explicit
 
-Public strLink()           As String
-Public strLinkFull()       As String
-Public strLinkHistory      As String
-Public strLinkHistory_en   As String
-Public strVersion          As String
-Public strDateProg         As String
-Public strDescription      As String
-Public strDescription_en   As String
-Public strRelease          As String
-Public strUpdVersions()    As String
-Public strUpdDescription() As String
+Public strLink()                As String
+Public strLinkFull()            As String
+Public strLinkHistory           As String
+Public strLinkHistory_en        As String
+Public strVersion               As String
+Public strDateProg              As String
+Public strDescription           As String
+Public strDescription_en        As String
+Public strRelease               As String
+Public strUpdVersions()         As String
+Public strUpdDescription()      As String
 
-' Проверка существования файла на сервере
+Private XMLHTTP                 As MSXML2.XMLHTTP30
+
+Private Const iTimeOutInSecs    As Integer = 5
+Private Const strXMLMainSection As String = "//driversbackuper"
+Private Const Url_Request       As String = "http://adia-project.net/ProjectDBS/dia_update2.xml"
+Private Const Url_Test_WWW      As String = "http://ya.ru/"
+Private Const Url_Test_Site     As String = "http://adia-project.net/test.txt"
+
+Private Declare Function InternetGetConnectedStateEx Lib "wininet.dll" (ByRef lpdwFlags As Long, ByVal lpszConnectionName As String, ByVal dwNameLen As Integer, ByVal dwReserved As Long) As Long
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function CheckConnection2Server
+'! Description (Описание)  :   [Проверка существования файла на сервере]
+'! Parameters  (Переменные):   URL (String)
+'!--------------------------------------------------------------------------------
 Function CheckConnection2Server(ByVal URL As String) As String
 
     ' Функция скачивает файл по ссылке URL$
     ' и сохраняет его под именем LocalPath$
-    Dim XMLHTTP
     Dim strResultText As String
     Dim strResultCode As String
+    Dim errNum        As Long
+    Dim tmstart, tmcurr, iTimeTaken
 
-    On Error Resume Next
+    On Error GoTo ErrCode
 
-    Set XMLHTTP = CreateObject("Microsoft.XMLHTTP")
+    If CheckInternetConnection Then
+        Set XMLHTTP = New MSXML2.XMLHTTP30
+        tmstart = Now
 
-    With XMLHTTP
-        .Open "GET", Replace$(URL, "\", "/"), "False"
-        .sEnd
-        strResultText = .statusText
-        strResultCode = .Status
-    End With
+        With XMLHTTP
+            '.Open "GET", Replace$(URL, vbBackslash, "/"), "False"
+            .Open "GET", Replace$(URL, vbBackslash, "/"), "True"
+            .sEnd ""
 
-    If StrComp(strResultText, "OK", vbTextCompare) = 0 Then
-        CheckConnection2Server = "OK"
-    Else
-        CheckConnection2Server = strResultCode & "-" & strResultText
+            Do
+                tmcurr = Now
+                iTimeTaken = CInt(DateDiff("s", tmstart, tmcurr))
+
+                ' Если таймаут, то выходим
+                If iTimeTaken > iTimeOutInSecs Then
+                    .abort
+
+                    Exit Do
+
+                End If
+
+                Sleep 50
+                DoEvents
+            Loop While .readyState <> 4
+
+            strResultText = .statusText
+            strResultCode = .Status
+        End With
+
+        If StrComp(strResultText, "OK", vbTextCompare) = 0 Then
+            CheckConnection2Server = "OK"
+        Else
+            CheckConnection2Server = "Error:" & strResultCode & " - " & strResultText & " - " & XMLHTTP.responseText
+        End If
     End If
 
-    Set XMLHTTP = Nothing
+    Exit Function
+
+ErrCode:
+    errNum = Err.Number
+    Debug.Print Err.Number & " " & Err.Description & " " & Err.LastDllError
+
+    If errNum <> 0 Then
+        DebugMode str5VbTab & "CheckConnection2Server: " & " Error: №" & Err.LastDllError & " - " & ApiErrorText(Err.LastDllError) & vbNewLine & _
+                  str5VbTab & "CheckConnection2Server: Err.Number: " & Err.Number & " Err.Description: " & Err.Description
+    End If
+
 End Function
 
-'! -----------------------------------------------------------
-'!  Функция     :  CheckUpd
-'!  Переменные  :  Optional start As Boolean
-'!  Описание    :  Проверка новых версий программы с использованием MSXML
-'! -----------------------------------------------------------
-Public Sub CheckUpd(Optional ByVal start As Boolean = True)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function CheckInternetConnection
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Function CheckInternetConnection() As Boolean
 
-    Dim xmlDoc           As DOMDocument
-    Dim nodeList         As IXMLDOMNodeList
-    Dim xmlNode          As IXMLDOMNode
-    Dim propertyNode     As IXMLDOMElement
-    Dim Url_Request      As String
-    Dim Url_Test         As String
-    Dim Url_Test_Result  As String
-    Dim TextNodeName     As String
-    Dim NodeIndex        As Integer
-    Dim strVerTemp       As String
-    Dim strResultCompare As String
+    Dim aux As String * 255
+    Dim R   As Long
+
+    R = InternetGetConnectedStateEx(R, aux, 254, 0)
+
+    If R = 1 Then
+        CheckInternetConnection = True
+    Else
+        CheckInternetConnection = False
+    End If
+
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub CheckUpd
+'! Description (Описание)  :   [Проверка новых версий программы с использованием MSXML]
+'! Parameters  (Переменные):   Start (Boolean = True)
+'!--------------------------------------------------------------------------------
+Public Sub CheckUpd(Optional ByVal Start As Boolean = True)
+
+    Dim TextNodeName         As String
+    Dim NodeIndex            As Integer
+    Dim strVerTemp           As String
+    Dim strResultCompare     As String
+    Dim Url_Test_Result_WWW  As String
+    Dim Url_Test_Result_Site As String
 
     DebugMode "CheckUpd-Start"
-    DebugMode "***CheckUpd-Options: " & start
+    mbCheckUpdNotEnd = True
+    DebugMode vbTab & "CheckUpd-Options: " & Start
 
     On Error Resume Next
 
     'Узнаем версию программы (установленной)
     strVerTemp = strProductVersion
-    Set xmlDoc = New DOMDocument
-    xmlDoc.async = False
-    Url_Request = "http://www.adia-project.net/ProjectDBS/dbs_update2.xml"
-    Url_Test = "http://www.adia-project.net/test.txt"
-    'Url_Request = strAppPath & "\dia_update2.xml"
-    ' проверка наличия доступа до сервера
-    Url_Test_Result = CheckConnection2Server(Url_Test)
+    'Url_Request = strAppPathBackSL & "dia_update2.xml"
+    ' проверка наличия доступа до google
+    Url_Test_Result_WWW = CheckConnection2Server(Url_Test_WWW)
 
-    If StrComp(Url_Test_Result, "OK", vbTextCompare) = 0 Then
+    If StrComp(Url_Test_Result_WWW, "OK", vbTextCompare) = 0 Then
+        ' проверка наличия доступа до сайта adia-project
+        Url_Test_Result_Site = CheckConnection2Server(Url_Test_Site)
 
-        ' загружаем файл
-        If Not xmlDoc.Load(Url_Request) Then
-            If Not start Then
-                MsgBox strMessages(126), vbInformation, strMessages(54)
-            End If
+        If StrComp(Url_Test_Result_Site, "OK", vbTextCompare) = 0 Then
 
-        Else
-            Set nodeList = xmlDoc.documentElement.selectNodes("//driversbackuper")
-            Set xmlNode = nodeList(0)
-            NodeIndex = 0
+            Dim xmlDoc       As DOMDocument30
+            Dim nodeList     As IXMLDOMNodeList
+            Dim xmlNode      As IXMLDOMNode
+            Dim propertyNode As IXMLDOMElement
 
-            For Each propertyNode In xmlNode.childNodes
-                TextNodeName = vbNullString
-                TextNodeName = xmlNode.childNodes(NodeIndex).nodeName
+            Set xmlDoc = New DOMDocument
+            xmlDoc.async = False
 
-                Select Case TextNodeName
+            ' загружаем файл
+            If Not xmlDoc.Load(Url_Request) Then
+                ChangeStatusTextAndDebug strMessages(126)
 
-                        ' Данные из файла dbs_update2.xml
-                        ' Версия проги
-                    Case "version"
-                        strVersion = xmlNode.childNodes(NodeIndex).Text
+                If Not Start Then
+                    MsgBox strMessages(126), vbInformation, strMessages(54)
+                End If
 
-                        ' Дата проги
-                    Case "date"
-                        strDateProg = xmlNode.childNodes(NodeIndex).Text
+            Else
+                Set nodeList = xmlDoc.documentElement.selectNodes(strXMLMainSection)
+                Set xmlNode = nodeList(0)
+                NodeIndex = 0
 
-                    Case "release"
-                        strRelease = xmlNode.childNodes(NodeIndex).Text
+                For Each propertyNode In xmlNode.childNodes
 
-                        ' Ссылка на Полную историю изменений
-                    Case "linkHistory"
-                        strLinkHistory = xmlNode.childNodes(NodeIndex).Text
+                    TextNodeName = vbNullString
+                    TextNodeName = xmlNode.childNodes(NodeIndex).nodeName
 
-                    Case "linkHistory_en"
-                        strLinkHistory_en = xmlNode.childNodes(NodeIndex).Text
-                End Select
+                    Select Case TextNodeName
 
-                NodeIndex = NodeIndex + 1
-            Next
-            '**** Сравнение версий программ
-            strResultCompare = CompareByVersion(strVersion, strVerTemp)
+                            ' Данные из файла dia_update2.xml
+                            ' Версия проги
+                        Case "version"
+                            strVersion = xmlNode.childNodes(NodeIndex).Text
 
-            ' Анализ итога сравнения и показ окна
-            Select Case strResultCompare
+                            ' Дата проги
+                        Case "date"
+                            strDateProg = xmlNode.childNodes(NodeIndex).Text
 
-                Case ">"
+                        Case "release"
+                            strRelease = xmlNode.childNodes(NodeIndex).Text
 
-                    If StrComp(strRelease, "beta", vbTextCompare) = 0 Then
-                        If Not mboolUpdateCheckBeta Then
-                            DebugMode "***The version on the site is Beta. In options check for beta are disable. Break function!!!"
+                            ' Ссылка на Полную историю изменений
+                        Case "linkHistory"
+                            strLinkHistory = xmlNode.childNodes(NodeIndex).Text
 
-                            If Not start Then
-                                If MsgBox(strMessages(56), vbQuestion + vbYesNo, strProductName) = vbYes Then
-                                    frmCheckUpdate.Show vbModal, frmMain
+                        Case "linkHistory_en"
+                            strLinkHistory_en = xmlNode.childNodes(NodeIndex).Text
+                    End Select
+
+                    NodeIndex = NodeIndex + 1
+                Next
+
+                '**** Сравнение версий программ
+                strResultCompare = CompareByVersion(strVersion, strVerTemp)
+
+                ' Анализ итога сравнения и показ окна
+                Select Case strResultCompare
+
+                    Case ">"
+
+                        If StrComp(strRelease, "beta", vbTextCompare) = 0 Then
+                            If Not mbUpdateCheckBeta Then
+                                DebugMode vbTab & "The version on the site is Beta. In options check for beta are disable. Break function!!!"
+                                ChangeStatusTextAndDebug strMessages(56)
+
+                                If Not Start Then
+                                    If MsgBox(strMessages(56) & strMessages(144), vbQuestion + vbYesNo, strProductName) = vbYes Then
+                                        frmCheckUpdate.Show vbModal, frmMain
+                                    Else
+
+                                        Exit Sub
+
+                                    End If
+
                                 Else
-                                    Exit Sub
+                                    ChangeStatusTextAndDebug strMessages(56)
                                 End If
+
+                            Else
+                                frmCheckUpdate.Show vbModal, frmMain
                             End If
 
                         Else
                             frmCheckUpdate.Show vbModal, frmMain
                         End If
 
-                    Else
-                        frmCheckUpdate.Show vbModal, frmMain
-                    End If
+                    Case "="
+                        ChangeStatusTextAndDebug strMessages(56)
 
-                Case "="
-
-                    If Not start Then
-                        If MsgBox(strMessages(56), vbQuestion + vbYesNo, strProductName) = vbYes Then
-                            frmCheckUpdate.Show vbModal, frmMain
+                        If Not Start Then
+                            If MsgBox(strMessages(56) & strMessages(144), vbQuestion + vbYesNo, strProductName) = vbYes Then
+                                frmCheckUpdate.Show vbModal, frmMain
+                            End If
                         End If
-                    End If
 
-                Case "<"
+                    Case "<"
+                        ChangeStatusTextAndDebug strMessages(55)
 
-                    If Not start Then
-                        If MsgBox(strMessages(55), vbQuestion + vbYesNo, strProductName) = vbYes Then
-                            frmCheckUpdate.Show vbModal, frmMain
+                        If Not Start Then
+                            If MsgBox(strMessages(55) & strMessages(144), vbQuestion + vbYesNo, strProductName) = vbYes Then
+                                frmCheckUpdate.Show vbModal, frmMain
+                            End If
                         End If
-                    End If
 
-                Case Else
+                    Case Else
+                        ChangeStatusTextAndDebug strMessages(102)
 
-                    If Not start Then
-                        MsgBox strMessages(102), vbInformation, strProductName
-                    End If
-            End Select
+                        If Not Start Then
+                            MsgBox strMessages(102), vbInformation, strProductName
+                        End If
 
-            Set xmlNode = Nothing
-            Set nodeList = Nothing
+                End Select
+
+                Set xmlNode = Nothing
+                Set nodeList = Nothing
+            End If
+
+        Else
+            DebugMode vbTab & "CheckUPD-Site: " & strMessages(53) & vbNewLine & "Error: " & Url_Test_Result_Site
+            ChangeStatusTextAndDebug strMessages(143)
+
+            If Not Start Then
+                MsgBox strMessages(143) & vbNewLine & "Error: " & Url_Test_Result_Site, vbInformation, strMessages(54)
+            End If
         End If
 
     Else
-        DebugMode "***CheckUPD: " & strMessages(53) & vbNewLine & "Error: " & Url_Test_Result
+        DebugMode vbTab & "CheckUPD-Inet: " & strMessages(53) & vbNewLine & "Error: " & Url_Test_Result_WWW
+        ChangeStatusTextAndDebug strMessages(53)
 
-        If Not start Then
-            MsgBox strMessages(53) & vbNewLine & "Error: " & Url_Test_Result, vbInformation, strMessages(54)
+        If Not Start Then
+            MsgBox strMessages(53) & vbNewLine & "Error: " & Url_Test_Result_WWW, vbInformation, strMessages(54)
         End If
     End If
 
     Set xmlDoc = Nothing
+    mbCheckUpdNotEnd = False
 
     On Error GoTo 0
 
     DebugMode "CheckUpd-End"
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function DeltaDay
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Function DeltaDay() As Integer
 
     Dim CurrentDate As Date
@@ -199,6 +299,12 @@ Private Function DeltaDay() As Integer
     DeltaDay = DeltaTemp
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function DeltaDayNew
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   dtFirstDate (Date)
+'                              dtSecondDate (Date)
+'!--------------------------------------------------------------------------------
 Private Function DeltaDayNew(ByVal dtFirstDate As Date, ByVal dtSecondDate As Date) As Integer
 
     Dim DeltaTemp As Integer
@@ -207,11 +313,11 @@ Private Function DeltaDayNew(ByVal dtFirstDate As Date, ByVal dtSecondDate As Da
     DeltaDayNew = DeltaTemp
 End Function
 
-'! -----------------------------------------------------------
-'!  Функция     :  CheckUpd
-'!  Переменные  :  Optional start As Boolean
-'!  Описание    :  Проверка новых версий программы с использованием MSXML
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadUpdateData
+'! Description (Описание)  :   [Проверка новых версий программы с использованием MSXML]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Sub LoadUpdateData()
 
     Dim xmlDoc          As DOMDocument
@@ -228,27 +334,30 @@ Public Sub LoadUpdateData()
 
     Set xmlDoc = New DOMDocument
     xmlDoc.async = False
-    Url_Request = "http://www.adia-project.net/ProjectDBS/dbs_update2.xml"
+    Url_Request = "http://www.adia-project.net/ProjectDBS/dia_update2.xml"
 
-    'Url_Request = strAppPath & "\dbs_update2.xml"
+    'Url_Request = strAppPathBackSL & "dia_update2.xml"
     If Not xmlDoc.Load(Url_Request) Then
+        ChangeStatusTextAndDebug strMessages(53)
         MsgBox strMessages(53), vbInformation, strMessages(54)
     Else
-        Set nodeList = xmlDoc.documentElement.selectNodes("//driversbackuper")
+        Set nodeList = xmlDoc.documentElement.selectNodes(strXMLMainSection)
         Set xmlNode = nodeList(0)
         NodeIndex = 0
 
         For Each propertyNode In xmlNode.childNodes
+
             TextNodeName = vbNullString
             TextNodeName = xmlNode.childNodes(NodeIndex).nodeName
 
             Select Case TextNodeName
 
-                    ' Данные из файла dbs_update2.xml
+                    ' Данные из файла dia_update2.xml
                     ' массив версий
                 Case "versions"
                     strVersionsTemp = xmlNode.childNodes(NodeIndex).Text
-                    strUpdVersions = Split(strVersionsTemp, ";", , vbTextCompare)
+                    strUpdVersions = Split(strVersionsTemp, ";")
+
                     ReDim strUpdDescription(UBound(strUpdVersions), 2) As String
                     ReDim strLink(UBound(strUpdVersions), 6) As String
                     ReDim strLinkFull(UBound(strUpdVersions), 6) As String
@@ -258,10 +367,12 @@ Public Sub LoadUpdateData()
                     For i = LBound(strUpdVersions) To UBound(strUpdVersions)
                         LoadUpdDescription strUpdVersions(i), i
                     Next
+
             End Select
 
             NodeIndex = NodeIndex + 1
         Next
+
         Set xmlNode = Nothing
         Set nodeList = Nothing
     End If
@@ -272,7 +383,13 @@ Public Sub LoadUpdateData()
 
 End Sub
 
-Public Function LoadUpdDescription(ByVal strVer As String, ByVal lngIndexVer As Long) As String
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadUpdDescription
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strVer (String)
+'                              lngIndexVer (Long)
+'!--------------------------------------------------------------------------------
+Public Sub LoadUpdDescription(ByVal strVer As String, ByVal lngIndexVer As Long)
 
     Dim xmlDocVers       As DOMDocument
     Dim nodeListVers     As IXMLDOMNodeList
@@ -288,13 +405,15 @@ Public Function LoadUpdDescription(ByVal strVer As String, ByVal lngIndexVer As 
 
     'Url_Request = strAppPath & vbBackslash & strVer & ".xml"
     If Not xmlDocVers.Load(Url_Request) Then
+        ChangeStatusTextAndDebug strMessages(53)
         MsgBox strMessages(53), vbInformation, strMessages(54)
     Else
-        Set nodeListVers = xmlDocVers.documentElement.selectNodes("//driversbackuper")
+        Set nodeListVers = xmlDocVers.documentElement.selectNodes(strXMLMainSection)
         Set xmlNodeVers = nodeListVers(0)
         NodeIndex = 0
 
         For Each propertyNodeVers In xmlNodeVers.childNodes
+
             TextNodeName = vbNullString
             TextNodeName = xmlNodeVers.childNodes(NodeIndex).nodeName
 
@@ -348,43 +467,50 @@ Public Function LoadUpdDescription(ByVal strVer As String, ByVal lngIndexVer As 
 
             NodeIndex = NodeIndex + 1
         Next
-    End If
-End Function
 
-' Показ напоминания об обновлении
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ShowUpdateToolTip
+'! Description (Описание)  :   [Показ напоминания об обновлении]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Sub ShowUpdateToolTip()
 
-    Dim mboolShowToolTip As Boolean
-    Dim intDeltaDay      As Integer
-    Dim dtToolTipDate    As Date
-    Dim strToolTipDate   As String
+    Dim mbShowToolTip As Boolean
+    Dim intDeltaDay   As Integer
+    Dim dtToolTipDate As Date
+    Dim strTTipDate   As String
 
-    If DeltaDay > 45 Then
-        If mboolUpdateToolTip Then
-            strToolTipDate = GetSetting(App.ProductName, "UpdateToolTip", "Show at Date", vbNullString)
+    If DeltaDay > 180 Then
+        If mbUpdateToolTip Then
+            strTTipDate = GetSetting(App.ProductName, "UpdateToolTip", "Show at Date", vbNullString)
 
-            If strToolTipDate = vbNullString Then
-                mboolShowToolTip = True
+            If LenB(strTTipDate) = 0 Then
+                mbShowToolTip = True
             Else
-                dtToolTipDate = CDate(strToolTipDate)
+                dtToolTipDate = CDate(strTTipDate)
                 intDeltaDay = DeltaDayNew(Date, dtToolTipDate)
 
                 If intDeltaDay >= 5 Then
-                    mboolShowToolTip = True
+                    mbShowToolTip = True
                 End If
             End If
 
         Else
-            mboolShowToolTip = False
+            mbShowToolTip = False
         End If
 
     Else
-        mboolShowToolTip = False
+        mbShowToolTip = False
     End If
 
     ' Если все условия выполнены, то показываем сообщение
     ' "Возможно, используемая вами, версия программы 'Помощник установки драйверов' уже устарела! "
-    If mboolShowToolTip Then
+    If mbShowToolTip Then
         ShowNotifyMessage strMessages(107)
     End If
+
 End Sub

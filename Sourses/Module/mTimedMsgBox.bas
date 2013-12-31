@@ -20,37 +20,27 @@ Private m_lhHook            As Long
 Private bTimedOut           As Boolean
 Private sMsgText            As String
 
-Private Declare Function GetClassName _
-                Lib "user32.dll" _
-                Alias "GetClassNameA" (ByVal hwnd As Long, _
-                                       ByVal lpClassName As String, _
-                                       ByVal nMaxCount As Long) As Long
-
-Private Declare Function SetTimer _
-                Lib "user32.dll" (ByVal hwnd As Long, _
-                                  ByVal nIDEvent As Long, _
-                                  ByVal uElapse As Long, _
-                                  ByVal lpTimerFunc As Long) As Long
-
-Private Declare Function KillTimer Lib "user32.dll" (ByVal hwnd As Long, ByVal nIDEvent As Long) As Long
+Private Declare Function GetClassName Lib "user32.dll" Alias "GetClassNameA" (ByVal hWnd As Long, ByVal lpClassName As String, ByVal nMaxCount As Long) As Long
+Private Declare Function SetTimer Lib "user32.dll" (ByVal hWnd As Long, ByVal nIDEvent As Long, ByVal uElapse As Long, ByVal lpTimerFunc As Long) As Long
+Private Declare Function KillTimer Lib "user32.dll" (ByVal hWnd As Long, ByVal nIDEvent As Long) As Long
 Private Declare Function GetCurrentThreadId Lib "kernel32.dll" () As Long
 Private Declare Function UnhookWindowsHookEx Lib "user32.dll" (ByVal hHook As Long) As Long
-Private Declare Function SetWindowsHookEx _
-                Lib "user32.dll" _
-                Alias "SetWindowsHookExA" (ByVal idHook As Long, _
-                                           ByVal lpfn As Long, _
-                                           ByVal hmod As Long, _
-                                           ByVal dwThreadId As Long) As Long
+Private Declare Function SetWindowsHookEx Lib "user32.dll" Alias "SetWindowsHookExA" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadId As Long) As Long
+Private Declare Function GetDlgCtrlID Lib "user32.dll" (ByVal hWnd As Long) As Long
 
-Private Declare Function GetDlgCtrlID Lib "user32.dll" (ByVal hwnd As Long) As Long
-
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function EnumChildWindowsProc
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lngHWnd (Long)
+'                              lParam (Long)
+'!--------------------------------------------------------------------------------
 Private Function EnumChildWindowsProc(ByVal lngHWnd As Long, ByVal lParam As Long) As Long
 
     Dim lRet       As Long
     Dim sClassName As String
 
-    sClassName = Space$(100)
-    lRet = GetClassName(lngHWnd, sClassName, 100)
+    sClassName = String$(100, vbNullChar)
+    lRet = GetClassName(lngHWnd, sClassName, Len(sClassName))
     sClassName = Left$(sClassName, lRet)
 
     If UCase$(sClassName) = UCase$("Button") Then
@@ -59,10 +49,16 @@ Private Function EnumChildWindowsProc(ByVal lngHWnd As Long, ByVal lParam As Lon
     Else
         EnumChildWindowsProc = 1
     End If
+
 End Function
 
-' *********************************************************************************************************
-' THIS IS CALLBACK procedure. Will called by Hook procedure
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetMessageBoxHandle
+'! Description (Описание)  :   [THIS IS CALLBACK procedure. Will called by Hook procedure]
+'! Parameters  (Переменные):   lMsg (Long)
+'                              wParam (Long)
+'                              lParam (Long)
+'!--------------------------------------------------------------------------------
 Private Function GetMessageBoxHandle(ByVal lMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
     If lMsg = HCBT_ACTIVATE Then
@@ -81,9 +77,11 @@ Private Function GetMessageBoxHandle(ByVal lMsg As Long, ByVal wParam As Long, B
     GetMessageBoxHandle = False
 End Function
 
-' *********************************************************************************************************
-' THIS IS CALLBACK procedure. Will called by timer procedure
-' This function is called when time out occurs by the timer
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub MessageBoxTimerEvent
+'! Description (Описание)  :   [THIS IS CALLBACK procedure. Will called by timer procedure. This function is called when time out occurs by the timer]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub MessageBoxTimerEvent()
 
     Dim lButtonCommand As Integer
@@ -97,22 +95,20 @@ Private Sub MessageBoxTimerEvent()
     End If
 
     m_lMsgHandle = 0
-    ' Set handle to ZERO
     m_lNoHandle = 0
-    ' Set handle to ZERO
     bTimedOut = True
-    ' Set flag to True
 End Sub
 
-' *********************************************************************************************************
-' THIS IS CALLBACK procedure. Will called by timer procedure
-' This function is called when time out occurs by the timer
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub MessageBoxTimerUpdateEvent
+'! Description (Описание)  :   [THIS IS CALLBACK procedure. Will called by timer procedure. This function is called when time out occurs by the timer]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub MessageBoxTimerUpdateEvent()
 
     Dim lRet As Long
     Dim sStr As String
 
-    'Debug.Print "m_lMsgHandle=" & m_lMsgHandle
     If Not (m_lMsgHandle = 0) Then
         m_TimeMsgBox = m_TimeMsgBox - 1
 
@@ -126,13 +122,18 @@ Private Sub MessageBoxTimerUpdateEvent()
         sStr = sMsgText & " (Time left: " & m_TimeMsgBox & " seconds)"
         SetWindowText m_lMsgHandle, sStr
     End If
+
 End Sub
 
-' *********************************************************************************************************
-Public Function MsgBoxEx(sMsgText As String, _
-                         dwWait As Long, _
-                         Optional Buttons As VbMsgBoxStyle = vbOKOnly, _
-                         Optional sTitle As String = "Timed MessageBox Demo") As VbMsgBoxResult
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function MsgBoxEx
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   sMsgText (String)
+'                              dwWait (Long)
+'                              Buttons (VbMsgBoxStyle = vbOKOnly)
+'                              sTitle (String = "Timed MessageBox Demo")
+'!--------------------------------------------------------------------------------
+Public Function MsgBoxEx(sMsgText As String, dwWait As Long, Optional Buttons As VbMsgBoxStyle = vbOKOnly, Optional sTitle As String = "Timed MessageBox") As VbMsgBoxResult
 
     Dim lTimer       As Long
     Dim lTimerUpdate As Long
@@ -144,7 +145,6 @@ Public Function MsgBoxEx(sMsgText As String, _
     lTimer = SetTimer(0, 0, dwWait * 1000, AddressOf MessageBoxTimerEvent)
     ' Set timer
     lTimerUpdate = SetTimer(0, 0, 1 * 1000, AddressOf MessageBoxTimerUpdateEvent)
-    ' Set timer
     ' Set the flag to false
     bTimedOut = False
     ' Display the message Box
@@ -159,4 +159,5 @@ Public Function MsgBoxEx(sMsgText As String, _
     If bTimedOut Then
         MsgBoxEx = 0
     End If
+
 End Function

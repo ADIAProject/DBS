@@ -12,7 +12,13 @@ Public Enum lngHASH_TYPE
 End Enum
 
 ' CAPICOM 2.1.0.2 (http://support.microsoft.com/kb/931906/)
-Public Function CalcHashFile(ByVal strPathFile As String, ByVal lngHashAlgoritm As lngHASH_TYPE) As String
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function CalcHashFile
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   StrPathFile (String)
+'                              lngHashAlgoritm (lngHASH_TYPE)
+'!--------------------------------------------------------------------------------
+Public Function CalcHashFile(ByVal StrPathFile As String, ByVal lngHashAlgoritm As lngHASH_TYPE) As String
 
     Dim objHashedData As New CAPICOM.HashedData
     Dim objStream     As New ADODB.Stream
@@ -21,16 +27,17 @@ Public Function CalcHashFile(ByVal strPathFile As String, ByVal lngHashAlgoritm 
 
     'Для строки
     '.Hash UStr2BStr(strText)
-    If PathFileExists(strPathFile) = 1 Then
+    If PathExists(StrPathFile) Then
 
         With objStream
             .Type = adTypeBinary
             .Open
-            .LoadFromFile (strPathFile)
+            .LoadFromFile (StrPathFile)
 
             Do Until .EOS
                 objHashedData.Hash .Read
             Loop
+
             .Close
         End With
 

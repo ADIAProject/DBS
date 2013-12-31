@@ -45,26 +45,24 @@ Private Const HWND_NOTOPMOST = -2
 Private Const TOPMOST_FLAGS = SWP_NOMOVE Or SWP_NOSIZE
 Private Const SWP_FLAGS = SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOSIZE
 
-'-------------------------------------------------------------------------
-' Procedure  : AnimateForm
-' Auther     : Jim Jose
-' Input      : AnimeObject, Event , Effect + Time/frame values
-' OutPut     : None
-' Purpose    : Cooool flash style animations in Vb
-'-------------------------------------------------------------------------
-Public Function AnimateForm(hwndObject As Object, _
-                            ByVal aEvent As AnimeEventEnum, _
-                            Optional ByVal aEffect As AnimeEffectEnum = 11, _
-                            Optional ByVal FrameTime As Long = 1, _
-                            Optional ByVal FrameCount As Long = 33) As Boolean
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function AnimateForm
+'! Description (Описание)  :   [Cooool flash style animations in Vb]
+'! Parameters  (Переменные):   hwndObject (Object)
+'                              aEvent (AnimeEventEnum)
+'                              aEffect (AnimeEffectEnum = 11)
+'                              FrameTime (Long = 1)
+'                              FrameCount (Long = 33)
+'!--------------------------------------------------------------------------------
+Public Function AnimateForm(hwndObject As Object, ByVal aEvent As AnimeEventEnum, Optional ByVal aEffect As AnimeEffectEnum = 11, Optional ByVal FrameTime As Long = 1, Optional ByVal FrameCount As Long = 33) As Boolean
 
     On Error GoTo Handle
 
-    Dim X1      As Long, Y1 As Long
-    Dim hRgn    As Long, tmpRgn As Long
-    Dim XValue  As Long, YValue As Long
-    Dim XIncr   As Double, YIncr As Double
-    Dim wHeight As Long, wWidth As Long
+    Dim X1      As Long, Y1                  As Long
+    Dim hRgn    As Long, tmpRgn            As Long
+    Dim XValue  As Long, YValue          As Long
+    Dim XIncr   As Double, YIncr          As Double
+    Dim wHeight As Long, wWidth         As Long
 
     wWidth = hwndObject.Width / Screen.TwipsPerPixelX
     wHeight = hwndObject.Height / Screen.TwipsPerPixelY
@@ -88,7 +86,7 @@ Public Function AnimateForm(hwndObject As Object, _
                 End If
 
                 ' Set the new region for the window
-                SetWindowRgn hwndObject.hwnd, hRgn, True
+                SetWindowRgn hwndObject.hWnd, hRgn, True
                 DoEvents
                 Sleep FrameTime
             Next
@@ -109,7 +107,7 @@ Public Function AnimateForm(hwndObject As Object, _
                 End If
 
                 ' Set the new region for the window
-                SetWindowRgn hwndObject.hwnd, hRgn, True
+                SetWindowRgn hwndObject.hWnd, hRgn, True
                 DoEvents
                 Sleep FrameTime
             Next
@@ -130,7 +128,7 @@ Public Function AnimateForm(hwndObject As Object, _
                 End If
 
                 ' Set the new region for the window
-                SetWindowRgn hwndObject.hwnd, hRgn, True
+                SetWindowRgn hwndObject.hWnd, hRgn, True
                 DoEvents
                 Sleep FrameTime
             Next
@@ -151,7 +149,7 @@ Public Function AnimateForm(hwndObject As Object, _
                 End If
 
                 ' Set the new region for the window
-                SetWindowRgn hwndObject.hwnd, hRgn, True
+                SetWindowRgn hwndObject.hWnd, hRgn, True
                 DoEvents
                 Sleep FrameTime
             Next
@@ -173,7 +171,7 @@ Public Function AnimateForm(hwndObject As Object, _
 
                 hRgn = CreateRectRgn(0, 0, XValue, YValue)
                 ' Set the new region for the window
-                SetWindowRgn hwndObject.hwnd, hRgn, True
+                SetWindowRgn hwndObject.hWnd, hRgn, True
                 DoEvents
                 Sleep FrameTime
             Next
@@ -195,7 +193,7 @@ Public Function AnimateForm(hwndObject As Object, _
 
                 hRgn = CreateRectRgn(0, wHeight, XValue, YValue)
                 ' Set the new region for the window
-                SetWindowRgn hwndObject.hwnd, hRgn, True
+                SetWindowRgn hwndObject.hWnd, hRgn, True
                 DoEvents
                 Sleep FrameTime
             Next
@@ -217,7 +215,7 @@ Public Function AnimateForm(hwndObject As Object, _
 
                 hRgn = CreateRectRgn(XValue, YValue, wWidth, 0)
                 ' Set the new region for the window
-                SetWindowRgn hwndObject.hwnd, hRgn, True
+                SetWindowRgn hwndObject.hWnd, hRgn, True
                 DoEvents
                 Sleep FrameTime
             Next
@@ -239,10 +237,10 @@ Public Function AnimateForm(hwndObject As Object, _
 
                 hRgn = CreateRectRgn(XValue, YValue, wWidth, wHeight)
                 ' Set the new region for the window
-                SetWindowRgn hwndObject.hwnd, hRgn, True
+                SetWindowRgn hwndObject.hWnd, hRgn, True
                 DoEvents
                 Sleep FrameTime
-            Next X1
+            Next
 
         Case eStrechHorizontally
             XIncr = wWidth / FrameCount
@@ -258,7 +256,7 @@ Public Function AnimateForm(hwndObject As Object, _
 
                 hRgn = CreateRectRgn(XValue / 2, 0, wWidth - XValue / 2, wHeight)
                 ' Set the new region for the window
-                SetWindowRgn hwndObject.hwnd, hRgn, True
+                SetWindowRgn hwndObject.hWnd, hRgn, True
                 DoEvents
                 Sleep FrameTime
             Next
@@ -277,7 +275,7 @@ Public Function AnimateForm(hwndObject As Object, _
 
                 hRgn = CreateRectRgn(0, wHeight / 2 - YValue / 2, wWidth, wHeight / 2 + YValue / 2)
                 ' Set the new region for the window
-                SetWindowRgn hwndObject.hwnd, hRgn, True
+                SetWindowRgn hwndObject.hWnd, hRgn, True
                 DoEvents
                 Sleep FrameTime
             Next
@@ -299,7 +297,7 @@ Public Function AnimateForm(hwndObject As Object, _
 
                 hRgn = CreateRectRgn((wWidth - XValue) / 2, (wHeight - YValue) / 2, (wWidth + XValue) / 2, (wHeight + YValue) / 2)
                 ' Set the new region for the window
-                SetWindowRgn hwndObject.hwnd, hRgn, True
+                SetWindowRgn hwndObject.hWnd, hRgn, True
                 DoEvents
                 Sleep FrameTime
             Next
@@ -327,7 +325,7 @@ Public Function AnimateForm(hwndObject As Object, _
 
                 hRgn = CreateRectRgn((wWidth - XValue) / 2, (wHeight - YValue) / 2, (wWidth + XValue) / 2, (wHeight + YValue) / 2)
                 ' Set the new region for the window
-                SetWindowRgn hwndObject.hwnd, hRgn, True
+                SetWindowRgn hwndObject.hWnd, hRgn, True
                 DoEvents
                 Sleep FrameTime
             Next
@@ -357,7 +355,7 @@ Public Function AnimateForm(hwndObject As Object, _
                 End If
 
                 ' Set the new region for the window
-                SetWindowRgn hwndObject.hwnd, hRgn, True
+                SetWindowRgn hwndObject.hWnd, hRgn, True
                 DoEvents
                 Sleep FrameTime
             Next
@@ -384,20 +382,26 @@ Public Function AnimateForm(hwndObject As Object, _
                 End If
 
                 ' Set the new region for the window
-                SetWindowRgn hwndObject.hwnd, hRgn, True
+                SetWindowRgn hwndObject.hWnd, hRgn, True
                 DoEvents
                 Sleep FrameTime
             Next
+
     End Select
 
     AnimateForm = True
+
     Exit Function
+
 Handle:
     AnimateForm = False
 End Function
 
-Public Sub MakeTopMostNoFocus(hwnd As Long)
-
-    'SetWindowPos hwnd, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS
-    SetWindowPos hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_FLAGS
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub MakeTopMostNoFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   hWnd (Long)
+'!--------------------------------------------------------------------------------
+Public Sub MakeTopMostNoFocus(hWnd As Long)
+    SetWindowPos hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_FLAGS
 End Sub

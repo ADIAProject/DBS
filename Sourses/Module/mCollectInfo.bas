@@ -125,6 +125,8 @@ Public Sub ReadDrivers()
     DoEvents
     miPbNext = 100
     ' Изменяем прогресс
+    If frmMain.TaskBar.isAccessible Then _
+        frmMain.TaskBar.SetProgressState frmMain.hwnd, TBPF_NORMAL
     frmProgress.ChangeProgressBarStatus miPbNext, 100
     '# list all class of drivers installed
     DebugMode "***ReadDrivers: ListKey - HKEY_LOCAL_MACHINE\" & strControlSet & "\Control\Class"
@@ -256,7 +258,7 @@ Public Sub ReadDrivers()
                 arrHwidsLocal(9, h) = strClassID
 
                 'Вывод инфо в лог
-                If mboolDebugEnable Then
+                If mbDebugEnable Then
                     DebugMode "RowNum: " & h & " From: " & regNameClass
                     DebugMode "ClassID: " & strClassID
                     DebugMode "DriverDesc: " & strDriverDesc
@@ -279,7 +281,10 @@ Public Sub ReadDrivers()
     ' Финишируем прогресс
     'miPbNext = 10000
     'ChangeProgressBarStatus frmProgress,frmProgress.ctlProgressBar1, miPbNext, 0
-    frmProgress.ctlProgressBar1.Value = 10000
+    'frmProgress.ctlProgressBar1.value = 10000
+    frmProgress.ChangeProgressBarStatus 10000, 0
+    'If frmProgress.TaskBar2.isAccessible Then _
+        'TaskBar2.SetProgressValue hwnd, frmProgress.ctlProgressBar1.value, frmProgress.ctlProgressBar1.Max
     DoEvents
 
     ' Переобъявляем массив на реальное кол-во записей

@@ -6,44 +6,25 @@ Option Explicit
 'Записывает строку в любой файл .INI
 'Читает список параметров и значений в секции
 Private IndexDevIDMass As Long
-
-Private Declare Function GetPrivateProfileSection _
-                Lib "kernel32.dll" _
-                Alias "GetPrivateProfileSectionA" (ByVal lpAppName As String, _
-                                                   ByVal lpReturnedString As String, _
-                                                   ByVal nSize As Long, _
-                                                   ByVal lpFileName As String) As Long
-
-Private Declare Function GetPrivateProfileInt _
-                Lib "kernel32.dll" _
-                Alias "GetPrivateProfileIntA" (ByVal lpApplicationName As String, _
-                                               ByVal lpKeyName As String, _
-                                               ByVal nDefault As Long, _
-                                               ByVal lpFileName As String) As Long
-
-Private Declare Function GetPrivateProfileString _
-                Lib "kernel32.dll" _
-                Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, _
-                                                  ByVal lpKeyName As String, _
-                                                  ByVal lpDefault As String, _
-                                                  ByVal lpReturnedString As String, _
-                                                  ByVal nSize As Long, _
-                                                  ByVal lpFileName As String) As Long
-
-Private Declare Function WritePrivateProfileString _
-                Lib "kernel32.dll" _
-                Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, _
-                                                    ByVal lpKeyName As String, _
-                                                    ByVal lpString As Any, _
-                                                    ByVal lpFileName As String) As Long
+Private Declare Function GetPrivateProfileSection Lib "kernel32.dll" Alias "GetPrivateProfileSectionA" (ByVal lpAppName As String, ByVal lpReturnedString As String, ByVal nSize As Long, ByVal lpFileName As String) As Long
+Private Declare Function GetPrivateProfileInt Lib "kernel32.dll" Alias "GetPrivateProfileIntA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal nDefault As Long, ByVal lpFileName As String) As Long
+Private Declare Function GetPrivateProfileString Lib "kernel32.dll" Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Long, ByVal lpFileName As String) As Long
+Private Declare Function GetPrivateProfileStringW Lib "kernel32.dll" (ByVal lpApplicationName As Long, ByVal lpKeyName As Long, ByVal lpDefault As Long, ByVal lpReturnedString As Long, ByVal nSize As Long, ByVal lpFileName As Long) As Long
+Private Declare Function WritePrivateProfileString Lib "kernel32.dll" Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpString As Any, ByVal lpFileName As String) As Long
 
 'sub to load all keys from an ini section into a listbox.
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function CheckIniSectionExists
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strSection (String)
+'                              strfullpath (String)
+'!--------------------------------------------------------------------------------
 Public Function CheckIniSectionExists(ByVal strSection As String, ByVal strfullpath As String) As Boolean
 
     Dim strBuffer As String
     Dim nTemp     As Long
 
-    strBuffer = String$(5 * 1024, Chr$(0&))
+    strBuffer = String$(5 * 1024, vbNullChar)
     nTemp = GetPrivateProfileSection(strSection, strBuffer, Len(strBuffer), strfullpath)
 
     If nTemp > 0 Then
@@ -51,53 +32,69 @@ Public Function CheckIniSectionExists(ByVal strSection As String, ByVal strfullp
     Else
         CheckIniSectionExists = False
     End If
+
 End Function
 
 ' Получение Boolean значения переменной ini-файла с дефолтовым значением
-Public Function GetIniValueBoolean(ByVal strIniPath As String, _
-                                   ByVal strIniSection As String, _
-                                   ByVal strIniValue As String, _
-                                   ByVal lngValueDefault As Long) As Boolean
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetIniValueBoolean
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strIniPath (String)
+'                              strIniSection (String)
+'                              strIniValue (String)
+'                              lngValueDefault (Long)
+'!--------------------------------------------------------------------------------
+Public Function GetIniValueBoolean(ByVal strIniPath As String, ByVal strIniSection As String, ByVal strIniValue As String, ByVal lngValueDefault As Long) As Boolean
 
-    Dim lngValue As Long
+    Dim LngValue As Long
 
-    lngValue = IniLongPrivate(strIniSection, strIniValue, strIniPath)
+    LngValue = IniLongPrivate(strIniSection, strIniValue, strIniPath)
 
-    If lngValue = 9999 Then
-        lngValue = lngValueDefault
+    If LngValue = 9999 Then
+        LngValue = lngValueDefault
     End If
 
-    GetIniValueBoolean = CBool(lngValue)
+    GetIniValueBoolean = CBool(LngValue)
 End Function
 
 ' Получение Long значения переменной ini-файла с дефолтовым значением
-Public Function GetIniValueLong(ByVal strIniPath As String, _
-                                ByVal strIniSection As String, _
-                                ByVal strIniValue As String, _
-                                ByVal lngValueDefault As Long) As Long
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetIniValueLong
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strIniPath (String)
+'                              strIniSection (String)
+'                              strIniValue (String)
+'                              lngValueDefault (Long)
+'!--------------------------------------------------------------------------------
+Public Function GetIniValueLong(ByVal strIniPath As String, ByVal strIniSection As String, ByVal strIniValue As String, ByVal lngValueDefault As Long) As Long
 
-    Dim lngValue As Long
+    Dim LngValue As Long
 
-    lngValue = IniLongPrivate(strIniSection, strIniValue, strIniPath)
+    LngValue = IniLongPrivate(strIniSection, strIniValue, strIniPath)
 
-    If lngValue = 9999 Then
-        lngValue = lngValueDefault
+    If LngValue = 9999 Then
+        LngValue = lngValueDefault
     End If
 
-    GetIniValueLong = lngValue
+    GetIniValueLong = LngValue
 End Function
 
 ' Получение String значения переменной ini-файла с дефолтовым значением
-Public Function GetIniValueString(ByVal strIniPath As String, _
-                                  ByVal strIniSection As String, _
-                                  ByVal strIniValue As String, _
-                                  ByVal strValueDefault As String) As String
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetIniValueString
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strIniPath (String)
+'                              strIniSection (String)
+'                              strIniValue (String)
+'                              strValueDefault (String)
+'!--------------------------------------------------------------------------------
+Public Function GetIniValueString(ByVal strIniPath As String, ByVal strIniSection As String, ByVal strIniValue As String, ByVal strValueDefault As String) As String
 
     Dim strValue As String
 
     strValue = IniStringPrivate(strIniSection, strIniValue, strIniPath)
 
-    If strValue = "No Key" Then
+    If strValue = "no_key" Then
         strValue = strValueDefault
     End If
 
@@ -113,9 +110,14 @@ End Function
 '!  Возвр. знач.:  Малый буфер или Нет секции если есть ошибки в работе функции. Иначе возвращает массив переменная=значение
 '!  Описание    :  Читает имена значений и переменных в массив в указанной секции .INI
 '! -----------------------------------------------------------
-Public Function GetSectionMass(ByVal SekName As String, _
-                               ByVal IniFileName As String, _
-                               Optional ByVal FirstValue As Boolean)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetSectionMass
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   SekName (String)
+'                              IniFileName (String)
+'                              FirstValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Function GetSectionMass(ByVal SekName As String, ByVal IniFileName As String, Optional ByVal FirstValue As Boolean)
 
     Dim strBuffer        As String * 32767
     Dim strTemp          As String
@@ -125,7 +127,7 @@ Public Function GetSectionMass(ByVal SekName As String, _
     Dim Index            As Long
     Dim arrSection()     As String
     Dim arrSectionTemp() As String
-    Dim key              As String
+    Dim Key              As String
     Dim Value            As String
     Dim str              As String
     Dim lpKeyValue()     As String
@@ -138,28 +140,32 @@ Public Function GetSectionMass(ByVal SekName As String, _
     strTemp = Left$(strBuffer, intSize)
 
     If FirstValue Then
+
         ReDim arrSection(1, 2) As String
+
         arrSectionTemp = Split(strTemp, vbNullChar)
         intTempSmallBuff = InStrRev(strTemp, vbNullChar)
 
         If intTempSmallBuff > 0 Then
             str = arrSectionTemp(0)
-            miRavnoPosition = InStr(1, str, "=")
+            miRavnoPosition = InStr(str, "=")
 
             If miRavnoPosition > 0 Then
-                key = Mid$(str, 1, miRavnoPosition - 1)
+                Key = Left$(str, miRavnoPosition - 1)
                 Value = Mid$(str, miRavnoPosition + 1)
             Else
-                key = str
+                Key = str
                 Value = str
             End If
 
-            arrSection(Index, 1) = key
+            arrSection(Index, 1) = Key
             arrSection(Index, 2) = Value
             IndexDevIDMass = 1
             GoTo IF_EXIT
         Else
+
             ReDim arrSection(1, 2) As String
+
             arrSection(1, 1) = "Small Buffer"
             arrSection(1, 2) = "Small Buffer"
             IndexDevIDMass = 1
@@ -167,41 +173,43 @@ Public Function GetSectionMass(ByVal SekName As String, _
         End If
     End If
 
-    'If Len(strTemp) > 0 Then
     If LenB(strTemp) > 0 Then
         lpKeyValue = Split(strTemp, vbNullChar)
+
         ReDim arrSection(UBound(lpKeyValue), 2) As String
 
         Do Until LenB(strTemp) = 0
             intTempSmallBuff = InStrRev(strTemp, vbNullChar)
 
             If intTempSmallBuff > 0 Then
-                intTemp = InStr(1, strTemp, vbNullChar)
-                str = Mid$(strTemp, 1, intTemp)
+                intTemp = InStr(strTemp, vbNullChar)
+                str = Left$(strTemp, intTemp)
 
-                If InStr(1, str, "---") > 0 Then
-                    key = "Строка без ID"
+                If InStr(str, "---") Then
+                    Key = "Строка без ID"
                     Value = "Строка без ID"
                     GoTo Save_StrKey
                 End If
 
-                miRavnoPosition = InStr(1, str, "=")
+                miRavnoPosition = InStr(str, "=")
 
                 If miRavnoPosition > 0 Then
-                    key = Mid$(str, 1, miRavnoPosition - 1)
+                    Key = Left$(str, miRavnoPosition - 1)
                     Value = Mid$(str, miRavnoPosition + 1)
                 Else
-                    key = TrimNull(str)
+                    Key = TrimNull(str)
                     Value = TrimNull(str)
                 End If
 
 Save_StrKey:
-                arrSection(Index, 1) = key
+                arrSection(Index, 1) = Key
                 arrSection(Index, 2) = Value
                 Index = Index + 1
                 strTemp = Mid$(strTemp, intTemp + 1, Len(strTemp))
             Else
+
                 ReDim arrSection(1, 2) As String
+
                 arrSection(1, 1) = "Small Buffer"
                 arrSection(1, 2) = "Small Buffer"
                 IndexDevIDMass = 1
@@ -209,8 +217,11 @@ Save_StrKey:
             End If
 
         Loop
+
     Else
+
         ReDim arrSection(Index, 2) As String
+
         arrSection(Index, 1) = "No section"
         arrSection(Index, 2) = "No section"
     End If
@@ -219,9 +230,14 @@ Save_StrKey:
 IF_EXIT:
     GetSectionMass = arrSection
 PROC_EXIT:
+
     Exit Function
+
 PROC_ERR:
-    MsgBox "Error: <" & err.Number & "> - " & err.Description, vbExclamation + vbOKOnly, "GetValueString"
+
+    If Not mbSilentRun Then
+        MsgBox "Error:  Err.Number: " & Err.Number & " Err.Description: " & Err.Description, vbExclamation + vbOKOnly, "GetValueString"
+    End If
 
     Resume PROC_EXIT
 
@@ -232,12 +248,19 @@ End Function
 '-------------------------------------------------
 'SekName - имя секции (регистр не учитывается)
 'IniFileName - имя файла .ini (если путь к файлу не указан,файл ищется в папке Windows)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function IniDelAllKeyPrivate
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   SekName (String)
+'                              IniFileName (String)
+'!--------------------------------------------------------------------------------
 Public Function IniDelAllKeyPrivate(SekName As String, IniFileName As String)
 
     Dim nTemp As Long
 
     nTemp = WritePrivateProfileString(SekName, vbNullString, vbNullString, IniFileName)
 End Function
+
 '! -----------------------------------------------------------
 '!  Функция     :  IniLongPrivate
 '!  Переменные  :  SekName As String, KeyName As String, IniFileName As String
@@ -249,8 +272,14 @@ End Function
 '!  Описание    :  Читает целый параметр из любого файла .INI
 '! -----------------------------------------------------------
 '--------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function IniLongPrivate
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   SekName (String)
+'                              KeyName (String)
+'                              IniFileName (String)
+'!--------------------------------------------------------------------------------
 Public Function IniLongPrivate(ByVal SekName As String, ByVal KeyName As String, ByVal IniFileName As String) As Long
-
     IniLongPrivate = GetPrivateProfileInt(SekName, KeyName, 9999, IniFileName)
 End Function
 
@@ -261,21 +290,28 @@ End Function
 '!                 KeyName - имя ключа (регистр не учитывается)
 '!                 IniFileName - имя файла .ini (если путь к файлу не указан,файл ищется в папке Windows)
 '!  Возвр. знач.:  As String
-'!                 "No Key"    - возвращаемое функцией значение, если ключ не найден
+'!                 "no_key"    - возвращаемое функцией значение, если ключ не найден
 '!  Описание    :  Читает строковый параметр из любого файла .INI
 '! -----------------------------------------------------------
-Public Function IniStringPrivate(ByVal SekName As String, _
-                                 ByVal KeyName As String, _
-                                 ByVal IniFileName As String) As String
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function IniStringPrivate
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   SekName (String)
+'                              KeyName (String)
+'                              IniFileName (String)
+'!--------------------------------------------------------------------------------
+Public Function IniStringPrivate(ByVal SekName As String, ByVal KeyName As String, ByVal IniFileName As String) As String
 
     'строковый буфер(под значение ключа)
-    Dim sTemp As String * 2048
-    Dim nTemp As Long
+    Dim sTemp(4096) As Byte
+    Dim nTemp       As Long
 
     'в неё запишется количество символов в строке ключа
-    nTemp = GetPrivateProfileString(SekName, KeyName, "No Key", sTemp, 2048, IniFileName)
-    IniStringPrivate = Left$(sTemp, nTemp)
-    'ограничение - параметр не может быть больше 255 символов
+    'ограничение - параметр не может быть больше 4096 символов
+    nTemp = GetPrivateProfileStringW(StrPtr(SekName), StrPtr(KeyName), StrPtr("no_key"), VarPtr(sTemp(0)), -1, StrPtr(IniFileName))
+    IniStringPrivate = Left$(sTemp(), nTemp * 2)
+    IniStringPrivate = TrimNull(IniStringPrivate)
+    Erase sTemp
 End Function
 
 '! -----------------------------------------------------------
@@ -288,18 +324,27 @@ End Function
 '!  Возвр. знач.:  As Long
 '!  Описание    :  Записывает строковый параметр в любой файл .INI
 '! -----------------------------------------------------------
-Public Sub IniWriteStrPrivate(ByVal SekName As String, _
-                              ByVal KeyName As String, _
-                              ByVal Param As String, _
-                              ByVal IniFileName As String)
-
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub IniWriteStrPrivate
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   SekName (String)
+'                              KeyName (String)
+'                              Param (String)
+'                              IniFileName (String)
+'!--------------------------------------------------------------------------------
+Public Sub IniWriteStrPrivate(ByVal SekName As String, ByVal KeyName As String, ByVal Param As String, ByVal IniFileName As String)
     WritePrivateProfileString SekName, KeyName, Param, IniFileName
 End Sub
 
 'sub to load all keys from an ini section into a listbox.
-Public Function LoadIniSectionKeys(ByVal strSection As String, _
-                                   ByVal strfullpath As String, _
-                                   Optional ByVal mboolKeys As Boolean = True) As String()
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function LoadIniSectionKeys
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strSection (String)
+'                              strfullpath (String)
+'                              mbKeys (Boolean = True) As String()
+'!--------------------------------------------------------------------------------
+Public Function LoadIniSectionKeys(ByVal strSection As String, ByVal strfullpath As String, Optional ByVal mbKeys As Boolean = True) As String()
 
     Dim KeyAndVal() As String
     Dim Key_Val()   As String
@@ -309,32 +354,31 @@ Public Function LoadIniSectionKeys(ByVal strSection As String, _
     Dim n           As Long
 
     n = -1
-    strBuffer = String$(5 * 1024, Chr$(0&))
+    strBuffer = String$(5 * 1024, vbNullChar)
     GetPrivateProfileSection strSection, strBuffer, Len(strBuffer), strfullpath
     KeyAndVal = Split(strBuffer, vbNullChar)
 
-    Dim lngLBound As Long
-    Dim lngUBound As Long
+    For intx = LBound(KeyAndVal) To UBound(KeyAndVal)
 
-    lngLBound = LBound(KeyAndVal)
-    lngUBound = UBound(KeyAndVal)
+        If LenB(KeyAndVal(intx)) = 0 Then
 
-    For intx = lngLBound To lngUBound
-
-        If KeyAndVal(intx) = vbNullString Then
             Exit For
+
         End If
 
         Key_Val = Split(KeyAndVal(intx), "=")
 
         If UBound(Key_Val) = -1 Then
+
             Exit For
+
         End If
 
         n = n + 1
+
         ReDim Preserve Z(n)
 
-        If mboolKeys Then
+        If mbKeys Then
             ' только ключи
             Z(n) = Key_Val(0)
         Else
@@ -346,11 +390,14 @@ Public Function LoadIniSectionKeys(ByVal strSection As String, _
         End If
 
     Next
+
     Erase KeyAndVal
     Erase Key_Val
 
     If n = -1 Then
+
         ReDim Z(0) As String
+
     End If
 
     LoadIniSectionKeys = Z
@@ -361,6 +408,11 @@ End Function
 '!  Переменные  :  sFileName As String
 '!  Описание    :  Привидение ини файла в "читабельный" вид
 '! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub NormIniFile
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   sFileName (String)
+'!--------------------------------------------------------------------------------
 Public Sub NormIniFile(ByVal sFileName As String)
 
     Dim nf          As Long
@@ -383,11 +435,14 @@ Public Sub NormIniFile(ByVal sFileName As String)
 
             If Len(slArray(nf)) Then
                 ub = ub + IIf(Left$(slArray(nf), vbNull) = Chr$(&H5B), 2, vbNull)
+
                 ReDim Preserve sOutArray(ub)
+
                 sOutArray(ub) = slArray(nf)
             End If
 
         Next
+
         sBuffer = Join(sOutArray, vbNewLine)
         DeleteFiles sFileName
         nf = FreeFile
@@ -395,16 +450,76 @@ Public Sub NormIniFile(ByVal sFileName As String)
         Put nf, 1, sBuffer
         Close nf
     End If
+
 End Sub
 
 '# use to read/write ini/inf file #
-Public Function ReadFromINI(ByVal strSection As String, _
-                            ByVal strkey As String, _
-                            ByVal strfullpath As String, _
-                            Optional ByVal strDefault As String = vbNullString) As String
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function ReadFromINI
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strSection (String)
+'                              strKey (String)
+'                              strfullpath (String)
+'                              strDefault (String = vbNullString)
+'!--------------------------------------------------------------------------------
+Public Function ReadFromINI(ByVal strSection As String, ByVal strKey As String, ByVal strfullpath As String, Optional ByVal strDefault As String = vbNullString) As String
 
     Dim strBuffer As String
 
-    strBuffer = String$(750, Chr$(0&))
-    ReadFromINI = Left$(strBuffer, GetPrivateProfileString(strSection, ByVal LCase$(strkey), strDefault, strBuffer, Len(strBuffer), strfullpath))
+    strBuffer = String$(750, vbNullChar)
+    ReadFromINI = Left$(strBuffer, GetPrivateProfileString(strSection, ByVal LCase$(strKey), strDefault, strBuffer, Len(strBuffer), strfullpath))
+End Function
+
+' Проверка на то что секция пустая
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function IniSectionIsEmpty
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strSection (String)
+'                              strIni (String)
+'!--------------------------------------------------------------------------------
+Public Function IniSectionIsEmpty(strSection As String, strIni As String) As Boolean
+
+    Dim sTemp As String * 2048
+    Dim nTemp As Long
+
+    'в неё запишется количество символов в строке ключа
+    nTemp = GetPrivateProfileSection(strSection, sTemp, 2048, strIni)
+    IniSectionIsEmpty = nTemp = 0
+End Function
+
+' Получение списка пустых секций из полученного ранее списка секций
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetIniEmptySectionFromList
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strSectionList (String)
+'                              strIniPath (String)
+'!--------------------------------------------------------------------------------
+Public Function GetIniEmptySectionFromList(strSectionList As String, strIniPath As String) As String
+
+    Dim strTmp             As String
+    Dim strSectionList_x() As String
+    Dim i_i                As Long
+    Dim strManufSection    As String
+
+    strSectionList_x = Split(strSectionList, "|")
+
+    For i_i = 0 To UBound(strSectionList_x)
+        strManufSection = strSectionList_x(i_i)
+
+        If IniSectionIsEmpty(strManufSection, strIniPath) Then
+            If LenB(strTmp) > 0 Then
+                strTmp = strTmp & "," & strManufSection
+            Else
+                strTmp = strManufSection
+            End If
+        End If
+
+    Next
+
+    If LenB(strTmp) > 0 Then
+        GetIniEmptySectionFromList = strTmp
+    Else
+        GetIniEmptySectionFromList = "-"
+    End If
+
 End Function

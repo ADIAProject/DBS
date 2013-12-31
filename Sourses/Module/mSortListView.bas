@@ -1,11 +1,11 @@
 Attribute VB_Name = "mSortListView"
 Option Explicit
 
-Public sOrder                As Boolean
-Public lSortAs               As Long
-Public m_lColumn             As Long
-Public m_PRECEDE             As Long
-Public m_FOLLOW              As Long
+Public sOrder                 As Boolean
+Public lSortAs                As Long
+Public m_lColumn              As Long
+Public m_PRECEDE              As Long
+Public m_FOLLOW               As Long
 
 Private Const LVM_FIRST       As Long = &H1000
 Private Const LVIF_TEXT       As Long = &H1
@@ -16,20 +16,27 @@ Private Const LVIF_INDENT     As Long = &H10
 Private Const LVM_GETITEMTEXT As Long = (LVM_FIRST + 45)
 
 Private Type LVITEM_lp
-    Mask                            As Long
-    iItem                           As Long
-    iSubItem                        As Long
-    State                           As Long
-    StateMask                       As Long
-    pszText                         As Long
-    cchTextMax                      As Long
-    iImage                          As Long
-    lParam                          As Long
-    iIndent                         As Long
+    Mask                                    As Long
+    iItem                               As Long
+    iSubItem                            As Long
+    State                               As Long
+    StateMask                           As Long
+    pszText                             As Long
+    cchTextMax                          As Long
+    iImage                              As Long
+    lParam                              As Long
+    iIndent                             As Long
 End Type
 
 Private m_uLVI As LVITEM_lp
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function hSortFunc
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lParam1 (Long)
+'                              lParam2 (Long)
+'                              lngHWnd (Long)
+'!--------------------------------------------------------------------------------
 Public Function hSortFunc(ByVal lParam1 As Long, ByVal lParam2 As Long, ByVal lngHWnd As Long) As Long
 
     Select Case lSortAs
@@ -44,10 +51,18 @@ Public Function hSortFunc(ByVal lParam1 As Long, ByVal lParam2 As Long, ByVal ln
             hSortFunc = IIf(CDate(pvGetItemText(lngHWnd, lParam1)) > CDate(pvGetItemText(lngHWnd, lParam2)), m_PRECEDE, m_FOLLOW)
 
         Case stNumber
-            hSortFunc = IIf(Val(pvGetItemText(lngHWnd, lParam1)) > Val(pvGetItemText(lngHWnd, lParam2)), m_PRECEDE, m_FOLLOW)
+            'hSortFunc = IIf(Val(pvGetItemText(lngHWnd, lParam1)) > Val(pvGetItemText(lngHWnd, lParam2)), m_PRECEDE, m_FOLLOW)
+            hSortFunc = IIf(CLng(pvGetItemText(lngHWnd, lParam1)) > CLng(pvGetItemText(lngHWnd, lParam2)), m_PRECEDE, m_FOLLOW)
     End Select
+
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function pvGetItemText
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lngHWnd (Long)
+'                              lParam (Long)
+'!--------------------------------------------------------------------------------
 Private Function pvGetItemText(ByVal lngHWnd As Long, ByVal lParam As Long) As String
 
     Dim a(261) As Byte

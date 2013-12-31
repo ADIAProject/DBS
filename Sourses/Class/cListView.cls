@@ -19,28 +19,14 @@ Option Explicit
 '********************************************************************
 '*       О сколько нам открытий чудных, готовит юзера Винда!        *
 '********************************************************************
-Private Declare Function GetAsyncKeyState Lib "user32.dll" (ByVal vKey As Long) As Integer
-Private Declare Function ImageList_Create _
-                Lib "comctl32.dll" (ByVal cx As Long, _
-                                    ByVal cy As Long, _
-                                    ByVal flags As Long, _
-                                    ByVal cInitial As Long, _
-                                    ByVal cGrow As Long) As Long
-
-Private Declare Function ImageList_Destroy Lib "comctl32.dll" (ByVal hIml As Long) As Long
-Private Declare Function ImageList_AddMasked _
-                Lib "comctl32.dll" (ByVal hIml As Long, _
-                                    ByVal hbmImage As Long, _
-                                    ByVal crMask As Long) As Long
-
-Private Declare Function ImageList_ReplaceIcon _
-                Lib "comctl32.dll" (ByVal hIml As Long, _
-                                    ByVal i As Long, _
-                                    ByVal hIcon As Long) As Long
-
-Private Declare Function ImageList_GetImageCount Lib "comctl32.dll" (ByVal hIml As Long) As Long
-Private Declare Function ImageList_Remove Lib "comctl32.dll" (ByVal hIml As Long, ByVal i As Long) As Long
-Private Declare Function ImageList_RemoveAll Lib "comctl32.dll" (ByVal hIml As Long) As Long
+Private Declare Function GetAsyncKeyState Lib "user32.dll" (ByVal VKey As Long) As Integer
+Private Declare Function ImageList_Create Lib "Comctl32.dll" (ByVal CX As Long, ByVal CY As Long, ByVal Flags As Long, ByVal cInitial As Long, ByVal cGrow As Long) As Long
+Private Declare Function ImageList_Destroy Lib "Comctl32.dll" (ByVal hIml As Long) As Long
+Private Declare Function ImageList_AddMasked Lib "Comctl32.dll" (ByVal hIml As Long, ByVal hbmImage As Long, ByVal crMask As Long) As Long
+Private Declare Function ImageList_ReplaceIcon Lib "Comctl32.dll" (ByVal hIml As Long, ByVal i As Long, ByVal hIcon As Long) As Long
+Private Declare Function ImageList_GetImageCount Lib "Comctl32.dll" (ByVal hIml As Long) As Long
+Private Declare Function ImageList_Remove Lib "Comctl32.dll" (ByVal hIml As Long, ByVal i As Long) As Long
+Private Declare Function ImageList_RemoveAll Lib "Comctl32.dll" (ByVal hIml As Long) As Long
 
 Public Enum eSortAsConst
     stText = 0
@@ -187,67 +173,66 @@ End Enum
 
 ' §§§§§§§§§§§§§§§§§§§§§§§§§§ Типы §§§§§§§§§§§§§§§§§§§§§§§§§§
 Private Type LVITEM
-    Mask            As Long
-    iItem           As Long
-    iSubItem        As Long
-    State           As Long
-    StateMask       As Long
-    pszText         As String
-    cchTextMax      As Long
-    iImage          As Long
-    lParam          As Long
-    iIndent         As Long
+    Mask                                    As Long
+    iItem                               As Long
+    iSubItem                            As Long
+    State                               As Long
+    StateMask                           As Long
+    pszText                             As String
+    cchTextMax                          As Long
+    iImage                              As Long
+    lParam                              As Long
+    iIndent                             As Long
 End Type
 
 Private Type LVCOLUMN
-    Mask             As Long
-    fmt              As Long
-    cx               As Long
-    pszText          As String
-    cchTextMax       As Long
-    iSubItem         As Long
-    iImage           As Long
-    iOrder           As Long
+    Mask                                    As Long
+    fmt                                 As Long
+    CX                                  As Long
+    pszText                             As String
+    cchTextMax                          As Long
+    iSubItem                            As Long
+    iImage                              As Long
+    iOrder                              As Long
 End Type
 
 Private Type LVBKIMAGE
-    ulFlags         As Long
-    hbm             As Long
-    pszImage        As String
-    cchImageMax     As Long
-    xOffsetPercent  As Long
-    yOffsetPercent  As Long
+    ulFlags                                 As Long
+    hBm                                 As Long
+    pszImage                            As String
+    cchImageMax                         As Long
+    XOffsetPercent                      As Long
+    YOffsetPercent                      As Long
 End Type
 
 Private Type LVTILEVIEWINFO
-    cbSize          As Long
-    dwMask          As Long
-    dwFlags         As Long
-    sizeTile        As POINT
-    cLines          As Long
-    rcLabelMargin   As RECT
+    cbSize                                  As Long
+    dwMask                              As Long
+    dwFlags                             As Long
+    SizeTile                            As POINT
+    cLines                              As Long
+    rcLabelMargin                       As RECT
 End Type
 
 Private Type LVHITTESTINFO
-    PT              As POINT
-    flags           As Long
-    iItem           As Long
-    iSubItem        As Long
+    PT                                      As POINT
+    Flags                               As Long
+    iItem                               As Long
+    iSubItem                            As Long
 End Type
 
 Private Type LVGROUP
-    cbSize          As Long
-    Mask            As Long
-    pszHeader       As Long
-    cchHeader       As Long
-    pszFooter       As Long
-    cchFooter       As Long
-    iGroupId        As Long
-    StateMask       As Long
-    State           As Long
-    uAlign          As Long
+    cbSize                                  As Long
+    Mask                                As Long
+    pszHeader                           As Long
+    cchHeader                           As Long
+    pszFooter                           As Long
+    cchFooter                           As Long
+    iGroupId                            As Long
+    StateMask                           As Long
+    State                               As Long
+    uAlign                              As Long
 End Type
-
 
 ' §§§§§§§§§§§§§§§§§§§§§§§§§§ Константы §§§§§§§§§§§§§§§§§§§§§§§§§§
 Private Const cNull                        As Long = &H0
@@ -375,7 +360,7 @@ Private Const LVGF_STATE                   As Long = &H4
 Private Const LVGF_ALIGN                   As Long = &H8
 
 ' §§§§§§§§§§§§§§§§§§§§§§§§§§ Сабклассировщик §§§§§§§§§§§§§§§§§§§§§§§§§§
-Private Const AsmMain                              As String = "558BEC83C4FC8D45FC50FF7514FF7510FF750CFF75086800000000B800000000FFD08B45FCC9C21000"
+Private Const AsmMain                      As String = "558BEC83C4FC8D45FC50FF7514FF7510FF750CFF75086800000000B800000000FFD08B45FCC9C21000"
 
 Private OldCtl                             As Long
 Private OldPrnt                            As Long
@@ -413,13 +398,21 @@ Public Event KeyUp(ByVal KeyCode As Long, ByVal Shift As Integer)
 Public Event KeyPress(KeyAscii As Long)
 
 ' §§§§§§§§§§§§§§§§§§§§§§§§§§ Varisants §§§§§§§§§§§§§§§§§§§§§§§§§§
-Private rc        As RECT
+Private RC        As RECT
 Private rcParent  As RECT
 Private hListView As Long     ' Хэндл контрола
 Private hLVParent As Long     ' Хэндл родительского окна контрола
 Private m_AtIntIL As Boolean  ' Используется-ли альтернативный ИмэйджЛист
 
-Public Function zLVCallBack(ByVal hwnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function zLVCallBack
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   hWnd (Long)
+'                              uMsg (Long)
+'                              wParam (Long)
+'                              lParam (Long)
+'!--------------------------------------------------------------------------------
+Public Function zLVCallBack(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
     Select Case uMsg
 
@@ -474,25 +467,33 @@ Public Function zLVCallBack(ByVal hwnd As Long, ByVal uMsg As Long, ByVal wParam
             RaiseEvent MouseUp(vbMiddleButton, Tmp.X, Tmp.Y, giGetShiftState)
     End Select
 
-    zLVCallBack = CallWindowProc(OldCtl, hwnd, uMsg, wParam, lParam)
+    zLVCallBack = CallWindowProc(OldCtl, hWnd, uMsg, wParam, lParam)
 End Function
 
-Public Function zLVpCallBack(ByVal hwnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function zLVpCallBack
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   hWnd (Long)
+'                              uMsg (Long)
+'                              wParam (Long)
+'                              lParam (Long)
+'!--------------------------------------------------------------------------------
+Public Function zLVpCallBack(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
-    Dim lng As Long, lng1 As Long, lng2 As Long, PT As POINT, tStr As String
+    Dim Lng As Long, lng1 As Long, lng2 As Long, PT As POINT, tStr As String
 
     If uMsg = WM_NOTIFY Then
-        Call CopyMemory(lng, ByVal lParam + 8&, 4&)
+        Call CopyMemory(Lng, ByVal lParam + 8&, 4&)
 
         ' Выделение из NMHDR поля code (lParam - указатель на структуру)
-        Select Case lng
+        Select Case Lng
 
             Case Is = LVN_BEGINDRAG, LVN_BEGINRDRAG
                 Call CopyMemory(lng1, ByVal lParam + 12, 4&)
                 ' iItem
                 Call CopyMemory(lng2, ByVal lParam + 16, 4&)
                 ' iSubItem
-                RaiseEvent DragBegin(lng1, lng2, IIf(lng = LVN_BEGINDRAG, vbLeftButton, vbRightButton))
+                RaiseEvent DragBegin(lng1, lng2, IIf(Lng = LVN_BEGINDRAG, vbLeftButton, vbRightButton))
 
             Case Is = LVN_BEGINLABELEDIT
                 Call CopyMemory(lng1, ByVal lParam + 16&, 4&)
@@ -541,6 +542,7 @@ Public Function zLVpCallBack(ByVal hwnd As Long, ByVal uMsg As Long, ByVal wPara
                 zLVpCallBack = (zLVpCallBack = cNull)
 
             Case Is = LVN_GETDISPINFO
+
             Case Is = LVN_GETINFOTIP
                 Call CopyMemory(lng1, ByVal lParam + 24&, 4&)
                 ' iItem
@@ -597,7 +599,7 @@ Public Function zLVpCallBack(ByVal hwnd As Long, ByVal uMsg As Long, ByVal wPara
             Case Is = NM_CLICK, NM_RCLICK
                 Call CopyMemory(lng1, ByVal lParam + 12&, 2&)
                 ' iItem
-                RaiseEvent Click(lng1, IIf(lng = NM_CLICK, vbLeftButton, vbRightButton))
+                RaiseEvent Click(lng1, IIf(Lng = NM_CLICK, vbLeftButton, vbRightButton))
 
             Case Is = NM_CUSTOMDRAW
                 RaiseEvent CustomDraw(lParam)
@@ -606,7 +608,7 @@ Public Function zLVpCallBack(ByVal hwnd As Long, ByVal uMsg As Long, ByVal wPara
             Case Is = NM_DBLCLK, NM_RDBLCLK
                 Call CopyMemory(lng1, ByVal lParam + 12&, 2&)
                 ' iItem
-                RaiseEvent DblClick(lng1, IIf(lng = NM_DBLCLK, vbLeftButton, vbRightButton))
+                RaiseEvent DblClick(lng1, IIf(Lng = NM_DBLCLK, vbLeftButton, vbRightButton))
 
             Case Is = NM_HOVER
                 RaiseEvent Hover
@@ -625,27 +627,35 @@ Public Function zLVpCallBack(ByVal hwnd As Long, ByVal uMsg As Long, ByVal wPara
         End Select
 
         Exit Function
+
     End If
 
-    zLVpCallBack = CallWindowProc(OldPrnt, hwnd, uMsg, wParam, lParam)
+    zLVpCallBack = CallWindowProc(OldPrnt, hWnd, uMsg, wParam, lParam)
+
     Exit Function
+
 cb:
-    Call CallWindowProc(OldPrnt, hwnd, uMsg, wParam, lParam)
+    Call CallWindowProc(OldPrnt, hWnd, uMsg, wParam, lParam)
 End Function
 
 ' Собственно создание...
-Public Function Create(ByVal hParent As Long, _
-                       ByVal dwStyle As gbLVStyle, _
-                       ByVal nLeft As Long, _
-                       ByVal nTop As Long, _
-                       ByVal nWidth As Long, _
-                       ByVal nHeight As Long, _
-                       Optional ByVal bInitImageList As Boolean = True, _
-                       Optional ByVal Border As gbLVBorderStyle) As Long
-
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function Create
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   hParent (Long)
+'                              dwStyle (gbLVStyle)
+'                              nLeft (Long)
+'                              nTop (Long)
+'                              nWidth (Long)
+'                              nHeight (Long)
+'                              bInitImageList (Boolean = True)
+'                              Border (gbLVBorderStyle)
+'!--------------------------------------------------------------------------------
+Public Function Create(ByVal hParent As Long, ByVal dwStyle As gbLVStyle, ByVal nLeft As Long, ByVal nTop As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal bInitImageList As Boolean = True, Optional ByVal Border As _
+                            gbLVBorderStyle) As Long
     'Call InitCommonControls
-    hLVParent = CreateWindowEx(cNull, "STATIC", "(c) Team ADIA", WS_VISIBLE Or WS_CHILD, nLeft, nTop, nWidth, nHeight, hParent, 0&, App.hInstance, ByVal 0&)
-    hListView = CreateWindowEx(Border, "SysListView32", vbNullString, WS_VISIBLE Or WS_CHILD Or dwStyle, 0&, 0&, nWidth, nHeight, hLVParent, cNull, App.hInstance, ByVal cNull)
+    hLVParent = CreateWindowEx(cNull, StrPtr("STATIC"), StrPtr("(c) Team ADIA"), WS_VISIBLE Or WS_CHILD, nLeft, nTop, nWidth, nHeight, hParent, 0&, App.hInstance, ByVal 0&)
+    hListView = CreateWindowEx(Border, StrPtr("SysListView32"), StrPtr(vbNullString), WS_VISIBLE Or WS_CHILD Or dwStyle, 0&, 0&, nWidth, nHeight, hLVParent, cNull, App.hInstance, ByVal cNull)
     Create = hListView
 
     If bInitImageList Then Call ImgLst_Init
@@ -657,6 +667,11 @@ Public Function Create(ByVal hParent As Long, _
     ' Начало сабклассинга родительского окна
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Destroy
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Sub Destroy()
 
     ' Отключение и удаление всего и вся...
@@ -675,11 +690,16 @@ Public Sub Destroy()
     If m_AtIntIL Then Call ImgLst_Destroy
 End Sub
 
-Public Sub AddItem(ByVal sText As String, _
-                   Optional ByVal lIndex As Long = &HFFFF, _
-                   Optional ByVal iIcon As Long = cNull, _
-                   Optional ByVal iIndent As Long = cNull, _
-                   Optional ByVal lItemData As Long = cNull)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub AddItem
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   sText (String)
+'                              lIndex (Long = &HFFFF)
+'                              iIcon (Long = cNull)
+'                              iIndent (Long = cNull)
+'                              lItemData (Long = cNull)
+'!--------------------------------------------------------------------------------
+Public Sub AddItem(ByVal sText As String, Optional ByVal lIndex As Long = &HFFFF, Optional ByVal iIcon As Long = cNull, Optional ByVal iIndent As Long = cNull, Optional ByVal lItemData As Long = cNull)
 
     Dim tLV As LVITEM
 
@@ -694,34 +714,53 @@ Public Sub AddItem(ByVal sText As String, _
     Call SendMessage(hListView, LVM_INSERTITEM, 0, tLV)
 End Sub
 
-Public Sub AddColumn(ByVal Index As Long, _
-                     Optional ByVal sText As String = vbNullString, _
-                     Optional ByVal lWidth As Long = 100&)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub AddColumn
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Index (Long)
+'                              sText (String = vbNullString)
+'                              lWidth (Long = 100&)
+'!--------------------------------------------------------------------------------
+Public Sub AddColumn(ByVal Index As Long, Optional ByVal sText As String = vbNullString, Optional ByVal lWidth As Long = 100&)
 
-    Dim lvc As LVCOLUMN
+    Dim LVC As LVCOLUMN
 
-    With lvc
+    With LVC
         .Mask = LVCF_FMT Or LVCF_WIDTH Or LVCF_TEXT
         .pszText = sText & vbNullChar
         .cchTextMax = Len(.pszText)
-        .cx = lWidth
+        .CX = lWidth
     End With
 
-    Call SendMessage(hListView, LVM_INSERTCOLUMN, Index, lvc)
+    Call SendMessage(hListView, LVM_INSERTCOLUMN, Index, LVC)
     Call Refresh
 End Sub
 
 ' §§§§§§§§§§§§§§§§§§§§§§§§§§ /* ImageList §§§§§§§§§§§§§§§§§§§§§§§§§§
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ImageList
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   ilType (gbLVImgLstType)
+'                              hImgLst (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let ImageList(ByVal ilType As gbLVImgLstType, ByVal hImgLst As Long)
-
     Call SendMessage(hListView, LVM_SETIMAGELIST, ilType, ByVal hImgLst)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ImageList
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   ilType (gbLVImgLstType)
+'!--------------------------------------------------------------------------------
 Public Property Get ImageList(ByVal ilType As gbLVImgLstType) As Long
-
     ImageList = SendMessage(hListView, LVM_GETIMAGELIST, ilType, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ImgLst_Init
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lColor (gbLVILColourDepth = ILC_COLOR24 Or ILC_MASK)
+'!--------------------------------------------------------------------------------
 Public Sub ImgLst_Init(Optional ByVal lColor As gbLVILColourDepth = ILC_COLOR24 Or ILC_MASK)
 
     Dim hLarge As Long
@@ -738,8 +777,12 @@ Public Sub ImgLst_Init(Optional ByVal lColor As gbLVILColourDepth = ILC_COLOR24 
     'ImageList(LVSIL_STATE) = hState
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ImgLst_Destroy
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Sub ImgLst_Destroy()
-
     Call ImageList_Destroy(ImageList(LVSIL_NORMAL))
     Call ImageList_Destroy(ImageList(LVSIL_SMALL))
 End Sub
@@ -747,6 +790,11 @@ End Sub
 '#############################################################################################################################
 'Purpose: Return Count of Checked Items
 '#############################################################################################################################
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function CheckedCount
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Function CheckedCount() As Long
 
     Dim lCount As Long
@@ -758,55 +806,93 @@ Public Function CheckedCount() As Long
         End If
 
     Next
+
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ImgLst_AddIcon
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   hIconLarge (Long = cNull)
+'                              hIconSmall (Long = cNull)
+'!--------------------------------------------------------------------------------
 Public Sub ImgLst_AddIcon(Optional ByVal hIconLarge As Long = cNull, Optional ByVal hIconSmall As Long = cNull)
-
     Call ImgLst_ReplaceIcon(, hIconLarge, hIconSmall)
 End Sub
 
-Public Sub ImgLst_ReplaceIcon(Optional ByVal lIndex As Long = &HFFFF, _
-                              Optional ByVal hIconLarge As Long = cNull, _
-                              Optional ByVal hIconSmall As Long = cNull)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ImgLst_ReplaceIcon
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long = &HFFFF)
+'                              hIconLarge (Long = cNull)
+'                              hIconSmall (Long = cNull)
+'!--------------------------------------------------------------------------------
+Public Sub ImgLst_ReplaceIcon(Optional ByVal lIndex As Long = &HFFFF, Optional ByVal hIconLarge As Long = cNull, Optional ByVal hIconSmall As Long = cNull)
 
     If Not slVer(hIconLarge, hIconSmall) Then
+
         Exit Sub
+
     End If
 
     Call ImageList_ReplaceIcon(ImageList(LVSIL_NORMAL), lIndex, hIconLarge)
     Call ImageList_ReplaceIcon(ImageList(LVSIL_SMALL), lIndex, hIconSmall)
 End Sub
 
-Public Sub ImageListAddMasked(ByVal hImgLarge As Long, _
-                              ByVal cMskLarge As Long, _
-                              ByVal hImgSmall As Long, _
-                              ByVal cMskSmall As Long)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ImageListAddMasked
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   hImgLarge (Long)
+'                              cMskLarge (Long)
+'                              hImgSmall (Long)
+'                              cMskSmall (Long)
+'!--------------------------------------------------------------------------------
+Public Sub ImageListAddMasked(ByVal hImgLarge As Long, ByVal cMskLarge As Long, ByVal hImgSmall As Long, ByVal cMskSmall As Long)
 
     If Not slVer(hImgLarge, hImgSmall) Then
+
         Exit Sub
+
     End If
 
     Call ImageList_AddMasked(ImageList(LVSIL_NORMAL), hImgLarge, cMskLarge)
     Call ImageList_AddMasked(ImageList(LVSIL_SMALL), hImgSmall, cMskSmall)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ImgLst_Count
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   iType (gbLVImgLstType)
+'!--------------------------------------------------------------------------------
 Public Property Get ImgLst_Count(ByVal iType As gbLVImgLstType) As Long
-
     ImgLst_Count = ImageList_GetImageCount(ImageList(iType))
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ImgLst_Remove
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Sub ImgLst_Remove(ByVal lIndex As Long)
-
     Call ImageList_Remove(ImageList(LVSIL_NORMAL), lIndex)
     Call ImageList_Remove(ImageList(LVSIL_SMALL), lIndex)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ImgLst_Clear
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Sub ImgLst_Clear()
-
     Call ImageList_RemoveAll(ImageList(LVSIL_NORMAL))
     Call ImageList_RemoveAll(ImageList(LVSIL_SMALL))
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function slVer
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   hIconLarge (Long)
+'                              hIconSmall (Long)
+'!--------------------------------------------------------------------------------
 Private Function slVer(ByRef hIconLarge As Long, ByRef hIconSmall As Long) As Boolean
 
     If hIconLarge = cNull And hIconSmall = cNull Then
@@ -819,56 +905,102 @@ Private Function slVer(ByRef hIconLarge As Long, ByRef hIconSmall As Long) As Bo
 End Function
 
 ' §§§§§§§§§§§§§§§§§§§§§§§§§§ ImageList */ §§§§§§§§§§§§§§§§§§§§§§§§§§
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property HeaderhWnd
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get HeaderhWnd() As Long
-
     HeaderhWnd = SendMessage(hListView, LVM_GETHEADER, cNull, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ToolTipCtl
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get ToolTipCtl() As Long
-
     ToolTipCtl = SendMessage(hListView, LVM_GETTOOLTIPS, cNull, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ToolTipCtl
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   inValue (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let ToolTipCtl(ByVal inValue As Long)
-
     Call SendMessage(hListView, LVM_SETTOOLTIPS, cNull, ByVal inValue)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ColumnsCount
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get ColumnsCount() As Long
-
     ColumnsCount = SendMessage(HeaderhWnd, HDM_GETITEMCOUNT, cNull, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemCountPerPage
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get ItemCountPerPage() As Long
-
     ItemCountPerPage = SendMessage(hListView, LVM_GETCOUNTPERPAGE, cNull, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ListItemsPerPage
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get ListItemsPerPage() As Long
-
     ListItemsPerPage = SendMessage(hListView, LVM_GETCOUNTPERPAGE, cNull, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property WorkAreasCount
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get WorkAreasCount() As Long
-
     Call SendMessage(hListView, LVM_GETNUMBEROFWORKAREAS, cNull, WorkAreasCount)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property SelectedCount
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get SelectedCount() As Long
-
     SelectedCount = SendMessage(hListView, LVM_GETSELECTEDCOUNT, cNull, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ColumnWidth
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   iColumn (Long)
+'                              lValue (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let ColumnWidth(ByVal iColumn As Long, ByVal lValue As Long)
-
     Call SendMessage(hListView, LVM_SETCOLUMNWIDTH, iColumn, ByVal lValue)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ColumnWidth
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   iColumn (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get ColumnWidth(ByVal iColumn As Long) As Long
-
     ColumnWidth = SendMessage(hListView, LVM_GETCOLUMNWIDTH, iColumn, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property OriginX
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get OriginX() As Long
 
     Dim tP As POINT
@@ -877,6 +1009,11 @@ Public Property Get OriginX() As Long
     OriginX = tP.X
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property OriginY
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get OriginY() As Long
 
     Dim tP As POINT
@@ -885,6 +1022,11 @@ Public Property Get OriginY() As Long
     OriginY = tP.Y
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemCaption
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get ItemCaption(ByVal lIndex As Long) As String
 
     Dim LVI As LVITEM
@@ -893,6 +1035,12 @@ Public Property Get ItemCaption(ByVal lIndex As Long) As String
     ItemCaption = LVI.pszText
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemCaption
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              sCaption (String)
+'!--------------------------------------------------------------------------------
 Public Property Let ItemCaption(ByVal lIndex As Long, ByVal sCaption As String)
 
     Dim LVI As LVITEM
@@ -901,6 +1049,12 @@ Public Property Let ItemCaption(ByVal lIndex As Long, ByVal sCaption As String)
     Call SetLVIStyle(lIndex, LVIF_TEXT, LVI, sCaption)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property SubItemCaption
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              lSubItemIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get SubItemCaption(ByVal lIndex As Long, ByVal lSubItemIndex As Long) As String
 
     Dim LVI As LVITEM
@@ -909,6 +1063,13 @@ Public Property Get SubItemCaption(ByVal lIndex As Long, ByVal lSubItemIndex As 
     SubItemCaption = LVI.pszText
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property SubItemCaption
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              lSubItemIndex (Long)
+'                              sCaption (String)
+'!--------------------------------------------------------------------------------
 Public Property Let SubItemCaption(ByVal lIndex As Long, ByVal lSubItemIndex As Long, ByVal sCaption As String)
 
     Dim LVI As LVITEM
@@ -917,6 +1078,12 @@ Public Property Let SubItemCaption(ByVal lIndex As Long, ByVal lSubItemIndex As 
     Call SetLVIStyle(lIndex, LVIF_TEXT, LVI, sCaption, lSubItemIndex)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property SubItemIconIndex
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              lSubItemIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get SubItemIconIndex(ByVal lIndex As Long, ByVal lSubItemIndex As Long) As Long
 
     Dim LVI As LVITEM
@@ -925,6 +1092,13 @@ Public Property Get SubItemIconIndex(ByVal lIndex As Long, ByVal lSubItemIndex A
     SubItemIconIndex = LVI.iImage
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property SubItemIconIndex
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              lSubItemIndex (Long)
+'                              lImage (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let SubItemIconIndex(ByVal lIndex As Long, ByVal lSubItemIndex As Long, ByVal lImage As Long)
 
     Dim LVI As LVITEM
@@ -934,6 +1108,11 @@ Public Property Let SubItemIconIndex(ByVal lIndex As Long, ByVal lSubItemIndex A
     Call SetLVIStyle(lIndex, LVIF_IMAGE, LVI, , lSubItemIndex)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemIconIndex
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get ItemIconIndex(ByVal lIndex As Long) As Long
 
     Dim LVI As LVITEM
@@ -942,6 +1121,12 @@ Public Property Get ItemIconIndex(ByVal lIndex As Long) As Long
     ItemIconIndex = LVI.iImage
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemIconIndex
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              lIconIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let ItemIconIndex(ByVal lIndex As Long, ByVal lIconIndex As Long)
 
     Dim LVI As LVITEM
@@ -951,6 +1136,11 @@ Public Property Let ItemIconIndex(ByVal lIndex As Long, ByVal lIconIndex As Long
     Call SetLVIStyle(lIndex, LVIF_IMAGE, LVI)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemIndent
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get ItemIndent(ByVal lIndex As Long) As Long
 
     Dim LVI As LVITEM
@@ -959,6 +1149,12 @@ Public Property Get ItemIndent(ByVal lIndex As Long) As Long
     ItemIndent = LVI.iIndent
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemIndent
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              lIndent (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let ItemIndent(ByVal lIndex As Long, ByVal lIndent As Long)
 
     Dim LVI As LVITEM
@@ -968,6 +1164,11 @@ Public Property Let ItemIndent(ByVal lIndex As Long, ByVal lIndent As Long)
     Call SetLVIStyle(lIndex, LVIF_INDENT, LVI)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemData
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get ItemData(ByVal lIndex As Long) As Long
 
     Dim LVI As LVITEM
@@ -976,6 +1177,12 @@ Public Property Get ItemData(ByVal lIndex As Long) As Long
     ItemData = LVI.lParam
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemData
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              lItemData (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let ItemData(ByVal lIndex As Long, ByVal lItemData As Long)
 
     Dim LVI As LVITEM
@@ -985,41 +1192,79 @@ Public Property Let ItemData(ByVal lIndex As Long, ByVal lItemData As Long)
     Call SetLVIStyle(lIndex, LVIF_PARAM, LVI)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemCut
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get ItemCut(ByVal lIndex As Long) As Boolean
-
     ItemCut = IsState(lIndex, LVIS_CUT)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemCut
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let ItemCut(ByVal lIndex As Long, ByVal bState As Boolean)
-
     Call SetState(lIndex, LVIS_CUT, bState)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemHot
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get ItemHot(ByVal lIndex As Long) As Boolean
-
     ItemHot = (lIndex = SendMessage(hListView, LVM_GETHOTITEM, cNull, ByVal cNull))
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemHot
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let ItemHot(ByVal lIndex As Long, ByVal bState As Boolean)
 
     If bState Then Call SendMessage(hListView, LVM_SETHOTITEM, lIndex, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemSelected
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get ItemSelected(ByVal lIndex As Long) As Boolean
-
     ItemSelected = IsState(lIndex, LVIS_SELECTED)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemSelected
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let ItemSelected(ByVal lIndex As Long, ByVal bState As Boolean)
-
     Call SetState(lIndex, LVIS_SELECTED, bState)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemChecked
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get ItemChecked(ByVal lIndex As Long) As Boolean
-
     ItemChecked = ((SendMessage(hListView, LVM_GETITEMSTATE, lIndex, ByVal LVIS_STATEIMAGEMASK) And &H2000&) = &H2000&)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemChecked
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let ItemChecked(ByVal lIndex As Long, ByVal bState As Boolean)
 
     Dim LVI As LVITEM
@@ -1033,9 +1278,15 @@ Public Property Let ItemChecked(ByVal lIndex As Long, ByVal bState As Boolean)
     Call SendMessage(hListView, LVM_SETHOTITEM, lIndex, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemText
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   iSubItem (Long)
+'                              lIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get ItemText(ByVal iSubItem As Long, ByVal lIndex As Long) As String
 
-    Dim lResult As Long, LVI As LVITEM
+    Dim lResult As Long, LVI                As LVITEM
 
     LVI.cchTextMax = 1024
     LVI.pszText = String$(LVI.cchTextMax, cNull)
@@ -1044,6 +1295,13 @@ Public Property Get ItemText(ByVal iSubItem As Long, ByVal lIndex As Long) As St
     ItemText = Left$(LVI.pszText, lResult)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemText
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   iSubItem (Long)
+'                              lIndex (Long)
+'                              sText (String)
+'!--------------------------------------------------------------------------------
 Public Property Let ItemText(ByVal iSubItem As Long, ByVal lIndex As Long, ByVal sText As String)
 
     Dim LVI As LVITEM
@@ -1054,21 +1312,38 @@ Public Property Let ItemText(ByVal iSubItem As Long, ByVal lIndex As Long, ByVal
     Call SendMessage(hListView, LVM_SETITEMTEXT, lIndex, LVI)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property SelectionMark
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get SelectionMark() As Long
-
     SelectionMark = SendMessage(hListView, LVM_GETSELECTIONMARK, cNull, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property SelectionMark
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   inValue (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let SelectionMark(ByVal inValue As Long)
-
     Call SendMessage(hListView, LVM_SETSELECTIONMARK, cNull, ByVal inValue)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property TopItem
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get TopItem() As Long
-
     TopItem = SendMessage(hListView, LVM_GETTOPINDEX, cNull, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property SelectedItem
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get SelectedItem() As Long
 
     Dim lFlags As Long
@@ -1079,6 +1354,11 @@ Public Property Get SelectedItem() As Long
     SelectedItem = SendMessage(hListView, LVM_GETNEXTITEM, &HFFFF, ByVal lFlags)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ColumnImage
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lColumn (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get ColumnImage(ByVal lColumn As Long) As Long
 
     Dim tHI As LVCOLUMN
@@ -1097,6 +1377,12 @@ Public Property Get ColumnImage(ByVal lColumn As Long) As Long
     ColumnImage = IIf(GetHeaderIInfo(lColumn, tHI), tHI.iImage, &HFFFF)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ColumnImage
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lColumn (Long)
+'                              lImage (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let ColumnImage(ByVal lColumn As Long, ByVal lImage As Long)
 
     Dim tHI As LVCOLUMN
@@ -1121,6 +1407,11 @@ Public Property Let ColumnImage(ByVal lColumn As Long, ByVal lImage As Long)
     Call SetHeaderIInfo(lColumn, tHI)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property TileViewItemLines
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get TileViewItemLines() As Long
 
     Dim tLVI As LVTILEVIEWINFO
@@ -1131,6 +1422,11 @@ Public Property Get TileViewItemLines() As Long
     TileViewItemLines = tLVI.cLines
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property TileViewItemLines
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lLines (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let TileViewItemLines(ByVal lLines As Long)
 
     Dim tLVI As LVTILEVIEWINFO
@@ -1142,6 +1438,11 @@ Public Property Let TileViewItemLines(ByVal lLines As Long)
     Call SendMessage(hListView, LVM_SETTILEVIEWINFO, cNull, tLVI)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property AutoArrange
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let AutoArrange(ByVal bState As Boolean)
 
     If bState Then
@@ -1149,13 +1450,23 @@ Public Property Let AutoArrange(ByVal bState As Boolean)
     Else
         Call SetLVStyle(False, cNull, LVS_AUTOARRANGE)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Arrange
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   newArrange (gbLVArrange)
+'!--------------------------------------------------------------------------------
 Public Property Let Arrange(ByVal newArrange As gbLVArrange)
-
     Call SendMessage(hListView, LVM_ARRANGE, newArrange, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property LabelEdit
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let LabelEdit(ByVal bState As Boolean)
 
     If bState Then
@@ -1163,8 +1474,14 @@ Public Property Let LabelEdit(ByVal bState As Boolean)
     Else
         Call SetLVStyle(False, cNull, LVS_EDITLABELS)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemPosX
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   iIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get ItemPosX(ByVal iIndex As Long) As Long
 
     Dim PNT As POINT
@@ -1173,6 +1490,11 @@ Public Property Get ItemPosX(ByVal iIndex As Long) As Long
     ItemPosX = PNT.X
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemPosY
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   iIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get ItemPosY(ByVal iIndex As Long) As Long
 
     Dim PNT As POINT
@@ -1181,6 +1503,13 @@ Public Property Get ItemPosY(ByVal iIndex As Long) As Long
     ItemPosY = PNT.Y
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SetItemPosition
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   iIndex (Long)
+'                              X (Long)
+'                              Y (Long)
+'!--------------------------------------------------------------------------------
 Public Sub SetItemPosition(ByVal iIndex As Long, ByVal X As Long, ByVal Y As Long)
 
     Dim PNT As POINT
@@ -1190,16 +1519,21 @@ Public Sub SetItemPosition(ByVal iIndex As Long, ByVal X As Long, ByVal Y As Lon
     Call SendMessage(hListView, LVM_SETITEMPOSITION32, iIndex, PNT)
 End Sub
 
-Public Sub GetItemRect(ByVal iIndex As Long, _
-                       flags As gbLVSIValues, _
-                       Optional ByRef lLeft As Long, _
-                       Optional ByRef lTop As Long, _
-                       Optional ByRef lRight As Long, _
-                       Optional ByVal lBottom As Long)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub GetItemRect
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   iIndex (Long)
+'                              Flags (gbLVSIValues)
+'                              lLeft (Long)
+'                              lTop (Long)
+'                              lRight (Long)
+'                              lBottom (Long)
+'!--------------------------------------------------------------------------------
+Public Sub GetItemRect(ByVal iIndex As Long, Flags As gbLVSIValues, Optional ByRef lLeft As Long, Optional ByRef lTop As Long, Optional ByRef lRight As Long, Optional ByVal lBottom As Long)
 
     Dim rct As RECT
 
-    rct.Left = flags
+    rct.Left = Flags
     Call SendMessage(hListView, LVM_GETITEMRECT, iIndex, rct)
     lLeft = rct.Left
     lTop = rct.Top
@@ -1207,18 +1541,23 @@ Public Sub GetItemRect(ByVal iIndex As Long, _
     lRight = rct.Right
 End Sub
 
-Public Sub GetSubItemRect(ByVal iIndex As Long, _
-                          ByVal iSubItem As Long, _
-                          ByVal flags As gbLVSIValues, _
-                          Optional ByRef lLeft As Long, _
-                          Optional ByRef lTop As Long, _
-                          Optional ByRef lRight As Long, _
-                          Optional ByVal lBottom As Long)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub GetSubItemRect
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   iIndex (Long)
+'                              iSubItem (Long)
+'                              Flags (gbLVSIValues)
+'                              lLeft (Long)
+'                              lTop (Long)
+'                              lRight (Long)
+'                              lBottom (Long)
+'!--------------------------------------------------------------------------------
+Public Sub GetSubItemRect(ByVal iIndex As Long, ByVal iSubItem As Long, ByVal Flags As gbLVSIValues, Optional ByRef lLeft As Long, Optional ByRef lTop As Long, Optional ByRef lRight As Long, Optional ByVal lBottom As Long)
 
     Dim rct As RECT
 
     rct.Top = iSubItem
-    rct.Left = flags
+    rct.Left = Flags
     Call SendMessage(hListView, LVM_GETSUBITEMRECT, iIndex, rct)
     lLeft = rct.Left
     lTop = rct.Top
@@ -1226,10 +1565,15 @@ Public Sub GetSubItemRect(ByVal iIndex As Long, _
     lRight = rct.Right
 End Sub
 
-Public Sub GetViewRect(Optional ByRef lLeft As Long, _
-                       Optional ByRef lTop As Long, _
-                       Optional ByRef lRight As Long, _
-                       Optional ByRef lBottom As Long)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub GetViewRect
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lLeft (Long)
+'                              lTop (Long)
+'                              lRight (Long)
+'                              lBottom (Long)
+'!--------------------------------------------------------------------------------
+Public Sub GetViewRect(Optional ByRef lLeft As Long, Optional ByRef lTop As Long, Optional ByRef lRight As Long, Optional ByRef lBottom As Long)
 
     Dim rct As RECT
 
@@ -1240,11 +1584,20 @@ Public Sub GetViewRect(Optional ByRef lLeft As Long, _
     lRight = rct.Right
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property BackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get BackColor() As OLE_COLOR
-
     BackColor = TranslateColor(SendMessage(hListView, LVM_GETBKCOLOR, cNull, ByVal cNull))
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property BackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   oColor (OLE_COLOR)
+'!--------------------------------------------------------------------------------
 Public Property Let BackColor(ByVal oColor As OLE_COLOR)
 
     If (oColor = &HFFFF) Then
@@ -1254,59 +1607,91 @@ Public Property Let BackColor(ByVal oColor As OLE_COLOR)
         Call SendMessage(hListView, LVM_SETBKCOLOR, cNull, ByVal oColor)
         Call SendMessage(hListView, LVM_SETTEXTBKCOLOR, cNull, ByVal oColor)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property TextBackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get TextBackColor() As OLE_COLOR
-
     TextBackColor = TranslateColor(SendMessage(hListView, LVM_GETTEXTBKCOLOR, cNull, ByVal cNull))
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property TextBackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   oColor (OLE_COLOR)
+'!--------------------------------------------------------------------------------
 Public Property Let TextBackColor(ByVal oColor As OLE_COLOR)
-
     Call SendMessage(hListView, LVM_SETTEXTBKCOLOR, cNull, ByVal oColor)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get ForeColor() As OLE_COLOR
-
     ForeColor = TranslateColor(SendMessage(hListView, LVM_GETTEXTCOLOR, cNull, ByVal cNull))
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   oColor (OLE_COLOR)
+'!--------------------------------------------------------------------------------
 Public Property Let ForeColor(ByVal oColor As OLE_COLOR)
-
     Call SendMessage(hListView, LVM_SETTEXTCOLOR, cNull, ByVal oColor)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property HeaderButtons
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let HeaderButtons(ByVal bState As Boolean)
 
-    Dim hwnd As Long, tStyle As Long
+    Dim hWnd As Long, tStyle                As Long
 
-    hwnd = HeaderhWnd
+    hWnd = HeaderhWnd
 
-    If hwnd = cNull Then
+    If hWnd = cNull Then
         ' Довольно полезно...
     End If
 
-    tStyle = GetWindowLong(hwnd, GWL_STYLE)
+    tStyle = GetWindowLong(hWnd, GWL_STYLE)
     tStyle = IIf(bState, tStyle Or HDS_BUTTONS, tStyle And Not HDS_BUTTONS)
-    Call SetWindowLong(hwnd, GWL_STYLE, tStyle)
+    Call SetWindowLong(hWnd, GWL_STYLE, tStyle)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property HeaderTrackSelect
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let HeaderTrackSelect(ByVal bState As Boolean)
 
     Dim tStyle As Long
-    Dim hwnd   As Long
+    Dim hWnd   As Long
 
-    hwnd = HeaderhWnd
+    hWnd = HeaderhWnd
 
-    If hwnd = cNull Then
+    If hWnd = cNull Then
         ' Довольно полезно...
     End If
 
-    tStyle = GetWindowLong(hwnd, GWL_STYLE)
+    tStyle = GetWindowLong(hWnd, GWL_STYLE)
     tStyle = IIf(bState, tStyle Or HDS_HOTTRACK, tStyle And Not HDS_HOTTRACK)
-    Call SetWindowLong(hwnd, GWL_STYLE, tStyle)
+    Call SetWindowLong(hWnd, GWL_STYLE, tStyle)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property MultiSelect
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let MultiSelect(ByVal bState As Boolean)
 
     If bState Then
@@ -1314,8 +1699,14 @@ Public Property Let MultiSelect(ByVal bState As Boolean)
     Else
         Call SetLVStyle(False, LVS_SINGLESEL, cNull)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property HideSelection
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bHide (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let HideSelection(ByVal bHide As Boolean)
 
     If bHide Then
@@ -1323,8 +1714,14 @@ Public Property Let HideSelection(ByVal bHide As Boolean)
     Else
         Call SetLVStyle(False, LVS_SHOWSELALWAYS, cNull)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property SubItemImages
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let SubItemImages(ByVal bState As Boolean)
 
     If bState Then
@@ -1332,8 +1729,14 @@ Public Property Let SubItemImages(ByVal bState As Boolean)
     Else
         Call SetLVStyle(True, cNull, LVS_EX_SUBITEMIMAGES)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property FlatScrollBar
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let FlatScrollBar(ByVal bState As Boolean)
 
     If bState Then
@@ -1341,8 +1744,14 @@ Public Property Let FlatScrollBar(ByVal bState As Boolean)
     Else
         Call SetLVStyle(True, cNull, LVS_EX_FLATSB)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property GridLines
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let GridLines(ByVal bState As Boolean)
 
     If bState Then
@@ -1350,8 +1759,14 @@ Public Property Let GridLines(ByVal bState As Boolean)
     Else
         Call SetLVStyle(True, cNull, LVS_EX_GRIDLINES)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property OneClickActivate
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let OneClickActivate(ByVal bState As Boolean)
 
     If bState Then
@@ -1359,8 +1774,14 @@ Public Property Let OneClickActivate(ByVal bState As Boolean)
     Else
         Call SetLVStyle(True, cNull, LVS_EX_ONECLICKACTIVATE)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ItemBorderSelect
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let ItemBorderSelect(ByVal bState As Boolean)
 
     If bState Then
@@ -1368,8 +1789,14 @@ Public Property Let ItemBorderSelect(ByVal bState As Boolean)
     Else
         Call SetLVStyle(True, cNull, LVS_EX_BORDERSELECT)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property InfoTips
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let InfoTips(ByVal bState As Boolean)
 
     If bState Then
@@ -1377,8 +1804,14 @@ Public Property Let InfoTips(ByVal bState As Boolean)
     Else
         Call SetLVStyle(True, cNull, LVS_EX_INFOTIP)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property LabelTips
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let LabelTips(ByVal bState As Boolean)
 
     If bState Then
@@ -1386,8 +1819,14 @@ Public Property Let LabelTips(ByVal bState As Boolean)
     Else
         Call SetLVStyle(True, cNull, LVS_EX_LABELTIP)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property BackPicture
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   sURL (String)
+'!--------------------------------------------------------------------------------
 Public Property Let BackPicture(ByVal sURL As String)
 
     Dim tLBI As LVBKIMAGE
@@ -1399,15 +1838,26 @@ Public Property Let BackPicture(ByVal sURL As String)
     Call SendMessage(hListView, LVM_SETTEXTBKCOLOR, cNull, &HFFFF)
 End Property
 
-Public Property Let CheckBoxes(ByVal bState As Boolean)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Checkboxes
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let Checkboxes(ByVal bState As Boolean)
 
     If bState Then
         Call SetLVStyle(True, LVS_EX_CHECKBOXES, cNull)
     Else
         Call SetLVStyle(True, cNull, LVS_EX_CHECKBOXES)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property TrackSelect
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let TrackSelect(ByVal bState As Boolean)
 
     If bState Then
@@ -1415,8 +1865,14 @@ Public Property Let TrackSelect(ByVal bState As Boolean)
     Else
         Call SetLVStyle(True, cNull, LVS_EX_TRACKSELECT)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property HeaderDragDrop
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let HeaderDragDrop(ByVal bState As Boolean)
 
     If bState Then
@@ -1424,8 +1880,14 @@ Public Property Let HeaderDragDrop(ByVal bState As Boolean)
     Else
         Call SetLVStyle(True, cNull, LVS_EX_HEADERDRAGDROP)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property FullRowSelect
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let FullRowSelect(ByVal bState As Boolean)
 
     If bState Then
@@ -1433,8 +1895,14 @@ Public Property Let FullRowSelect(ByVal bState As Boolean)
     Else
         Call SetLVStyle(True, cNull, LVS_EX_FULLROWSELECT)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property NoScrollBar
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let NoScrollBar(ByVal bState As Boolean)
 
     If bState Then
@@ -1442,8 +1910,14 @@ Public Property Let NoScrollBar(ByVal bState As Boolean)
     Else
         Call SetLVStyle(False, cNull, LVS_NOSCROLL)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property NoColumnHeaders
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Let NoColumnHeaders(ByVal bState As Boolean)
 
     If bState Then
@@ -1451,8 +1925,15 @@ Public Property Let NoColumnHeaders(ByVal bState As Boolean)
     Else
         Call SetLVStyle(False, cNull, LVS_NOCOLUMNHEADER)
     End If
+
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property GroupHeader
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lPtrGroup (Long)
+'                              sHeader (String)
+'!--------------------------------------------------------------------------------
 Public Property Let GroupHeader(ByVal lPtrGroup As Long, ByVal sHeader As String)
 
     Dim tLVG As LVGROUP
@@ -1464,6 +1945,11 @@ Public Property Let GroupHeader(ByVal lPtrGroup As Long, ByVal sHeader As String
     Call SendMessage(hListView, LVM_SETGROUPINFO, lPtrGroup, tLVG)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property GroupAlign
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lPtrGroup (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get GroupAlign(ByVal lPtrGroup As Long) As gbLVGroupAligin
 
     Dim tLVG As LVGROUP
@@ -1474,6 +1960,12 @@ Public Property Get GroupAlign(ByVal lPtrGroup As Long) As gbLVGroupAligin
     GroupAlign = tLVG.uAlign
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property GroupAlign
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lPtrGroup (Long)
+'                              eAlign (gbLVGroupAligin)
+'!--------------------------------------------------------------------------------
 Public Property Let GroupAlign(ByVal lPtrGroup As Long, ByVal eAlign As gbLVGroupAligin)
 
     Dim tLVG As LVGROUP
@@ -1484,6 +1976,11 @@ Public Property Let GroupAlign(ByVal lPtrGroup As Long, ByVal eAlign As gbLVGrou
     Call SendMessage(hListView, LVM_GETGROUPINFO, lPtrGroup, tLVG)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property GroupState
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lPtrGroup (Long)
+'!--------------------------------------------------------------------------------
 Public Property Get GroupState(ByVal lPtrGroup As Long) As gbLVGroupState
 
     Dim tLVG As LVGROUP
@@ -1494,6 +1991,12 @@ Public Property Get GroupState(ByVal lPtrGroup As Long) As gbLVGroupState
     GroupState = tLVG.State
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property GroupState
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lPtrGroup (Long)
+'                              eState (gbLVGroupState)
+'!--------------------------------------------------------------------------------
 Public Property Let GroupState(ByVal lPtrGroup As Long, ByVal eState As gbLVGroupState)
 
     Dim tLVG As LVGROUP
@@ -1504,77 +2007,141 @@ Public Property Let GroupState(ByVal lPtrGroup As Long, ByVal eState As gbLVGrou
     Call SendMessage(hListView, LVM_GETGROUPINFO, lPtrGroup, tLVG)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property HotCursor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   hCursor (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let HotCursor(ByVal hCursor As Long)
-
     Call SendMessage(hListView, LVM_SETHOTCURSOR, cNull, ByVal hCursor)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property HotCursor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get HotCursor() As Long
-
     HotCursor = SendMessage(hListView, LVM_GETHOTCURSOR, cNull, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property HoverTime
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get HoverTime() As Long
-
     HoverTime = SendMessage(hListView, LVM_GETHOVERTIME, cNull, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property HoverTime
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   inValue (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let HoverTime(inValue As Long)
-
     Call SendMessage(hListView, LVM_SETHOVERTIME, cNull, ByVal inValue)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property GetItemSpasing
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   fSmallIconView (Boolean)
+'!--------------------------------------------------------------------------------
 Public Property Get GetItemSpasing(ByVal fSmallIconView As Boolean) As Long
-
     GetItemSpasing = SendMessage(hListView, LVM_GETITEMSPACING, fSmallIconView, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property hWnd_Parent
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get hWnd_Parent() As Long
-
     hWnd_Parent = hLVParent
 End Property
 
-Public Property Get hwnd() As Long
-
-    hwnd = hListView
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property hWnd
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get hWnd() As Long
+    hWnd = hListView
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property hWnd_Edit
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get hWnd_Edit() As Long
-
     hWnd_Edit = SendMessage(hListView, LVM_GETEDITCONTROL, cNull, ByVal cNull)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function Count
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Function Count() As Long
-
     Count = SendMessage(hListView, LVM_GETITEMCOUNT, cNull, ByVal cNull)
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub CountSet
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Flag (gbLVICFlag)
+'                              inValue (Long)
+'!--------------------------------------------------------------------------------
 Public Sub CountSet(ByVal Flag As gbLVICFlag, ByVal inValue As Long)
-
     Call SendMessage(hListView, LVM_SETITEMCOUNT, inValue, ByVal Flag)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function ItemNext
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lStartIndex (Long)
+'                              fParam (gbLVGetNextItem)
+'!--------------------------------------------------------------------------------
 Public Function ItemNext(ByVal lStartIndex As Long, ByVal fParam As gbLVGetNextItem) As Long
-
     ItemNext = SendMessage(hListView, LVM_GETNEXTITEM, lStartIndex, ByVal fParam)
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub StartEdit
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Sub StartEdit(ByVal lIndex As Long)
-
     Call SendMessage(hListView, LVM_EDITLABEL, &HFFFF, ByVal cNull)
     Call SendMessage(hListView, LVM_EDITLABEL, lIndex, ByVal cNull)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetStringWidth
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   inString (String)
+'!--------------------------------------------------------------------------------
 Public Function GetStringWidth(ByVal inString As String) As Long
-
     GetStringWidth = SendMessage(hListView, LVM_GETSTRINGWIDTH, cNull, ByVal StrPtr(inString))
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub EnsureVisible
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Sub EnsureVisible(ByVal lIndex As Long)
-
     Call SendMessage(hListView, LVM_ENSUREVISIBLE, lIndex - vbNull, ByVal cNull)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function HitTest
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   X (Long)
+'                              Y (Long)
+'!--------------------------------------------------------------------------------
 Public Function HitTest(ByVal X As Long, ByVal Y As Long) As Long
 
     Dim tLVHI As LVHITTESTINFO
@@ -1584,6 +2151,12 @@ Public Function HitTest(ByVal X As Long, ByVal Y As Long) As Long
     HitTest = SendMessage(hListView, LVM_HITTEST, cNull, tLVHI)
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function SubItemHitTest
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   X (Long)
+'                              Y (Long)
+'!--------------------------------------------------------------------------------
 Public Function SubItemHitTest(ByVal X As Long, ByVal Y As Long) As Long
 
     Dim tLVHI As LVHITTESTINFO
@@ -1593,11 +2166,23 @@ Public Function SubItemHitTest(ByVal X As Long, ByVal Y As Long) As Long
     SubItemHitTest = SendMessage(hListView, LVM_SUBITEMHITTEST, cNull, tLVHI)
 End Function
 
-Public Sub SetIconsPacing(ByVal cx As Integer, ByVal cy As Integer)
-
-    Call SendMessage(hListView, LVM_SETICONSPACING, cNull, MakeDWord(cx, cy))
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SetIconsPacing
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   CX (Integer)
+'                              CY (Integer)
+'!--------------------------------------------------------------------------------
+Public Sub SetIconsPacing(ByVal CX As Integer, ByVal CY As Integer)
+    Call SendMessage(hListView, LVM_SETICONSPACING, cNull, MakeDWord(CX, CY))
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ItemPosition
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   iIndex (Long)
+'                              X (Long)
+'                              Y (Long)
+'!--------------------------------------------------------------------------------
 Public Sub ItemPosition(ByVal iIndex As Long, ByRef X As Long, ByRef Y As Long)
 
     Dim PNT As POINT
@@ -1607,58 +2192,107 @@ Public Sub ItemPosition(ByVal iIndex As Long, ByRef X As Long, ByRef Y As Long)
     Y = PNT.Y
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Scroll
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   X (Long)
+'                              Y (Long)
+'!--------------------------------------------------------------------------------
 Public Sub Scroll(ByVal X As Long, ByVal Y As Long)
-
     Call SendMessage(hListView, LVM_SCROLL, X, ByVal Y)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Clear
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Sub Clear()
-
     Call SendMessage(hListView, LVM_DELETEALLITEMS, cNull, ByVal cNull)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub RemoveItem
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Sub RemoveItem(ByVal lIndex As Long)
-
     Call SendMessage(hListView, LVM_DELETEITEM, lIndex, ByVal cNull)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub RemoveColumn
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Sub RemoveColumn(ByVal lIndex As Long)
-
     Call SendMessage(hListView, LVM_DELETECOLUMN, lIndex, cNull)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Refresh
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Sub Refresh()
-
     Call SendMessage(hListView, LVM_UPDATE, cNull, ByVal cNull)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub RedrawItem
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   iIndex (Long)
+'!--------------------------------------------------------------------------------
 Public Sub RedrawItem(ByVal iIndex As Long)
-
     Call SendMessage(hListView, LVM_REDRAWITEMS, iIndex, ByVal iIndex)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub RedrawAllItems
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Sub RedrawAllItems()
-
     Call SendMessage(hListView, LVM_REDRAWITEMS, 0, ByVal Count)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SetStyleEx
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   inValue (gbLVStyleEx)
+'!--------------------------------------------------------------------------------
 Public Sub SetStyleEx(inValue As gbLVStyleEx)
-
     Call SetLVStyle(True, inValue, cNull)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DelStyleEx
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   inValue (gbLVStyleEx)
+'!--------------------------------------------------------------------------------
 Public Sub DelStyleEx(inValue As gbLVStyleEx)
-
     Call SetLVStyle(True, cNull, inValue)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SetFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Sub SetFocus()
-
     ' Установка фокуса
-    Call SetFocusApi(hListView)
+    Call SetFocusAPI(hListView)
 End Sub
 
 ' Передвижение/изменение размеров
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Move
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   nLeft (Long)
+'                              nTop (Long)
+'                              nWidth (Long)
+'                              nHeight (Long)
+'!--------------------------------------------------------------------------------
 Public Sub Move(ByVal nLeft As Long, ByVal nTop As Long, Optional ByVal nWidth As Long, Optional ByVal nHeight As Long)
 
     Dim hRect As RECT
@@ -1672,9 +2306,14 @@ Public Sub Move(ByVal nLeft As Long, ByVal nTop As Long, Optional ByVal nWidth A
 End Sub
 
 ' §§§§§§§§§§§§§§§§§§§§§§§§§§  §§§§§§§§§§§§§§§§§§§§§§§§§§
-Private Sub SetLVStyle(ByVal SetStyleEx As Boolean, _
-                       Optional ByVal lAddStyle As Long = cNull, _
-                       Optional ByVal lDelStyle As Long = cNull)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SetLVStyle
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   SetStyleEx (Boolean)
+'                              lAddStyle (Long = cNull)
+'                              lDelStyle (Long = cNull)
+'!--------------------------------------------------------------------------------
+Private Sub SetLVStyle(ByVal SetStyleEx As Boolean, Optional ByVal lAddStyle As Long = cNull, Optional ByVal lDelStyle As Long = cNull)
 
     Dim tStyle As Long
 
@@ -1692,12 +2331,18 @@ Private Sub SetLVStyle(ByVal SetStyleEx As Boolean, _
     Else
         Call SetWindowLong(hListView, IIf(SetStyleEx, GWL_EXSTYLE, GWL_STYLE), tStyle)
     End If
+
 End Sub
 
-Private Sub GetLVIStyle(ByVal lIndex As Long, _
-                        ByVal lMask As Long, _
-                        ByRef m_tLV As LVITEM, _
-                        Optional ByVal lSubItem As Long = cNull)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub GetLVIStyle
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              lMask (Long)
+'                              m_tLV (LVITEM)
+'                              lSubItem (Long = cNull)
+'!--------------------------------------------------------------------------------
+Private Sub GetLVIStyle(ByVal lIndex As Long, ByVal lMask As Long, ByRef m_tLV As LVITEM, Optional ByVal lSubItem As Long = cNull)
 
     Dim lPos As Long
 
@@ -1717,11 +2362,16 @@ Private Sub GetLVIStyle(ByVal lIndex As Long, _
     m_tLV.cchTextMax = Len(m_tLV.pszText)
 End Sub
 
-Private Sub SetLVIStyle(ByVal lIndex As Long, _
-                        ByVal lMask As Long, _
-                        m_tLV As LVITEM, _
-                        Optional ByVal sText As String, _
-                        Optional ByVal lSubItem As Long = 0)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SetLVIStyle
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              lMask (Long)
+'                              m_tLV (LVITEM)
+'                              sText (String)
+'                              lSubItem (Long = 0)
+'!--------------------------------------------------------------------------------
+Private Sub SetLVIStyle(ByVal lIndex As Long, ByVal lMask As Long, m_tLV As LVITEM, Optional ByVal sText As String, Optional ByVal lSubItem As Long = 0)
 
     If ((lMask And LVIF_TEXT) = LVIF_TEXT) Then
         m_tLV.pszText = String$(1024, cNull)
@@ -1737,6 +2387,12 @@ Private Sub SetLVIStyle(ByVal lIndex As Long, _
     Call UpdateWindow(hListView)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function IsState
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              lValue (Long)
+'!--------------------------------------------------------------------------------
 Private Function IsState(ByVal lIndex As Long, ByVal lValue As Long) As Long
 
     Dim m_tLV As LVITEM
@@ -1747,6 +2403,13 @@ Private Function IsState(ByVal lIndex As Long, ByVal lValue As Long) As Long
     IsState = CBool(m_tLV.State And lValue)
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SetState
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lIndex (Long)
+'                              lValue (Long)
+'                              bState (Boolean)
+'!--------------------------------------------------------------------------------
 Private Sub SetState(ByVal lIndex As Long, ByVal lValue As Long, ByVal bState As Boolean)
 
     Dim m_tLV As LVITEM
@@ -1756,48 +2419,68 @@ Private Sub SetState(ByVal lIndex As Long, ByVal lValue As Long, ByVal bState As
     Call SetLVIStyle(lIndex, LVIF_STATE, m_tLV)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetHeaderIInfo
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lCol (Long)
+'                              tHI (LVCOLUMN)
+'!--------------------------------------------------------------------------------
 Private Function GetHeaderIInfo(ByVal lCol As Long, tHI As LVCOLUMN) As Boolean
-
     lCol = lCol - vbNull
     tHI.iSubItem = lCol
     GetHeaderIInfo = Not (SendMessage(hListView, LVM_GETCOLUMN, lCol, tHI) = cNull)
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function SetHeaderIInfo
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lCol (Long)
+'                              tHI (LVCOLUMN)
+'!--------------------------------------------------------------------------------
 Private Function SetHeaderIInfo(ByVal lCol As Long, tHI As LVCOLUMN) As Boolean
-
     lCol = lCol - vbNull
     tHI.iSubItem = lCol
     SetHeaderIInfo = Not (SendMessage(hListView, LVM_SETCOLUMN, lCol, tHI) = cNull)
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function TranslateColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   clr (Long)
+'                              hPal (Long = cNull)
+'!--------------------------------------------------------------------------------
 Private Function TranslateColor(ByVal clr As Long, Optional hPal As Long = cNull) As Long
 
     If OleTranslateColor(clr, hPal, TranslateColor) Then TranslateColor = &HFFFF
 End Function
 
-Private Function MakeDWord(LoWord As Integer, HiWord As Integer) As Long
-
-    MakeDWord = (HiWord * &H10000) Or (LoWord And &HFFFF&)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function MakeDWord
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   LoWord (Integer)
+'                              HiWord (Integer)
+'!--------------------------------------------------------------------------------
+Private Function MakeDWord(ByVal LoWord As Integer, ByVal HiWord As Integer) As Long
+    MakeDWord = (CLng(HiWord) * &H10000) Or (LoWord And &HFFFF&)
 End Function
 
-Private Function LoWord(DWord As Long) As Integer
-
-    LoWord = IIf(DWord And &H8000&, DWord Or &HFFFF0000, DWord And &HFFFF&)
-End Function
-
-Private Function HiWord(DWord As Long) As Integer
-
-    HiWord = (DWord And &HFFFF0000) \ &H10000
-End Function
-
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function giGetShiftState
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Function giGetShiftState() As Integer
-
     ' Довольно полезно...
     giGetShiftState = (-vbShiftMask * gbKeyIsPressed(vbKeyShift))
     giGetShiftState = giGetShiftState Or (-vbAltMask * gbKeyIsPressed(vbKeyMenu))
     giGetShiftState = giGetShiftState Or (-vbCtrlMask * gbKeyIsPressed(vbKeyControl))
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function gbKeyIsPressed
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   nVirtKeyCode (KeyCodeConstants)
+'!--------------------------------------------------------------------------------
 Private Function gbKeyIsPressed(ByVal nVirtKeyCode As KeyCodeConstants) As Boolean
 
     If (GetAsyncKeyState(nVirtKeyCode) And &H8000&) = &H8000& Then gbKeyIsPressed = True
@@ -1805,40 +2488,60 @@ End Function
 
 ' §§§§§§§§§§§§§§§§§§§§§§§§§§ Вот он прогресс в VB §§§§§§§§§§§§§§§§§§§§§§§§§§
 ' Сабклассинг с пом. ASM (автора не знаю...)
-Private Sub StartSubclass(ByRef ASM() As Byte, _
-                          ByVal hwnd As Long, _
-                          ByRef OldWndProc As Long, _
-                          Optional ByVal ProcNumber As Long)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub StartSubclass
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   ASM() (Byte)
+'                              hWnd (Long)
+'                              OldWndProc (Long)
+'                              ProcNumber (Long)
+'!--------------------------------------------------------------------------------
+Private Sub StartSubclass(ByRef ASM() As Byte, ByVal hWnd As Long, ByRef OldWndProc As Long, Optional ByVal ProcNumber As Long)
 
-    Dim lng As Long, tPtr As Long
+    Dim Lng As Long, tPtr                   As Long
 
-    lng = Len(AsmMain) \ 2&
-    ReDim ASM(cNull To lng - vbNull)
+    Lng = Len(AsmMain) \ 2&
 
-    For lng = cNull To lng - vbNull
-        ASM(lng) = Val("&H" & Mid$(AsmMain, (lng) * 2& + vbNull, 2&))
+    ReDim ASM(cNull To Lng - vbNull)
+
+    For Lng = cNull To Lng - vbNull
+        ASM(Lng) = Val("&H" & Mid$(AsmMain, (Lng) * 2& + vbNull, 2&))
     Next
+
     Call CopyMemory(tPtr, ByVal ObjPtr(Me), 4&)
-    Call CopyMemory(lng, ByVal tPtr + &H1C + (4& * ProcNumber), 4&)
+    Call CopyMemory(Lng, ByVal tPtr + &H1C + (4& * ProcNumber), 4&)
     Call CopyMemory(ASM(23), ObjPtr(Me), 4&)
-    Call CopyMemory(ASM(28), lng, 4&)
-    OldWndProc = SetWindowLong(hwnd, &HFFFC, VarPtr(ASM(0)))
+    Call CopyMemory(ASM(28), Lng, 4&)
+    OldWndProc = SetWindowLong(hWnd, &HFFFC, VarPtr(ASM(0)))
 End Sub
 
-Private Sub StopSabclass(ByVal hwnd As Long, ByVal OldWndProc As Long)
-
-    Call SetWindowLong(hwnd, &HFFFC, OldWndProc)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub StopSabclass
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   hWnd (Long)
+'                              OldWndProc (Long)
+'!--------------------------------------------------------------------------------
+Private Sub StopSabclass(ByVal hWnd As Long, ByVal OldWndProc As Long)
+    Call SetWindowLong(hWnd, &HFFFC, OldWndProc)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Class_Terminate
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub Class_Terminate()
-
     Call Destroy
 End Sub
 
-Public Sub Sort(Optional ByVal ColumnIndex As Long = 0, _
-                Optional ByVal SortAs As eSortAsConst = stText, _
-                Optional ByVal SortOrder As eSortOrderConstants = [soAscending])
-
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Sort
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   ColumnIndex (Long = 0)
+'                              SortAs (As eSortAsConst = stText)
+'                              SortOrder (eSortOrderConstants = [soAscending])
+'!--------------------------------------------------------------------------------
+Public Sub Sort(Optional ByVal ColumnIndex As Long = 0, Optional ByVal SortAs As eSortAsConst = stText, Optional ByVal SortOrder As eSortOrderConstants = [soAscending])
     m_lColumn = ColumnIndex
     lSortAs = SortAs
     m_PRECEDE = SortOrder
@@ -1846,92 +2549,154 @@ Public Sub Sort(Optional ByVal ColumnIndex As Long = 0, _
     SendMessageLong hListView, LVM_SORTITEMSEX, hListView, AddressOf hSortFunc
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property LeftParent
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get LeftParent() As Long
-
     GetClientRect hLVParent, rcParent
     LeftParent = rcParent.Left
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property TopParent
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get TopParent() As Long
-
     GetClientRect hLVParent, rcParent
     TopParent = rcParent.Top
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property WidthParent
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get WidthParent() As Long
-
     GetClientRect hLVParent, rcParent
     WidthParent = rcParent.Right - rcParent.Left
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property HeightParent
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get HeightParent() As Long
-
     GetClientRect hLVParent, rcParent
     HeightParent = rcParent.Bottom - rcParent.Top
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property LeftParent
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let LeftParent(ByVal vNewValue As Long)
-
     MoveWindow hLVParent, vNewValue, TopParent, WidthParent, HeightParent, vbNull
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property TopParent
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let TopParent(ByVal vNewValue As Long)
-
     MoveWindow hLVParent, LeftParent, vNewValue, WidthParent, HeightParent, vbNull
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property WidthParent
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let WidthParent(ByVal vNewValue As Long)
-
     MoveWindow hLVParent, LeftParent, TopParent, vNewValue, HeightParent, vbNull
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property HeightParent
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let HeightParent(ByVal vNewValue As Long)
-
     MoveWindow hLVParent, LeftParent, TopParent, WidthParent, vNewValue, vbNull
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Left
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get Left() As Long
-
-    GetClientRect hListView, rc
-    Left = rc.Left
+    GetClientRect hListView, RC
+    Left = RC.Left
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Top
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get Top() As Long
-
-    GetClientRect hListView, rc
-    Top = rc.Top
+    GetClientRect hListView, RC
+    Top = RC.Top
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Width
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get Width() As Long
-
-    GetClientRect hListView, rc
-    Width = rc.Right - rc.Left
+    GetClientRect hListView, RC
+    Width = RC.Right - RC.Left
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Height
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get Height() As Long
-
-    GetClientRect hListView, rc
-    Height = rc.Bottom - rc.Top
+    GetClientRect hListView, RC
+    Height = RC.Bottom - RC.Top
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Left
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let Left(ByVal vNewValue As Long)
-
     MoveWindow hListView, vNewValue, Top, Width, Height, vbNull
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Top
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let Top(ByVal vNewValue As Long)
-
     MoveWindow hListView, Left, vNewValue, Width, Height, vbNull
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Width
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let Width(ByVal vNewValue As Long)
-
     MoveWindow hListView, Left, Top, vNewValue, Height, vbNull
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Height
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Long)
+'!--------------------------------------------------------------------------------
 Public Property Let Height(ByVal vNewValue As Long)
-
     MoveWindow hListView, Left, Top, Width, vNewValue, vbNull
 End Property
-
-

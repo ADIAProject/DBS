@@ -12,13 +12,21 @@ Public glHighlightColor As Long
 ' Comments    :
 ' Returns     :
 '---------------------------------------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub HighlightActiveControl
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   frm (Form)
+'                              ctrl (Control)
+'                              bState (Boolean)
+'!--------------------------------------------------------------------------------
 Public Sub HighlightActiveControl(ByRef frm As Form, ByVal ctrl As Control, ByVal bState As Boolean)
 
     Dim l As Long
 
     l = 45
 
-    'On Error Resume Next
+    On Error Resume Next
+
     If bState Then
         frm.Controls.Add "VB.Shape", "ShapeHL", ctrl.Container
 
@@ -36,4 +44,5 @@ Public Sub HighlightActiveControl(ByRef frm As Form, ByVal ctrl As Control, ByVa
     Else
         frm.Controls.Remove "ShapeHL"
     End If
+
 End Sub

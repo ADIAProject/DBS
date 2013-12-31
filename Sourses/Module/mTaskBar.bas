@@ -2,18 +2,20 @@ Attribute VB_Name = "mTaskBar"
 'Определение рабочей области Windows, то есть часть экрана, не затененного панелью задач или другими прикладными областями
 Option Explicit
 
-Public Const SPI_GETWORKAREA As Integer = 48
 Public lngTopWorkArea        As Long
 Public lngLeftWorkArea       As Long
 Public lngRightWorkArea      As Long
 Public lngBottomWorkArea     As Long
-Public Declare Function SystemParametersInfo _
-               Lib "user32.dll" _
-               Alias "SystemParametersInfoA" (ByVal uAction As Long, _
-                                              ByVal uParam As Long, _
-                                              lpvParam As Any, _
-                                              ByVal fuWinIni As Long) As Long
 
+Public Const SPI_GETWORKAREA As Integer = 48
+
+Public Declare Function SystemParametersInfo Lib "user32.dll" Alias "SystemParametersInfoA" (ByVal uAction As Long, ByVal uParam As Long, lpvParam As Any, ByVal fuWinIni As Long) As Long
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub GetWorkArea
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Sub GetWorkArea()
 
     Dim typRect As RECT
@@ -26,4 +28,5 @@ Public Sub GetWorkArea()
         lngRightWorkArea = .Right * Screen.TwipsPerPixelX
         lngBottomWorkArea = .Bottom * Screen.TwipsPerPixelY
     End With
+
 End Sub

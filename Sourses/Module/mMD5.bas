@@ -16,35 +16,17 @@ Private Const lMD5Length          As Long = 16
 
 Private Declare Function CryptDestroyHash Lib "advapi32.dll" (ByVal hHash As Long) As Long
 Private Declare Function CryptReleaseContext Lib "advapi32.dll" (ByVal hProv As Long, ByVal dwFlags As Long) As Long
-Private Declare Function CryptAcquireContext _
-                Lib "advapi32.dll" _
-                Alias "CryptAcquireContextA" (ByRef phProv As Long, _
-                                              ByVal pszContainer As String, _
-                                              ByVal pszProvider As String, _
-                                              ByVal dwProvType As Long, _
-                                              ByVal dwFlags As Long) As Long
-
-Private Declare Function CryptCreateHash _
-                Lib "advapi32.dll" (ByVal hProv As Long, _
-                                    ByVal Algid As Long, _
-                                    ByVal hKey As Long, _
-                                    ByVal dwFlags As Long, _
-                                    ByRef phHash As Long) As Long
-
-Private Declare Function CryptHashData _
-                Lib "advapi32.dll" (ByVal hHash As Long, _
-                                    pbData As Any, _
-                                    ByVal dwDataLen As Long, _
-                                    ByVal dwFlags As Long) As Long
-
-Private Declare Function CryptGetHashParam _
-                Lib "advapi32.dll" (ByVal pCryptHash As Long, _
-                                    ByVal dwParam As Long, _
-                                    ByRef pbData As Any, _
-                                    ByRef pcbData As Long, _
-                                    ByVal dwFlags As Long) As Long
+Private Declare Function CryptAcquireContext Lib "advapi32.dll" Alias "CryptAcquireContextA" (ByRef phProv As Long, ByVal pszContainer As String, ByVal pszProvider As String, ByVal dwProvType As Long, ByVal dwFlags As Long) As Long
+Private Declare Function CryptCreateHash Lib "advapi32.dll" (ByVal hProv As Long, ByVal Algid As Long, ByVal hkey As Long, ByVal dwFlags As Long, ByRef phHash As Long) As Long
+Private Declare Function CryptHashData Lib "advapi32.dll" (ByVal hHash As Long, pbData As Any, ByVal dwDataLen As Long, ByVal dwFlags As Long) As Long
+Private Declare Function CryptGetHashParam Lib "advapi32.dll" (ByVal pCryptHash As Long, ByVal dwParam As Long, ByRef pbData As Any, ByRef pcbData As Long, ByVal dwFlags As Long) As Long
 
 'Расчет хэш-суммы MD5 файла
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetMD5
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   sFile (String)
+'!--------------------------------------------------------------------------------
 Public Function GetMD5(sFile As String) As String
 
     Dim hFile            As Long
@@ -58,7 +40,7 @@ Public Function GetMD5(sFile As String) As String
     Dim sMD5             As String
 
     'Get a handle to the file
-    hFile = CreateFile(sFile, GENERIC_READ, FILE_SHARE_READ, ByVal 0&, OPEN_EXISTING, ByVal 0&, ByVal 0&)
+    hFile = CreateFile(StrPtr(sFile & vbNullChar), GENERIC_READ, FILE_SHARE_READ, ByVal 0&, OPEN_EXISTING, ByVal 0&, ByVal 0&)
 
     'Check if file opened successfully
     If hFile > 0 Then
@@ -67,13 +49,16 @@ Public Function GetMD5(sFile As String) As String
 
         'File size must be greater than 0
         If lFileSize > 0 Then
+
             'Prepare the buffer
             ReDim uBuffer(lFileSize - 1) As Byte
 
             'Read the file
             If ReadFile(hFile, uBuffer(0), lFileSize, lBytesRead, ByVal 0&) <> 0 Then
                 If lBytesRead <> lFileSize Then
+
                     ReDim Preserve uBuffer(lBytesRead - 1)
+
                 End If
 
                 'Acquire the context, create the hash, and hash the data
@@ -86,6 +71,7 @@ Public Function GetMD5(sFile As String) As String
                                 For i = 0 To lMD5Length - 1
                                     sMD5 = sMD5 & (Right$("0" & Hex$(uMD5(i)), 2))
                                 Next
+
                             End If
                         End If
 

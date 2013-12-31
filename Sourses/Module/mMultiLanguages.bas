@@ -12,8 +12,8 @@ Option Explicit
 '               on any media without express permission.
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 'Поддержка многоязычности в программе
-Public mboolLanguageChange            As Boolean
-Public arrLanguage()                  As String
+Public mbMultiLanguage                As Boolean
+Public arrLanguage()                  As String     ' Массив служебных сообщений
 Public strPCLangID                    As String
 Public strPCLangLocaliseName          As String
 Public strPCLangEngName               As String
@@ -21,16 +21,16 @@ Public strPCLangCurrentPath           As String
 Public strPCLangCurrentID             As String
 
 'Язык программы при старте
-Public mboolAutoLanguage              As Boolean
+Public mbAutoLanguage                 As Boolean
 Public strStartLanguageID             As String
 
 ' Массив служебных сообщений
-Public strMessages(120)               As String
+Public strMessages(150)               As String
 
 ' Api - переменные для работы с языками
 Public Const LOCALE_ILANGUAGE         As Long = &H1    'language id
 Public Const LOCALE_SLANGUAGE         As Long = &H2    'localized name of language
-Public Const LOCALE_SENGLANGUAGE      As Long = &H1001 'English name of language
+Public Const LOCALE_SENGLANGUAGE      As Long = &H1001    'English name of language
 
 Private Const LOCALE_SABBREVLANGNAME  As Long = &H3    'abbreviated language name
 Private Const LOCALE_SNATIVELANGNAME  As Long = &H4    'native name of language
@@ -38,14 +38,14 @@ Private Const LOCALE_IDEFAULTLANGUAGE As Long = &H9    'default language id
 
 Public Declare Function GetSystemDefaultLCID Lib "kernel32.dll" () As Long
 
-Private Declare Function GetLocaleInfo _
-                Lib "kernel32.dll" _
-                Alias "GetLocaleInfoA" (ByVal Locale As Long, _
-                                        ByVal LCType As Long, _
-                                        ByVal lpLCData As String, _
-                                        ByVal cchData As Long) As Long
+Private Declare Function GetLocaleInfo Lib "kernel32.dll" Alias "GetLocaleInfoA" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As String, ByVal cchData As Long) As Long
 
 ' Получение Font.charset на основании кодовой страницы
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetCharsetFromLng
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lngCodePage (Long)
+'!--------------------------------------------------------------------------------
 Public Function GetCharsetFromLng(lngCodePage As Long) As Long
 
     Dim lngCharset As Long
@@ -64,7 +64,7 @@ Public Function GetCharsetFromLng(lngCodePage As Long) As Long
             lngCharset = ANSI_CHARSET
 
         Case 1253
-            'RUSSIAN_CHARSET = 204
+            'GREEK_CHARSET = 161
             lngCharset = GREEK_CHARSET
 
         Case 1254
@@ -114,70 +114,65 @@ Public Function GetCharsetFromLng(lngCodePage As Long) As Long
     GetCharsetFromLng = lngCharset
 End Function
 
-'Public Const ANSI_CHARSET = 0
-'Public Const DEFAULT_CHARSET = 1
-'Public Const SYMBOL_CHARSET = 2
-'Public Const SHIFTJIS_CHARSET = 128
-'Public Const HANGEUL_CHARSET = 129
-'Public Const HANGUL_CHARSET = 129
-'Public Const GB2312_CHARSET = 134
-'Public Const CHINESEBIG5_CHARSET = 136
-'Public Const OEM_CHARSET = 255
-'Public Const JOHAB_CHARSET = 130
-'Public Const HEBREW_CHARSET = 177
-'Public Const ARABIC_CHARSET = 178
-'Public Const GREEK_CHARSET = 161
-'Public Const TURKISH_CHARSET = 162
-'Public Const VIETNAMESE_CHARSET = 163
-'Public Const THAI_CHARSET = 222
-'Public Const EASTEUROPE_CHARSET = 238
-'Public Const RUSSIAN_CHARSET = 204
-'Public Const MAC_CHARSET = 77
-'Public Const BALTIC_CHARSET = 186
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetUserLocaleInfo
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   dwLocaleID (Long)
+'                              dwLCType (Long)
+'!--------------------------------------------------------------------------------
 Public Function GetUserLocaleInfo(ByVal dwLocaleID As Long, ByVal dwLCType As Long) As String
 
     Dim sReturn As String
-    Dim r       As Long
+    Dim R       As Long
 
     'call the function passing the Locale type
     'variable to retrieve the required size of
     'the string buffer needed
-    r = GetLocaleInfo(dwLocaleID, dwLCType, sReturn, Len(sReturn))
+    R = GetLocaleInfo(dwLocaleID, dwLCType, sReturn, 0)
 
     'if successful..
-    If r Then
+    If R Then
         'pad the buffer with spaces
-        sReturn = Space$(r)
+        sReturn = String$(R, vbNullChar)
         'and call again passing the buffer
-        r = GetLocaleInfo(dwLocaleID, dwLCType, sReturn, Len(sReturn))
+        R = GetLocaleInfo(dwLocaleID, dwLCType, sReturn, Len(sReturn))
 
         'if successful (r > 0)
-        If r Then
+        If R Then
             'r holds the size of the string
             'including the terminating null
-            GetUserLocaleInfo = Left$(sReturn, r - 1)
+            GetUserLocaleInfo = TrimNull(sReturn)
+            ', r - 1)
         End If
     End If
+
 End Function
 
 '! -----------------------------------------------------------
-'!  Функция     :  LoadLanguage
+'!  Функция     :  LoadLanguageList
 '!  Переменные  :
 '!  Описание    :  Загрузка списка языков
 '! -----------------------------------------------------------
-Public Function LoadLanguage() As Boolean
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function LoadLanguageList
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Function LoadLanguageList() As Boolean
 
     Dim strFileList_x() As String
     Dim ii              As Integer
     Dim strTemp         As String
-    Dim lngValue        As Long
+    Dim LngValue        As Long
 
-    strFileList_x = SearchFilesInRoot(strAppPath & "\Tools\LangDBS", "*.lng", False, False)
+    strFileList_x = SearchFilesInRoot(strAppPathBackSL & strToolsLang_Path, "*.lng", False, False)
 
     If UBound(strFileList_x, 2) = 0 Then
-        If strFileList_x(0, 0) = vbNullString Then
-            LoadLanguage = False
+        If LenB(strFileList_x(0, 0)) = 0 Then
+            LoadLanguageList = False
+
             Exit Function
+
         End If
     End If
 
@@ -187,95 +182,124 @@ Public Function LoadLanguage() As Boolean
         ' Путь до языкового файла
         strTemp = strFileList_x(0, ii)
 
-        If strTemp <> "No Key" Then
+        If strTemp <> "no_key" Then
             arrLanguage(1, ii + 1) = strTemp
         End If
 
         ' Имя языка
         strTemp = IniStringPrivate("Lang", "Name", strFileList_x(0, ii))
 
-        If strTemp <> "No Key" Then
+        If strTemp <> "no_key" Then
             arrLanguage(2, ii + 1) = strTemp
         End If
 
         ' Имя переводчика
         strTemp = IniStringPrivate("Lang", "TranslatorName", strFileList_x(0, ii))
 
-        If strTemp <> "No Key" Then
+        If strTemp <> "no_key" Then
             arrLanguage(4, ii + 1) = strTemp
         End If
 
         ' Адрес переводчика
         strTemp = IniStringPrivate("Lang", "TranslatorURL", strFileList_x(0, ii))
 
-        If strTemp <> "No Key" Then
+        If strTemp <> "no_key" Then
             arrLanguage(5, ii + 1) = strTemp
         End If
 
         ' Charset языка
-        lngValue = GetIniValueLong(strFileList_x(0, ii), "Lang", "Charset", 1)
-        arrLanguage(6, ii + 1) = lngValue
+        LngValue = GetIniValueLong(strFileList_x(0, ii), "Lang", "Charset", 1)
+        arrLanguage(6, ii + 1) = LngValue
         ' ID языка
         strTemp = IniStringPrivate("Lang", "ID", strFileList_x(0, ii))
 
-        If strTemp <> "No Key" Then
+        If strTemp <> "no_key" Then
             arrLanguage(3, ii + 1) = strTemp
 
-            If mboolAutoLanguage Then
-
-                'If  strTemp = strPCLangID Then
-                If InStr(1, strTemp, strPCLangID, vbTextCompare) > 0 Then
+            If mbAutoLanguage Then
+                If InStr(1, strTemp, strPCLangID, vbTextCompare) Then
                     strPCLangCurrentPath = arrLanguage(1, ii + 1)
                     strPCLangCurrentID = strPCLangID
-                    lngDialog_Charset = GetCharsetFromLng(CLng(arrLanguage(6, ii + 1)))
+                    lngFont_Charset = GetCharsetFromLng(CLng(arrLanguage(6, ii + 1)))
                 End If
 
             Else
 
                 If LenB(strStartLanguageID) > 0 Then
-                    If InStr(1, strTemp, strStartLanguageID, vbTextCompare) > 0 Then
+                    If InStr(1, strTemp, strStartLanguageID, vbTextCompare) Then
                         strPCLangCurrentPath = arrLanguage(1, ii + 1)
                         strPCLangCurrentID = strStartLanguageID
-                        lngDialog_Charset = GetCharsetFromLng(CLng(arrLanguage(6, ii + 1)))
+                        lngFont_Charset = GetCharsetFromLng(CLng(arrLanguage(6, ii + 1)))
                     End If
                 End If
             End If
         End If
 
-        LoadLanguage = True
+        LoadLanguageList = True
     Next
 
-    If strPCLangCurrentPath = vbNullString Then
-        strPCLangCurrentPath = strAppPath & "\Tools\LangDBS\English.lng"
+    If LenB(strPCLangCurrentPath) = 0 Then
+        strPCLangCurrentPath = PathCombine(strAppPathBackSL & strToolsLang_Path, "English.lng")
         strPCLangCurrentID = "0409"
-        lngDialog_Charset = 1
+        lngFont_Charset = 1
     End If
 
-    'arrLanguage
 End Function
 
 'Локализация сообщений программы
-Public Sub LocaliseMessage(strPathFile As String)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LocaliseMessage
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   StrPathFile (String)
+'!--------------------------------------------------------------------------------
+Public Sub LocaliseMessage(StrPathFile As String)
 
     Dim i As Integer
 
-    For i = LBound(strMessages) To UBound(strMessages)
-        strMessages(i) = LocaliseString(strPathFile, "Messages", "strMessages" & i, "strMessages" & i)
-    Next
+    For i = 1 To UBound(strMessages)
+        strMessages(i) = LocaliseString(StrPathFile, "Messages", "strMessages" & i, "strMessages" & i)
+    Next i
+
 End Sub
 
-Public Function LocaliseString(strPathFile As String, _
-                               strSection As String, _
-                               strParam As String, _
-                               strDefValue As String) As String
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function LocaliseString
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   StrPathFile (String)
+'                              strSection (String)
+'                              strParam (String)
+'                              strDefValue (String)
+'!--------------------------------------------------------------------------------
+Public Function LocaliseString(ByVal StrPathFile As String, ByVal strSection As String, ByVal strParam As String, ByVal strDefValue As String) As String
 
     Dim strTemp As String
 
-    strTemp = IniStringPrivate(strSection, strParam, strPathFile)
+    strTemp = IniStringPrivate(strSection, strParam, StrPathFile)
 
-    If strTemp <> "No Key" Then
+    If strTemp <> "no_key" Then
         LocaliseString = ConvertString(Trim$(strTemp))
     Else
         LocaliseString = strDefValue
     End If
+
 End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadLanguageOS
+'! Description (Описание)  :   [Считываем язык операционной системы, и записываем в переменные Public]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Sub LoadLanguageOS()
+
+    Dim LCID As Long
+
+    ' Считываем язык операционой системы
+    LCID = GetSystemDefaultLCID()
+    'language id
+    strPCLangID = GetUserLocaleInfo(LCID, LOCALE_ILANGUAGE)
+    'localized name of language
+    strPCLangLocaliseName = GetUserLocaleInfo(LCID, LOCALE_SLANGUAGE)
+    'English name of language
+    strPCLangEngName = GetUserLocaleInfo(LCID, LOCALE_SENGLANGUAGE)
+End Sub
+

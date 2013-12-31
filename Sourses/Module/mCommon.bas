@@ -4,15 +4,8 @@ Option Explicit
 ' ***************************************************************************
 ' Module Constants
 ' ***************************************************************************
-Private Const MODULE_NAME As String = "basCommon"
-Private Const KB_32       As Long = 32768
-
-' ***************************************************************************
-' API Declares
-' ***************************************************************************
-' The CopyMemory function copies a block of memory from one location to
-' another. For overlapped blocks, use the MoveMemory function
-Private Declare Function PathFileExists Lib "shlwapi" Alias "PathFileExistsA" (ByVal pszPath As String) As Long
+Private Const MODULE_NAME    As String = "mCommonHash"
+Private Const KB_32          As Long = 32768
 
 ' ***************************************************************************
 ' Global constants
@@ -31,8 +24,8 @@ Private Const MB_YESNOCANCEL As Long = &H3&    ' three buttons
 ' ***************************************************************************
 ' UDT for passing data through the hook
 Private Type MSGBOX_HOOK_PARAMS
-    hWndOwner                       As Long
-    hHook                           As Long
+    hWndOwner                               As Long
+    hHook                               As Long
 End Type
 
 ' ***************************************************************************
@@ -65,12 +58,19 @@ Public gblnStopProcessing As Boolean
 ' 28-Jan-2010  Kenneth Ives  kenaso@tx.rr.com
 '              Routine created
 ' ***************************************************************************
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function CalcProgress
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   curCurrAmt (Currency)
+'                              curMaxAmount (Currency)
+'!--------------------------------------------------------------------------------
 Public Function CalcProgress(ByVal curCurrAmt As Currency, ByVal curMaxAmount As Currency) As Long
 
     Dim lngPercent    As Long
     Dim curAmtLeft    As Currency
 
     Const MAX_PERCENT As Long = 100
+
     ' percentage to be calcuated
     ' difference between current and max amount
     ' Reset progress bar
@@ -78,7 +78,9 @@ Public Function CalcProgress(ByVal curCurrAmt As Currency, ByVal curMaxAmount As
 
     If (curCurrAmt <= 0@) Or (curMaxAmount <= 0@) Then
         CalcProgress = 0
+
         Exit Function
+
     End If
 
     ' Make sure current value does
@@ -131,10 +133,15 @@ End Function
 ' 18-Sep-2002  Kenneth Ives  kenaso@tx.rr.com
 '              Wrote routine
 ' ***************************************************************************
-Public Sub ErrorMsg(ByVal strModule As String, _
-                    ByVal strRoutine As String, _
-                    ByVal strMsg As String, _
-                    Optional ByVal strCaption As String = vbNullString)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ErrorMsg
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strModule (String)
+'                              strRoutine (String)
+'                              strMsg (String)
+'                              strCaption (String = vbNullString)
+'!--------------------------------------------------------------------------------
+Public Sub ErrorMsg(ByVal strModule As String, ByVal strRoutine As String, ByVal strMsg As String, Optional ByVal strCaption As String = vbNullString)
 
     Dim strNewCaption As String
     Dim strFullMsg    As String
@@ -176,6 +183,11 @@ End Sub
 ' Returns:       New record size as a long integer
 '
 ' ***************************************************************************
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetBlockSize
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   curAmtLeft (Currency)
+'!--------------------------------------------------------------------------------
 Public Function GetBlockSize(ByVal curAmtLeft As Currency) As Long
 
     ' Determine the amount of data to process
@@ -187,6 +199,7 @@ Public Function GetBlockSize(ByVal curAmtLeft As Currency) As Long
         Case Else
             GetBlockSize = CLng(curAmtLeft)
     End Select
+
 End Function
 
 ' ***************************************************************************
@@ -210,6 +223,12 @@ End Function
 ' 18-Sep-2002  Kenneth Ives  kenaso@tx.rr.com
 '              Wrote routine
 ' ***************************************************************************
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub InfoMsg
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strMsg (String)
+'                              strCaption (String = vbNullString)
+'!--------------------------------------------------------------------------------
 Public Sub InfoMsg(ByVal strMsg As String, Optional ByVal strCaption As String = vbNullString)
 
     Dim strNewCaption As String
@@ -239,6 +258,12 @@ End Sub
 ' 18-Sep-2002  Kenneth Ives  kenaso@tx.rr.com
 '              Wrote routine
 ' ***************************************************************************
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function strFormatCaption
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strCaption (String)
+'                              bError (Boolean = False)
+'!--------------------------------------------------------------------------------
 Private Function strFormatCaption(ByVal strCaption As String, Optional ByVal bError As Boolean = False) As String
 
     Dim strNewCaption As String
