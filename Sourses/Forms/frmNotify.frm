@@ -7,7 +7,7 @@ Begin VB.Form frmNotify
    ClientWidth     =   4680
    ControlBox      =   0   'False
    BeginProperty Font 
-      Name            =   "Arial"
+      Name            =   "Tahoma"
       Size            =   8.25
       Charset         =   204
       Weight          =   400
@@ -15,7 +15,6 @@ Begin VB.Form frmNotify
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   Icon            =   "frmNotify.frx":0000
    LinkTopic       =   "Form2"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -28,36 +27,45 @@ Begin VB.Form frmNotify
       Top             =   120
    End
    Begin prjDIADBS.LabelW lblNameProg 
-      Height          =   735
+      Height          =   1065
       Left            =   720
+      TabIndex        =   0
       Top             =   120
       Width           =   3855
       _ExtentX        =   6800
-      _ExtentY        =   2566
-      Caption         =   "lblNameProg"
-      WordWrap        =   -1  'True
-      ShadowStyle     =   0
-      Alignment       =   2
-   End
-   Begin prjDIADBS.LabelW lblText 
-      Height          =   915
-      Left            =   720
-      Top             =   1800
-      Width           =   2865
-      _ExtentX        =   5054
-      _ExtentY        =   1614
+      _ExtentY        =   1879
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   204
          Weight          =   400
-         Underline       =   -1  'True
+         Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Caption         =   "lblText"
-      WordWrap        =   -1  'True
-      ShadowStyle     =   0
+      Alignment       =   2
+      BackStyle       =   0
+      Caption         =   "Label2"
+   End
+   Begin prjDIADBS.LabelW Label1 
+      Height          =   1095
+      Left            =   720
+      TabIndex        =   1
+      Top             =   1800
+      Width           =   2775
+      _ExtentX        =   0
+      _ExtentY        =   0
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackStyle       =   0
+      Caption         =   "Label1"
    End
 End
 Attribute VB_Name = "frmNotify"
@@ -77,50 +85,46 @@ Option Explicit
 '               online service, or distribute as source
 '               on any media without express permission.
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-Private msHangDuration             As Long
-Private msShowDuration             As Long
-Private msHideDuration             As Long
-Private twipsx                     As Long
-Private twipsy                     As Long
+Private msHangDuration         As Long
+Private msShowDuration         As Long
+Private msHideDuration         As Long
+Private twipsx                 As Long
+Private twipsy                 As Long
 
-Private Const notify_mode_show     As Integer = 1
-Private Const notify_mode_wait     As Integer = 2
-Private Const notify_mode_hide     As Integer = 3
-Private notify_mode                As Long
+Private Const notify_mode_show As Integer = 1
+Private Const notify_mode_wait As Integer = 2
+Private Const notify_mode_hide As Integer = 3
 
-Private Const SW_SHOWNA            As Integer = 8
-Private Const SND_ASYNC            As Long = &H1 'play asynchronously
-Private Const SND_FILENAME         As Long = &H20000 'sound is file name
-Private Const GRADIENT_FILL_RECT_V As Long = &H1
+Private notify_mode            As Long
 
-Private Type TRIVERTEX
-    X                                      As Long
-    Y                                      As Long
-    Red                                    As Integer    'ushort value
-    Green                                  As Integer    'ushort value
-    Blue                                   As Integer    'ushort value
-    Alpha                                  As Integer    'ushort value
-End Type
+Private Const SW_SHOWNA        As Integer = 8
 
-Private Type GRADIENT_RECT
-    UpperLeft                              As Long
-    LowerRight                             As Long
-End Type
+Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
 
-Private Declare Function PlaySound _
-                Lib "winmm.dll" _
-                Alias "PlaySoundA" (ByVal lpszName As String, _
-                                    ByVal hModule As Long, _
-                                    ByVal dwFlags As Long) As Long
+Private strFormName As String
 
-Private Declare Function GradientFill _
-                Lib "msimg32.dll" (ByVal hDC As Long, _
-                                   pVertex As TRIVERTEX, _
-                                   ByVal dwNumVertex As Long, _
-                                   pMesh As GRADIENT_RECT, _
-                                   ByVal dwNumMesh As Long, _
-                                   ByVal dwMode As Long) As Long
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub FontCharsetChange
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub FontCharsetChange()
 
+    ' Выставляем шрифт
+    With Me.Font
+        .Name = strFontOtherForm_Name
+        .Size = lngFontOtherForm_Size
+        .Charset = lngFont_Charset
+    End With
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawGradientBackground
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Colour1 (Long)
+'                              Colour2 (Long)
+'!--------------------------------------------------------------------------------
 Private Sub DrawGradientBackground(Colour1 As Long, Colour2 As Long)
 
     Dim vert(0 To 1) As TRIVERTEX
@@ -136,8 +140,6 @@ Private Sub DrawGradientBackground(Colour1 As Long, Colour2 As Long)
         .Alpha = 0
     End With
 
-    'VERT(0)
-    'VERT(0)
     'gradient end colour
     With vert(1)
         .X = Me.ScaleWidth \ twipsx
@@ -148,19 +150,25 @@ Private Sub DrawGradientBackground(Colour1 As Long, Colour2 As Long)
         .Alpha = 0
     End With
 
-    'VERT(1)
-    'VERT(1)
     grc.UpperLeft = 0
     grc.LowerRight = 1
     GradientFill hDC, vert(0), 2, grc, 1, GRADIENT_FILL_RECT_V
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawIconPicture
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   img (StdPicture)
+'                              ImageX (Long)
+'                              ImageY (Long)
+'                              ImgTransColour (Long)
+'!--------------------------------------------------------------------------------
 Private Sub DrawIconPicture(img As StdPicture, ImageX As Long, ImageY As Long, ImgTransColour As Long)
 
     Dim hbmDc   As Long
     Dim hBmp    As Long
     Dim hBmpOld As Long
-    Dim bmp     As BITMAP
+    Dim Bmp     As BITMAP
 
     'if the picture is a bitmap...
     If img.Type = vbPicTypeBitmap Then
@@ -174,12 +182,13 @@ Private Sub DrawIconPicture(img As StdPicture, ImageX As Long, ImageY As Long, I
 
             'retrieve information for the
             'specified graphics object
-            If GetObject(hBmp, Len(bmp), bmp) <> 0 Then
+            If GetObject(hBmp, Len(Bmp), Bmp) <> 0 Then
                 'draw the bitmap with the
                 'specified transparency colour
-                TransparentBlt Me.hDC, ImageX, ImageY, bmp.bmWidth, bmp.bmHeight, hbmDc, 0, 0, bmp.bmWidth, bmp.bmHeight, ImgTransColour
+                TransparentBlt Me.hDC, ImageX, ImageY, Bmp.BMWidth, Bmp.BMHeight, hbmDc, 0, 0, Bmp.BMWidth, Bmp.BMHeight, ImgTransColour
             End If
 
+            'GetObject
             SelectObject hbmDc, hBmpOld
             DeleteObject hBmpOld
             DeleteDC hbmDc
@@ -191,18 +200,25 @@ Private Sub DrawIconPicture(img As StdPicture, ImageX As Long, ImageY As Long, I
         Me.PaintPicture img, ImageX, ImageY
     End If
 
-    'img.Type
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub Form_Click()
-
     Timer1.Enabled = False
     ReleaseCapture
     Unload Me
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Initialize
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub Form_Initialize()
-
     'position the elements and
     'set some initial settings
     twipsx = Screen.TwipsPerPixelX
@@ -210,63 +226,111 @@ Private Sub Form_Initialize()
     Me.KeyPreview = True
     Me.AutoRedraw = True
 
-    With lblText
+    With Label1
         .Move 4 * twipsx, 40 * twipsx, Me.ScaleWidth - (7 * twipsx), Me.ScaleHeight - (44 * twipsx)
         .AutoSize = False
         .WordWrap = True
         '.BackStyle = vbTransparent
         .Alignment = vbCenter
     End With
+
+    'LABEL1
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_KeyPress
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   KeyAscii (Integer)
+'!--------------------------------------------------------------------------------
 Private Sub Form_KeyPress(KeyAscii As Integer)
 
     If KeyAscii = vbKeyEscape Then
         Unload Me
     End If
+
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Load
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub Form_Load()
-
+    SetupVisualStyles Me
+    strFormName = Me.Name
     lblNameProg.Caption = strFrmMainCaptionTemp & vbNewLine & " v." & strProductVersion & " " & strFrmMainCaptionTempDate & strDateProgram & ")"
+    ' Выставляем шрифт
+    FontCharsetChange
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_MouseMove
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Button (Integer)
+'                              Shift (Integer)
+'                              X (Single)
+'                              Y (Single)
+'!--------------------------------------------------------------------------------
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     'trap the mouse movements while
     'in the form
-    If GetCapture() = Me.hwnd Then
+    If GetCapture() = Me.hWnd Then
         If X < 0 Or X > Me.Width Or Y < 0 Or Y > Me.Height Then
             ReleaseCapture
-            lblText.ForeColor = &H80000012
-            lblText.Font.Underline = False
+            Label1.ForeColor = &H80000012
+            Label1.Font.Underline = False
         End If
 
     Else
-        lblText.ForeColor = RGB(0, 0, 255)
-        lblText.Font.Underline = True
-        SetCapture Me.hwnd
+        Label1.ForeColor = RGB(0, 0, 255)
+        Label1.Font.Underline = True
+        SetCapture Me.hWnd
     End If
+
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_MouseUp
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Button (Integer)
+'                              Shift (Integer)
+'                              X (Single)
+'                              Y (Single)
+'!--------------------------------------------------------------------------------
 Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
-
     Timer1.Enabled = False
     ReleaseCapture
     CheckUpd False
     Unload Me
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Unload
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Cancel (Integer)
+'!--------------------------------------------------------------------------------
 Private Sub Form_Unload(Cancel As Integer)
-
     Set frmNotify = Nothing
 End Sub
 
-Private Sub lblText_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Label1_MouseMove
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Button (Integer)
+'                              Shift (Integer)
+'                              X (Single)
+'                              Y (Single)
+'!--------------------------------------------------------------------------------
+Private Sub Label1_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Form_MouseMove Button, Shift, X, Y
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function LongToSignedShort
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   dwUnsigned (Long)
+'!--------------------------------------------------------------------------------
 Private Function LongToSignedShort(dwUnsigned As Long) As Integer
 
     'convert from long to signed short
@@ -275,22 +339,29 @@ Private Function LongToSignedShort(dwUnsigned As Long) As Integer
     Else
         LongToSignedShort = CInt(dwUnsigned - &H10000)
     End If
+
 End Function
 
-Public Sub ShowMessage(ByVal sMsg As String, _
-                       Optional img As StdPicture, _
-                       Optional ImageX As Long = 0, _
-                       Optional ImageY As Long = 0, _
-                       Optional BgColour1 As Long = &HFFFFFF, _
-                       Optional BgColour2 As Long = &HFFFFFF, _
-                       Optional ImgTransColour As Long = &HFFFFFF, _
-                       Optional ByVal msShowTime As Long = 50, _
-                       Optional ByVal msHangTime As Long = 4000, _
-                       Optional ByVal msHideTime As Long = 50, _
-                       Optional ByVal bPlacement As Boolean = False, _
-                       Optional sSound As String)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ShowMessage
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   sMsg (String)
+'                              img (StdPicture)
+'                              ImageX (Long = 0)
+'                              ImageY (Long = 0)
+'                              BgColour1 (Long = &HFFFFFF)
+'                              BgColour2 (Long = &HFFFFFF)
+'                              ImgTransColour (Long = &HFFFFFF)
+'                              msShowTime (Long = 50)
+'                              msHangTime (Long = 4000)
+'                              msHideTime (Long = 50)
+'                              bPlacement (Boolean = False)
+'                              sSound (String)
+'!--------------------------------------------------------------------------------
+Public Sub ShowMessage(ByVal sMsg As String, Optional img As StdPicture, Optional ImageX As Long = 0, Optional ImageY As Long = 0, Optional BgColour1 As Long = &HFFFFFF, Optional BgColour2 As Long = &HFFFFFF, Optional ImgTransColour As Long = _
+                            &HFFFFFF, Optional ByVal msShowTime As Long = 50, Optional ByVal msHangTime As Long = 4000, Optional ByVal msHideTime As Long = 50, Optional ByVal bPlacement As Boolean = False, Optional sSound As String)
 
-    Dim rc As RECT
+    Dim RC As RECT
 
     'ensure the notification window
     'is not already visible
@@ -306,7 +377,7 @@ Public Sub ShowMessage(ByVal sMsg As String, _
         End If
 
         'set the sMsg
-        lblText.Caption = sMsg
+        Label1.Caption = sMsg
         'assign the intervals for the
         'respective timer events
         msShowDuration = msShowTime
@@ -321,7 +392,7 @@ Public Sub ShowMessage(ByVal sMsg As String, _
 
         'retrieve the work area (the
         'available real estate available)
-        SystemParametersInfo SPI_GETWORKAREA, 0, rc, 0
+        SystemParametersInfo SPI_GETWORKAREA, 0, RC, 0
 
         'move the form in the upper-right corner
         'of the work area and set the form as
@@ -333,15 +404,15 @@ Public Sub ShowMessage(ByVal sMsg As String, _
 
             Case True
                 'show top left
-                SetWindowPos Me.hwnd, HWND_TOPMOST, 0, rc.Top, (Me.Width / twipsx), 0, SWP_NOACTIVATE
+                SetWindowPos Me.hWnd, HWND_TOPMOST, 0, RC.Top, (Me.Width / twipsx), 0, SWP_NOACTIVATE
 
             Case False
                 'show top right
-                SetWindowPos Me.hwnd, HWND_TOPMOST, rc.Right - (Me.Width / twipsx), rc.Top, (Me.Width / twipsx), 0, SWP_NOACTIVATE
+                SetWindowPos Me.hWnd, HWND_TOPMOST, RC.Right - (Me.Width / twipsx), RC.Top, (Me.Width / twipsx), 0, SWP_NOACTIVATE
         End Select
 
         'show the form without activating
-        ShowWindow Me.hwnd, SW_SHOWNA
+        ShowWindow Me.hWnd, SW_SHOWNA
         'begin the animation by setting
         'the notify mode to notify_mode_show,
         'and setting the interval to the value
@@ -351,8 +422,14 @@ Public Sub ShowMessage(ByVal sMsg As String, _
         Timer1.Interval = msShowDuration
         Timer1.Enabled = True
     End If
+
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Timer1_Timer
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub Timer1_Timer()
 
     Select Case notify_mode
@@ -385,5 +462,7 @@ Private Sub Timer1_Timer()
                 Timer1.Enabled = False
                 Unload Me
             End If
+
     End Select
+
 End Sub

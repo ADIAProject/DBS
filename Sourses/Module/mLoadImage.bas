@@ -230,9 +230,9 @@ End Function
 Public Sub LoadIconImagePath()
     DebugMode vbTab & "LoadIconImagePath-Start", 2
     strPathImageMainWork = strPathImageMain & strImageMainName
-    strPathImageStatusButtonWork = strPathImageStatusButton & strImageStatusButtonName
-
+    'strPathImageStatusButtonWork = strPathImageStatusButton & strImageStatusButtonName
     'strPathImageMenuWork = strPathImageMenu & strImageMenuName
+    
     If PathExists(strPathImageMainWork) = False Then
         If Not mbSilentRun Then
             MsgBox strMessages(15), vbCritical, strProductName
@@ -241,13 +241,13 @@ Public Sub LoadIconImagePath()
         strPathImageMainWork = strPathImageMain & "Standart"
     End If
 
-    If PathExists(strPathImageStatusButtonWork) = False Then
-        If Not mbSilentRun Then
-            MsgBox strMessages(15), vbCritical, strProductName
-        End If
-
-        strPathImageStatusButtonWork = strPathImageStatusButton & "Standart"
-    End If
+'    If PathExists(strPathImageStatusButtonWork) = False Then
+'        If Not mbSilentRun Then
+'            MsgBox strMessages(15), vbCritical, strProductName
+'        End If
+'
+'        strPathImageStatusButtonWork = strPathImageStatusButton & "Standart"
+'    End If
 
     'If PathExists(strPathImageMenuWork) = False Then
     'If Not mbSilentRun Then

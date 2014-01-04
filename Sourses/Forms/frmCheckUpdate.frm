@@ -1,5 +1,4 @@
 VERSION 5.00
-Object = "{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0"; "richtx32.Ocx"
 Begin VB.Form frmCheckUpdate 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Обновление: Обнаружена новая версия программы"
@@ -27,11 +26,24 @@ Begin VB.Form frmCheckUpdate
    Begin prjDIADBS.ComboBoxW cmbVersions 
       Height          =   345
       Left            =   4680
-      Sorted          =   -1  'True
-      Style           =   2  'Dropdown List
       TabIndex        =   3
       Top             =   450
       Width           =   1335
+      _ExtentX        =   4233
+      _ExtentY        =   609
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   8.25
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Style           =   2
+      Text            =   "frmCheckUpdate.frx":000C
+      CueBanner       =   "frmCheckUpdate.frx":002C
+      Sorted          =   -1  'True
    End
    Begin prjDIADBS.ctlXpButton cmdExit 
       Height          =   735
@@ -41,13 +53,6 @@ Begin VB.Form frmCheckUpdate
       Width           =   1935
       _ExtentX        =   3413
       _ExtentY        =   1296
-      Caption         =   "Закрыть"
-      ButtonStyle     =   3
-      PictureWidth    =   0
-      PictureHeight   =   0
-      ShowFocusRect   =   0   'False
-      XPColor_Pressed =   15116940
-      XPColor_Hover   =   4692449
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Arial Unicode MS"
          Size            =   8.25
@@ -57,6 +62,13 @@ Begin VB.Form frmCheckUpdate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Caption         =   "Закрыть"
+      ButtonStyle     =   3
+      PictureWidth    =   0
+      PictureHeight   =   0
+      ShowFocusRect   =   0   'False
+      XPColor_Pressed =   15116940
+      XPColor_Hover   =   4692449
    End
    Begin prjDIADBS.ctlXpButton cmdHistory 
       Height          =   735
@@ -66,13 +78,6 @@ Begin VB.Form frmCheckUpdate
       Width           =   2175
       _ExtentX        =   3836
       _ExtentY        =   1296
-      Caption         =   "История изменений"
-      ButtonStyle     =   3
-      PictureWidth    =   48
-      PictureHeight   =   48
-      ShowFocusRect   =   0   'False
-      XPColor_Pressed =   15116940
-      XPColor_Hover   =   4692449
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Arial Unicode MS"
          Size            =   8.25
@@ -82,6 +87,13 @@ Begin VB.Form frmCheckUpdate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Caption         =   "История изменений"
+      ButtonStyle     =   3
+      PictureWidth    =   48
+      PictureHeight   =   48
+      ShowFocusRect   =   0   'False
+      XPColor_Pressed =   15116940
+      XPColor_Hover   =   4692449
    End
    Begin prjDIADBS.ctlXpButton cmdUpdate 
       Height          =   735
@@ -91,14 +103,6 @@ Begin VB.Form frmCheckUpdate
       Width           =   2175
       _ExtentX        =   3836
       _ExtentY        =   1296
-      Caption         =   "Скачать обновление"
-      ButtonStyle     =   3
-      PictureWidth    =   48
-      PictureHeight   =   48
-      ShowFocusRect   =   0   'False
-      XPColor_Pressed =   15116940
-      XPColor_Hover   =   4692449
-      MaskColor       =   16777215
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Arial Unicode MS"
          Size            =   8.25
@@ -108,6 +112,14 @@ Begin VB.Form frmCheckUpdate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Caption         =   "Скачать обновление"
+      ButtonStyle     =   3
+      PictureWidth    =   48
+      PictureHeight   =   48
+      ShowFocusRect   =   0   'False
+      XPColor_Pressed =   15116940
+      XPColor_Hover   =   4692449
+      MaskColor       =   16777215
    End
    Begin prjDIADBS.ctlXpButton cmdDonate 
       Height          =   735
@@ -117,13 +129,6 @@ Begin VB.Form frmCheckUpdate
       Width           =   2220
       _ExtentX        =   3916
       _ExtentY        =   1296
-      Caption         =   "Поддержать проект"
-      ButtonStyle     =   3
-      PictureWidth    =   51
-      PictureHeight   =   28
-      ShowFocusRect   =   0   'False
-      XPColor_Pressed =   15116940
-      XPColor_Hover   =   4692449
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Arial Unicode MS"
          Size            =   8.25
@@ -133,6 +138,13 @@ Begin VB.Form frmCheckUpdate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Caption         =   "Поддержать проект"
+      ButtonStyle     =   3
+      PictureWidth    =   51
+      PictureHeight   =   28
+      ShowFocusRect   =   0   'False
+      XPColor_Pressed =   15116940
+      XPColor_Hover   =   4692449
       TextColor       =   0
       MenuCaption0    =   "#"
    End
@@ -145,16 +157,25 @@ Begin VB.Form frmCheckUpdate
       Width           =   11130
       _ExtentX        =   19632
       _ExtentY        =   7541
-      _Version        =   393217
-      Enabled         =   -1  'True
-      ReadOnly        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   8.25
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ScrollBars      =   2
       DisableNoScroll =   -1  'True
-      TextRTF         =   $"frmCheckUpdate.frx":000C
+      FileName        =   "frmCheckUpdate.frx":004C
+      Text            =   "frmCheckUpdate.frx":006C
+      TextRTF         =   "frmCheckUpdate.frx":008C
    End
    Begin prjDIADBS.LabelW lblWait 
       Height          =   375
       Left            =   100
+      TabIndex        =   6
       Top             =   2640
       Width           =   11160
       _ExtentX        =   0
@@ -168,13 +189,13 @@ Begin VB.Form frmCheckUpdate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Caption         =   "Идет загрузка данных с официального сайта. Пожалуйста, подождите...."
-      ShadowStyle     =   0
       Alignment       =   2
+      Caption         =   "Идет загрузка данных с официального сайта. Пожалуйста, подождите...."
    End
    Begin prjDIADBS.LabelW lblVersionList 
       Height          =   375
       Left            =   120
+      TabIndex        =   7
       Top             =   450
       Width           =   4545
       _ExtentX        =   8017
@@ -189,11 +210,11 @@ Begin VB.Form frmCheckUpdate
          Strikethrough   =   0   'False
       EndProperty
       Caption         =   "Список изменений для версии:"
-      ShadowStyle     =   0
    End
    Begin prjDIADBS.LabelW lblWWW 
       Height          =   315
       Left            =   6120
+      TabIndex        =   8
       Top             =   450
       Width           =   5040
       _ExtentX        =   8890
@@ -207,14 +228,14 @@ Begin VB.Form frmCheckUpdate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Caption         =   "www.adia-project.net"
       ForeColor       =   12582912
-      ShadowStyle     =   0
       Alignment       =   1
+      Caption         =   "www.adia-project.net"
    End
    Begin prjDIADBS.LabelW lblVersion 
       Height          =   315
       Left            =   120
+      TabIndex        =   9
       Top             =   45
       Width           =   11085
       _ExtentX        =   0
@@ -228,9 +249,8 @@ Begin VB.Form frmCheckUpdate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Caption         =   "Последняя версия программы:"
-      ShadowStyle     =   0
       Alignment       =   2
+      Caption         =   "Последняя версия программы:"
    End
 End
 Attribute VB_Name = "frmCheckUpdate"
@@ -276,10 +296,10 @@ Private Sub cmdHistory_Click()
     Select Case strPCLangCurrentID
 
         Case "0419"
-            cmdString = kavichki & strLinkHistory & kavichki
+            cmdString = Kavichki & strLinkHistory & Kavichki
 
         Case Else
-            cmdString = kavichki & strLinkHistory_en & kavichki
+            cmdString = Kavichki & strLinkHistory_en & Kavichki
     End Select
 
     DebugMode "cmdString: " & cmdString
@@ -292,7 +312,7 @@ Private Sub cmdUpdate_Click()
     Dim nRetShellEx As Boolean
     Dim cmdString   As String
 
-    cmdString = kavichki & strLink(cmbVersions.ListIndex, 0) & kavichki
+    cmdString = Kavichki & strLink(cmbVersions.ListIndex, 0) & Kavichki
     DebugMode "cmdString: " & cmdString
     nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
     DebugMode "cmdString: " & nRetShellEx
@@ -306,13 +326,13 @@ Private Sub cmdUpdate_ClickMenu(mnuIndex As Integer)
     Select Case mnuIndex
 
         Case 0
-            cmdString = kavichki & strLink(cmbVersions.ListIndex, 0) & kavichki
+            cmdString = Kavichki & strLink(cmbVersions.ListIndex, 0) & Kavichki
 
         Case 2
-            cmdString = kavichki & strLink(cmbVersions.ListIndex, 2) & kavichki
+            cmdString = Kavichki & strLink(cmbVersions.ListIndex, 2) & Kavichki
 
         Case 4
-            cmdString = kavichki & strLink(cmbVersions.ListIndex, 4) & kavichki
+            cmdString = Kavichki & strLink(cmbVersions.ListIndex, 4) & Kavichki
     End Select
 
     DebugMode "cmdString: " & cmdString
@@ -323,13 +343,13 @@ End Sub
 Private Sub FontCharsetChange()
 
     ' Выставляем шрифт
-    Me.Font.Name = strOtherForm_FontName
-    Me.Font.Size = lngOtherForm_FontSize
-    Me.Font.Charset = lngDialog_Charset
-    SetButtonProperties cmdUpdate, , False
-    SetButtonProperties cmdHistory, , False
-    SetButtonProperties cmdDonate, , False
-    SetButtonProperties cmdExit, , False
+    Me.Font.Name = strFontOtherForm_Name
+    Me.Font.Size = lngFontOtherForm_Size
+    Me.Font.Charset = lngFont_Charset
+    SetBtnFontProperties cmdUpdate
+    SetBtnFontProperties cmdHistory
+    SetBtnFontProperties cmdDonate
+    SetBtnFontProperties cmdExit
 End Sub
 
 Private Sub Form_Activate()
@@ -365,7 +385,7 @@ End Sub
 Private Sub Form_Load()
 
     'SetSmallIcon Me.hWnd
-    Call SetIcon(Me.hwnd, "FRMUPDATE", False)
+    Call SetIcon(Me.hWnd, "FRMUPDATE", False)
     
     mbFirstStartUpdate = True
     lblWait.Left = 100
@@ -378,7 +398,7 @@ Private Sub Form_Load()
     LoadIconImage2Btn cmdDonate, "BTN_DONATE", strPathImageMainWork
 
     ' Локализациz приложения
-    If mbLanguageChange Then
+    If mbMultiLanguage Then
         Localise strPCLangCurrentPath
     Else
         ' Выставляем шрифт
@@ -386,19 +406,19 @@ Private Sub Form_Load()
     End If
 End Sub
 
-Private Sub Form_Terminate()
-
-    If Forms.Count = 0 Then
-        UnloadApp
-    End If
-End Sub
+'Private Sub Form_Terminate()
+'
+'    If Forms.Count = 0 Then
+'        UnloadApp
+'    End If
+'End Sub
 
 Private Sub lblWWW_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     Dim cmdString   As String
     Dim nRetShellEx As Boolean
 
-    cmdString = kavichki & "http://www.adia-project.net" & kavichki
+    cmdString = Kavichki & "http://www.adia-project.net" & Kavichki
     DebugMode "cmdString: " & cmdString
     nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
     DebugMode "cmdString: " & nRetShellEx
@@ -447,21 +467,21 @@ Private Sub LoadButtonLink(ButtonName As ctlXpButton, strMassivLink() As String)
                     .MenuEnabled(4) = False
                 End If
 
-                If strMassivLink(cmbVersions.ListIndex, 1) = vbNullString Then
+                If LenB(strMassivLink(cmbVersions.ListIndex, 1)) = 0 Then
                     .MenuVisible(0) = False
                     .MenuVisible(1) = False
                 Else
                     .MenuCaption(0) = strMassivLink(cmbVersions.ListIndex, 1)
                 End If
 
-                If strMassivLink(cmbVersions.ListIndex, 3) = vbNullString Then
+                If LenB(strMassivLink(cmbVersions.ListIndex, 3)) = 0 Then
                     .MenuVisible(1) = False
                     .MenuVisible(2) = False
                 Else
                     .MenuCaption(2) = strMassivLink(cmbVersions.ListIndex, 3)
                 End If
 
-                If strMassivLink(cmbVersions.ListIndex, 5) = vbNullString Then
+                If LenB(strMassivLink(cmbVersions.ListIndex, 5)) = 0 Then
                     .MenuVisible(3) = False
                     .MenuVisible(4) = False
                 Else
@@ -490,14 +510,14 @@ Private Sub LoadDescriptionAndLinks()
     LoadButtonLink cmdUpdate, strLink
 
     ' Описание изменений
-    If strDescriptionTemp <> vbNullString Then
+    If LenB(strDescriptionTemp) Then
         rtfDescription.TextRTF = strDescriptionTemp
     Else
         rtfDescription.TextRTF = "Error on load ChangeLog. Please inform the developer"
     End If
 End Sub
 
-Private Sub Localise(strPathFile As String)
+Private Sub Localise(StrPathFile As String)
 
     Dim strFormName As String
 
@@ -505,20 +525,20 @@ Private Sub Localise(strPathFile As String)
     ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
     FontCharsetChange
     ' Название формы
-    Me.Caption = LocaliseString(strPathFile, strFormName, strFormName, Me.Caption)
+    Me.Caption = LocaliseString(StrPathFile, strFormName, strFormName, Me.Caption)
     'Кнопки
-    cmdUpdate.Caption = LocaliseString(strPathFile, strFormName, "cmdUpdate", cmdUpdate.Caption)
-    cmdHistory.Caption = LocaliseString(strPathFile, strFormName, "cmdHistory", cmdHistory.Caption)
-    cmdDonate.Caption = LocaliseString(strPathFile, strFormName, "cmdDonate", cmdDonate.Caption)
-    cmdExit.Caption = LocaliseString(strPathFile, strFormName, "cmdExit", cmdExit.Caption)
+    cmdUpdate.Caption = LocaliseString(StrPathFile, strFormName, "cmdUpdate", cmdUpdate.Caption)
+    cmdHistory.Caption = LocaliseString(StrPathFile, strFormName, "cmdHistory", cmdHistory.Caption)
+    cmdDonate.Caption = LocaliseString(StrPathFile, strFormName, "cmdDonate", cmdDonate.Caption)
+    cmdExit.Caption = LocaliseString(StrPathFile, strFormName, "cmdExit", cmdExit.Caption)
     ' Лейблы
-    lblVersion.Caption = LocaliseString(strPathFile, strFormName, "lblVersion", lblVersion.Caption) & " " & strVersion & " (" & strDateProg & ")"
+    lblVersion.Caption = LocaliseString(StrPathFile, strFormName, "lblVersion", lblVersion.Caption) & " " & strVersion & " (" & strDateProg & ")"
 
     If StrComp(strRelease, "beta", vbTextCompare) = 0 Then
         lblVersion.Caption = lblVersion.Caption & " This version may be Unstable!!!"
         lblVersion.ForeColor = vbRed
     End If
 
-    lblVersionList.Caption = LocaliseString(strPathFile, strFormName, "lblVersionList", lblVersionList.Caption)
-    lblWait.Caption = LocaliseString(strPathFile, strFormName, "lblWait", lblWait.Caption)
+    lblVersionList.Caption = LocaliseString(StrPathFile, strFormName, "lblVersionList", lblVersionList.Caption)
+    lblWait.Caption = LocaliseString(StrPathFile, strFormName, "lblWait", lblWait.Caption)
 End Sub

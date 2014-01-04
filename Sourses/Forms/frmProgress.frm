@@ -23,7 +23,6 @@ Begin VB.Form frmProgress
       Width           =   7170
       _ExtentX        =   12647
       _ExtentY        =   873
-      Appearance      =   1
       Max             =   10000
    End
 End
@@ -40,9 +39,9 @@ Private mbRunProgress As Boolean
 Private Sub FontCharsetChange()
 
     ' Выставляем шрифт
-    Me.Font.Name = strOtherForm_FontName
-    Me.Font.Size = lngOtherForm_FontSize
-    Me.Font.Charset = lngDialog_Charset
+    Me.Font.Name = strFontOtherForm_Name
+    Me.Font.Size = lngFontOtherForm_Size
+    Me.Font.Charset = lngFont_Charset
 End Sub
 
 Private Sub Form_Activate()
@@ -70,7 +69,7 @@ Private Sub Form_Load()
     'Set TaskBar2 = New cITaskBarList3
         
     ' Локализациz приложения
-    If mbLanguageChange Then
+    If mbMultiLanguage Then
         Localise strPCLangCurrentPath
     Else
         ' Выставляем шрифт
@@ -79,22 +78,22 @@ Private Sub Form_Load()
 
     ProgressBar1.Height = Me.Height - VPadding(Me)
 
-    If strOsCurrentVersion > "5.2" Then
-        ProgressBar1.BorderStyle = ccFixedSingle
-    Else
-        ProgressBar1.BorderStyle = ccNone
-    End If
+'    If strOsCurrentVersion > "5.2" Then
+'        ProgressBar1 = CCBorderStyleSingle
+'    Else
+'        ProgressBar1.BorderStyle = CCBorderStyleNone
+'    End If
 End Sub
 
-Private Sub Form_Terminate()
-                    
-    'Set TaskBar2 = Nothing
-    If Forms.Count = 0 Then
-        UnloadApp
-    End If
-End Sub
+'Private Sub Form_Terminate()
+'
+'    'Set TaskBar2 = Nothing
+'    If Forms.Count = 0 Then
+'        UnloadApp
+'    End If
+'End Sub
 
-Private Sub Localise(strPathFile As String)
+Private Sub Localise(StrPathFile As String)
 
     Dim strFormName As String
 
@@ -102,7 +101,7 @@ Private Sub Localise(strPathFile As String)
     ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
     FontCharsetChange
     ' Название формы
-    Me.Caption = LocaliseString(strPathFile, strFormName, strFormName, Me.Caption)
+    Me.Caption = LocaliseString(StrPathFile, strFormName, strFormName, Me.Caption)
 End Sub
 
 Public Sub ChangeProgressBarStatus(ByRef lngProgressValue As Long, ByVal lngProgressValuePlus As Long)
@@ -113,9 +112,12 @@ Public Sub ChangeProgressBarStatus(ByRef lngProgressValue As Long, ByVal lngProg
         lngProgressValue = 10000
         Sleep 50
     End If
-    ProgressBar1.value = lngProgressValue
-    If frmMain.TaskBar.isAccessible Then
-        frmMain.TaskBar.SetProgressValue frmMain.hwnd, ProgressBar1.value, ProgressBar1.Max
-    End If
+    ProgressBar1.Value = lngProgressValue
+
+    With ProgressBar1
+        .Value = lngProgressValue
+        .SetTaskBarProgressValue .Value, .Max
+    End With
+    
     DoEvents
 End Sub

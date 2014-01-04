@@ -1,5 +1,4 @@
 VERSION 5.00
-Object = "{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0"; "richtx32.Ocx"
 Begin VB.Form frmDonate 
    Caption         =   "Поблагодарить автора"
    ClientHeight    =   6315
@@ -29,13 +28,6 @@ Begin VB.Form frmDonate
       Width           =   2055
       _ExtentX        =   3625
       _ExtentY        =   1508
-      Caption         =   "Закрыть"
-      ButtonStyle     =   3
-      PictureWidth    =   0
-      PictureHeight   =   0
-      ShowFocusRect   =   0   'False
-      XPColor_Pressed =   15116940
-      XPColor_Hover   =   4692449
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Arial Unicode MS"
          Size            =   8.25
@@ -45,6 +37,13 @@ Begin VB.Form frmDonate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Caption         =   "Закрыть"
+      ButtonStyle     =   3
+      PictureWidth    =   0
+      PictureHeight   =   0
+      ShowFocusRect   =   0   'False
+      XPColor_Pressed =   15116940
+      XPColor_Hover   =   4692449
    End
    Begin prjDIADBS.RichTextBox DonateRTF 
       Height          =   5175
@@ -54,12 +53,20 @@ Begin VB.Form frmDonate
       Width           =   9330
       _ExtentX        =   16457
       _ExtentY        =   9128
-      _Version        =   393217
-      Enabled         =   -1  'True
-      ReadOnly        =   -1  'True
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   8.25
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ScrollBars      =   2
       DisableNoScroll =   -1  'True
-      TextRTF         =   $"frmDonate.frx":000C
+      FileName        =   "frmDonate.frx":000C
+      Text            =   "frmDonate.frx":002C
+      TextRTF         =   "frmDonate.frx":004C
    End
    Begin prjDIADBS.ctlXpButton cmdSMSCoin 
       Height          =   855
@@ -69,16 +76,6 @@ Begin VB.Form frmDonate
       Width           =   2055
       _ExtentX        =   3625
       _ExtentY        =   1508
-      Caption         =   "Donate via SMSCoin"
-      PicturePosition =   2
-      ButtonStyle     =   3
-      Picture         =   "frmDonate.frx":0091
-      PictureWidth    =   48
-      PictureHeight   =   48
-      ShowFocusRect   =   0   'False
-      XPColor_Pressed =   15116940
-      XPColor_Hover   =   4692449
-      MaskColor       =   16645372
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Arial Unicode MS"
          Size            =   8.25
@@ -88,6 +85,16 @@ Begin VB.Form frmDonate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Caption         =   "Donate via SMSCoin"
+      PicturePosition =   2
+      ButtonStyle     =   3
+      Picture         =   "frmDonate.frx":01BC
+      PictureWidth    =   48
+      PictureHeight   =   48
+      ShowFocusRect   =   0   'False
+      XPColor_Pressed =   15116940
+      XPColor_Hover   =   4692449
+      MaskColor       =   16645372
    End
    Begin prjDIADBS.ctlXpButton cmdPayPal 
       Height          =   855
@@ -97,16 +104,6 @@ Begin VB.Form frmDonate
       Width           =   2175
       _ExtentX        =   3836
       _ExtentY        =   1508
-      Caption         =   "Donate via"
-      PicturePosition =   2
-      ButtonStyle     =   3
-      Picture         =   "frmDonate.frx":09FA
-      PictureWidth    =   73
-      PictureHeight   =   38
-      ShowFocusRect   =   0   'False
-      XPColor_Pressed =   15116940
-      XPColor_Hover   =   4692449
-      MaskColor       =   16777215
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Arial Unicode MS"
          Size            =   8.25
@@ -116,6 +113,16 @@ Begin VB.Form frmDonate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Caption         =   "Donate via"
+      PicturePosition =   2
+      ButtonStyle     =   3
+      Picture         =   "frmDonate.frx":0B25
+      PictureWidth    =   73
+      PictureHeight   =   38
+      ShowFocusRect   =   0   'False
+      XPColor_Pressed =   15116940
+      XPColor_Hover   =   4692449
+      MaskColor       =   16777215
    End
    Begin prjDIADBS.ctlXpButton cmdYandexMoney 
       Height          =   855
@@ -125,16 +132,6 @@ Begin VB.Form frmDonate
       Width           =   2175
       _ExtentX        =   3836
       _ExtentY        =   1508
-      Caption         =   "Donate via"
-      PicturePosition =   2
-      ButtonStyle     =   3
-      Picture         =   "frmDonate.frx":2AF4
-      PictureWidth    =   61
-      PictureHeight   =   32
-      ShowFocusRect   =   0   'False
-      XPColor_Pressed =   15116940
-      XPColor_Hover   =   4692449
-      MaskColor       =   16185078
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Arial Unicode MS"
          Size            =   8.25
@@ -144,6 +141,16 @@ Begin VB.Form frmDonate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      Caption         =   "Donate via"
+      PicturePosition =   2
+      ButtonStyle     =   3
+      Picture         =   "frmDonate.frx":2C1F
+      PictureWidth    =   61
+      PictureHeight   =   32
+      ShowFocusRect   =   0   'False
+      XPColor_Pressed =   15116940
+      XPColor_Hover   =   4692449
+      MaskColor       =   16185078
    End
 End
 Attribute VB_Name = "frmDonate"
@@ -153,12 +160,12 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Sub CheckEditDonate(strPathFile As String)
+Private Sub CheckEditDonate(StrPathFile As String)
 
     Dim strMD5TextRtf         As String
     Dim strDONATE_MD5RTF_temp As String
 
-    strMD5TextRtf = GetMD5(strPathFile)
+    strMD5TextRtf = GetMD5(StrPathFile)
     DebugMode "DonateInfo: " & strMD5TextRtf
 
     Select Case strPCLangCurrentID
@@ -228,10 +235,10 @@ End Sub
 Private Sub FontCharsetChange()
 
     ' Выставляем шрифт
-    Me.Font.Name = strOtherForm_FontName
-    Me.Font.Size = lngOtherForm_FontSize
-    Me.Font.Charset = lngDialog_Charset
-    SetButtonProperties cmdExit, , False
+    Me.Font.Name = strFontOtherForm_Name
+    Me.Font.Size = lngFontOtherForm_Size
+    Me.Font.Charset = lngFont_Charset
+    SetBtnFontProperties cmdExit
 End Sub
 
 Private Sub Form_Activate()
@@ -249,11 +256,11 @@ End Sub
 Private Sub Form_Load()
 
     'SetSmallIcon Me.hWnd
-    Call SetIcon(Me.hwnd, "FRMDONATE", False)
+    Call SetIcon(Me.hWnd, "FRMDONATE", False)
     
-    If Not mbIsDesignMode Then
-        Hook Me.hwnd, (Me.Width \ Screen.TwipsPerPixelX), (Me.Height \ Screen.TwipsPerPixelY)
-    End If
+'    If Not mbIsDesignMode Then
+'        Hook Me.hWnd, (Me.Width \ Screen.TwipsPerPixelX), (Me.Height \ Screen.TwipsPerPixelY)
+'    End If
 
     Me.Left = (lngRightWorkArea - lngLeftWorkArea) / 2 - Me.Width / 2
     Me.Top = (lngBottomWorkArea - lngTopWorkArea) / 2 - Me.Height / 2
@@ -261,23 +268,23 @@ Private Sub Form_Load()
     DonateRTF.Visible = False
 
     ' Локализациz приложения
-    If mbLanguageChange Then
+    If mbMultiLanguage Then
         Localise strPCLangCurrentPath
     Else
         ' Выставляем шрифт
         FontCharsetChange
     End If
 
-    Dim Result As Long
+    'Dim Result As Long
 
-    SetParaDirection DonateRTF.hwnd, PFE_RTLPAR
-    'Size
-    vbBO.cbSize = LenB(vbBO)
-    'Attribute to set
-    vbBO.wMask = BOM_DEFPARADIR
-    'Default direction
-    vbBO.wEffects = BOE_RTLDIR
-    Result = SendBOMessage(DonateRTF.hwnd, EM_SETBIDIOPTIONS, 0, vbBO)
+'    SetParaDirection DonateRTF.hWnd, PFE_RTLPAR
+'    'Size
+'    vbBO.cbSize = LenB(vbBO)
+'    'Attribute to set
+'    vbBO.wMask = BOM_DEFPARADIR
+'    'Default direction
+'    vbBO.wEffects = BOE_RTLDIR
+    'Result = SendBOMessage(DonateRTF.hWnd, EM_SETBIDIOPTIONS, 0, vbBO)
     'DonateRTF.RightMargin = Me.Width - 1000
 End Sub
 
@@ -304,12 +311,12 @@ Private Sub Form_Resize()
     End With
 End Sub
 
-Private Sub Form_Terminate()
-
-    If Forms.Count = 0 Then
-        UnloadApp
-    End If
-End Sub
+'Private Sub Form_Terminate()
+'
+'    If Forms.Count = 0 Then
+'        UnloadApp
+'    End If
+'End Sub
 
 Private Sub LoadDonate()
 
@@ -324,7 +331,7 @@ Private Sub LoadDonate()
             strPathDonate = PathCollect("Tools\DocsDBS\0409\donate.rtf")
     End Select
 
-    If PathFileExists(strPathDonate) = 1 Then
+    If PathExists(strPathDonate) Then
         DonateRTF.LoadFile strPathDonate
         'DonateRTF.Visible = True
     Else
@@ -336,7 +343,7 @@ Private Sub LoadDonate()
     CheckEditDonate strPathDonate
 End Sub
 
-Private Sub Localise(strPathFile As String)
+Private Sub Localise(StrPathFile As String)
 
     Dim strFormName As String
 
@@ -344,7 +351,7 @@ Private Sub Localise(strPathFile As String)
     ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
     FontCharsetChange
     ' Название формы
-    Me.Caption = LocaliseString(strPathFile, strFormName, strFormName, Me.Caption)
+    Me.Caption = LocaliseString(StrPathFile, strFormName, strFormName, Me.Caption)
     'Кнопки
-    cmdExit.Caption = LocaliseString(strPathFile, strFormName, "cmdExit", cmdExit.Caption)
+    cmdExit.Caption = LocaliseString(StrPathFile, strFormName, "cmdExit", cmdExit.Caption)
 End Sub

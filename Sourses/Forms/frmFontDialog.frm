@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form frmFontDialog 
    BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Locate Font and Color ..."
-   ClientHeight    =   2670
+   ClientHeight    =   2655
    ClientLeft      =   45
    ClientTop       =   405
    ClientWidth     =   4425
@@ -19,95 +19,36 @@ Begin VB.Form frmFontDialog
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   2670
+   ScaleHeight     =   2655
    ScaleWidth      =   4425
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
    Begin prjDIADBS.TextBoxW txtFont 
       Height          =   495
       Left            =   60
-      TabIndex        =   11
+      TabIndex        =   9
       Top             =   1260
       Width           =   4275
-      _ExtentX        =   7541
-      _ExtentY        =   873
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   18
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Text            =   "frmFontDialog.frx":0000
-      Alignment       =   2
-      CueBanner       =   "frmFontDialog.frx":0052
-   End
-   Begin prjDIADBS.OptionButtonW optControl 
-      Height          =   255
-      Index           =   3
-      Left            =   3240
-      TabIndex        =   8
-      Top             =   2760
-      Visible         =   0   'False
-      Width           =   975
-      _ExtentX        =   1720
-      _ExtentY        =   450
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Value           =   0   'False
-      Caption         =   "frmFontDialog.frx":0072
-   End
-   Begin prjDIADBS.OptionButtonW optControl 
-      Height          =   255
-      Index           =   1
-      Left            =   960
-      TabIndex        =   7
-      Top             =   2760
-      Visible         =   0   'False
-      Width           =   1035
-      _ExtentX        =   1826
-      _ExtentY        =   450
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Value           =   0   'False
-      Caption         =   "frmFontDialog.frx":009E
+      _extentx        =   7541
+      _extenty        =   873
+      font            =   "frmFontDialog.frx":0000
+      text            =   "frmFontDialog.frx":0028
+      alignment       =   2
+      cuebanner       =   "frmFontDialog.frx":007A
    End
    Begin prjDIADBS.OptionButtonW optControl 
       Height          =   255
       Index           =   0
-      Left            =   120
+      Left            =   3240
       TabIndex        =   6
       Top             =   2760
       Visible         =   0   'False
-      Width           =   795
-      _ExtentX        =   1402
-      _ExtentY        =   450
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Caption         =   "frmFontDialog.frx":00D2
+      Width           =   975
+      _extentx        =   1720
+      _extenty        =   450
+      font            =   "frmFontDialog.frx":009A
+      value           =   0   'False
+      caption         =   "frmFontDialog.frx":00C2
    End
    Begin prjDIADBS.SpinBox txtFontSize 
       Height          =   315
@@ -115,21 +56,13 @@ Begin VB.Form frmFontDialog
       TabIndex        =   4
       Top             =   420
       Width           =   675
-      _ExtentX        =   1191
-      _ExtentY        =   556
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Min             =   6
-      Max             =   20
-      Value           =   6
-      AllowOnlyNumbers=   -1  'True
+      _extentx        =   1191
+      _extenty        =   556
+      font            =   "frmFontDialog.frx":00EE
+      min             =   6
+      max             =   20
+      value           =   6
+      allowonlynumbers=   -1  'True
    End
    Begin prjDIADBS.ctlColorButton ctlFontColor 
       Height          =   330
@@ -137,9 +70,9 @@ Begin VB.Form frmFontDialog
       TabIndex        =   3
       Top             =   780
       Width           =   525
-      _ExtentX        =   926
-      _ExtentY        =   582
-      Icon            =   "frmFontDialog.frx":00FC
+      _extentx        =   926
+      _extenty        =   582
+      icon            =   "frmFontDialog.frx":0116
    End
    Begin prjDIADBS.CheckBoxW chkItalic 
       Height          =   315
@@ -147,19 +80,11 @@ Begin VB.Form frmFontDialog
       TabIndex        =   2
       Top             =   675
       Width           =   1575
-      _ExtentX        =   2778
-      _ExtentY        =   556
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      Caption         =   "frmFontDialog.frx":0256
-      Transparent     =   -1  'True
+      _extentx        =   2778
+      _extenty        =   556
+      font            =   "frmFontDialog.frx":0272
+      caption         =   "frmFontDialog.frx":029A
+      transparent     =   -1  'True
    End
    Begin prjDIADBS.CheckBoxW chkBold 
       Height          =   255
@@ -167,19 +92,11 @@ Begin VB.Form frmFontDialog
       TabIndex        =   1
       Top             =   420
       Width           =   1575
-      _ExtentX        =   2778
-      _ExtentY        =   450
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Caption         =   "frmFontDialog.frx":0282
-      Transparent     =   -1  'True
+      _extentx        =   2778
+      _extenty        =   450
+      font            =   "frmFontDialog.frx":02C6
+      caption         =   "frmFontDialog.frx":02EE
+      transparent     =   -1  'True
    End
    Begin prjDIADBS.ctlFontCombo ctlFontCombo 
       Height          =   315
@@ -187,20 +104,12 @@ Begin VB.Form frmFontDialog
       TabIndex        =   0
       Top             =   60
       Width           =   4335
-      _ExtentX        =   7646
-      _ExtentY        =   556
-      PreviewText     =   "ctlFontCombo1"
-      ComboFontSize   =   10
-      ButtonOverColor =   0
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   7646
+      _extenty        =   556
+      previewtext     =   "ctlFontCombo1"
+      combofontsize   =   10
+      buttonovercolor =   0
+      font            =   "frmFontDialog.frx":0316
    End
    Begin prjDIADBS.CheckBoxW chkUnderline 
       Height          =   315
@@ -208,135 +117,73 @@ Begin VB.Form frmFontDialog
       TabIndex        =   5
       Top             =   960
       Width           =   1575
-      _ExtentX        =   2778
-      _ExtentY        =   556
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   -1  'True
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Caption         =   "frmFontDialog.frx":02AA
-      Transparent     =   -1  'True
+      _extentx        =   2778
+      _extenty        =   556
+      font            =   "frmFontDialog.frx":033E
+      caption         =   "frmFontDialog.frx":0366
+      transparent     =   -1  'True
    End
    Begin prjDIADBS.ctlJCbutton cmdOK 
       Height          =   750
       Left            =   2280
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   1860
       Width           =   2100
-      _ExtentX        =   3704
-      _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ButtonStyle     =   13
-      BackColor       =   12244692
-      Caption         =   "Сохранить изменения и выйти"
-      PictureAlign    =   0
-      PicturePushOnHover=   -1  'True
-      PictureShadow   =   -1  'True
-      CaptionEffects  =   0
-      TooltipBackColor=   0
-      ColorScheme     =   3
+      _extentx        =   3704
+      _extenty        =   1323
+      font            =   "frmFontDialog.frx":0398
+      buttonstyle     =   13
+      backcolor       =   12244692
+      caption         =   "Сохранить изменения и выйти"
+      picturealign    =   0
+      picturepushonhover=   -1  'True
+      pictureshadow   =   -1  'True
+      captioneffects  =   0
+      tooltipbackcolor=   0
+      colorscheme     =   3
    End
    Begin prjDIADBS.ctlJCbutton cmdExit 
       Height          =   750
       Left            =   60
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   1860
       Width           =   2100
-      _ExtentX        =   3704
-      _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ButtonStyle     =   13
-      BackColor       =   12244692
-      Caption         =   "Выход без сохранения"
-      PictureAlign    =   0
-      PicturePushOnHover=   -1  'True
-      PictureShadow   =   -1  'True
-      CaptionEffects  =   0
-      TooltipBackColor=   0
-      ColorScheme     =   3
-   End
-   Begin prjDIADBS.OptionButtonW optControl 
-      Height          =   255
-      Index           =   2
-      Left            =   2100
-      TabIndex        =   14
-      Top             =   2760
-      Visible         =   0   'False
-      Width           =   1035
-      _ExtentX        =   1826
-      _ExtentY        =   450
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Value           =   0   'False
-      Caption         =   "frmFontDialog.frx":02DC
+      _extentx        =   3704
+      _extenty        =   1323
+      font            =   "frmFontDialog.frx":03C0
+      buttonstyle     =   13
+      backcolor       =   12244692
+      caption         =   "Выход без сохранения"
+      picturealign    =   0
+      picturepushonhover=   -1  'True
+      pictureshadow   =   -1  'True
+      captioneffects  =   0
+      tooltipbackcolor=   0
+      colorscheme     =   3
    End
    Begin prjDIADBS.LabelW lblFontSize 
       Height          =   375
       Left            =   60
-      TabIndex        =   12
+      TabIndex        =   10
       Top             =   420
       Width           =   1815
-      _ExtentX        =   3201
-      _ExtentY        =   661
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackStyle       =   0
-      Caption         =   "Размер шрифта"
+      _extentx        =   3201
+      _extenty        =   661
+      font            =   "frmFontDialog.frx":03E8
+      backstyle       =   0
+      caption         =   "Размер шрифта"
    End
    Begin prjDIADBS.LabelW lblFontColor 
       Height          =   375
       Left            =   60
-      TabIndex        =   13
+      TabIndex        =   11
       Top             =   840
       Width           =   1815
-      _ExtentX        =   3201
-      _ExtentY        =   661
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackStyle       =   0
-      Caption         =   "Цвет шрифта"
+      _extentx        =   3201
+      _extenty        =   661
+      font            =   "frmFontDialog.frx":0410
+      backstyle       =   0
+      caption         =   "Цвет шрифта"
    End
 End
 Attribute VB_Name = "frmFontDialog"
@@ -541,36 +388,8 @@ End Sub
 Private Sub SaveOptions()
 
     With txtFont
-
+            
         If optControl.Item(0).Value Then
-            strFontTab_Name = .Font.Name
-            miFontTab_Size = .Font.Size
-            mbFontTab_Underline = .Font.Underline
-            mbFontTab_Strikethru = .Font.Strikethrough
-            mbFontTab_Bold = .Font.Bold
-            mbFontTab_Italic = .Font.Italic
-            lngFontTab_Color = .ForeColor
-            
-        ElseIf optControl.Item(1).Value Then
-            strFontTab2_Name = .Font.Name
-            miFontTab2_Size = .Font.Size
-            mbFontTab2_Underline = .Font.Underline
-            mbFontTab2_Strikethru = .Font.Strikethrough
-            mbFontTab2_Bold = .Font.Bold
-            mbFontTab2_Italic = .Font.Italic
-            lngFontTab2_Color = .ForeColor
-            
-        ElseIf optControl.Item(2).Value Then
-            strFontTT_Name = .Font.Name
-            miFontTT_Size = .Font.Size
-            mbFontTT_Underline = .Font.Underline
-            mbFontTT_Strikethru = .Font.Strikethrough
-            mbFontTT_Bold = .Font.Bold
-            mbFontTT_Italic = .Font.Italic
-            lngFontTT_Color = .ForeColor
-            SetTTFontProperties frmOptions.TT
-            
-        ElseIf optControl.Item(3).Value Then
             strFontBtn_Name = .Font.Name
             miFontBtn_Size = .Font.Size
             mbFontBtn_Underline = .Font.Underline
@@ -579,8 +398,8 @@ Private Sub SaveOptions()
             mbFontBtn_Italic = .Font.Italic
             lngFontBtn_Color = .ForeColor
             SetBtnFontProperties frmOptions.cmdFutureButton
-            frmOptions.cmdFutureButton.TextColor = .ForeColor
-            frmOptions.cmdFutureButton.Refresh
+            frmOptions.cmdFutureButton.ForeColor = .ForeColor
+            'frmOptions.cmdFutureButton.Refresh
         End If
 
     End With

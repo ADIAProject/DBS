@@ -3,28 +3,6 @@ Option Explicit
 
 Public strControlSet As String
 
-Private Declare Function SetupGetInfDriverStoreLocationW _
-                Lib "setupapi.dll" (ByVal FileName As Long, _
-                                    AlternatePlatformInfo As PSP_ALTPLATFORM_INFO_V2, _
-                                    ByVal LocaleName As Long, _
-                                    ByVal ReturnBuffer As Long, _
-                                    ByVal ReturnBufferSize As Long, _
-                                    ByRef RequiredSize As Long) As Long
-
-Private Type PSP_ALTPLATFORM_INFO_V2
-    cbSize As Long
-    Platform As Long
-    MajorVersion As Long
-    MinorVersion As Long
-    ProcessorArchitecture As Integer
-    Reserved As Integer
-    flags As Integer
-    FirstValidatedMajorVersion As Long
-    FirstValidatedMinorVersion As Long
-End Type
-
-Private Const SP_ALTPLATFORM_FLAGS_VERSION_RANGE = &H1
-
 ' From MSDN
 'BOOL SetupGetInfDriverStoreLocation(
 '  __in       PCTSTR FileName,
@@ -34,13 +12,29 @@ Private Const SP_ALTPLATFORM_FLAGS_VERSION_RANGE = &H1
 '  __in       DWORD ReturnBufferSize,
 '  __out_opt  PDWORD RequiredSize
 ');
+Private Declare Function SetupGetInfDriverStoreLocationW Lib "setupapi.dll" (ByVal FileName As Long, AlternatePlatformInfo As PSP_ALTPLATFORM_INFO_V2, ByVal LocaleName As Long, ByVal ReturnBuffer As Long, ByVal ReturnBufferSize As Long, ByRef RequiredSize As Long) As Long
+
+Private Type PSP_ALTPLATFORM_INFO_V2
+    cbSize As Long
+    Platform As Long
+    MajorVersion As Long
+    MinorVersion As Long
+    ProcessorArchitecture As Integer
+    Reserved As Integer
+    Flags As Integer
+    FirstValidatedMajorVersion As Long
+    FirstValidatedMinorVersion As Long
+End Type
+
+Private Const SP_ALTPLATFORM_FLAGS_VERSION_RANGE = &H1
+
 Public Function GetInfDriverStorePath(sInfPath As String) As String
 
     Dim sBuffer     As String
     Dim as12        As PSP_ALTPLATFORM_INFO_V2
     Dim ret         As Long
     Dim lngSizeBuff As Long
-    Dim OSVI        As OSVERSIONINFO
+    Dim OSVI        As OSVERSIONINFOEX
     Dim SI          As SYSTEM_INFO
 
     If APIFunctionPresent("SetupGetInfDriverStoreLocationW", "setupapi.dll") Then
@@ -54,7 +48,7 @@ Public Function GetInfDriverStorePath(sInfPath As String) As String
             .FirstValidatedMinorVersion = 0
             .MajorVersion = OSVI.dwMajorVersion
             .MinorVersion = OSVI.dwMinorVersion
-            .Platform = OSVI.dwPlatformId
+            .Platform = OSVI.dwPlatformID
 
             If APIFunctionPresent("GetNativeSystemInfo", "kernel32.dll") Then
                 GetNativeSystemInfo SI
@@ -64,7 +58,7 @@ Public Function GetInfDriverStorePath(sInfPath As String) As String
             End If
 
             .Reserved = 0
-            .flags = SP_ALTPLATFORM_FLAGS_VERSION_RANGE
+            .Flags = SP_ALTPLATFORM_FLAGS_VERSION_RANGE
         End With
 
         DebugMode "******GetInfDriverStorePath: " & sInfPath
@@ -74,7 +68,7 @@ Public Function GetInfDriverStorePath(sInfPath As String) As String
         GetInfDriverStorePath = TrimNull(sBuffer)
 
         If ret = 0 Then
-            DebugMode "******GetInfDriverStorePath: Err №" & err.LastDllError & " - " & ApiErrorText(err.LastDllError)
+            DebugMode "******GetInfDriverStorePath: Err №" & Err.LastDllError & " - " & ApiErrorText(Err.LastDllError)
         Else
             DebugMode "******GetInfDriverStorePath: ResultValue - " & GetInfDriverStorePath
         End If
@@ -91,8 +85,8 @@ Public Sub ReadDrivers()
     Dim U()                 As String
     Dim n                   As Long
     Dim i                   As Long
-    Dim J                   As Long
-    Dim h                   As Long
+    Dim j                   As Long
+    Dim H                   As Long
     Dim miMaxCountArr       As Long
     Dim miPbInterval        As Long
     Dim miPbNext            As Long
@@ -108,7 +102,7 @@ Public Sub ReadDrivers()
     Dim strInfSectionExt    As String
     Dim strMatchingDeviceId As String
     Dim regNameClass        As String
-    Dim r                   As Boolean
+    Dim R                   As Boolean
     Dim ss                  As String
     Dim StringHash          As Scripting.Dictionary
 
@@ -125,9 +119,9 @@ Public Sub ReadDrivers()
     DoEvents
     miPbNext = 100
     ' Изменяем прогресс
-    If frmMain.TaskBar.isAccessible Then _
-        frmMain.TaskBar.SetProgressState frmMain.hwnd, TBPF_NORMAL
+    frmProgress.ProgressBar1.SetTaskBarProgressState PrbTaskBarStateInProgress
     frmProgress.ChangeProgressBarStatus miPbNext, 100
+    
     '# list all class of drivers installed
     DebugMode "***ReadDrivers: ListKey - HKEY_LOCAL_MACHINE\" & strControlSet & "\Control\Class"
     Z = ListKey(HKEY_LOCAL_MACHINE, strControlSet & "\Control\Class", False)
@@ -156,7 +150,7 @@ Public Sub ReadDrivers()
 
         lngUBoundU = UBound(U)
 
-        For J = 0 To lngUBoundU
+        For j = 0 To lngUBoundU
 
             ' Если записей в массиве становится больше чем объявлено, то увеличиваем размерность массива
             If n = miMaxCountArr Then
@@ -164,10 +158,10 @@ Public Sub ReadDrivers()
                 ReDim Preserve CH(miMaxCountArr)
             End If
 
-            If U(J) = vbNullString Then
+            If LenB(U(j)) = 0 Then
                 CH(n) = Z(i)
             Else
-                CH(n) = Z(i) & vbBackslash & U(J)
+                CH(n) = Z(i) & vbBackslash & U(j)
             End If
 
             DebugMode "******ReadDrivers: ListKey Result - " & CH(n), 2
@@ -185,7 +179,7 @@ Public Sub ReadDrivers()
 
     DebugMode "***ReadDrivers-Start: ListKey Result- " & UBound(CH)
     '# get all info of each instaled driver #
-    h = 0
+    H = 0
     miMaxCountArr = 200
     ' максимальное кол-во элементов в массиве
     ReDim arrHwidsLocal(10, miMaxCountArr) As String
@@ -206,7 +200,7 @@ Public Sub ReadDrivers()
     For i = 0 To lngUBoundCH
 
         ' Если записей в массиве становится больше чем объявлено, то увеличиваем размерность массива
-        If h = miMaxCountArr Then
+        If H = miMaxCountArr Then
             miMaxCountArr = miMaxCountArr + miMaxCountArr
             ReDim Preserve arrHwidsLocal(10, miMaxCountArr)
         End If
@@ -222,7 +216,7 @@ Public Sub ReadDrivers()
 
             ' если необходимо конвертировать дату в формат dd/mm/yyyy
             If LenB(strDriverDate) > 0 Then
-                strDriverDate = ConvertDate2Rus(strDriverDate)
+                ConvertDate2Rus strDriverDate
             End If
 
             strDriverVersion = GetKeyValue(HKEY_LOCAL_MACHINE, regNameClass, "DriverVersion", True)
@@ -235,31 +229,31 @@ Public Sub ReadDrivers()
             strMatchingDeviceId = GetKeyValue(HKEY_LOCAL_MACHINE, regNameClass, "MatchingDeviceId", True)
             ' Если нет повторов, то заносим данные в массив
             ss = strDriverDesc & strInfPath & strInfSection & strInfSectionExt & strMatchingDeviceId
-            r = StringHash.Exists(ss)
+            R = StringHash.Exists(ss)
 
-            If Not r Then
+            If Not R Then
                 StringHash.Item(ss) = "+"
                 'Заполняем массив даными
-                arrHwidsLocal(0, h) = strDriverDesc
-                arrHwidsLocal(1, h) = strDriverDate
-                arrHwidsLocal(2, h) = strDriverVersion
-                arrHwidsLocal(3, h) = strProviderName
+                arrHwidsLocal(0, H) = strDriverDesc
+                arrHwidsLocal(1, H) = strDriverDate
+                arrHwidsLocal(2, H) = strDriverVersion
+                arrHwidsLocal(3, H) = strProviderName
                 
-                If strClassName = vbNullString Then
-                    arrHwidsLocal(4, h) = strClass
+                If LenB(strClassName) = 0 Then
+                    arrHwidsLocal(4, H) = strClass
                 Else
-                    arrHwidsLocal(4, h) = strClassName
+                    arrHwidsLocal(4, H) = strClassName
                 End If
 
-                arrHwidsLocal(5, h) = strClass
-                arrHwidsLocal(6, h) = strInfPath
-                arrHwidsLocal(7, h) = strInfSection & strInfSectionExt
-                arrHwidsLocal(8, h) = strMatchingDeviceId
-                arrHwidsLocal(9, h) = strClassID
+                arrHwidsLocal(5, H) = strClass
+                arrHwidsLocal(6, H) = strInfPath
+                arrHwidsLocal(7, H) = strInfSection & strInfSectionExt
+                arrHwidsLocal(8, H) = strMatchingDeviceId
+                arrHwidsLocal(9, H) = strClassID
 
                 'Вывод инфо в лог
                 If mbDebugEnable Then
-                    DebugMode "RowNum: " & h & " From: " & regNameClass
+                    DebugMode "RowNum: " & H & " From: " & regNameClass
                     DebugMode "ClassID: " & strClassID
                     DebugMode "DriverDesc: " & strDriverDesc
                     DebugMode "ClassName: " & strClass & " : " & strClassName
@@ -271,25 +265,23 @@ Public Sub ReadDrivers()
                     DebugMode "*****************************************"
                 End If
 
-                h = h + 1
+                H = H + 1
             End If
         End If
 
         ' Изменяем прогресс
         frmProgress.ChangeProgressBarStatus miPbNext, miPbInterval
     Next
+    
     ' Финишируем прогресс
-    'miPbNext = 10000
-    'ChangeProgressBarStatus frmProgress,frmProgress.ctlProgressBar1, miPbNext, 0
-    'frmProgress.ctlProgressBar1.value = 10000
     frmProgress.ChangeProgressBarStatus 10000, 0
-    'If frmProgress.TaskBar2.isAccessible Then _
-        'TaskBar2.SetProgressValue hwnd, frmProgress.ctlProgressBar1.value, frmProgress.ctlProgressBar1.Max
+    frmProgress.ProgressBar1.SetTaskBarProgressState PrbTaskBarStateNone
+    
     DoEvents
-
+    
     ' Переобъявляем массив на реальное кол-во записей
-    If h > 0 Then
-        ReDim Preserve arrHwidsLocal(10, h - 1)
+    If H > 0 Then
+        ReDim Preserve arrHwidsLocal(10, H - 1)
     Else
         ReDim Preserve arrHwidsLocal(10, 0)
     End If
@@ -297,3 +289,44 @@ Public Sub ReadDrivers()
     DebugMode "*****************************************"
     DebugMode "ReadDrivers-Finish"
 End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function CollectCmdString
+'! Description (Описание)  :   [Создание коммандной строки запуска программы DPInst]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Function CollectCmdString() As String
+
+    Dim strCmdStringDPInstTemp As String
+
+    If mbDpInstLegacyMode Then
+        strCmdStringDPInstTemp = strCmdStringDPInstTemp & "/LM "
+    End If
+
+    If mbDpInstPromptIfDriverIsNotBetter Then
+        strCmdStringDPInstTemp = strCmdStringDPInstTemp & "/P "
+    End If
+
+    If mbDpInstForceIfDriverIsNotBetter Then
+        strCmdStringDPInstTemp = strCmdStringDPInstTemp & "/F "
+    End If
+
+    If mbDpInstSuppressAddRemovePrograms Then
+        strCmdStringDPInstTemp = strCmdStringDPInstTemp & "/SA "
+    End If
+
+    If mbDpInstSuppressWizard Then
+        strCmdStringDPInstTemp = strCmdStringDPInstTemp & "/SW "
+    End If
+
+    If mbDpInstQuietInstall Then
+        strCmdStringDPInstTemp = strCmdStringDPInstTemp & "/Q "
+    End If
+
+    If mbDpInstScanHardware Then
+        strCmdStringDPInstTemp = strCmdStringDPInstTemp & "/SH "
+    End If
+
+    ' Результирующая строка
+    CollectCmdString = strCmdStringDPInstTemp
+End Function

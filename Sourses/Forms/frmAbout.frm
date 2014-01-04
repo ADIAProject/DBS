@@ -30,14 +30,22 @@ Begin VB.Form frmAbout
       TabIndex        =   0
       Top             =   120
       Width           =   2100
-      _extentx        =   3704
-      _extenty        =   3519
-      font            =   "frmAbout.frx":000C
-      caption         =   ""
-      picturenormal   =   "frmAbout.frx":003C
-      pictureshadow   =   -1  'True
-      captioneffects  =   0
-      tooltipbackcolor=   0
+      _ExtentX        =   3704
+      _ExtentY        =   3519
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   8.25
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Caption         =   ""
+      PictureNormal   =   "frmAbout.frx":000C
+      PictureShadow   =   -1  'True
+      CaptionEffects  =   0
+      TooltipBackColor=   0
    End
    Begin prjDIADBS.ctlXpButton cmdHomePage 
       Height          =   735
@@ -45,19 +53,27 @@ Begin VB.Form frmAbout
       TabIndex        =   2
       Top             =   5505
       Width           =   1800
-      _extentx        =   3175
-      _extenty        =   1296
-      font            =   "frmAbout.frx":1008E
-      caption         =   "HomePage"
-      buttonstyle     =   3
-      picturewidth    =   48
-      pictureheight   =   48
-      xpcolor_pressed =   15116940
-      xpcolor_hover   =   4692449
-      showfocusrect   =   0   'False
-      textcolor       =   0
-      menucaption0    =   "#"
-      menuexist       =   -1  'True
+      _ExtentX        =   3175
+      _ExtentY        =   1296
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   8.25
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Caption         =   "HomePage"
+      ButtonStyle     =   3
+      PictureWidth    =   48
+      PictureHeight   =   48
+      ShowFocusRect   =   0   'False
+      XPColor_Pressed =   15116940
+      XPColor_Hover   =   4692449
+      TextColor       =   0
+      MenuCaption0    =   "#"
+      MenuExist       =   -1  'True
    End
    Begin prjDIADBS.ctlXpButton cmdOsZoneNet 
       Height          =   735
@@ -65,13 +81,21 @@ Begin VB.Form frmAbout
       TabIndex        =   3
       Top             =   5505
       Width           =   1920
-      _extentx        =   3387
-      _extenty        =   1296
-      font            =   "frmAbout.frx":100BE
-      caption         =   "Обсуждение на OsZone.Net"
-      buttonstyle     =   3
-      xpcolor_pressed =   15116940
-      xpcolor_hover   =   4692449
+      _ExtentX        =   3387
+      _ExtentY        =   1296
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   8.25
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Caption         =   "Обсуждение на OsZone.Net"
+      ButtonStyle     =   3
+      XPColor_Pressed =   15116940
+      XPColor_Hover   =   4692449
    End
    Begin prjDIADBS.ctlXpButton cmdCheckUpd 
       Height          =   735
@@ -79,18 +103,26 @@ Begin VB.Form frmAbout
       TabIndex        =   4
       Top             =   5505
       Width           =   1920
-      _extentx        =   3387
-      _extenty        =   1296
-      font            =   "frmAbout.frx":100EE
-      caption         =   "Проверить обновление..."
-      buttonstyle     =   3
-      picturewidth    =   48
-      pictureheight   =   48
-      xpcolor_pressed =   15116940
-      xpcolor_hover   =   4692449
-      showfocusrect   =   0   'False
-      textcolor       =   0
-      menucaption0    =   "#"
+      _ExtentX        =   3387
+      _ExtentY        =   1296
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   8.25
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Caption         =   "Проверить обновление..."
+      ButtonStyle     =   3
+      PictureWidth    =   48
+      PictureHeight   =   48
+      ShowFocusRect   =   0   'False
+      XPColor_Pressed =   15116940
+      XPColor_Hover   =   4692449
+      TextColor       =   0
+      MenuCaption0    =   "#"
    End
    Begin prjDIADBS.ctlXpButton cmdDonate 
       Height          =   735
@@ -98,18 +130,26 @@ Begin VB.Form frmAbout
       TabIndex        =   5
       Top             =   5505
       Width           =   1920
-      _extentx        =   3387
-      _extenty        =   1296
-      font            =   "frmAbout.frx":1011E
-      caption         =   "Поддержать проект"
-      buttonstyle     =   3
-      picturewidth    =   51
-      pictureheight   =   28
-      xpcolor_pressed =   15116940
-      xpcolor_hover   =   4692449
-      showfocusrect   =   0   'False
-      textcolor       =   0
-      menucaption0    =   "#"
+      _ExtentX        =   3387
+      _ExtentY        =   1296
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   8.25
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Caption         =   "Поддержать проект"
+      ButtonStyle     =   3
+      PictureWidth    =   51
+      PictureHeight   =   28
+      ShowFocusRect   =   0   'False
+      XPColor_Pressed =   15116940
+      XPColor_Hover   =   4692449
+      TextColor       =   0
+      MenuCaption0    =   "#"
    End
    Begin prjDIADBS.ctlXpButton cmdExit 
       Height          =   735
@@ -117,86 +157,141 @@ Begin VB.Form frmAbout
       TabIndex        =   1
       Top             =   5505
       Width           =   1800
-      _extentx        =   3175
-      _extenty        =   1296
-      font            =   "frmAbout.frx":1014E
-      caption         =   "Закрыть"
-      buttonstyle     =   3
-      picturewidth    =   0
-      pictureheight   =   0
-      xpcolor_pressed =   15116940
-      xpcolor_hover   =   4692449
-      showfocusrect   =   0   'False
+      _ExtentX        =   3175
+      _ExtentY        =   1296
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   8.25
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Caption         =   "Закрыть"
+      ButtonStyle     =   3
+      PictureWidth    =   0
+      PictureHeight   =   0
+      ShowFocusRect   =   0   'False
+      XPColor_Pressed =   15116940
+      XPColor_Hover   =   4692449
    End
    Begin prjDIADBS.LabelW lblTranslator 
       Height          =   315
       Left            =   105
+      TabIndex        =   6
       Top             =   2820
       Width           =   9855
-      _extentx        =   17383
-      _extenty        =   556
-      font            =   "frmAbout.frx":1017E
-      caption         =   "Перевод программы: Головеев Роман"
-      shadowstyle     =   0
+      _ExtentX        =   17383
+      _ExtentY        =   556
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   9.75
+         Charset         =   204
+         Weight          =   400
+         Underline       =   -1  'True
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Caption         =   "Перевод программы: Головеев Роман"
    End
    Begin prjDIADBS.LabelW lblThanks 
       Height          =   1935
       Left            =   105
+      TabIndex        =   7
       Top             =   3120
       Width           =   9855
-      _extentx        =   17383
-      _extenty        =   3413
-      caption         =   "Благодарности:"
-      wordwrap        =   -1  'True
-      shadowstyle     =   0
+      _ExtentX        =   17383
+      _ExtentY        =   3413
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   8.25
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Caption         =   "Благодарности:"
    End
    Begin prjDIADBS.LabelW lblAuthor 
       Height          =   375
       Left            =   105
+      TabIndex        =   8
       Top             =   2520
       Width           =   9735
-      _extentx        =   17171
-      _extenty        =   661
-      font            =   "frmAbout.frx":101AE
-      caption         =   "Автор программы: Головеев Роман"
-      shadowstyle     =   0
+      _ExtentX        =   17171
+      _ExtentY        =   661
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   9.75
+         Charset         =   204
+         Weight          =   400
+         Underline       =   -1  'True
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Caption         =   "Автор программы: Головеев Роман"
    End
    Begin prjDIADBS.LabelW lblInfo 
       Height          =   1095
       Left            =   2280
+      TabIndex        =   9
       Top             =   1440
       Width           =   7695
-      _extentx        =   13573
-      _extenty        =   1931
-      font            =   "frmAbout.frx":101DE
-      caption         =   "Описание программы"
-      wordwrap        =   -1  'True
-      shadowstyle     =   0
+      _ExtentX        =   13573
+      _ExtentY        =   1931
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   9
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Caption         =   "Описание программы"
    End
    Begin prjDIADBS.LabelW lblNameProg 
       Height          =   1395
       Left            =   2280
+      TabIndex        =   10
       Top             =   45
       Width           =   7680
-      _extentx        =   13547
-      _extenty        =   2461
-      font            =   "frmAbout.frx":1020E
-      caption         =   "Label1"
-      shadowstyle     =   0
-      alignment       =   2
+      _ExtentX        =   13547
+      _ExtentY        =   2461
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   15.75
+         Charset         =   204
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Alignment       =   2
+      Caption         =   "Label1"
    End
    Begin prjDIADBS.LabelW lblMailTo 
       Height          =   330
       Left            =   105
+      TabIndex        =   11
       Top             =   5160
       Width           =   3750
-      _extentx        =   6615
-      _extenty        =   582
-      font            =   "frmAbout.frx":1023E
-      caption         =   "Написать E-mail автору программы"
-      autosize        =   -1  'True
-      forecolor       =   12582912
-      shadowstyle     =   0
+      _ExtentX        =   6615
+      _ExtentY        =   582
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Arial Unicode MS"
+         Size            =   9.75
+         Charset         =   204
+         Weight          =   700
+         Underline       =   -1  'True
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   12582912
+      Caption         =   "Написать E-mail автору программы"
+      AutoSize        =   -1  'True
    End
 End
 Attribute VB_Name = "frmAbout"
@@ -234,7 +329,7 @@ Private Sub cmdHomePage_Click()
     Dim cmdString   As String
     Dim nRetShellEx As Boolean
 
-    cmdString = kavichki & "http://www.adia-project.net" & kavichki
+    cmdString = Kavichki & "http://www.adia-project.net" & Kavichki
     DebugMode "cmdString: " & cmdString
     nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
     DebugMode "cmdString: " & nRetShellEx
@@ -248,10 +343,10 @@ Private Sub cmdHomePage_ClickMenu(mnuIndex As Integer)
     Select Case mnuIndex
 
         Case 0
-            cmdString = kavichki & "http://www.adia-project.net" & kavichki
+            cmdString = Kavichki & "http://www.adia-project.net" & Kavichki
 
         Case 2
-            cmdString = kavichki & "http://www.adia-project.net/forum/index.php" & kavichki
+            cmdString = Kavichki & "http://www.adia-project.net/forum/index.php" & Kavichki
     End Select
 
     DebugMode "cmdString: " & cmdString
@@ -264,7 +359,7 @@ Private Sub cmdOsZoneNet_Click()
     Dim cmdString   As String
     Dim nRetShellEx As Boolean
 
-    cmdString = kavichki & "http://forum.oszone.net/thread-190814.html" & kavichki
+    cmdString = Kavichki & "http://forum.oszone.net/thread-190814.html" & Kavichki
     DebugMode "cmdString: " & cmdString
     nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
     DebugMode "cmdString: " & nRetShellEx
@@ -275,7 +370,7 @@ Private Sub ctlAquaButton1_Click()
     Dim cmdString   As String
     Dim nRetShellEx As Boolean
 
-    cmdString = kavichki & "http://www.adia-project.net" & kavichki
+    cmdString = Kavichki & "http://www.adia-project.net" & Kavichki
     DebugMode "cmdString: " & cmdString
     nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
     DebugMode "cmdString: " & nRetShellEx
@@ -284,14 +379,14 @@ End Sub
 Private Sub FontCharsetChange()
 
     ' Выставляем шрифт
-    Me.Font.Name = strOtherForm_FontName
-    Me.Font.Size = lngOtherForm_FontSize
-    Me.Font.Charset = lngDialog_Charset
-    SetButtonProperties cmdDonate, , False
-    SetButtonProperties cmdCheckUpd, , False
-    SetButtonProperties cmdHomePage, , False
-    SetButtonProperties cmdOsZoneNet, , False
-    SetButtonProperties cmdExit, , False
+    Me.Font.Name = strFontOtherForm_Name
+    Me.Font.Size = lngFontOtherForm_Size
+    Me.Font.Charset = lngFont_Charset
+    SetBtnFontProperties cmdDonate
+    SetBtnFontProperties cmdCheckUpd
+    SetBtnFontProperties cmdHomePage
+    SetBtnFontProperties cmdOsZoneNet
+    SetBtnFontProperties cmdExit
 End Sub
 
 '! -----------------------------------------------------------
@@ -316,7 +411,7 @@ Private Sub Form_Load()
     'SetSmallIcon Me.hWnd
     
     ' This icon is the form icon
-    Call SetIcon(Me.hwnd, "FRMABOUT", False)
+    Call SetIcon(Me.hWnd, "FRMABOUT", False)
     
     Me.Left = (lngRightWorkArea - lngLeftWorkArea) / 2 - Me.Width / 2
     Me.Top = (lngBottomWorkArea - lngTopWorkArea) / 2 - Me.Height / 2
@@ -349,7 +444,7 @@ Private Sub Form_Load()
     End With
 
     ' Локализациz приложения
-    If mbLanguageChange Then
+    If mbMultiLanguage Then
         Localise strPCLangCurrentPath
     Else
         ' Выставляем шрифт
@@ -357,12 +452,12 @@ Private Sub Form_Load()
     End If
 End Sub
 
-Private Sub Form_Terminate()
-
-    If Forms.Count = 0 Then
-        UnloadApp
-    End If
-End Sub
+'Private Sub Form_Terminate()
+'
+''    If Forms.Count = 0 Then
+''        UnloadApp
+''    End If
+'End Sub
 
 '! -----------------------------------------------------------
 '!  Функция     :  lblMailTo_MouseDown
@@ -372,7 +467,7 @@ End Sub
 Private Sub lblMailTo_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     If Button = vbLeftButton Then
-        ShellExecute Me.hwnd, vbNullString, "mailto:Romeo91<roman-novosib@ngs.ru>?Subject=My%20wish%20for%20update%20program%20(Drivers%20BackUp%20Solution)", vbNullString, "c:\", 1
+        ShellExecute Me.hWnd, vbNullString, "mailto:Romeo91<roman-novosib@ngs.ru>?Subject=My%20wish%20for%20update%20program%20(Drivers%20BackUp%20Solution)", vbNullString, "c:\", 1
     End If
 End Sub
 
@@ -381,9 +476,9 @@ Private Sub lblTranslator_MouseDown(Button As Integer, Shift As Integer, X As Si
     Dim cmdString   As String
     Dim nRetShellEx As Boolean
 
-    If strTranslatorUrl <> vbNullString Then
+    If LenB(strTranslatorUrl) Then
         If Button = vbLeftButton Then
-            cmdString = kavichki & strTranslatorUrl & kavichki
+            cmdString = Kavichki & strTranslatorUrl & Kavichki
             DebugMode "cmdString: " & cmdString
             nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
             DebugMode "cmdString: " & nRetShellEx
@@ -402,7 +497,7 @@ Private Sub LoadTranslator()
             lblTranslator.Caption = "Translation of the program: " & strTranslatorName
     End Select
 
-    If strTranslatorUrl <> vbNullString Then
+    If LenB(strTranslatorUrl) Then
 
         With lblTranslator
             '.MouseIcon = lblMailTo.MouseIcon
@@ -410,11 +505,10 @@ Private Sub LoadTranslator()
             .ForeColor = lblMailTo.ForeColor
         End With
 
-        'lblTranslator
     End If
 End Sub
 
-Private Sub Localise(strPathFile As String)
+Private Sub Localise(StrPathFile As String)
 
     Dim strFormName As String
 
@@ -422,18 +516,18 @@ Private Sub Localise(strPathFile As String)
     ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
     FontCharsetChange
     ' Название формы
-    Me.Caption = LocaliseString(strPathFile, strFormName, strFormName, Me.Caption)
+    Me.Caption = LocaliseString(StrPathFile, strFormName, strFormName, Me.Caption)
     'Кнопки
-    cmdDonate.Caption = LocaliseString(strPathFile, strFormName, "cmdDonate", cmdDonate.Caption)
-    cmdCheckUpd.Caption = LocaliseString(strPathFile, strFormName, "cmdCheckUpd", cmdCheckUpd.Caption)
-    cmdHomePage.Caption = LocaliseString(strPathFile, strFormName, "cmdHomePage", cmdHomePage.Caption)
-    cmdOsZoneNet.Caption = LocaliseString(strPathFile, strFormName, "cmdOsZoneNet", cmdOsZoneNet.Caption)
-    cmdExit.Caption = LocaliseString(strPathFile, strFormName, "cmdExit", cmdExit.Caption)
+    cmdDonate.Caption = LocaliseString(StrPathFile, strFormName, "cmdDonate", cmdDonate.Caption)
+    cmdCheckUpd.Caption = LocaliseString(StrPathFile, strFormName, "cmdCheckUpd", cmdCheckUpd.Caption)
+    cmdHomePage.Caption = LocaliseString(StrPathFile, strFormName, "cmdHomePage", cmdHomePage.Caption)
+    cmdOsZoneNet.Caption = LocaliseString(StrPathFile, strFormName, "cmdOsZoneNet", cmdOsZoneNet.Caption)
+    cmdExit.Caption = LocaliseString(StrPathFile, strFormName, "cmdExit", cmdExit.Caption)
     ' Лейблы
-    lblMailTo.Caption = LocaliseString(strPathFile, strFormName, "lblMailTo", lblMailTo.Caption)
-    lblInfo.Caption = LocaliseString(strPathFile, strFormName, "lblInfo", lblInfo.Caption)
+    lblMailTo.Caption = LocaliseString(StrPathFile, strFormName, "lblMailTo", lblMailTo.Caption)
+    lblInfo.Caption = LocaliseString(StrPathFile, strFormName, "lblInfo", lblInfo.Caption)
     ' Перевод программы
-    strTranslatorName = LocaliseString(strPathFile, "Lang", "TranslatorName", lblTranslator.Caption)
-    strTranslatorUrl = LocaliseString(strPathFile, "Lang", "TranslatorUrl", vbNullString)
+    strTranslatorName = LocaliseString(StrPathFile, "Lang", "TranslatorName", lblTranslator.Caption)
+    strTranslatorUrl = LocaliseString(StrPathFile, "Lang", "TranslatorUrl", vbNullString)
     LoadTranslator
 End Sub

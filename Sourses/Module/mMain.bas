@@ -2,7 +2,7 @@ Attribute VB_Name = "mMain"
 Option Explicit
 
 ' Основные параметры программы
-Public Const strDateProgram         As String = "30/12/2013"
+Public Const strDateProgram         As String = "03/01/2014"
 
 ' Основные переменные проекта (название, версия и т.д)
 Public strProductName               As String
@@ -42,14 +42,14 @@ Public strSysDirDRVStore                    As String
 Public strSysDrive                          As String
 Public strWinDirHelp                        As String
 Public strInfDir                            As String
-Public mbLogNotOnCDRoom                  As Boolean
-Public mbHideOtherProcess                As Boolean
-Public mbDelTmpAfterClose                As Boolean
-Public mbUpdateCheck                     As Boolean
-Public mbUpdateCheckBeta                 As Boolean
-Public mbUpdateToolTip                   As Boolean
-Public mbIsDesignMode                    As Boolean
-Public mbIsDriveCDRoom                   As Boolean
+Public mbLogNotOnCDRoom                     As Boolean
+Public mbHideOtherProcess                   As Boolean
+Public mbDelTmpAfterClose                   As Boolean
+Public mbUpdateCheck                        As Boolean
+Public mbUpdateCheckBeta                    As Boolean
+Public mbUpdateToolTip                      As Boolean
+Public mbIsDesignMode                       As Boolean
+Public mbIsDriveCDRoom                      As Boolean
 Public strArh7zExePATH                      As String
 Public strArh7zParam1                       As String
 Public strArh7zParam2                       As String
@@ -61,14 +61,14 @@ Public strArh7zSFXConfigPathEn              As String
 Public mbAddInList                       As Boolean
 
 'номер последнего элемента в списке ОС
-Public LastIdOS                             As Long
+Public LastIdOS                          As Long
 
 'Маркер перезапуска программы
 Public mbRestartProgram                  As Boolean
 Public mbStartMaximazed                  As Boolean
-Public strDPInstExePath                     As String
-Public strDPInstExePath64                   As String
-Public strDPInstExePath86                   As String
+Public strDPInstExePath                  As String
+Public strDPInstExePath64                As String
+Public strDPInstExePath86                As String
 
 ' Параметры DPinst
 Public mbDpInstLegacyMode                As Boolean
@@ -78,25 +78,17 @@ Public mbDpInstSuppressAddRemovePrograms As Boolean
 Public mbDpInstSuppressWizard            As Boolean
 Public mbDpInstQuietInstall              As Boolean
 Public mbDpInstScanHardware              As Boolean
-Public mbCalculateHashMode               As Boolean
-Public strImageMainName                     As String
+
+Public strImageMainName                  As String
 Public mbSilentDLL                       As Boolean
 
 ' Расширенное меню
-'Public mbExMenu                              As Boolean
-Public strImageMenuName                     As String
+'Public mbExMenu                         As Boolean
+Public strImageMenuName                  As String
 
 'Прочие параметры программы
 Public mbIsWin64                         As Boolean
 Public mbFirstStart                      As Boolean
-
-' Шрифт основной формы и шрифта подсказок
-Public strMainForm_FontName                 As String
-Public lngMainForm_FontSize                 As Long
-
-' Шрифт других форм
-Public strOtherForm_FontName                As String
-Public lngOtherForm_FontSize                As Long
 
 ' Запуск с коммандной строкой
 Public mbRunWithParam                    As Boolean
@@ -112,16 +104,16 @@ Public strFrmMainCaptionTemp                As String
 Public strFrmMainCaptionTempDate            As String
 
 '-------------------- Переменные размеров Формы и кнопок ------------------'
-Public MainFormWidth                        As Long
-Public MainFormHeight                       As Long
+Public lngMainFormWidth                        As Long
+Public lngMainFormHeight                       As Long
 
 ' Минимальные значения размеров формы
-Public Const MainFormWidthMin               As Long = 12700
-Public Const MainFormHeightMin              As Long = 6000
+Public Const lngMainFormWidthMin               As Long = 12700
+Public Const lngMainFormHeightMin              As Long = 6000
 
 ' Дефолтные значения размеров формы
-Private Const MainFormWidthDef              As Long = 12700
-Private Const MainFormHeightDef             As Long = 8000
+Private Const lngMainFormWidthDef              As Long = 12700
+Private Const lngMainFormHeightDef             As Long = 8000
 
 Public mbSaveSizeOnExit                  As Boolean
 Public mbCheckAllGroup                   As Boolean
@@ -137,15 +129,25 @@ Public mbBlockListOnBackup               As Boolean
 Public mbTempPath          As Boolean
 Public strAlternativeTempPath As String
 Public mbPatnAbs           As Boolean
-Public strCompName            As String
-Public strMB_Model            As String
-Public strMB_Manufacturer     As String
-Public strCompModel           As String
 Public lngArchNameMode        As Long
 Public strArchNameCustom      As String
 
 ' Переменная для определения выключения DEP
 Public mbDisableDEP        As Boolean
+
+Private mbInitXPStyle                    As Boolean
+
+' Переменные для определения модели компа
+Public strCompName            As String
+Public strMB_Model            As String
+Public strMB_Manufacturer     As String
+Public strCompModel           As String
+Public mbIsNotebok                       As Boolean
+Public mbCheckUpdNotEnd                  As Boolean
+Public mbChangeResolution                As Boolean ' Маркер, показывающий что проводилось измеенние разрешения экрана
+' Работаем в тихом режиме
+Public mbSilentRun                       As Boolean
+Public strThisBuildBy                    As String  ' Добавляем к описанию в главном окне в названии программы
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub Main
@@ -581,6 +583,9 @@ Private Sub GetMainIniParam()
     Dim cntOsInIni As Integer
     Dim strDebugLogPathFolder       As String
 
+    '[Description]
+    strThisBuildBy = GetIniValueString(strSysIni, "Description", "BuildBy", vbNullString)
+    'strThisBuildBy = "www.SamLab.Ws"
     '[Debug]
     ' Активация отладки
     mbDebugEnable = GetIniValueBoolean(strSysIni, "Debug", "DebugEnable", 1)
@@ -659,7 +664,7 @@ Private Sub GetMainIniParam()
         strAlternativeTempPath = PathCollect(strAlternativeTempPath)
         DebugMode "AlternativeTempPath: " & strAlternativeTempPath
 
-        If PathFileExists(strAlternativeTempPath) = 1 Then
+        If PathExists(strAlternativeTempPath) Then
             strWinTemp = strAlternativeTempPath
             strWorkTemp = strWinTemp & strProjectName
 
@@ -691,8 +696,6 @@ Private Sub GetMainIniParam()
     miStartMode = GetIniValueLong(strSysIni, "Main", "StartMode", 2)
     'Блокирование окна listview ghb бекапировании
     mbBlockListOnBackup = GetIniValueBoolean(strSysIni, "Main", "BlockListOnBackup", 1)
-    ' Используется Новая функция расчета Hash-файла
-    mbCalculateHashMode = GetIniValueBoolean(strSysIni, "Main", "CalculateHashMode", 1)
     'Режим архивирования по умолчанию
     miArchMode = GetIniValueLong(strSysIni, "Main", "ArchMode", 0)
     ' расширенное меню
@@ -769,10 +772,10 @@ Private Sub GetMainIniParam()
     strArh7zSFXPATH = IniStringPrivate("Arc", "PathSFX", strSysIni)
     strArh7zSFXPATH = PathCollect(strArh7zSFXPATH)
 
-    If PathFileExists(strArh7zSFXPATH) = 0 Then
+    If PathExists(strArh7zSFXPATH) = False Then
         strArh7zSFXPATH = strAppPath & "\Tools\Arc\sfx\7zSD.sfx"
 
-        If PathFileExists(strArh7zSFXPATH) = 0 Then
+        If PathExists(strArh7zSFXPATH) = False Then
             MsgBox strMessages(7) & vbNewLine & strArh7zSFXPATH, vbInformation, strProductName
         End If
     End If
@@ -781,10 +784,10 @@ Private Sub GetMainIniParam()
     strArh7zSFXConfigPath = IniStringPrivate("Arc", "PathSFXConfig", strSysIni)
     strArh7zSFXConfigPath = PathCollect(strArh7zSFXConfigPath)
 
-    If PathFileExists(strArh7zSFXConfigPath) = 0 Then
+    If PathExists(strArh7zSFXConfigPath) = False Then
         strArh7zSFXConfigPath = strAppPath & "\Tools\Arc\sfx\config.txt"
 
-        If PathFileExists(strArh7zSFXConfigPath) = 0 Then
+        If PathExists(strArh7zSFXConfigPath) = False Then
             MsgBox strMessages(7) & vbNewLine & strArh7zSFXConfigPath, vbInformation, strProductName
         End If
     End If
@@ -793,10 +796,10 @@ Private Sub GetMainIniParam()
     strArh7zSFXConfigPathEn = IniStringPrivate("Arc", "PathSFXConfigEn", strSysIni)
     strArh7zSFXConfigPathEn = PathCollect(strArh7zSFXConfigPathEn)
 
-    If PathFileExists(strArh7zSFXConfigPathEn) = 0 Then
+    If PathExists(strArh7zSFXConfigPathEn) = False Then
         strArh7zSFXConfigPathEn = strAppPath & "\Tools\Arc\sfx\config_en.txt"
 
-        If PathFileExists(strArh7zSFXConfigPathEn) = 0 Then
+        If PathExists(strArh7zSFXConfigPathEn) = False Then
             MsgBox strMessages(7) & vbNewLine & strArh7zSFXConfigPathEn, vbInformation, strProductName
         End If
     End If
@@ -856,7 +859,7 @@ Private Sub GetMainIniParam()
             arrOSList(i, 2) = IniStringPrivate("OS_" & cntOsInIni, "drpFolder", strSysIni)
 
             If arrOSList(i, 2) <> "No Key" Then
-                If PathFileExists(PathCollect(arrOSList(i, 2))) = 0 Then
+                If PathExists(PathCollect(arrOSList(i, 2))) = False Then
                     DebugMode "Not find folder for package driver backup" & vbNewLine & "для ОС: " & arrOSList(i, 0) & " is64bit:" & arrOSList(i, 1) & vbNewLine & vbNewLine & "Folder is not Exist: " & vbNewLine & PathCollect(arrOSList(i, 2))
                     arrOSList(i, 3) = "DriverPack folder is not Exist"
                 End If
@@ -1032,7 +1035,7 @@ Private Sub Win64ReloadOptions()
     strSysDir86 = GetSpecialFolderPath(CSIDL_SYSTEM)
     strSysDir64 = GetSystemWow64Dir
 
-    If strSysDir64 = vbNullString Then
+    If LenB(strSysDir64) = 0 Then
         strSysDir64 = GetSpecialFolderPath(CSIDL_SYSTEMX86)
     End If
 
@@ -1042,9 +1045,9 @@ Private Sub Win64ReloadOptions()
     DebugMode "CSIDL_SYSTEMX86: " & strSysDir64
 
     ' Если определившийся путь существует, то принимаем его, елси нет, то тогда
-    If PathFileExists(strSysDir64) And InStr(1, strSysDir64, "64", vbTextCompare) > 0 Then
+    If PathExists(strSysDir64) And InStr(1, strSysDir64, "64", vbTextCompare) > 0 Then
         strSysDir = strSysDir64
-    ElseIf PathFileExists(strWinDir & "SysWOW64") Then
+    ElseIf PathExists(strWinDir & "SysWOW64") Then
         strSysDir = strWinDir & "SysWOW64"
     Else
         strSysDir = Getpath_SYSTEM

@@ -186,11 +186,11 @@ End Sub
 Private Sub FontCharsetChange()
 
     ' Выставляем шрифт
-    Me.Font.Name = strOtherForm_FontName
-    Me.Font.Size = lngOtherForm_FontSize
-    Me.Font.Charset = lngDialog_Charset
-    SetButtonProperties , cmdExit, True
-    SetButtonProperties , cmdOK, True
+    Me.Font.Name = strFontOtherForm_Name
+    Me.Font.Size = lngFontOtherForm_Size
+    Me.Font.Charset = lngFont_Charset
+    SetBtnFontProperties cmdExit
+    SetBtnFontProperties cmdOK
 End Sub
 
 '! -----------------------------------------------------------
@@ -223,7 +223,7 @@ Private Sub Form_Load()
     LoadIconImage2BtnJC cmdExit, "BTN_EXIT", strPathImageMainWork
 
     ' Локализациz приложения
-    If mbLanguageChange Then
+    If mbMultiLanguage Then
         Localise strPCLangCurrentPath
     Else
         ' Выставляем шрифт
@@ -231,12 +231,12 @@ Private Sub Form_Load()
     End If
 End Sub
 
-Private Sub Form_Terminate()
-
-    If Forms.Count = 0 Then
-        UnloadApp
-    End If
-End Sub
+'Private Sub Form_Terminate()
+'
+'    If Forms.Count = 0 Then
+'        UnloadApp
+'    End If
+'End Sub
 
 Private Sub Localise(StrPathFile As String)
 
@@ -272,7 +272,7 @@ Private Sub SaveOptions()
             .lvOS.AddItem txtOSVer, , i - 1
             .lvOS.ItemText(2, i - 1) = ucPathDRP.Path
 
-            If chk64bit.Checked Then
+            If chk64bit.Value Then
                 .lvOS.ItemText(1, i - 1) = "1"
             Else
                 .lvOS.ItemText(1, i - 1) = "0"
@@ -287,7 +287,7 @@ Private Sub SaveOptions()
             .lvOS.ItemText(0, i) = txtOSVer
             .lvOS.ItemText(2, i) = ucPathDRP.Path
 
-            If chk64bit.Checked Then
+            If chk64bit.Value Then
                 .lvOS.ItemText(1, i) = "1"
             Else
                 .lvOS.ItemText(1, i) = "0"

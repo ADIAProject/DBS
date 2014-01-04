@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form frmMain 
    Caption         =   "frmMain"
    ClientHeight    =   7185
-   ClientLeft      =   165
+   ClientLeft      =   225
    ClientTop       =   855
    ClientWidth     =   12480
    BeginProperty Font 
@@ -27,18 +27,10 @@ Begin VB.Form frmMain
       TabIndex        =   15
       Top             =   6480
       Width           =   12480
-      _ExtentX        =   22013
-      _ExtentY        =   1244
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
-         Size            =   9
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Theme           =   2
+      _extentx        =   22013
+      _extenty        =   1244
+      font            =   "frmMain.frx":000C
+      theme           =   2
    End
    Begin prjDIADBS.ProgressBar ProgressBar1 
       Align           =   2  'Align Bottom
@@ -56,49 +48,33 @@ Begin VB.Form frmMain
       Left            =   0
       Top             =   0
       Width           =   12495
-      _ExtentX        =   22040
-      _ExtentY        =   10795
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   14215660
-      FillColor       =   14215660
-      Style           =   8
-      RoundedCorner   =   0   'False
-      Caption         =   ""
-      IconSize        =   48
-      ThemeColor      =   2
-      HeaderStyle     =   1
+      _extentx        =   22040
+      _extenty        =   10795
+      font            =   "frmMain.frx":0030
+      backcolor       =   14215660
+      fillcolor       =   14215660
+      style           =   8
+      roundedcorner   =   0   'False
+      caption         =   ""
+      iconsize        =   48
+      themecolor      =   2
+      headerstyle     =   1
       Begin prjDIADBS.ctlJCFrames frGroup 
          Height          =   2100
          Left            =   120
          Top             =   75
          Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   3704
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15783104
-         FillColor       =   15783104
-         Style           =   4
-         RoundedCorner   =   0   'False
-         Caption         =   "Выделение группы драйверов"
-         TextBoxHeight   =   21
-         HeaderStyle     =   1
-         GradientHeaderStyle=   2
+         _extentx        =   10398
+         _extenty        =   3704
+         font            =   "frmMain.frx":0054
+         backcolor       =   15783104
+         fillcolor       =   15783104
+         style           =   4
+         roundedcorner   =   0   'False
+         caption         =   "Выделение группы драйверов"
+         textboxheight   =   21
+         headerstyle     =   1
+         gradientheaderstyle=   2
          Begin prjDIADBS.CheckBoxW chkHideOther 
             Height          =   400
             Left            =   75
@@ -116,7 +92,7 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Caption         =   "frmMain.frx":000C
+            Caption         =   "frmMain.frx":0078
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp1 
@@ -137,7 +113,7 @@ Begin VB.Form frmMain
                Strikethrough   =   0   'False
             EndProperty
             Value           =   0   'False
-            Caption         =   "frmMain.frx":0072
+            Caption         =   "frmMain.frx":00DE
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp2 
@@ -158,7 +134,7 @@ Begin VB.Form frmMain
                Strikethrough   =   0   'False
             EndProperty
             Value           =   0   'False
-            Caption         =   "frmMain.frx":00A4
+            Caption         =   "frmMain.frx":0110
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp3 
@@ -179,7 +155,7 @@ Begin VB.Form frmMain
                Strikethrough   =   0   'False
             EndProperty
             Value           =   0   'False
-            Caption         =   "frmMain.frx":00CA
+            Caption         =   "frmMain.frx":0136
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp4 
@@ -199,7 +175,7 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Caption         =   "frmMain.frx":00F0
+            Caption         =   "frmMain.frx":015C
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.ctlJCbutton cmdCheckAll 
@@ -208,26 +184,18 @@ Begin VB.Form frmMain
             TabIndex        =   8
             Top             =   500
             Width           =   2055
-            _ExtentX        =   3625
-            _ExtentY        =   900
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Arial"
-               Size            =   8.25
-               Charset         =   204
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ButtonStyle     =   10
-            BackColor       =   12244692
-            Caption         =   "Выделить всё"
-            PictureAlign    =   0
-            PicturePushOnHover=   -1  'True
-            PictureShadow   =   -1  'True
-            CaptionEffects  =   0
-            TooltipBackColor=   0
-            ColorScheme     =   1
+            _extentx        =   3625
+            _extenty        =   900
+            font            =   "frmMain.frx":018E
+            buttonstyle     =   10
+            backcolor       =   12244692
+            caption         =   "Выделить всё"
+            picturealign    =   0
+            picturepushonhover=   -1  'True
+            pictureshadow   =   -1  'True
+            captioneffects  =   0
+            tooltipbackcolor=   0
+            colorscheme     =   1
          End
          Begin prjDIADBS.ctlJCbutton cmdUnCheckAll 
             Height          =   510
@@ -235,26 +203,18 @@ Begin VB.Form frmMain
             TabIndex        =   9
             Top             =   1100
             Width           =   2055
-            _ExtentX        =   3625
-            _ExtentY        =   900
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Arial"
-               Size            =   8.25
-               Charset         =   204
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ButtonStyle     =   10
-            BackColor       =   12244692
-            Caption         =   "Снять выделение"
-            PictureAlign    =   0
-            PicturePushOnHover=   -1  'True
-            PictureShadow   =   -1  'True
-            CaptionEffects  =   0
-            TooltipBackColor=   0
-            ColorScheme     =   1
+            _extentx        =   3625
+            _extenty        =   900
+            font            =   "frmMain.frx":01B2
+            buttonstyle     =   10
+            backcolor       =   12244692
+            caption         =   "Снять выделение"
+            picturealign    =   0
+            picturepushonhover=   -1  'True
+            pictureshadow   =   -1  'True
+            captioneffects  =   0
+            tooltipbackcolor=   0
+            colorscheme     =   1
          End
          Begin prjDIADBS.CheckBoxW chkCheckAll 
             Height          =   400
@@ -273,7 +233,7 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Caption         =   "frmMain.frx":0122
+            Caption         =   "frmMain.frx":01D6
             Transparent     =   -1  'True
          End
       End
@@ -282,25 +242,17 @@ Begin VB.Form frmMain
          Left            =   6120
          Top             =   75
          Width           =   6255
-         _ExtentX        =   11033
-         _ExtentY        =   3704
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   15783104
-         FillColor       =   15783104
-         Style           =   4
-         RoundedCorner   =   0   'False
-         Caption         =   "Создание резервной копии выбранных драйверов"
-         TextBoxHeight   =   21
-         HeaderStyle     =   1
-         GradientHeaderStyle=   2
+         _extentx        =   11033
+         _extenty        =   3704
+         font            =   "frmMain.frx":0232
+         backcolor       =   15783104
+         fillcolor       =   15783104
+         style           =   4
+         roundedcorner   =   0   'False
+         caption         =   "Создание резервной копии выбранных драйверов"
+         textboxheight   =   21
+         headerstyle     =   1
+         gradientheaderstyle=   2
          Begin prjDIADBS.ComboBoxW cmbTypeBackUp 
             Height          =   330
             Left            =   1800
@@ -319,8 +271,8 @@ Begin VB.Form frmMain
                Strikethrough   =   0   'False
             EndProperty
             Style           =   2
-            Text            =   "frmMain.frx":017E
-            CueBanner       =   "frmMain.frx":019E
+            Text            =   "frmMain.frx":0256
+            CueBanner       =   "frmMain.frx":0276
          End
          Begin prjDIADBS.ctlJCbutton cmdStartBackUp 
             Height          =   510
@@ -328,26 +280,18 @@ Begin VB.Form frmMain
             TabIndex        =   0
             Top             =   925
             Width           =   2175
-            _ExtentX        =   3836
-            _ExtentY        =   900
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Arial"
-               Size            =   8.25
-               Charset         =   204
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ButtonStyle     =   10
-            BackColor       =   12244692
-            Caption         =   "Start Backup"
-            PictureAlign    =   0
-            PicturePushOnHover=   -1  'True
-            PictureShadow   =   -1  'True
-            CaptionEffects  =   0
-            TooltipBackColor=   0
-            ColorScheme     =   1
+            _extentx        =   3836
+            _extenty        =   900
+            font            =   "frmMain.frx":0296
+            buttonstyle     =   10
+            backcolor       =   12244692
+            caption         =   "Start Backup"
+            picturealign    =   0
+            picturepushonhover=   -1  'True
+            pictureshadow   =   -1  'True
+            captioneffects  =   0
+            tooltipbackcolor=   0
+            colorscheme     =   1
          End
          Begin prjDIADBS.ctlJCbutton cmdBreak 
             Height          =   510
@@ -355,51 +299,35 @@ Begin VB.Form frmMain
             TabIndex        =   1
             Top             =   1500
             Width           =   2175
-            _ExtentX        =   3836
-            _ExtentY        =   900
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Arial"
-               Size            =   8.25
-               Charset         =   204
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ButtonStyle     =   10
-            Enabled         =   0   'False
-            BackColor       =   12244692
-            Caption         =   "Break"
-            PictureAlign    =   0
-            PicturePushOnHover=   -1  'True
-            PictureShadow   =   -1  'True
-            CaptionEffects  =   0
-            TooltipBackColor=   0
-            ColorScheme     =   1
+            _extentx        =   3836
+            _extenty        =   900
+            font            =   "frmMain.frx":02BA
+            buttonstyle     =   10
+            enabled         =   0   'False
+            backcolor       =   12244692
+            caption         =   "Break"
+            picturealign    =   0
+            picturepushonhover=   -1  'True
+            pictureshadow   =   -1  'True
+            captioneffects  =   0
+            tooltipbackcolor=   0
+            colorscheme     =   1
          End
          Begin prjDIADBS.ctlJCFrames frArchName 
             Height          =   1170
             Left            =   0
             Top             =   930
             Width           =   3855
-            _ExtentX        =   6800
-            _ExtentY        =   2064
-            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Arial"
-               Size            =   8.25
-               Charset         =   204
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            BackColor       =   14215660
-            FillColor       =   14215660
-            TextBoxColor    =   12244692
-            Style           =   5
-            RoundedCorner   =   0   'False
-            Caption         =   "Имя Архива"
-            Alignment       =   0
+            _extentx        =   6800
+            _extenty        =   2064
+            font            =   "frmMain.frx":02DE
+            backcolor       =   14215660
+            fillcolor       =   14215660
+            textboxcolor    =   12244692
+            style           =   5
+            roundedcorner   =   0   'False
+            caption         =   "Имя Архива"
+            alignment       =   0
             Begin VB.TextBox txtArchName 
                Height          =   350
                Left            =   120
@@ -425,7 +353,7 @@ Begin VB.Form frmMain
                   Strikethrough   =   0   'False
                EndProperty
                Value           =   0   'False
-               Caption         =   "frmMain.frx":01BE
+               Caption         =   "frmMain.frx":0302
                Transparent     =   -1  'True
             End
             Begin prjDIADBS.OptionButtonW optArchNamePC 
@@ -446,7 +374,7 @@ Begin VB.Form frmMain
                   Strikethrough   =   0   'False
                EndProperty
                Value           =   0   'False
-               Caption         =   "frmMain.frx":0200
+               Caption         =   "frmMain.frx":0344
                Transparent     =   -1  'True
             End
             Begin prjDIADBS.OptionButtonW optArchCustom 
@@ -466,7 +394,7 @@ Begin VB.Form frmMain
                   Italic          =   0   'False
                   Strikethrough   =   0   'False
                EndProperty
-               Caption         =   "frmMain.frx":023C
+               Caption         =   "frmMain.frx":0380
                Transparent     =   -1  'True
             End
          End
@@ -495,27 +423,19 @@ Begin VB.Form frmMain
          Left            =   120
          Top             =   2280
          Width           =   12255
-         _ExtentX        =   21616
-         _ExtentY        =   6509
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Arial"
-            Size            =   9
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   14016736
-         FillColor       =   14016736
-         TextBoxColor    =   11595760
-         TxtBoxShadow    =   1
-         Style           =   3
-         RoundedCorner   =   0   'False
-         Caption         =   "Список найденных драйверов устройств"
-         TextBoxHeight   =   21
-         ThemeColor      =   3
-         GradientHeaderStyle=   1
+         _extentx        =   21616
+         _extenty        =   6509
+         font            =   "frmMain.frx":03B4
+         backcolor       =   14016736
+         fillcolor       =   14016736
+         textboxcolor    =   11595760
+         txtboxshadow    =   1
+         style           =   3
+         roundedcorner   =   0   'False
+         caption         =   "Список найденных драйверов устройств"
+         textboxheight   =   21
+         themecolor      =   3
+         gradientheaderstyle=   1
       End
    End
    Begin VB.Menu mnuReCollectHWID 
@@ -595,9 +515,7 @@ Option Explicit
 
 Public WithEvents lvDevices       As cListView
 Attribute lvDevices.VB_VarHelpID = -1
-'Public WithEvents TaskBar As cITaskBarList3
 
-Private mobjSHA                   As New cSHA1
 Private mbBreakUpdateDBAll        As Boolean
 Private cmbListTypeBackupElement1 As String
 Private cmbListTypeBackupElement2 As String
@@ -620,11 +538,11 @@ Private lngFrameCount             As Long
 Private lngBorderWidthX           As Long
 Private lngBorderWidthY           As Long
 
-'! -----------------------------------------------------------
-'!  Функция     :  BlockControl
-'!  Переменные  :
-'!  Описание    :  Блокировка(Разблокировка) некоторых элементов формы при работе сложных функций
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub BlockControl
+'! Description (Описание)  :   [Блокировка(Разблокировка) некоторых элементов формы при работе сложных функций]
+'! Parameters  (Переменные):   mbEnable (Boolean)
+'!--------------------------------------------------------------------------------
 Private Sub BlockControl(ByVal mbEnable As Boolean)
 
     'Filter
@@ -642,46 +560,58 @@ Private Sub BlockControl(ByVal mbEnable As Boolean)
     chkCheckAll.Enabled = Not mbEnable
 End Sub
 
-Private Sub ChangeFrmMainCaption()
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ChangeFrmMainCaption
+'! Description (Описание)  :   [Изменение Caption Формы]
+'! Parameters  (Переменные):   lngPercentage (Long)
+'!--------------------------------------------------------------------------------
+Private Sub ChangeFrmMainCaption(Optional ByVal lngPercentage As Long)
+
+    Dim strProgressValue As String
 
     Select Case strPCLangCurrentID
 
         Case "0419"
             strFrmMainCaptionTemp = "Drivers Backup Solution"
+            strFrmMainCaptionTempDate = " (Дата релиза: "
 
         Case Else
             strFrmMainCaptionTemp = "Drivers Backup Solution"
+            strFrmMainCaptionTempDate = " (Date Build: "
     End Select
 
-    Me.Caption = strFrmMainCaptionTemp & " v." & strProductVersion & strFrmMainCaptionTempDate & " @" & App.CompanyName
+    If lngPercentage Mod 999 Then
+        If ProgressBar1.Visible Then
+            strProgressValue = (lngPercentage \ 10) & "% (" & ctlUcStatusBar1.PanelText(1) & ") - "
+        End If
+    End If
+
+    If LenB(strThisBuildBy) = 0 Then
+        Me.Caption = strProgressValue & strFrmMainCaptionTemp & " v." & strProductVersion & strFrmMainCaptionTempDate & " @" & App.CompanyName
+    Else
+        Me.Caption = strProgressValue & strFrmMainCaptionTemp & " v." & strProductVersion & strFrmMainCaptionTempDate & " " & strThisBuildBy
+    End If
+
 End Sub
 
 Private Sub chkHideOther_Click()
 
-    chkCheckAll.Enabled = chkHideOther.Checked
+    chkCheckAll.Enabled = chkHideOther.Value
 
-    If optGrp1.Checked Then
-        optGrp1.Checked = False
+    If optGrp1.Value Then
         optGrp1_Click
-        optGrp1.Checked = True
     End If
 
-    If optGrp2.Checked Then
-        optGrp2.Checked = False
+    If optGrp2.Value Then
         optGrp2_Click
-        optGrp2.Checked = True
     End If
 
-    If optGrp3.Checked Then
-        optGrp3.Checked = False
+    If optGrp3.Value Then
         optGrp3_Click
-        optGrp3.Checked = True
     End If
 
-    If optGrp4.Checked Then
-        optGrp4.Checked = False
+    If optGrp4.Value Then
         optGrp4_Click
-        optGrp4.Checked = True
     End If
 End Sub
 
@@ -899,7 +829,7 @@ Private Sub CopyFile2Dest(ByRef arrZ() As String, _
                     Next
 
                     ' создаем каталог назначения, если его нет
-                    If PathFileExists(strDestinationTemp) = 0 Then
+                    If PathExists(strDestinationTemp) = False Then
                         CreateNewDirectory strDestinationTemp
                     End If
 
@@ -938,8 +868,8 @@ Private Sub CopyFile2Dest(ByRef arrZ() As String, _
                         ' Копирование файла
                         strFileNameFrom = cDir & strFileName
 
-                        If PathFileExists(strFileNameFrom) Then
-                            If PathFileExists(strDestPath4File) = 0 Then
+                        If PathExists(strFileNameFrom) Then
+                            If PathExists(strDestPath4File) = False Then
                                 CopyFileTo cDir & strFileName, strDestPath4File
                                 DebugMode "******Backup File: FROM=" & strFileNameFrom & " TO=" & strDestPath4File
                             End If
@@ -950,7 +880,7 @@ Private Sub CopyFile2Dest(ByRef arrZ() As String, _
 
                             '# search for correctly driver if has more tha one printer #
                             ' ищем файл по всей папке strSysDir & "\spool\Drivers\w32x86"
-                            If PathFileExists(strDestPath4File) = 0 Then
+                            If PathExists(strDestPath4File) = False Then
                                 strFileNameFrom = CStr(SearchFilesInRoot(cDir, strFileName, True, True))
 
                                 If LenB(strFileNameFrom) > 0 Then
@@ -969,7 +899,7 @@ Private Sub CopyFile2Dest(ByRef arrZ() As String, _
                     End If
 
                     ' Дополнительный поиск файлов по расширению, если файл все еще не найден
-                    If PathFileExists(strDestPath4File) = 0 Then
+                    If PathExists(strDestPath4File) = False Then
                         'Расширение файла
                         ext = ExtFromFileName(strFileName)
 
@@ -981,27 +911,27 @@ Private Sub CopyFile2Dest(ByRef arrZ() As String, _
                         End If
 
                         If ext = "hlp" Then
-                            If PathFileExists(BackslashAdd2Path(strWinDirHelp) & strFileName) Then
+                            If PathExists(BackslashAdd2Path(strWinDirHelp) & strFileName) Then
                                 CopyFileTo BackslashAdd2Path(strWinDirHelp) & strFileName, strDestPath4File
                             End If
 
                         ElseIf ext = "sys" Then
 
-                            If PathFileExists(strSysDirDrivers & strFileName) Then
+                            If PathExists(strSysDirDrivers & strFileName) Then
                                 CopyFileTo strSysDirDrivers & strFileName, strDestPath4File
                             End If
 
-                            If PathFileExists(strSysDirDrivers64 & strFileName) Then
+                            If PathExists(strSysDirDrivers64 & strFileName) Then
                                 CopyFileTo strSysDirDrivers64 & strFileName, strDestPath4File
                             End If
 
                         Else
 
-                            If PathFileExists(strSysDir86 & strFileName) Then
+                            If PathExists(strSysDir86 & strFileName) Then
                                 CopyFileTo strSysDir86 & strFileName, strDestPath4File
                             End If
 
-                            If PathFileExists(strSysDir64 & strFileName) Then
+                            If PathExists(strSysDir64 & strFileName) Then
                                 CopyFileTo strSysDir64 & strFileName, strDestPath4File
                             End If
                         End If
@@ -1071,7 +1001,7 @@ Private Function DefineFolderBackUp() As String
                 If CBool(str_x64) = mbIsWin64 Then
                     strDestFolder = PathCollect(strDestFolderTemp)
 
-                    If PathFileExists(strDestFolder) = 0 Then
+                    If PathExists(strDestFolder) = False Then
                         strDestFolder = vbNullString
                     End If
 
@@ -1111,13 +1041,13 @@ Private Function DoZip(ByVal strPackFolder As String, ByVal strDpName As String)
     End If
 
     ' Удаляем старые архивы если есть
-    If PathFileExists(strDpName7z) = 1 Then
+    If PathExists(strDpName7z) Then
         DebugMode "***DoZip: Clean previous drivers archive "
         DeleteFiles strDpName7z
     End If
 
     If mbCreateSFX Then
-        If PathFileExists(strDpName) = 1 Then
+        If PathExists(strDpName) Then
             DebugMode "***DoZip: Clean previous drivers archive "
             DeleteFiles strDpName
         End If
@@ -1195,8 +1125,8 @@ Private Function DoZip(ByVal strPackFolder As String, ByVal strDpName As String)
             ChangeStatusTextAndDebug strMessages(13) & " " & strDpName, "Error on run : " & cmdString
         Else
 
-            If PathFileExists(strDpName) = 1 Then
-                If PathFileExists(strDpName7z) = 1 Then
+            If PathExists(strDpName) Then
+                If PathExists(strDpName7z) Then
                     DebugMode "***DoZip: Clean temp drivers archive "
                     DeleteFiles strDpName7z
                 End If
@@ -1312,7 +1242,7 @@ CopyCatAgain:
     If LenB(strCatFile) > 0 Then
 
         ' ищем файл cat его по всей папке strSysDirCatRoot c именем из полученным из файла inf
-        If PathFileExists(BackslashAdd2Path(strDestination) & strCatFile) = 0 Then
+        If PathExists(BackslashAdd2Path(strDestination) & strCatFile) = False Then
             strCatFilePath = CStr(SearchFilesInRoot(strSysDirCatRoot, strCatFile, True, True))
 
             If LenB(strCatFilePath) > 0 Then
@@ -1322,7 +1252,7 @@ CopyCatAgain:
         End If
 
         ' ищем файл cat его по всей папке strSysDirCatRoot c именем аналогичным файлу inf
-        If PathFileExists(BackslashAdd2Path(strDestination) & strCatFile) = 0 Then
+        If PathExists(BackslashAdd2Path(strDestination) & strCatFile) = False Then
             strCatFilePath = CStr(SearchFilesInRoot(strSysDirCatRoot, strCatFileFromInf, True, True))
 
             If LenB(strCatFilePath) > 0 Then
@@ -1332,7 +1262,7 @@ CopyCatAgain:
         End If
 
         ' ищем файл cat его по всей папке strSysDirDRVStore
-        If PathFileExists(BackslashAdd2Path(strDestination) & strCatFile) = 0 Then
+        If PathExists(BackslashAdd2Path(strDestination) & strCatFile) = False Then
             strCatFilePath = CStr(SearchFilesInRoot(strSysDirDRVStore, strCatFile, True, True))
 
             If LenB(strCatFilePath) > 0 Then
@@ -1342,7 +1272,7 @@ CopyCatAgain:
         End If
 
         ' Если файл cat все еще не найден, то ищем его по всей папке windows
-        If PathFileExists(BackslashAdd2Path(strDestination) & strCatFile) = 0 Then
+        If PathExists(BackslashAdd2Path(strDestination) & strCatFile) = False Then
             strCatFilePath = CStr(SearchFilesInRoot(strWinDir, strCatFile, True, True))
 
             If LenB(strCatFilePath) > 0 Then
@@ -1352,7 +1282,7 @@ CopyCatAgain:
         End If
 
         ' Если файл найден, то имя файла передаем обратно функции для дальнейшего использования
-        If PathFileExists(BackslashAdd2Path(strDestination) & strCatFile) = 1 Then
+        If PathExists(BackslashAdd2Path(strDestination) & strCatFile) Then
             FindCopyCatFile = strCatFile
         Else
 
@@ -1369,7 +1299,7 @@ CopyCatAgain:
         End If
     End If
 
-    If PathFileExists(BackslashAdd2Path(strDestination) & strCatFile) = 0 Then
+    If PathExists(BackslashAdd2Path(strDestination) & strCatFile) = False Then
         DebugMode "***CatalogFile not find: " & strCatFile
     End If
 End Function
@@ -1378,20 +1308,20 @@ Private Sub FontCharsetChange()
 
     ' Выставляем шрифт
     With Me.Font
-        .Name = strMainForm_FontName
-        .Size = lngMainForm_FontSize
-        .Charset = lngDialog_Charset
+        .Name = strFontMainForm_Name
+        .Size = lngFontMainForm_Size
+        .Charset = lngFont_Charset
     End With
 
-    SetButtonProperties , cmdCheckAll, True
-    SetButtonProperties , cmdUnCheckAll, True
-    SetButtonProperties , cmdStartBackUp, True
-    SetButtonProperties , cmdBreak, True
-    frGroup.Font.Charset = lngDialog_Charset
-    frBackUp.Font.Charset = lngDialog_Charset
-    frArchName.Font.Charset = lngDialog_Charset
-    frPanelLV.Font.Charset = lngDialog_Charset
-    ctlUcStatusBar1.Font.Charset = lngDialog_Charset
+    SetBtnFontProperties cmdCheckAll
+    SetBtnFontProperties cmdUnCheckAll
+    SetBtnFontProperties cmdStartBackUp
+    SetBtnFontProperties cmdBreak
+    frGroup.Font.Charset = lngFont_Charset
+    frBackUp.Font.Charset = lngFont_Charset
+    frArchName.Font.Charset = lngFont_Charset
+    frPanelLV.Font.Charset = lngFont_Charset
+    ctlUcStatusBar1.Font.Charset = lngFont_Charset
 End Sub
 
 Private Sub Form_Activate()
@@ -1453,7 +1383,6 @@ Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
                 cmdUnCheckAll_Click
 
             Case 19
-
                 ' CTRL+Break (Прерывание групповой обработки)
                 If cmdBreak.Visible Then
                     cmdBreak_Click
@@ -1461,27 +1390,20 @@ Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
 
             Case 49
                 ' CTRL+1 (Переключение между группами)
-                optGrp1.ClearChecks
-                optGrp1.Checked = True
-                optGrp1_Click
-
+                optGrp1.Value = True
+                
             Case 50
                 ' CTRL+2 (Переключение между группами)
-                optGrp2.ClearChecks
-                optGrp2.Checked = True
-                optGrp2_Click
-
+                optGrp2.Value = True
+                
             Case 51
                 ' CTRL+3 (Переключение между группами)
-                optGrp3.ClearChecks
-                optGrp3.Checked = True
-                optGrp3_Click
-
-                ' CTRL+4 (Переключение между группами)
+                optGrp3.Value = True
+                
             Case 52
-                optGrp4.ClearChecks
-                optGrp4.Checked = True
-                optGrp4_Click
+                ' CTRL+4 (Переключение между группами)
+                optGrp4.Value = True
+                
         End Select
     End If
 End Sub
@@ -1492,6 +1414,7 @@ Private Sub Form_Load()
     Dim ii As Long
 
     DebugMode "FrmMainLoad-Start"
+    SetupVisualStyles Me
     'SetSmallIcon Me.hDc
     mbFirstStart = True
     
@@ -1504,26 +1427,19 @@ Private Sub Form_Load()
     '       you can change the FORMICON to be any name & icon you want in the AlphaIcon.rc file.
     Call SetIcon(Me.hWnd, "FRMMAIN", False)
     
-    Set TaskBar = New cITaskBarList3
-    If TaskBar.IsAccessible Then
-        'Icon32x32x32 = ExtractIcon(App.hInstance, AppPath & App.EXEName & ".exe", 0)
-        'SendMessage hwnd, WM_SETICON, ICON_BIG, ByVal Icon32x32x32
-        SetIcon Me.hWnd, "AMAINICO", True
-    End If
-    
     ' Загрузка картинок для эементов и меню
     LoadIconImage
 
-    If Not mbIsDesignMode Then
-        Hook Me.hWnd, (MainFormWidthMin \ Screen.TwipsPerPixelX), (MainFormHeightMin \ Screen.TwipsPerPixelY)
-    End If
+    'If Not mbIsDesignMode Then
+        'Hook Me.hWnd, (MainFormWidthMin \ Screen.TwipsPerPixelX), (MainFormHeightMin \ Screen.TwipsPerPixelY)
+    'End If
 
     With Me
         ' Смена заголовка формы
         ChangeFrmMainCaption
         ' Разворачиваем форму на весь экран
-        .Width = MainFormWidth
-        .Height = MainFormHeight
+        .Width = lngMainFormWidth
+        .Height = lngMainFormHeight
         ' Центрируем форму на экране
         .Left = (lngRightWorkArea - lngLeftWorkArea) / 2 - .Width / 2
         .Top = (lngBottomWorkArea - lngTopWorkArea) / 2 - .Height / 2
@@ -1540,10 +1456,10 @@ Private Sub Form_Load()
     ctlUcStatusBar1.PanelAutoSize(1) = False
     PrintFileInDebugLog strSysIni
     ' Загрузка меню языков
-    mnuMainLang.Visible = mbLanguageChange
+    mnuMainLang.Visible = mbMultiLanguage
 
     ' Локализациz приложения и загрузка меню языков
-    If mbLanguageChange Then
+    If mbMultiLanguage Then
         DebugMode "CreateLangList: " & UBound(arrLanguage)
 
         For i = UBound(arrLanguage, 2) To 1 Step -1
@@ -1568,8 +1484,8 @@ Private Sub Form_Load()
     LoadList_Device False
     'pbProgressBar.Visible = False
     ' Параметры выделения при старте
-    chkCheckAll.Checked = mbCheckAllGroup
-    chkHideOther.Checked = mbListOnlyGroup
+    chkCheckAll.Value = mbCheckAllGroup
+    chkHideOther.Value = mbListOnlyGroup
     ' Режим при старте
     SelectStartMode
     ' Имя архива при старте
@@ -1583,8 +1499,8 @@ Private Sub Form_Load()
         AnimateForm Me, aLoad, eZoomOut, lngFrameTime, lngFrameCount
     End If
 
-    DebugMode "FrmMainLoad-Finish"
-    DebugMode "======================================================================="
+    DebugMode "FrmMainLoad-Finish" & vbNewLine & _
+              "======================================================================="
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
@@ -1634,12 +1550,12 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     'Set CFm_sbStatusBar = Nothing
     lvDevices.Destroy
     Set lvDevices = Nothing
-    Set TaskBar = Nothing
+    'Set TaskBar = Nothing
     Set frmMain = Nothing
 
-    If Not mbIsDesignMode Then
-        Unhook
-    End If
+'    If Not mbIsDesignMode Then
+'        Unhook
+'    End If
 
     For i = Forms.Count - 1 To 1 Step -1
 
@@ -1650,9 +1566,9 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     Next
     Unload Me
     Set frmMain = Nothing
-    FreeLibrary m_hMod
+    'FreeLibrary m_hMod
     ' принудительный выход
-    End
+    'End
 End Sub
 
 Private Sub Form_Resize()
@@ -1674,12 +1590,12 @@ Private Sub Form_Resize()
     End With
 End Sub
 
-Private Sub Form_Terminate()
-
-    If Forms.Count = 0 Then
-        UnloadApp
-    End If
-End Sub
+'Private Sub Form_Terminate()
+'
+'    If Forms.Count = 0 Then
+'        UnloadApp
+'    End If
+'End Sub
 
 '! -----------------------------------------------------------
 '!  Функция     :  FRMStateSave
@@ -1721,7 +1637,7 @@ Private Function ListingDirectory(ByVal strPath As String, ByVal mbRecursion As 
         strFileList = vbNullString
 
         If UBound(strFileList_x, 2) >= 0 Then
-            If strFileList_x(0, 0) <> vbNullString Then
+            If LenB(strFileList_x(0, 0)) Then
 
                 Dim lngLBound As Long
                 Dim lngUBound As Long
@@ -1732,7 +1648,7 @@ Private Function ListingDirectory(ByVal strPath As String, ByVal mbRecursion As 
                 For ii = lngLBound To lngUBound
                     strFileListTemp = FileNameFromPath(strFileList_x(0, ii))
 
-                    If strFileListTemp <> vbNullString Then
+                    If LenB(strFileListTemp) Then
                         strFileList = AppendStr(strFileList, strFileListTemp, ";")
                     End If
 
@@ -1969,7 +1885,6 @@ Private Sub Localise(ByVal StrPathFile As String)
     optGrp2.Caption = LocaliseString(StrPathFile, strFormName, "optGrp2", optGrp2.Caption)
     optGrp3.Caption = LocaliseString(StrPathFile, strFormName, "optGrp3", optGrp3.Caption)
     optGrp4.Caption = LocaliseString(StrPathFile, strFormName, "optGrp4", optGrp4.Caption)
-    'chkLiveOnly.Caption = LocaliseString(strPathFile, strFormName, "chkLiveOnly", chkLiveOnly.Caption)
     chkHideOther.Caption = LocaliseString(StrPathFile, strFormName, "chkHideOther", chkHideOther.Caption)
     cmdCheckAll.Caption = LocaliseString(StrPathFile, strFormName, "cmdCheckAll", cmdCheckAll.Caption)
     cmdUnCheckAll.Caption = LocaliseString(StrPathFile, strFormName, "cmdUnCheckAll", cmdUnCheckAll.Caption)
@@ -2118,7 +2033,7 @@ Private Sub mnuHistory_Click()
 
     strFilePathTemp = strAppPath & "\Tools\DocsDBS\" & strPCLangCurrentID & "\history.txt"
 
-    If PathFileExists(strFilePathTemp) = 0 Then
+    If PathExists(strFilePathTemp) = False Then
         strFilePathTemp = strAppPath & "\Tools\DocsDBS\0409\history.txt"
     End If
 
@@ -2153,7 +2068,7 @@ Private Sub mnuLang_Click(Index As Integer)
     ChangeStatusTextAndDebug "Select language: " & arrLanguage(2, i)
     strPCLangCurrentPath = strPathLng
     strPCLangCurrentIDTemp = arrLanguage(3, i)
-    lngDialog_Charset = GetCharsetFromLng(CLng(arrLanguage(6, i)))
+    lngFont_Charset = GetCharsetFromLng(CLng(arrLanguage(6, i)))
 
     If InStr(1, strPCLangCurrentIDTemp, ";", vbTextCompare) > 0 Then
         strPCLangCurrentID_x = Split(strPCLangCurrentIDTemp, ";", , vbTextCompare)
@@ -2185,7 +2100,7 @@ Private Sub mnuLinks_Click()
 
     strFilePathTemp = strAppPath & "\Tools\DocsDBS\" & strPCLangCurrentID & "\Links.html"
 
-    If PathFileExists(strFilePathTemp) = 0 Then
+    If PathExists(strFilePathTemp) = False Then
         strFilePathTemp = strAppPath & "\Tools\DocsDBS\0409\Links.html"
     End If
 
@@ -2222,9 +2137,9 @@ Private Sub mnuOptions_Click()
         Set lvDevices = Nothing
         Set frmMain = Nothing
 
-        If Not mbIsDesignMode Then
-            Unhook
-        End If
+'        If Not mbIsDesignMode Then
+'            Unhook
+'        End If
 
         For i = Forms.Count - 1 To 1 Step -1
 
@@ -2234,7 +2149,7 @@ Private Sub mnuOptions_Click()
 
         Next
         Set frmMain = Nothing
-        FreeLibrary m_hMod
+        'FreeLibrary m_hMod
         ' принудительный выход
         ShellExecute Me.hWnd, "open", App.EXEName, vbNullString, strAppPath, SW_SHOWNORMAL
         End
@@ -2307,7 +2222,7 @@ Private Sub optGrp1_Click()
 
     Dim i As Integer
 
-    If Not chkHideOther.Checked Then
+    If Not chkHideOther.Value Then
         lvDevices.Clear
         lvDevices.Destroy
         Set lvDevices = Nothing
@@ -2339,7 +2254,7 @@ Private Sub optGrp1_Click()
         Set lvDevices = Nothing
         LoadList_Device False, 1
 
-        If chkCheckAll.Checked And chkCheckAll.Enabled Then
+        If chkCheckAll.Value And chkCheckAll.Enabled Then
             cmdCheckAll_Click
         End If
     End If
@@ -2352,7 +2267,7 @@ Private Sub optGrp2_Click()
 
     Dim i As Integer
 
-    If Not chkHideOther.Checked Then
+    If Not chkHideOther.Value Then
         lvDevices.Clear
         lvDevices.Destroy
         Set lvDevices = Nothing
@@ -2385,7 +2300,7 @@ Private Sub optGrp2_Click()
         Set lvDevices = Nothing
         LoadList_Device False, 2
 
-        If chkCheckAll.Checked And chkCheckAll.Enabled Then
+        If chkCheckAll.Value And chkCheckAll.Enabled Then
             cmdCheckAll_Click
         End If
     End If
@@ -2396,7 +2311,7 @@ End Sub
 
 Private Sub optGrp3_Click()
 
-    If Not chkHideOther.Checked Then
+    If Not chkHideOther.Value Then
         cmdCheckAll_Click
     Else
         lvDevices.Clear
@@ -2404,7 +2319,7 @@ Private Sub optGrp3_Click()
         Set lvDevices = Nothing
         LoadList_Device False, 3
 
-        If chkCheckAll.Checked And chkCheckAll.Enabled Then
+        If chkCheckAll.Value And chkCheckAll.Enabled Then
             cmdCheckAll_Click
         End If
     End If
@@ -2417,7 +2332,7 @@ Private Sub optGrp4_Click()
 
     Dim i As Integer
 
-    If Not chkHideOther.Checked Then
+    If Not chkHideOther.Value Then
         lvDevices.Clear
         lvDevices.Destroy
         Set lvDevices = Nothing
@@ -2428,7 +2343,7 @@ Private Sub optGrp4_Click()
 
             For i = 0 To .Count
 
-                If .ItemText(7, i) = vbNullString Then
+                If LenB(.ItemText(7, i)) = 0 Then
                     If Not .ItemChecked(i) Then
                         .ItemChecked(i) = True
                     End If
@@ -2464,18 +2379,16 @@ Private Sub ReCollectHWID()
     lvDevices.Destroy
     Set lvDevices = Nothing
     DoEvents
-    ' повторно собираем данные
     
-    If TaskBar.IsAccessible Then TaskBar.SetProgressState hWnd, TBPF_NORMAL
+    ' повторно собираем данные
+    ProgressBar1.SetTaskBarProgressState PrbTaskBarStateInProgress
     frmProgress.Show vbModal, Me
-    'ReadDrivers
+    
     ' А теперь перестраиваем список драйверов
     LoadList_Device False
     ListViewResize
     
-    If TaskBar.IsAccessible Then
-        TaskBar.SetProgressState hWnd, TBPF_NOPROGRESS
-    End If
+    ProgressBar1.SetTaskBarProgressState PrbTaskBarStateNone
     
     ChangeStatusTextAndDebug strMessages(5)
 End Sub
@@ -2554,24 +2467,24 @@ Private Sub SelectStartArchName()
     Select Case lngArchNameMode
 
         Case 0
-            optArchCustom.ClearChecks
-            optArchCustom.Checked = True
-            optArchCustom_Click
+            
+            optArchCustom.Value = True
+            
 
         Case 1
-            optArchNamePC.ClearChecks
-            optArchNamePC.Checked = True
-            optArchNamePC_Click
+            
+            optArchNamePC.Value = True
+            
 
         Case 2
-            optArchModelPC.ClearChecks
-            optArchModelPC.Checked = True
-            optArchModelPC_Click
+            
+            optArchModelPC.Value = True
+            
 
         Case Else
-            optArchCustom.ClearChecks
-            optArchCustom.Checked = True
-            optArchCustom_Click
+            
+            optArchCustom.Value = True
+            
     End Select
 End Sub
 
@@ -2581,24 +2494,17 @@ Private Sub SelectStartMode()
     Select Case miStartMode
 
         Case 1
-            optGrp1.ClearChecks
-            optGrp1.Checked = True
-            optGrp1_Click
+            optGrp1.Value = True
 
         Case 2
-            optGrp2.ClearChecks
-            optGrp2.Checked = True
-            optGrp2_Click
-
+            optGrp2.Value = True
+            
         Case 3
-            optGrp3.ClearChecks
-            optGrp3.Checked = True
-            optGrp3_Click
+            optGrp3.Value = True
 
         Case 4
-            optGrp4.ClearChecks
-            optGrp4.Checked = True
-            optGrp4_Click
+            optGrp4.Value = True
+            
     End Select
 End Sub
 
@@ -2631,9 +2537,8 @@ Private Sub StartBackUp()
     Dim strClass              As String
     Dim strInfSection         As String
     Dim numCat                As Long
-    Dim mbDoZip            As Boolean
+    Dim mbDoZip               As Boolean
     Dim str7zFileArchivePath  As String
-    Dim strDestFolderTemp     As String
     Dim strStatusMsgTemp      As String
     Dim strSectionName        As String
     Dim strFileList           As String
@@ -2643,8 +2548,8 @@ Private Sub StartBackUp()
     Dim lngNumFilesFromFolder As String
     Dim strFolderPath         As String
     Dim strFileNameInf        As String
-    Dim mbCompare          As Boolean
-    Dim mbBackUPedFiles    As Boolean
+    Dim mbCompare             As Boolean
+    Dim mbBackUPedFiles       As Boolean
 
     DebugMode "cmdStartBackUp_Click-Start"
     TimeScriptRun = 0
@@ -2657,14 +2562,22 @@ Private Sub StartBackUp()
     Else
 
         '# Диалог открытия файла
-        If mbIsDriveCDRoom Then
-            destDirDialog = cmdPathClick(Me, strAppPathBackSL & "drivers", strMessages(2))
-        Else
-            strDestFolderTemp = DefineFolderBackUp
-            destDirDialog = cmdPathClick(Me, strDestFolderTemp, strMessages(2))
-        End If
-
-        If destDirDialog = vbNullString Then
+        With New CommonDialog
+            If mbIsDriveCDRoom Then
+                .InitDir = strAppPathBackSL & "drivers\"
+            Else
+                .InitDir = DefineFolderBackUp
+            End If
+    
+            .DialogTitle = strMessages(2)
+            
+            If .ShowFolder = True Then
+                destDirDialog = .FileName
+            End If
+    
+        End With
+    
+        If LenB(destDirDialog) = 0 Then
             '# if user cancel #
             Exit Sub
         End If
@@ -2694,7 +2607,7 @@ Private Sub StartBackUp()
 
         DebugMode "***StartBackUp: Destination directory: " & destDir
 
-        If PathFileExists(destDir) = 1 Then
+        If PathExists(destDir) Then
             DebugMode "***StartBackUp: Clean destination directory: " & destDir
             ChangeStatusTextAndDebug strMessages(82)
             DelRecursiveFolder destDir
@@ -2702,12 +2615,12 @@ Private Sub StartBackUp()
 
         lvCountCheck = lvDevices.CheckedCount
         ' Отображаем ProgressBar
-        ProgressBar1.Value = 0
-        ProgressBar1.Visible = True
-        If TaskBar.IsAccessible Then
-            TaskBar.SetProgressState hWnd, TBPF_NORMAL
-            TaskBar.SetProgressValue hWnd, ProgressBar1.Value, ProgressBar1.Max
-        End If
+        With ProgressBar1
+            .Value = 0
+            .Visible = True
+            .SetTaskBarProgressState PrbTaskBarStateInProgress
+            .SetTaskBarProgressValue .Value, .Max
+        End With
         
         miPbInterval = Round(10000 / lvCountCheck)
         miPbNext = 0
@@ -2750,16 +2663,16 @@ Private Sub StartBackUp()
                 DebugMode "***StartBackUp: DestForDriver=" & dest
 
                 ' Если исходный inf-файл существует, то продолжаем, если нет пропускаем
-                If PathFileExists(strInfDir & strInfFileName) > 0 Then
+                If PathExists(strInfDir & strInfFileName) Then
 
                     ' Если каталога нет, то создаем
-                    If PathFileExists(dest) = 0 Then
+                    If PathExists(dest) = False Then
                         CreateNewDirectory dest
                         numCat = 1
                     Else
 
                         ' А если есть, то значит мы уже обрабатывали такой драйвер, делаем его копию
-                        If PathFileExists(strInfFile2Path) = 0 Then
+                        If PathExists(strInfFile2Path) = False Then
                             dest = dest & "_" & numCat
                             CreateNewDirectory dest
                             numCat = numCat + 1
@@ -2794,25 +2707,11 @@ Private Sub StartBackUp()
 
                     If strOsCurrentVersion < "6.0" Then
                         If LenB(strCatFileName4Inf) > 0 And strOsCurrentVersion >= "5.1" Then
-                            If PathFileExists(BackslashAdd2Path(dest) & strCatFileName4Inf) = 1 Then
-                                If mbCalculateHashMode Then
-                                    strDataSHA1 = CalcHashFile(BackslashAdd2Path(dest) & strCatFileName4Inf, CAPICOM_HASH_ALGORITHM_SHA1)
-                                Else
+                            If PathExists(BackslashAdd2Path(dest) & strCatFileName4Inf) Then
+                                ' Сравнение файлов по Hash
+                                strDataSHA1 = CalcHashFile(BackslashAdd2Path(dest) & strCatFileName4Inf, CAPICOM_HASH_ALGORITHM_SHA1)
 
-                                    Dim abytData()   As Byte
-                                    Dim abytHashed() As Byte
-
-                                    With mobjSHA
-                                        ' convert file location to byte array 
-                                        abytData() = StrConv(BackslashAdd2Path(dest) & strCatFileName4Inf, vbFromUnicode)
-                                        ' hash data and return as Byte array
-                                        abytHashed() = .HashFile(abytData())
-                                        ' convert byte array to string data
-                                        strDataSHA1 = StrConv(CStr(abytHashed()), vbUnicode)
-                                    End With
-                                End If
-
-                                ZF1 = SearchFoldersInRoot(strSysDirDRVStore, "*" & "_" & UCase$(strDataSHA1) & "*", False, False)
+                                ZF1 = SearchFoldersInRoot(strSysDirDRVStore, "*" & "_" & UCase$(strDataSHA1) & "*")
 
                                 Dim lngUBoundZF1 As Long
 
@@ -2826,14 +2725,10 @@ Private Sub StartBackUp()
                                         If LenB(strFileNameInf) > 0 Then
                                             strFileNameInf = BackslashAdd2Path(strFolderPath) & strFileNameInf & ".inf"
 
-                                            If PathFileExists(strFileNameInf) = 1 Then
+                                            If PathExists(strFileNameInf) Then
 
                                                 'Сравнение файлов но Hash SHA1-сумме
-                                                If mbCalculateHashMode Then
-                                                    mbCompare = CompareFilesByHashCAPICOM(strFileNameInf, strInfFile2Path)
-                                                Else
-                                                    mbCompare = CompareFilesByHash(strFileNameInf, strInfFile2Path)
-                                                End If
+                                                mbCompare = CompareFilesByHashCAPICOM(strFileNameInf, strInfFile2Path)
 
                                                 If mbCompare Then
                                                     ' Удаляем предыдущий inf, чтобы не было дублей
@@ -2858,14 +2753,10 @@ Private Sub StartBackUp()
                         strFileNameInf = GetInfDriverStorePath(strInfDir & strInfFileName)
 
                         If LenB(strFileNameInf) > 0 Then
-                            If PathFileExists(strFileNameInf) = 1 Then
+                            If PathExists(strFileNameInf) Then
 
                                 'Сравнение файлов но Hash SHA1-сумме
-                                If mbCalculateHashMode Then
-                                    mbCompare = CompareFilesByHashCAPICOM(strFileNameInf, strInfFile2Path)
-                                Else
-                                    mbCompare = CompareFilesByHash(strFileNameInf, strInfFile2Path)
-                                End If
+                                mbCompare = CompareFilesByHashCAPICOM(strFileNameInf, strInfFile2Path)
 
                                 If mbCompare Then
                                     ' Получение пути каталога с драйверами
@@ -2969,9 +2860,11 @@ Private Sub StartBackUp()
                     miPbNext = 10000
                 End If
 
-                ProgressBar1.Value = miPbNext
-                If TaskBar.IsAccessible Then _
-                    TaskBar.SetProgressValue hWnd, ProgressBar1.Value, ProgressBar1.Max
+                With ProgressBar1
+                    .Value = miPbNext
+                    .SetTaskBarProgressValue .Value, .Max
+                End With
+                
                 mbBackUPedFiles = True
             End If
 
@@ -3006,9 +2899,11 @@ Private Sub StartBackUp()
 
                     '# create ZIP #
                 Case 1
-                    ProgressBar1.Value = 9000
-                    If TaskBar.IsAccessible Then _
-                        TaskBar.SetProgressValue hWnd, ProgressBar1.Value, ProgressBar1.Max
+                    With ProgressBar1
+                        .Value = 9000
+                        .SetTaskBarProgressValue .Value, .Max
+                    End With
+
                     ChangeStatusTextAndDebug "Zipping driver files..."
                     str7zFileArchivePath = BackslashAdd2Path(destDirDialog) & txtArchName & ".7z"
                     DebugMode "StartBackUp: Zip to File=" & str7zFileArchivePath
@@ -3024,9 +2919,10 @@ Private Sub StartBackUp()
                     MousePointer = 0
                     TimeScriptFinish = GetTickCount
                     AllTimeScriptRun = CalculateTime(TimeScriptRun, TimeScriptFinish)
-                    ProgressBar1.Value = 10000
-                    If TaskBar.IsAccessible Then _
-                        TaskBar.SetProgressValue hWnd, ProgressBar1.Value, ProgressBar1.Max
+                    With ProgressBar1
+                        .Value = 10000
+                        .SetTaskBarProgressValue .Value, .Max
+                    End With
 
                     If mbDoZip Then
                         ChangeStatusTextAndDebug strMessages(67) & " " & AllTimeScriptRun, , True
@@ -3038,17 +2934,15 @@ Private Sub StartBackUp()
 
                     '# create ZIP-SFX with DPInst #
                 Case 2
-                    ProgressBar1.Value = 9000
-                    If TaskBar.IsAccessible Then _
-                        TaskBar.SetProgressValue hWnd, ProgressBar1.Value, ProgressBar1.Max
+                    With ProgressBar1
+                        .Value = 9000
+                        .SetTaskBarProgressValue .Value, .Max
+                    End With
                     ChangeStatusTextAndDebug "Zipping driver files..."
                     str7zFileArchivePath = BackslashAdd2Path(destDirDialog) & txtArchName & ".exe"
                     DebugMode "StartBackUp: Zip to File=" & str7zFileArchivePath
                     mbDoZip = DoZip(destDir, str7zFileArchivePath)
                     DoEvents
-                    ProgressBar1.Value = 10000
-                    If TaskBar.IsAccessible Then _
-                        TaskBar.SetProgressValue hWnd, ProgressBar1.Value, ProgressBar1.Max
 
                     If mbDoZip Then
                         '# delete temp folder #
@@ -3070,9 +2964,10 @@ Private Sub StartBackUp()
                     End If
 
                 Case Else
-                    ProgressBar1.Value = 10000
-                    If TaskBar.IsAccessible Then _
-                        TaskBar.SetProgressValue hWnd, ProgressBar1.Value, ProgressBar1.Max
+                    With ProgressBar1
+                        .Value = 10000
+                        .SetTaskBarProgressValue .Value, .Max
+                    End With
                     ChangeStatusTextAndDebug strMessages(67) & " " & AllTimeScriptRun, , True
                     MsgBox strMessages(10), vbInformation + vbOKOnly, strProductName
             End Select
@@ -3094,8 +2989,7 @@ Private Sub StartBackUp()
         lvDevices.Refresh
     End If
 
-    If TaskBar.IsAccessible Then _
-        TaskBar.SetProgressState hWnd, TBPF_NOPROGRESS
+    ProgressBar1.SetTaskBarProgressState PrbTaskBarStateNone
         
     DebugMode "cmdStartBackUp_Click-Finish"
 End Sub
@@ -3147,7 +3041,7 @@ End Sub
 '! -----------------------------------------------------------
 Private Sub VerModules()
 
-    MsgBox strMessages(35) & vbNewLine & "7za.exe (x86)" & vbTab & vbTab & FSO.GetFileVersion(strArh7zExePATH) & vbNewLine & "7zSD.sfx (SFX-Module)" & vbTab & FSO.GetFileVersion(strArh7zSFXPATH) & vbNewLine & "DPinst.exe (x86)" & vbTab & vbTab & FSO.GetFileVersion(strDPInstExePath) & vbNewLine & "DPinst.exe (x64)" & vbTab & vbTab & FSO.GetFileVersion(strDPInstExePath64), vbInformation, strProductName
+    MsgBox strMessages(35) & vbNewLine & "7za.exe (x86)" & vbTab & vbTab & objFSO.GetFileVersion(strArh7zExePATH) & vbNewLine & "7zSD.sfx (SFX-Module)" & vbTab & objFSO.GetFileVersion(strArh7zSFXPATH) & vbNewLine & "DPinst.exe (x86)" & vbTab & vbTab & objFSO.GetFileVersion(strDPInstExePath) & vbNewLine & "DPinst.exe (x64)" & vbTab & vbTab & objFSO.GetFileVersion(strDPInstExePath64), vbInformation, strProductName
 End Sub
 
 '[SourceDisksNames.x86]
