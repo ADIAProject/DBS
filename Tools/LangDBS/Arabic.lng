@@ -1,0 +1,256 @@
+[Lang]
+	Name=ÚÑÈí
+	TranslatorName=ÇáíÒíÏ ááÍÇÓÈÇÊ æÇáÈÑãÌíÇÊ 
+	TranslatorURL=http://www.mfmd.net
+	ID=0409;0009;0c09;2809;1009;2409;4009;1809;2009;4409;1409;3409;4809;1c09;2c09;0809;3009;3c09;3809
+        Version=3.9.20
+        Date=20/09/2012
+	Charset=1252
+
+'Support Locale IDs (LCID) by this language file
+
+'       0x2c01: Arabic
+'       0009: English
+'       0c09: English (Australia)
+'       2809: English (Belize)
+'       1009: English (Canada)
+'       2409: English (Caribbean)
+'       4009: English (India)
+'       1809: English (Ireland)
+'       2009: English (Jamaica)
+'       4409: English (Malaysia)
+'       1409: English (New Zealand)
+'       3409: English (Philippines)
+'       4809: English (Singapore)
+'       1c09: English (South Africa)
+'       2c09: English (Trinidad)
+'       0809: English (United Kingdom)
+'       0409: English (United States)
+'       3009: English (Zimbabwe)
+'       3c09: English (Hong Kong)
+'       3809: English (Indonesia)
+
+
+' some parametrs support esc-sequences \n \r \t 
+
+[frmMain]
+	frPanelLV=List of found device drivers
+	frBackup=Create a backup of selected drivers
+	frGroup= Select a group of drivers
+	mnuOptions=ÎíÇÑÇÊ
+	mnuMainAbout=ÊÚáíãÇÊ
+	mnuLinks=ÑæÇÈØ
+	mnuHistory=ÊÇÑíÎ ÇáÊÛííÑÇÊ
+	mnuHelp=ÊÚáíãÇÊ
+	mnuOsZoneNet=OsZone.net ÈÑäÇãÌ ÇáßáÇã Úáì
+	mnuHomePage=ÒæÑ ÇáÕİÍÉ ÇáÑÆíÓíÉ
+	mnuHomePageForum=ÒæÑ ãäÊÏì ÇáÈÑäÇãÌ
+	mnuCheckUpd=ÇáÊÍŞŞ ãä æÌæÏ ÊÍÏíËÇÊ ÇáÈÑäÇãÌ
+	mnuDonate=ÇáÊÈÑÚ...
+	mnuLicence=ÇÊİÇŞ ÇáÊÑÎíÕ...
+	mnuAbout=Íæá...
+	mnuModulesVersion=ÇáæÍÏÇÊ ÇáäãØíÉ...
+	mnuMainLang=ÇááÛÉ
+	mnuLangStart=ÇÓÊÎÏÇã ÇááÛÉ ÇáãÍÏÏÉ ÚäÏ ÈÏÁ ÊÔÛíá (ÅáÛÇÁ ÇÎÊíÇÑ Åáì)
+	mnuReCollectHWID=ÊİÍÕ ÊÛííÑÇÊ ÇáÃÌåÒÉ
+	cmdCheckAll=ÍÏÏ Çáßá
+	cmdUnCheckAll=áÇÊÍÏÏ
+	cmdBreak=ÅÍÈÇØ ÇáÊäİíĞ
+	optGrp1=ãÇíßÑæÓæİÊ
+	optGrp2=OEM
+	optGrp3=Çáßá
+	optGrp4=áÇ ÔíÁ
+	chkLiveOnly=ÈÑÇãÌ áÇíİ İŞØ
+	chkHideOther=ÅÎİÇÁ Çáßá æáßä ãÌãæÚÉ ãÎÊÇÑÉ
+	chkCheckAll=ÍÏÏ ßá ãä ÇáãÌãæÚÉ ÈÃßãáåÇ ÚäÏ ÇÎÊíÇÑ
+	cmdStartBackUp=äÓÎ ÇÍÊíÇØí
+	lblTypeBackUp=äæÚ ÇáäÓÎ ÇáÇÍÊíÇØí
+	cmbListTypeBackupElement1=ÇáãÌáÏ ÇáãäÙã ãÚ ÇáÊÚÑíİÇÊ
+	cmbListTypeBackupElement2=7z-driver ÇÑÔíİ
+	cmbListTypeBackupElement3= Dpinst ÃÑÔİÉ ãÚ ÇáÊËÈíÊ ÇáÊáŞÇÆí Úä ØÑíŞ - 7 zSFX
+	TableHeader1=* ÇÓã ÇáãäÊÌ *
+	TableHeader2=* ÊÇÑíÎ *
+	TableHeader3=* ÅÕÏÇÑ *
+	TableHeader4=* ÇáãäÊÌ *
+	TableHeader5=* İÆÉ ÇáÊÚÑíİÇÊ *
+	TableHeader6=* İÆÉ ÇáÊÚáíãÇÊ ÇáÈÑãÌíÉ *
+	TableHeader7=* Inf *
+	TableHeader8=* ÇáİÑÚ *
+	TableHeader9=* HWID *
+	TableHeader10=* æÖÚ ãÚÑİ *
+	frArchName=Name of the archive
+	optArchNamePC=ÇÓã ÌåÇÒ ÇáÍÇÓæÈ
+	optArchModelPC=äãæĞÌ ÇáÍÇÓæÈ
+	optArchCustom=ÇáŞÇáÈ ÇáãÓÊÎÏã
+	
+[frmAbout]
+	frmAbout=Íæá...
+	cmdDonate=Donate ...
+	cmdLicence=ÇÊİÇŞ ÇáÊÑÎíÕ
+	cmdHomePage=Home
+	cmdOsZoneNet=Discussion OsZone.Net
+	cmdCheckUpd=Updating ...
+	cmdExit=Close
+	lblMailTo=ÃÑÓá ÈÑíÏ ÅáßÊÑæäí ãä ãÄáİ ÇáÈÑäÇãÌ
+	lblInfo=Êã ÊÕãíã åĞÇ ÇáÈÑäÇãÌ áÇäÔÇÁ äÓÎÉ ÇÍÊíÇØíÉ ãä ÊÚÑíİÇÊ ÇáÃÌåÒÉ. æíÑì ÇáÈÑäÇãÌ ÃíÖÇ ÇáÊÚÑíİÇÊ áÛíÑ- ÇáãÈÇÔÑÉ "ÇáæÍÏÇÊ". íãßä ááÈÑäÇãÌ ÅäÔÇÁ ÇÑÔíİ¡ æÇáÊí íãßä ÇÓÊÎÏÇãåÇ İí æŞÊ áÇÍŞ ßÍÒã ÊÚÑíİÇÊ  İí ÇáÈÑäÇãÌ . ÈÑÇãÌ ãÓÇÚÏ áÊËÈíÊ ÇáÊÚÑíİÇÊ
+
+[frmLicence]
+	frmLicence=License Agreement
+	chkAgreeLicence=ÇŞÈá ÇáÊÑÎíÕ
+	cmdOK=ÇŞÈá
+	cmdExit=ÇÛáÇŞ
+
+[frmCheckUpdate]	
+	frmCheckUpdate=ÊÍÏíË: äÓÎÉ ÌÏíÏÉ ãä ÇáÈÑäÇãÌ
+	cmdUpdate=ÊÍãíá ÇáÊÍÏíË
+	cmdHistory=ÇáÊÇÑíÎ
+	cmdDonate=ÇáÊÈÑÚ
+	cmdExit=ÇÛáÇŞ
+	lblVersion=ÇÎÑ ÇÕÏÇÑ
+	frDescription=ÇáÊÏæíä İí ÊÇÑíÎ ÇáÊÛííÑÇÊ:
+	lblDescription1="-"-ÊÕÍíÍ ÇáÃÎØÇÁ İí ÇáÈÑäÇãÌ
+	lblDescription2="*"--ÇáÊÛííÑÇÊ ÇáÊÌãíáíÉ
+	lblDescription3="+"-æÙÇÆİ ãÍÓäÉ
+	lblDescription4="!"--ÅÚáÇäÇÊ åÇãÉ
+	lblWait=ÊÍãíá ÇáÈíÇäÇÊ ãä ÇáãæŞÚ ÇáÑÓãí. ÇáÑÌÇÁ ÇáÇäÊÙÇÑ...
+	lblVersionList=ŞÇÆãÉ ÈÇáÊÛííÑÇÊ ááÅÕÏÇÑ
+
+[frmDonate]	
+	frmDonate=ÇáÊÈÑÚ
+	cmdExit=ÇÛáÇŞ
+
+[frmOptions]
+	frmOptions=ÎíÇÑÇÊ
+	cmdOK=ÍİÙ ÇáÊÛííÑÇÊ
+	cmdExit=ÇáÅäåÇÁ ÈÏæä ÍİÙ
+	frOptions=Options
+        ItemOptions1=ÇáÎíÇÑÇÊ ÇáÑÆíÓíÉ
+        ItemOptions2=ÏÚã äÙÇã ÇáÊÔÛíá
+        ItemOptions3=Úãá ÇáãÑÇİŞ ÇáÚÇãÉ
+        ItemOptions5=ãÙåÑ ÇáÈÑäÇãÌ 
+        ItemOptions6=DPInst  parametrs ÈÏÁ
+	frMain=Main Options
+	lblOptionsStart=ÇáÅÌÑÇÁÇÊ Úáì ÈÏÁ ÇáÈÑäÇãÌ
+	chkUpdate=ÇáÊÍŞŞ ãä æÌæÏ ÊÍÏíËÇÊ
+	chkUpdateBeta=ÊÍŞŞ ãä æÌæÏ ÅÕÏÇÑÇÊ ÈíÊÇ ãä ÇáÈÑäÇãÌ.
+	chkHideOtherProcess=ÊÔÛíá ÚãáíÉ ÎÇÑÌíÉ İí ÅÎİÇÁ ÇáæÖÚ
+	lblOptionsTemp=ÇáÚãá ãÚ ÇáãáİÇÊ ÇáãÄŞÊÉ
+	chkTempPath=ãÌáÏ ÇáãáİÇÊ ÇáãÄŞÊÉ
+	chkRemoveTemp=ÍĞİ ÇáãáİÇÊ ÇáãÄŞÊÉ
+	lblDebug=ÊÕÍíÍ æÖÚ ÎíÇÑÇÊ
+	chkDebug=Êãßíä æÖÚ ÇáÊÕÍíÍ
+	chkRemoveHistory=ãáİ ÇáÊÕÍíÍ ÇáŞÏíãÉ æÇÖÍÉ Úáì ÈÏÁ ÇáÈÑäÇãÌ
+	lblRezim=ÇáÈÏÁ İí æÖÚ
+	lblDebugLogPath=ÇáãÓÇÑ Åáì ãáİ ÇáÓÌá:
+	frMainTools=Paths of main utilities (Tools)
+	cmdPathDefault=ÊÚííä Åáì ÇáãÓÇÑ ÇáÇİÊÑÇÖí
+	frOS=Supported OS
+	cmdAddOS=ÅÖÇİÉ
+	cmdEditOS=ÊÍÑíÑ
+	cmdDelOS=ÍĞİ
+	frDesign=Appearance
+	lblSizeForm=ÍÌã ÇáÅØÇÑ ÇáÑÆíÓí
+	lblFormHeight=ÇáÇÑÊİÇÚ:
+	lblFormWidth=ÇáÚÑÖ:
+	chkFormMaximaze=ÅÈÏÃ ÈÇáÊÒííÏ
+	chkFormSizeSave=ÍİÙ ÍÌã ÇáäãÇĞÌ ÚäÏ ÇáÅäåÇÁ
+	lblSizeButton=ÎÕÇÆÕ ÒÑ
+	cmdChooseFont=ÇÎÊÑ ÇáÎØ áäÕ ÇáÒÑ
+	lblImageMain=ÇáÑãæÒ ÇáÑÆíÓíÉ
+	lblFormWidthMin=ÊæÌÏ Şíã ÇáÍÏ ÇáÃÏäì áÈÚÖ ÇáãÚáãÇÊ. ÅĞÇ ßÇäÊ ÇáŞíãÉ ÃŞá ãä ÇáÍÏ ÇáÃÏäì¡ æåĞÇ ÇáÅØÇÑ Óæİ ÊÖíÁ ÈÇááæä ÇáÃÍãÑ. ÇáÈÑäÇãÌ ÓíÊã ÊÚííä Şíã ÇİÊÑÇÖíÉ İí ÈÏÇíÊå.
+	AdditionalColorCaption=ÃáæÇä ÅÖÇİíÉ...
+	frDpInstParam=DPInst ãÚáãÇÊ ÇáÈÏÁ ãä
+	lblParam=ÇáãÚáãÉ
+	lblDescription=æÕİ ÇáãÚáãÉ
+	lblLegacyMode=æåæ íÊíÍ áÊËÈíÊ ÈÑÇãÌ ÇáÊÔÛíá ÛíÑ ÇáãæŞÚÉ¡ æÍÒã ÈÑäÇãÌ ÇáÊÔÛíá ÇáÊí ÊÍÊæí Úáì ãáİÇÊ ÇáãİŞæÏíä
+	lblPromptIfDriverIsNotBetter=íÚÑÖ ãÑÈÚ ÍæÇÑ ÅĞÇ ßÇä ÈÑäÇãÌ ÇáÊÔÛíá ÇáÌÏíÏ áÇ ÊØÇÈŞ ÃİÖá ááÌåÇÒ ãä ÈÑäÇãÌ ÇáÊÔÛíá ÇáãËÈÊ ÍÇáíÇ Úáì ÇáÌåÇÒ
+	lblForceIfDriverIsNotBetter=İÑÖ ÊËÈíÊ ÈÑäÇãÌ ÇáÊÔÛíá Úáì ÇáÌåÇÒ ÍÊì ÅĞÇ ßÇä ÈÑäÇãÌ ÇáÊÔÛíá ÇáãËÈÊ ÍÇáíÇ Úáì ÇáÌåÇÒ íØÇÈŞ ÃİÖá ãä ÈÑäÇãÌ ÇáÊÔÛíá ÇáÌÏíÏ
+	lblSuppressAddRemovePrograms=İÅäå íãäÚ ÅÖÇİÉ ÇáÅÏÎÇáÇÊ ÇáãæÌæÏÉ İí ÇáäÇİĞÉ \ "ÅÖÇİÉ Ãæ ÅÒÇáÉ ÇáÈÑÇãÌ" \
+	lblSuppressWizard=Ãäå íãäÚ ÚÑÖ ÇáãÚÇáÌ..., æáßä ÓíÊã ÚÑÖ ãÑÈÚÇÊ ÇáÍæÇÑ ÇáãÓÊÎÏã ÑÈãÇ ÈäÙÇã ÇáÊÔÛíá
+	lblQuietInstall=æÖÚ ÛíÑ ãÑÇŞÈ. İÅäå íãäÚ ÚÑÖ ÕİÍÇÊ ÇáãÚÇáÌ æÇáãÓÊÎÏã ÚÇÏÉ ãÑÈÚÇÊ ÍæÇÑ ÇáãÚÑæÖÉ ÈæÇÓØÉ äÙÇã ÇáÊÔÛíá 
+	lblScanHardware=(ÓíÊã äÓÎ ÈÑÇãÌ ÇáÊÔÛíá æÊËÈíÊåÇ İŞØ ááÃÌåÒÉ ÇáãæÌæÏÉ İí ÇáßãÈíæÊÑ (æÓæİ ÊÚãá İŞØ ãä ÃÌá ÃÌåÒÉ æÕá æÔÛá
+	lblCmdStringDPInst=ãÌãæÚ ãÚáãÇÊ ÇáÈÏÁ
+        TableOSHeader1=ÇáÅÕÏÇÑ
+        TableOSHeader3=ÍÒãÉ ÇáÊÚÑíİÇÊ
+        TableOSHeader5=x64
+	chkSilentDll=(dll and ocx) ÓÌíá/ÊÍÏíË ÕÇãÊ áãßæäÇÊ ÇáäÙÇã
+	ItemOptions4=ÇÓã ÇáÃÑÔíİ
+	frArchName=ÇÓã ÇáÃÑÔíİ
+	optArchNamePC=ÇÓã ÌåÇÒ ÇáÍÇÓæÈ
+	optArchModelPC=äãæĞÌ ÇáÍÇÓæÈ
+	optArchCustom=ÇáŞÇáÈ ÇáãÓÊÎÏã
+	lblArchNameStart=ÇÓã ãÍİæÙ ÈÔßá ÇİÊÑÇÖí
+	lblArchShablon=ÇÓã ÇáŞÇáÈ ãä ÇáÃÑÔíİ
+	lblMacrosType=ÇáãÇßÑæ ÇáãÊæİÑÉ
+	lblMacrosParam=ÇáãÚáãÉ
+	lblMacrosDescription=æÕİ ÇáãÚáãÉ
+	lblMacrosPCName=ÇáÇÓã ÇáãÎÊÕÑ ááÍÇÓæÈ ÈÏæä áÇÍŞÉ ÇáãÌÇá
+	lblMacrosPCModel=ÇáßãÈíæÊÑ \ ØÑÇÒ ÇááæÍÉ ÇáÃã
+	lblMacrosOSVer=ÅÕÏÇÑ äÙÇã ÇáÊÔÛíá ßãÇ wnt (5 | 6)
+	lblMacrosOSBit=ÇáåäÏÓÉ ÇáãÚãÇÑíÉ¡ æäÙÇã ÇáÊÔÛíá¡ İí ÇáÔßá x (32 | 64)
+	lblMacrosDate=ÊÇÑíÎ ÇáäÓÎ ÇáÇÍÊíÇØí
+	lblTypeBackUp=äæÚ ÇáäÓÎ ÇáÇÍÊíÇØí ÈÔßá ÇİÊÑÇÖí
+	cmdFutureButton=ÒÑß ÇáÎÇÕ ãÓÊŞÈáÇ
+	chkButtonDisable=(Êãßíä/ÊÚØíá (İŞØ ááÇÎÊÈÇÑ
+	lblDebugLogLevel=ÊÕÍíÍ ãÓÊæì
+
+[frmOSEdit]	
+	frmOSEdit=ÊÍÑíÑ ÅÏÎÇá
+	lblOSVer=ÅÕÏÇÑ äÙÇã ÇáÊÔÛíá 
+	lblPathDRP=ÇáãÓÇÑ Åáì ÇáãÌáÏ ãÚ ÍÒã ÇáÊÚÑíİÇÊ
+	chk64bit=ÈÑÇãÌ ÊÔÛíá äÙÇã ÇáÊÔÛíá 64-ÈÊ 
+	cmdOK=ÊØÈíŞ
+	cmdExit=ÇÛáÇŞ
+
+[frmProgress]
+	frmProgress=ÌãÚ ãÚáæãÇÊ Íæá ÈÑÇãÌ ÇáÊÔÛíá. ÇáÑÌÇÁ ÇáÇäÊÙÇÑ...
+
+[Messages]
+	strMessages1=ÇáäÓÎ ÇáÇÍÊíÇØí ÈÑÇãÌ ÇáÊÔÛíá¡ ÍÏÏ ÈÑäÇãÌ ÇáÊÔÛíá ãä ÇáŞÇÆãÉ æÇäŞÑ İæŞ ÇáäÓÎ ÇáÇÍÊíÇØí
+	strMessages2=ÍÏÏ ÇáÏáíá ÍíË ÊÑíÏ ÍİÙ äÓÎÉ ÇÍÊíÇØíÉ.
+	strMessages3=ÌãÚ ãÚáæãÇÊ Íæá ÇáÊßæíä æãáİÇÊ ÇáÊÚÑíİÇÊ áÃÌåÒÉ ÇáÍÇÓæÈ ÇáÑÌÇÁ ÇáÇäÊÙÇÑ...
+	strMessages4=ÈÑäÇãÌ ÇáÚãá áÇ íãßäß
+	strMessages5=ÇßÊãÇá ÌãÚ ãÚáæãÇÊ Íæá Êßæíä ÇáÃÌåÒÉ ÇáÎÇÕÉ Èß!
+	strMessages6=ÈÑäÇãÌ ÇáÊÔÛíá ÛíÑ ãÍÏÏÉ. ÍÏÏ ÈÑäÇãÌ ÇáÊÔÛíá ÇáãäÇÓÈ ãä ÇáŞÇÆãÉ¡ Ëã ÇäŞÑ İæŞ ÇáäÓÎ ÇáÇÍÊíÇØí.
+	strMessages7=ÃÍÏ ãáİÇÊ ÇáÈÑäÇãÌ ãİŞæÏÉ
+	strMessages8=İÔá İí ÊÓÌíá ãáİ ÇáäÙÇã. ãÍÇæáÉ ÊÓÌíá Çáãáİ íÏæíÇğ¡ Ãæ ÈÈÓÇØÉ äÓÎÉ Åáì windir%\system32\r\n\r\nContinuation İí ÇáãÇÆÉ ãä ÇáÚãá ŞÏ íÄÏí Åáì ÃÎØÇÁ ÃÎÑì. åá ÊÑÛÈ İí ÇáÇÓÊãÑÇÑ¿
+	strMessages9=ÇáÈÍË æÍİÙ ãáİÇÊ ÈÑäÇãÌ ÇáÊÔÛíá
+	strMessages10=ÇáäÓÎ ÇáÇÍÊíÇØí ÇßÊãá ÈäÌÇÍ
+	strMessages11=æŞÏ Êã ÊÛííÑ ãáİ ÊÑÎíÕ ÇáÊÚáíãÇÊ ÇáÈÑãÌíÉ ÇáãÕÏÑ! ŞÏ íßæä ãä ÎØÃ Ãæ äÊíÌÉ ááÊÛííÑÇÊ ÈÑäÇãÌ ÖÇÑ. ÇÊÕá ÈÇáÔÑßÉ ÇáãÕäÚÉ Ãæ ÊÍãíá ÈÑäÇãÌ ÌÏíÏ áÊæÒíÚ. åá ÊÑÛÈ İí ÇáÇÓÊãÑÇÑ¿
+	strMessages12=ÍÏË ÎØÃ ÃËäÇÁ ÅäÔÇÁ ÇáÃÑÔíİ. áã íÊã ÅäÔÇÁ äÓÎÉ ÇÍÊíÇØíÉ!
+	strMessages13=İÔáÊ ÚãáíÉ ÅäÔÇÁ ÇáäÓÎÉ ÇáÇÍÊíÇØíÉ ãä ÇáÓÇÆŞíä 7z:
+	strMessages15=íãßäß ÊÍÏíÏ Ïáíá ááÕæÑ ÇáÈÏíáÉ ááÑãæÒ ÛíÑ ãæÌæÏ. ÓíÊã ÇÓÊÎÏÇã ÇáÕæÑ ÇáŞíÇÓíÉ!
+	strMessages16=ÈÏÁ ÊÔÛíá ÇáÈÑäÇãÌ ãÚ ŞÑÕ/ÏíİíÏí ÚãáíÉ ÊÍÏíË ŞÇÚÏÉ ÇáÈíÇäÇÊ ãä ÇáãÓÊÍíá
+	strMessages20=İÔá ÅÒÇáÉ ãáİÇÊ ãä ÇáÈÑäÇãÌ. åá ÊÑÛÈ İí ÇáÇÓÊãÑÇÑ¿
+	strMessages21=Extract all files (DLL-OCX) from program completed successfully. \r\n\r\n Would you like to open a directory with files?
+	strMessages22=Extract all files (DLL-OCX) from program completed. \r\n In the extraction procedure errors were found! \r\n\r\n Would you like to open a directory with files?
+	strMessages25=DBS the program provides the following key start \r\n\r\n "/?", "/h", "-h", "-help", "/help" - display the window \r\n\r\n" /extractdll[:path]" - extract files from program to the specified directory, if a directory is specified, the recovery is a temporary directory \r\n\r\n "/regdll" - registration of software components (dll and ocx)
+	strMessages27=ÊÍáíá Êã ÅÍÈÇØå İí ÈÑäÇãÌ ÇáÊÔÛíá!!!\r\will Êã ÅÍÈÇØ ÇáãåãÉ:
+	strMessages33=İÔá İí ÈÏÁ ÊÔÛíá ÇáÈÑäÇãÌ ÇáÎÇÑÌí:
+	strMessages34=åá ÃäÊ ãÊÃßÏ ãä Ãäß ÊÑíÏ ÇáÎÑæÌ¿
+	strMessages35=Versions supporting modules:\r\n\r\nName module:\t\tFile Version:
+	strMessages36=New settings written!\r\nTo use, you must restart the program.\r\n\r\nWould you like to restart the program now?
+	strMessages37=åá ÃäÊ ãÊÃßÏ ãä Ãäß ÊÑíÏ ÅäåÇÁ ÈÏæä ÍİÙ ÇáÅÚÏÇÏÇÊ¿
+	strMessages38=The program works with CD\DVD!\r\nSohranenie settings can not be!
+	strMessages39=ÊÚĞÑ ÊÍãíá ÇÊİÇŞíÉ ÇáÊÑÎíÕ. ßĞáß ÊÚãá ÈÑÇãÌ ãÓÊÍíáÉ. ÇÊÕá ÈÇáÔÑßÉ ÇáãÕäÚÉ Ãæ ÊÍãíá ÈÑäÇãÌ ÌÏíÏ áÊæÒíÚ.
+	strMessages40=source text file has been changed!!!\r\nForma 'Support Project' will be closed.\r\nPlease the manufacturer or download a new distribution program.
+	strMessages41=ÇÊÕá ÈÇáÔÑßÉ ÇáãÕäÚÉ Ãæ ÊÍãíá ÈÑäÇãÌ ÌÏíÏ áÊæÒíÚ.donate.rtf ÊÚĞÑ ÊÍãíá Çáãáİ 
+	strMessages42=İÔá äÓÎ Çáãáİ
+	strMessages43=ÇáÇåÊãÇã! Çáãáİ ááŞÑÇÁÉ İŞØ¡ æÇáßÊÇÈÉ Åáì ãáİ ÇáãÓÊÍíá. áÍİÙ ÇáÍÇÌÉ Åáì ÅÒÇáÉ ÇáÓãÉ ãä Çáãáİ æÍÇæá ãÑÉ ÃÎÑì
+	strMessages44=áÇ íãßä ÅäÔÇÁ ãáİ ãÄŞÊ İí ÇáÏáíá:
+	strMessages45=ÍÏË ÎØÃ ÃËäÇÁ ßÊÇÈÉ ÇáÈíÇäÇÊ Åáì ãáİ:
+	strMessages53=áã íÊã ÊËÈíÊ ÇÊÕÇá ÇáÅäÊÑäÊ Ãæ ÇáÎÇÏã ÛíÑ ãÊæİÑ
+	strMessages54=İÔá İí ÈÏÁ ÊÔÛíá ÇáÊÍŞŞ ãä ÇáÊÍÏíË
+	strMessages55=The server encountered an old version! Very strange:)\r\nThis is all you have unofficial release obtained from the author's program for testing.\r\n\r\nWould you like open the form to update the program?
+	strMessages56=New versions of the program is not found.\r\n\r\nWould you like to open the form to update the program?
+	strMessages58=ÇáÊÍŞŞ ãä æÌæÏ ÊÍÏíËÇÊ ááÈÑäÇãÌ...
+	strMessages59=ÊÍãíá ÇáÈÑäÇãÌ ßÇãá
+	strMessages66=Êã ÅÍÈÇØ ãÚÇáÌÉ. æŞÊ ÇáÊÔÛíá:
+	strMessages67=ÚãáíÉ ÇáÇäÊåÇÁ ãä ÌãíÚ ÇáÓÇÆŞíä. æŞÊ ÇáÊÔÛíá:
+	strMessages81=ÇáĞåÇÈ¡ æÍĞİ ÇáãáİÇÊ ÇáãÄŞÊÉ. ÇáÑÌÇÁ ÇáÇäÊÙÇÑ...
+	strMessages82=íĞåÈ ÍĞİ ÇáãáİÇÊ İí ÇáÏáíá ÇáæÌåÉ. ÇáÑÌÇÁ ÇáÇäÊÙÇÑ...
+	strMessages97=ÅäÔÇÁ ÃÑÔíİ:
+	strMessages102=ÍÏË ÎØÃ ÚäÏ ãŞÇÑäÉ ÅÕÏÇÑÇÊ ÇáÈÑäÇãÌ. ÃÑÌÚ Åáì ÇáÔÑßÉ ÇáãÕäÚÉ.
+	strMessages106=The current version of the component is older than that used by the program.\r\nIt is recommended to install the update!\r\n\r\nNOTE! The update may affect other programs that use this component!\r\n\r\nWould you like to upgrade?
+	strMessages107=Perhaps you are using, version of "Drivers BackUp Solution" out of date!\r\n\rClick here to check updates " 
+	strMessages108=ãä
