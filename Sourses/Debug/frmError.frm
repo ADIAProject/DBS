@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{5E9E78A0-531B-11CF-91F6-C2863C385E30}#1.0#0"; "MSFLXGRD.OCX"
+Object = "{5E9E78A0-531B-11CF-91F6-C2863C385E30}#1.0#0"; "MSFlxGrd.ocx"
 Begin VB.Form frmError 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Warning, Error in Application!"
@@ -9,7 +9,7 @@ Begin VB.Form frmError
    ClientWidth     =   8640
    ClipControls    =   0   'False
    BeginProperty Font 
-      Name            =   "Arial"
+      Name            =   "Tahoma"
       Size            =   8.25
       Charset         =   204
       Weight          =   400
@@ -28,7 +28,7 @@ Begin VB.Form frmError
    Begin VB.CommandButton cmdContinue 
       Caption         =   "Continue running program (Not recommended)"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   9
          Charset         =   204
          Weight          =   700
@@ -45,7 +45,7 @@ Begin VB.Form frmError
    Begin VB.CommandButton cmdCreateFile 
       Caption         =   "Create Error.log"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   9
          Charset         =   204
          Weight          =   700
@@ -63,7 +63,7 @@ Begin VB.Form frmError
    Begin VB.CommandButton cmdEmail 
       Caption         =   "E-mail to author (do not forget to attach Error.log)"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   9
          Charset         =   204
          Weight          =   700
@@ -81,7 +81,7 @@ Begin VB.Form frmError
    Begin VB.Frame Frame1 
       Caption         =   "Description of error"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   204
          Weight          =   700
@@ -96,7 +96,7 @@ Begin VB.Form frmError
       Width           =   8500
       Begin VB.TextBox lblErrDescr 
          BeginProperty Font 
-            Name            =   "MS Sans Serif"
+            Name            =   "Tahoma"
             Size            =   9.75
             Charset         =   204
             Weight          =   400
@@ -116,7 +116,7 @@ Begin VB.Form frmError
          AutoSize        =   -1  'True
          Caption         =   "Number of application error:"
          BeginProperty Font 
-            Name            =   "Arial"
+            Name            =   "Tahoma"
             Size            =   13.5
             Charset         =   204
             Weight          =   700
@@ -134,7 +134,7 @@ Begin VB.Form frmError
          AutoSize        =   -1  'True
          Caption         =   "XXXXXX"
          BeginProperty Font 
-            Name            =   "Arial"
+            Name            =   "Tahoma"
             Size            =   14.25
             Charset         =   204
             Weight          =   400
@@ -153,7 +153,7 @@ Begin VB.Form frmError
    Begin VB.CommandButton cmdExit 
       Caption         =   "Close program"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   9
          Charset         =   204
          Weight          =   700
@@ -181,7 +181,7 @@ Begin VB.Form frmError
       ScrollBars      =   2
       AllowUserResizing=   3
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   9.75
          Charset         =   204
          Weight          =   700
@@ -194,7 +194,7 @@ Begin VB.Form frmError
       AutoSize        =   -1  'True
       Caption         =   "Line with error in code of the program:"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   14.25
          Charset         =   204
          Weight          =   700
@@ -212,7 +212,7 @@ Begin VB.Form frmError
       Alignment       =   1  'Right Justify
       Caption         =   "XXXXXX"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   14.25
          Charset         =   204
          Weight          =   400
@@ -231,7 +231,7 @@ Begin VB.Form frmError
       Alignment       =   1  'Right Justify
       Caption         =   "Label5"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   14.25
          Charset         =   204
          Weight          =   400
@@ -250,7 +250,7 @@ Begin VB.Form frmError
       AutoSize        =   -1  'True
       Caption         =   "Error has occurred in procedure:"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   14.25
          Charset         =   204
          Weight          =   700
@@ -268,7 +268,7 @@ Begin VB.Form frmError
       Alignment       =   2  'Center
       Caption         =   "Stack of executing procedure:"
       BeginProperty Font 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   13.5
          Charset         =   204
          Weight          =   700
@@ -303,7 +303,7 @@ Dim FileName As String
     FileName = "error.log"
     
     sFile = App.Path + vbBackslash + FileName
-    If mboolIsDriveCDRoom Then sFile = "c:\error.log"
+    If mbIsDriveCDRoom Then sFile = "c:\error.log"
     
         With Me.MSFlexGrid1
              .ColWidth(0) = 1200
@@ -320,12 +320,12 @@ Dim iFile As Integer
 Dim ErrText As String
 'On Error GoTo err
     
-    ErrText = "Description error in program Drivers BackUp Solution" & vbCrLf & _
+    ErrText = "Description error in program " & App.ProductName & vbCrLf & _
               "====================================" & vbCrLf & vbCrLf & _
-              "DateTime:" & vbTab & CStr(Date + Time) & vbCrLf & _
-              "Error Number:" & vbTab & lblErrCode & vbCrLf & _
-              "Procedure:" & vbTab & lblProc & vbCrLf & _
-              "Row with error:" & vbTab & lblStmt & vbCrLf & _
+              "DateTime:" & vbTab & CStr(Date + time) & vbCrLf & _
+              "Error Number:" & vbTab & lblErrCode.Caption & vbCrLf & _
+              "Procedure:" & vbTab & lblProc.Caption & vbCrLf & _
+              "Row with error:" & vbTab & lblStmt.Caption & vbCrLf & _
               "Description error:" & vbTab & lblErrDescr.Text & vbCrLf & vbCrLf & _
               "Listing executing procedure" & vbCrLf & _
               "---------------------" & vbCrLf & _
@@ -334,10 +334,10 @@ Dim ErrText As String
               "---------------------" & vbCrLf & _
               "Version of program:" & vbTab & App.Major & "." & App.Minor & "." & App.Revision & vbCrLf & _
               "Work path:" & vbTab & App.Path & vbCrLf & _
-              "Name OS:" & vbTab & OSInfo(0) & vbCrLf & _
-              "Version OS:" & vbTab & OSInfo(4) & vbCrLf & _
-              "Build OS:" & vbTab & OSInfo(1) & vbCrLf & _
-              "Other:" & vbTab & OSInfo(2) & vbCrLf & _
+              "Name OS:" & vbTab & OSInfo.Name & vbCrLf & _
+              "Version OS:" & vbTab & OSInfo.VerFull & vbCrLf & _
+              "Build OS:" & vbTab & OSInfo.BuildNumber & vbCrLf & _
+              "Other:" & vbTab & OSInfo.ServicePack & vbCrLf & _
               "====================================" & vbCrLf & vbCrLf
 
     iFile = FreeFile
@@ -391,7 +391,7 @@ Private Sub cmdEmail_Click()
         cmdCreateFile_Click
     End If
     Call ShellExecute(0, "Open", "mailto:Roman<roman-novosib@ngs.ru>" & _
-                                "?Subject=Error_DriversBackUpSolution_" & App.Major & "." & App.Minor & "." & App.Revision, vbNullString, vbNullString, 1)
+                                "?Subject=Error_" & Replace$(App.ProductName," ", vbNullString) & "_" & App.Major & "." & App.Minor & "." & App.Revision, vbNullString, vbNullString, 1)
 End Sub
 
 Private Sub cmdExit_Click()

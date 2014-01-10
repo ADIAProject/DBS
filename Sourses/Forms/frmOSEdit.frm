@@ -7,7 +7,7 @@ Begin VB.Form frmOSEdit
    ClientTop       =   540
    ClientWidth     =   8400
    BeginProperty Font 
-      Name            =   "Arial"
+      Name            =   "Tahoma"
       Size            =   8.25
       Charset         =   204
       Weight          =   400
@@ -33,7 +33,7 @@ Begin VB.Form frmOSEdit
       _ExtentX        =   4683
       _ExtentY        =   370
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   204
          Weight          =   400
@@ -44,12 +44,25 @@ Begin VB.Form frmOSEdit
       Caption         =   "frmOSEdit.frx":000C
       Transparent     =   -1  'True
    End
-   Begin VB.TextBox txtOSVer 
+   Begin prjDIADBS.TextBoxW txtOSVer 
       Height          =   375
       Left            =   2880
       TabIndex        =   0
       Top             =   240
       Width           =   5415
+      _ExtentX        =   0
+      _ExtentY        =   0
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Text            =   "frmOSEdit.frx":005E
+      CueBanner       =   "frmOSEdit.frx":007E
    End
    Begin prjDIADBS.ctlJCbutton cmdOK 
       Height          =   750
@@ -60,7 +73,7 @@ Begin VB.Form frmOSEdit
       _ExtentX        =   3201
       _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   204
          Weight          =   400
@@ -86,7 +99,7 @@ Begin VB.Form frmOSEdit
       _ExtentX        =   3201
       _ExtentY        =   1296
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   204
          Weight          =   400
@@ -125,7 +138,7 @@ Begin VB.Form frmOSEdit
       _ExtentX        =   0
       _ExtentY        =   0
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   204
          Weight          =   400
@@ -144,7 +157,7 @@ Begin VB.Form frmOSEdit
       _ExtentX        =   0
       _ExtentY        =   0
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   204
          Weight          =   400

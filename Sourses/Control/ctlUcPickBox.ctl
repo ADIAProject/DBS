@@ -682,9 +682,9 @@ Public Event PathChanged()
 '*************************************************************************************************
 '-Selfsub declarations----------------------------------------------------------------------------
 Private Enum eMsgWhen                                                       'When to callback
-    MSG_BEFORE = 1                                                            'Callback before the original WndProc
-    MSG_AFTER = 2                                                             'Callback after the original WndProc
-    MSG_BEFORE_AFTER = MSG_BEFORE Or MSG_AFTER                                'Callback before and after the original WndProc
+    MSG_BEFORE = 1                                                          'Callback before the original WndProc
+    MSG_AFTER = 2                                                           'Callback after the original WndProc
+    MSG_BEFORE_AFTER = MSG_BEFORE Or MSG_AFTER                              'Callback before and after the original WndProc
 End Enum
 
 Private Const ALL_MESSAGES  As Long = -1                                    'All messages callback
@@ -749,10 +749,9 @@ Private bTrack       As Boolean
 Private bTrackUser32 As Boolean
 Private bInCtrl      As Boolean
 
-'Track the mouse leaving the indicated window
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub TrackMouseLeave
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Track the mouse leaving the indicated window]
 '! Parameters  (Переменные):   lng_hWnd (Long)
 '!--------------------------------------------------------------------------------
 Private Sub TrackMouseLeave(ByVal lng_hWnd As Long)
@@ -779,7 +778,7 @@ End Sub
 '-SelfSub code------------------------------------------------------------------------------------
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function sc_Subclass
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [SelfSub code]
 '! Parameters  (Переменные):   lng_hWnd (Long)
 '                              lParamUser (Long = 0)
 '                              nOrdinal (Long = 1)
@@ -795,57 +794,64 @@ Private Function sc_Subclass(ByVal lng_hWnd As Long, Optional ByVal lParamUser A
     '* oCallback  - Optional, the object that will receive the callback. If undefined, callbacks are sent to this object's instance
     '* bIdeSafety - Optional, enable/disable IDE safety measures. NB: you should really only disable IDE safety in a UserControl for design-time subclassing
     '*************************************************************************************************
-    Const CODE_LEN     As Long = 260                                           'Thunk length in bytes
-    Const MEM_LEN      As Long = CODE_LEN + (8 * (MSG_ENTRIES + 1))            'Bytes to allocate per thunk, data + code + msg tables
-    Const PAGE_RWX     As Long = &H40&                                         'Allocate executable memory
-    Const MEM_COMMIT   As Long = &H1000&                                       'Commit allocated memory
-    Const MEM_RELEASE  As Long = &H8000&                                       'Release allocated memory flag
-    Const IDX_EBMODE   As Long = 3                                             'Thunk data index of the EbMode function address
-    Const IDX_CWP      As Long = 4                                             'Thunk data index of the CallWindowProc function address
-    Const IDX_SWL      As Long = 5                                             'Thunk data index of the SetWindowsLong function address
-    Const IDX_FREE     As Long = 6                                             'Thunk data index of the VirtualFree function address
-    Const IDX_BADPTR   As Long = 7                                             'Thunk data index of the IsBadCodePtr function address
-    Const IDX_OWNER    As Long = 8                                             'Thunk data index of the Owner object's vTable address
-    Const IDX_CALLBACK As Long = 10                                            'Thunk data index of the callback method address
-    Const IDX_EBX      As Long = 16                                            'Thunk code patch index of the thunk data
-    Const SUB_NAME     As String = "sc_Subclass"                               'This routine's name
+    Const CODE_LEN     As Long = 260                                          'Thunk length in bytes
+    Const MEM_LEN      As Long = CODE_LEN + (8 * (MSG_ENTRIES + 1))           'Bytes to allocate per thunk, data + code + msg tables
+    Const PAGE_RWX     As Long = &H40&                                        'Allocate executable memory
+    Const MEM_COMMIT   As Long = &H1000&                                      'Commit allocated memory
+    Const MEM_RELEASE  As Long = &H8000&                                      'Release allocated memory flag
+    Const IDX_EBMODE   As Long = 3                                            'Thunk data index of the EbMode function address
+    Const IDX_CWP      As Long = 4                                            'Thunk data index of the CallWindowProc function address
+    Const IDX_SWL      As Long = 5                                            'Thunk data index of the SetWindowsLong function address
+    Const IDX_FREE     As Long = 6                                            'Thunk data index of the VirtualFree function address
+    Const IDX_BADPTR   As Long = 7                                            'Thunk data index of the IsBadCodePtr function address
+    Const IDX_OWNER    As Long = 8                                            'Thunk data index of the Owner object's vTable address
+    Const IDX_CALLBACK As Long = 10                                           'Thunk data index of the callback method address
+    Const IDX_EBX      As Long = 16                                           'Thunk code patch index of the thunk data
+    Const SUB_NAME     As String = "sc_Subclass"                              'This routine's name
 
     Dim nAddr          As Long
     Dim nID            As Long
     Dim nMyID          As Long
 
-    If IsWindow(lng_hWnd) = 0 Then                                            'Ensure the window handle is valid
+    'Ensure the window handle is valid
+    If IsWindow(lng_hWnd) = 0 Then
         zError SUB_NAME, "Invalid window handle"
-
         Exit Function
-
     End If
 
-    nMyID = GetCurrentProcessId                                               'Get this process's ID
-    GetWindowThreadProcessId lng_hWnd, nID                                    'Get the process ID associated with the window handle
+    'Get this process's ID
+    nMyID = GetCurrentProcessId
+    'Get the process ID associated with the window handle
+    GetWindowThreadProcessId lng_hWnd, nID
 
-    If nID <> nMyID Then                                                      'Ensure that the window handle doesn't belong to another process
+    'Ensure that the window handle doesn't belong to another process
+    If nID <> nMyID Then
         zError SUB_NAME, "Window handle belongs to another process"
-
         Exit Function
-
     End If
 
-    If oCallback Is Nothing Then                                              'If the user hasn't specified the callback owner
-        Set oCallback = Me                                                      'Then it is me
+    'If the user hasn't specified the callback owner
+    If oCallback Is Nothing Then
+        'Then it is me
+        Set oCallback = Me
     End If
 
-    nAddr = zAddressOf(oCallback, nOrdinal)                                   'Get the address of the specified ordinal method
+    'Get the address of the specified ordinal method
+    nAddr = zAddressOf(oCallback, nOrdinal)
 
-    If nAddr = 0 Then                                                         'Ensure that we've found the ordinal method
+    'Ensure that we've found the ordinal method
+    If nAddr = 0 Then
         zError SUB_NAME, "Callback method not found"
 
         Exit Function
 
     End If
 
-    If z_Funk Is Nothing Then                                                 'If this is the first time through, do the one-time initialization
-        Set z_Funk = New Collection                                             'Create the hWnd/thunk-address collection
+    'If this is the first time through, do the one-time initialization
+    If z_Funk Is Nothing Then
+    
+        'Create the hWnd/thunk-address collection
+        Set z_Funk = New Collection
         z_Sc(14) = &HD231C031
         z_Sc(15) = &HBBE58960
         z_Sc(17) = &H4339F631
@@ -896,89 +902,119 @@ Private Function sc_Subclass(ByVal lng_hWnd As Long, Optional ByVal lParamUser A
         z_Sc(62) = &HFF525150
         z_Sc(63) = &H53FF2073
         z_Sc(64) = &HC328&
-        z_Sc(IDX_CWP) = zFnAddr("user32", "CallWindowProcA")                    'Store CallWindowProc function address in the thunk data
-        z_Sc(IDX_SWL) = zFnAddr("user32", "SetWindowLongA")                     'Store the SetWindowLong function address in the thunk data
-        z_Sc(IDX_FREE) = zFnAddr("kernel32", "VirtualFree")                     'Store the VirtualFree function address in the thunk data
-        z_Sc(IDX_BADPTR) = zFnAddr("kernel32", "IsBadCodePtr")                  'Store the IsBadCodePtr function address in the thunk data
+        'Store CallWindowProc function address in the thunk data
+        z_Sc(IDX_CWP) = zFnAddr("user32", "CallWindowProcA")
+        'Store the SetWindowLong function address in the thunk data
+        z_Sc(IDX_SWL) = zFnAddr("user32", "SetWindowLongA")
+        'Store the VirtualFree function address in the thunk data
+        z_Sc(IDX_FREE) = zFnAddr("kernel32", "VirtualFree")
+        'Store the IsBadCodePtr function address in the thunk data
+        z_Sc(IDX_BADPTR) = zFnAddr("kernel32", "IsBadCodePtr")
     End If
 
-    z_ScMem = VirtualAlloc(0, MEM_LEN, MEM_COMMIT, PAGE_RWX)                  'Allocate executable memory
-
-    If z_ScMem <> 0 Then                                                      'Ensure the allocation succeeded
-
-        On Error GoTo CatchDoubleSub                                            'Catch double subclassing
-
-        z_Funk.Add z_ScMem, "h" & lng_hWnd                                    'Add the hWnd/thunk-address to the collection
+    'Allocate executable memory
+    z_ScMem = VirtualAlloc(0, MEM_LEN, MEM_COMMIT, PAGE_RWX)
+    
+    'Ensure the allocation succeeded
+    If z_ScMem <> 0 Then
+    
+        'Catch double subclassing
+        On Error GoTo CatchDoubleSub
+        
+        'Add the hWnd/thunk-address to the collection
+        z_Funk.Add z_ScMem, "h" & lng_hWnd
 
         On Error GoTo 0
 
-        If bIdeSafety Then                                                      'If the user wants IDE protection
-            z_Sc(IDX_EBMODE) = zFnAddr("vba6", "EbMode")                          'Store the EbMode function address in the thunk data
+        'If the user wants IDE protection
+        If bIdeSafety Then
+            'Store the EbMode function address in the thunk data
+            z_Sc(IDX_EBMODE) = zFnAddr("vba6", "EbMode")
         End If
 
-        z_Sc(IDX_EBX) = z_ScMem                                                 'Patch the thunk data address
-        z_Sc(IDX_HWND) = lng_hWnd                                               'Store the window handle in the thunk data
-        z_Sc(IDX_BTABLE) = z_ScMem + CODE_LEN                                   'Store the address of the before table in the thunk data
-        z_Sc(IDX_ATABLE) = z_ScMem + CODE_LEN + ((MSG_ENTRIES + 1) * 4)         'Store the address of the after table in the thunk data
-        z_Sc(IDX_OWNER) = ObjPtr(oCallback)                                     'Store the callback owner's object address in the thunk data
-        z_Sc(IDX_CALLBACK) = nAddr                                              'Store the callback address in the thunk data
-        z_Sc(IDX_PARM_USER) = lParamUser                                        'Store the lParamUser callback parameter in the thunk data
-        nAddr = SetWindowLongA(lng_hWnd, GWL_WNDPROC, z_ScMem + WNDPROC_OFF)    'Set the new WndProc, return the address of the original WndProc
-
-        If nAddr = 0 Then                                                       'Ensure the new WndProc was set correctly
+        'Patch the thunk data address
+        z_Sc(IDX_EBX) = z_ScMem
+        'Store the window handle in the thunk data
+        z_Sc(IDX_HWND) = lng_hWnd
+        'Store the address of the before table in the thunk data
+        z_Sc(IDX_BTABLE) = z_ScMem + CODE_LEN
+        'Store the address of the after table in the thunk data
+        z_Sc(IDX_ATABLE) = z_ScMem + CODE_LEN + ((MSG_ENTRIES + 1) * 4)
+        'Store the callback owner's object address in the thunk data
+        z_Sc(IDX_OWNER) = ObjPtr(oCallback)
+        'Store the callback address in the thunk data
+        z_Sc(IDX_CALLBACK) = nAddr
+        'Store the lParamUser callback parameter in the thunk data
+        z_Sc(IDX_PARM_USER) = lParamUser
+        'Set the new WndProc, return the address of the original WndProc
+        nAddr = SetWindowLongA(lng_hWnd, GWL_WNDPROC, z_ScMem + WNDPROC_OFF)
+        
+        'Ensure the new WndProc was set correctly
+        If nAddr = 0 Then
             zError SUB_NAME, "SetWindowLong failed, error #" & Err.LastDllError
             GoTo ReleaseMemory
         End If
-
-        z_Sc(IDX_WNDPROC) = nAddr                                               'Store the original WndProc address in the thunk data
-        RtlMoveMemory z_ScMem, VarPtr(z_Sc(0)), CODE_LEN                        'Copy the thunk code/data to the allocated memory
-        sc_Subclass = True                                                      'Indicate success
+        
+        'Store the original WndProc address in the thunk data
+        z_Sc(IDX_WNDPROC) = nAddr
+        'Copy the thunk code/data to the allocated memory
+        RtlMoveMemory z_ScMem, VarPtr(z_Sc(0)), CODE_LEN
+        'Indicate success
+        sc_Subclass = True
     Else
         zError SUB_NAME, "VirtualAlloc failed, error: " & Err.LastDllError
     End If
 
-    Exit Function                                                             'Exit sc_Subclass
+    'Exit sc_Subclass
+    Exit Function
 
 CatchDoubleSub:
     zError SUB_NAME, "Window handle is already subclassed"
+
 ReleaseMemory:
-    VirtualFree z_ScMem, 0, MEM_RELEASE                                       'sc_Subclass has failed after memory allocation, so release the memory
+    'sc_Subclass has failed after memory allocation, so release the memory
+    VirtualFree z_ScMem, 0, MEM_RELEASE
 End Function
 
-'Terminate all subclassing
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub sc_Terminate
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Terminate all subclassing]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub sc_Terminate()
 
     Dim i As Long
 
-    If Not (z_Funk Is Nothing) Then                                           'Ensure that subclassing has been started
+    'Ensure that subclassing has been started
+    If Not (z_Funk Is Nothing) Then
 
         With z_Funk
 
-            For i = .Count To 1 Step -1                                           'Loop through the collection of window handles in reverse order
-                z_ScMem = .Item(i)                                                  'Get the thunk address
+            'Loop through the collection of window handles in reverse order
+            For i = .Count To 1 Step -1
+                'Get the thunk address
+                z_ScMem = .Item(i)
 
-                If IsBadCodePtr(z_ScMem) = 0 Then                                   'Ensure that the thunk hasn't already released its memory
-                    sc_UnSubclass zData(IDX_HWND)                                     'UnSubclass
+                'Ensure that the thunk hasn't already released its memory
+                If IsBadCodePtr(z_ScMem) = 0 Then
+                    'UnSubclass
+                    sc_UnSubclass zData(IDX_HWND)
                 End If
 
-            Next i                                                                'Next member of the collection
+            'Next member of the collection
+            Next i
 
         End With
 
-        Set z_Funk = Nothing                                                    'Destroy the hWnd/thunk-address collection
+        'Destroy the hWnd/thunk-address collection
+        Set z_Funk = Nothing
     End If
 
 End Sub
 
-'UnSubclass the specified window handle
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub sc_UnSubclass
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [UnSubclass the specified window handle]
 '! Parameters  (Переменные):   lng_hWnd (Long)
 '!--------------------------------------------------------------------------------
 Private Sub sc_UnSubclass(ByVal lng_hWnd As Long)
@@ -998,54 +1034,61 @@ Private Sub sc_UnSubclass(ByVal lng_hWnd As Long)
 
 End Sub
 
-'Add the message value to the window handle's specified callback table
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub sc_AddMsg
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Add the message value to the window handle's specified callback table]
 '! Parameters  (Переменные):   lng_hWnd (Long)
 '                              uMsg (Long)
 '                              When (eMsgWhen = eMsgWhen.MSG_AFTER)
 '!--------------------------------------------------------------------------------
 Private Sub sc_AddMsg(ByVal lng_hWnd As Long, ByVal uMsg As Long, Optional ByVal When As eMsgWhen = eMsgWhen.MSG_AFTER)
 
-    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then                             'Ensure that the thunk hasn't already released its memory
-        If When And MSG_BEFORE Then                                             'If the message is to be added to the before original WndProc table...
-            zAddMsg uMsg, IDX_BTABLE                                              'Add the message to the before table
+    'Ensure that the thunk hasn't already released its memory
+    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then
+        'If the message is to be added to the before original WndProc table...
+        If When And MSG_BEFORE Then
+            'Add the message to the before table
+            zAddMsg uMsg, IDX_BTABLE
         End If
 
-        If When And MSG_AFTER Then                                              'If message is to be added to the after original WndProc table...
-            zAddMsg uMsg, IDX_ATABLE                                              'Add the message to the after table
+        'If message is to be added to the after original WndProc table...
+        If When And MSG_AFTER Then
+            'Add the message to the after table
+            zAddMsg uMsg, IDX_ATABLE
         End If
     End If
 
 End Sub
 
-'Delete the message value from the window handle's specified callback table
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub sc_DelMsg
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Delete the message value from the window handle's specified callback table]
 '! Parameters  (Переменные):   lng_hWnd (Long)
 '                              uMsg (Long)
 '                              When (eMsgWhen = eMsgWhen.MSG_AFTER)
 '!--------------------------------------------------------------------------------
 Private Sub sc_DelMsg(ByVal lng_hWnd As Long, ByVal uMsg As Long, Optional ByVal When As eMsgWhen = eMsgWhen.MSG_AFTER)
 
-    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then                             'Ensure that the thunk hasn't already released its memory
-        If When And MSG_BEFORE Then                                             'If the message is to be deleted from the before original WndProc table...
-            zDelMsg uMsg, IDX_BTABLE                                              'Delete the message from the before table
+    'Ensure that the thunk hasn't already released its memory
+    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then
+        'If the message is to be deleted from the before original WndProc table...
+        If When And MSG_BEFORE Then
+            'Delete the message from the before table
+            zDelMsg uMsg, IDX_BTABLE
         End If
 
-        If When And MSG_AFTER Then                                              'If the message is to be deleted from the after original WndProc table...
-            zDelMsg uMsg, IDX_ATABLE                                              'Delete the message from the after table
+        'If the message is to be deleted from the after original WndProc table...
+        If When And MSG_AFTER Then
+            'Delete the message from the after table
+            zDelMsg uMsg, IDX_ATABLE
         End If
     End If
 
 End Sub
 
-'Call the original WndProc
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function sc_CallOrigWndProc
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Call the original WndProc]
 '! Parameters  (Переменные):   lng_hWnd (Long)
 '                              uMsg (Long)
 '                              wParam (Long)
@@ -1053,46 +1096,49 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Function sc_CallOrigWndProc(ByVal lng_hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
-    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then                             'Ensure that the thunk hasn't already released its memory
-        sc_CallOrigWndProc = CallWindowProcA(zData(IDX_WNDPROC), lng_hWnd, uMsg, wParam, lParam) 'Call the original WndProc of the passed window handle parameter
+    'Ensure that the thunk hasn't already released its memory
+    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then
+        'Call the original WndProc of the passed window handle parameter
+        sc_CallOrigWndProc = CallWindowProcA(zData(IDX_WNDPROC), lng_hWnd, uMsg, wParam, lParam)
     End If
 
 End Function
 
-'Get the subclasser lParamUser callback parameter
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Property sc_lParamUser
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Get the subclasser lParamUser callback parameter]
 '! Parameters  (Переменные):   lng_hWnd (Long)
 '!--------------------------------------------------------------------------------
 Private Property Get sc_lParamUser(ByVal lng_hWnd As Long) As Long
 
-    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then                             'Ensure that the thunk hasn't already released its memory
-        sc_lParamUser = zData(IDX_PARM_USER)                                    'Get the lParamUser callback parameter
+    'Ensure that the thunk hasn't already released its memory
+    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then
+        'Get the lParamUser callback parameter
+        sc_lParamUser = zData(IDX_PARM_USER)
     End If
 
 End Property
 
-'Let the subclasser lParamUser callback parameter
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Property sc_lParamUser
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Let the subclasser lParamUser callback parameter]
 '! Parameters  (Переменные):   lng_hWnd (Long)
 '                              NewValue (Long)
 '!--------------------------------------------------------------------------------
 Private Property Let sc_lParamUser(ByVal lng_hWnd As Long, ByVal NewValue As Long)
 
-    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then                             'Ensure that the thunk hasn't already released its memory
-        zData(IDX_PARM_USER) = NewValue                                         'Set the lParamUser callback parameter
+    'Ensure that the thunk hasn't already released its memory
+    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then
+        'Set the lParamUser callback parameter
+        zData(IDX_PARM_USER) = NewValue
     End If
 
 End Property
 
 '-The following routines are exclusively for the sc_ subclass routines----------------------------
-'Add the message to the specified table of the window handle
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub zAddMsg
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Add the message to the specified table of the window handle]
 '! Parameters  (Переменные):   uMsg (Long)
 '                              nTable (Long)
 '!--------------------------------------------------------------------------------
@@ -1102,8 +1148,8 @@ Private Sub zAddMsg(ByVal uMsg As Long, ByVal nTable As Long)
     Dim nBase  As Long                                                        'Remember z_ScMem
     Dim i      As Long                                                        'Loop index
 
-    nBase = z_ScMem                                                            'Remember z_ScMem so that we can restore its value on exit
-    z_ScMem = zData(nTable)                                                    'Map zData() to the specified table
+    nBase = z_ScMem                                                           'Remember z_ScMem so that we can restore its value on exit
+    z_ScMem = zData(nTable)                                                   'Map zData() to the specified table
 
     If uMsg = ALL_MESSAGES Then                                               'If ALL_MESSAGES are being added to the table...
         nCount = ALL_MESSAGES                                                   'Set the table entry count to ALL_MESSAGES
@@ -1172,10 +1218,9 @@ Bail:
     z_ScMem = nBase                                                           'Restore the value of z_ScMem
 End Sub
 
-'Error handler
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub zError
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Error handler]
 '! Parameters  (Переменные):   sRoutine (String)
 '                              sMsg (String)
 '!--------------------------------------------------------------------------------
@@ -1184,22 +1229,22 @@ Private Sub zError(ByVal sRoutine As String, ByVal sMsg As String)
     MsgBox sMsg & ".", vbExclamation + vbApplicationModal, "Error in " & TypeName(Me) & "." & sRoutine
 End Sub
 
-'Return the address of the specified DLL/procedure
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function zFnAddr
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Return the address of the specified DLL/procedure]
 '! Parameters  (Переменные):   sDLL (String)
 '                              sProc (String)
 '!--------------------------------------------------------------------------------
 Private Function zFnAddr(ByVal sDLL As String, ByVal sProc As String) As Long
-    zFnAddr = GetProcAddress(GetModuleHandleA(sDLL), sProc)                   'Get the specified procedure address
-    Debug.Assert zFnAddr                                                      'In the IDE, validate that the procedure address was located
+    'Get the specified procedure address
+    zFnAddr = GetProcAddress(GetModuleHandleA(sDLL), sProc)
+    'In the IDE, validate that the procedure address was located
+    Debug.Assert zFnAddr
 End Function
 
-'Map zData() to the thunk address for the specified window handle
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function zMap_hWnd
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Map zData() to the thunk address for the specified window handle]
 '! Parameters  (Переменные):   lng_hWnd (Long)
 '!--------------------------------------------------------------------------------
 Private Function zMap_hWnd(ByVal lng_hWnd As Long) As Long
@@ -1220,10 +1265,11 @@ Catch:
     zError "zMap_hWnd", "Window handle isn't subclassed"
 End Function
 
-'Return the address of the specified ordinal method on the oCallback object, 1 = last private method, 2 = second last private method, etc
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function zAddressOf
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Return the address of the specified ordinal method on the oCallback object,
+'!                              1 = last private method,
+'!                              2 = second last private method, etc]
 '! Parameters  (Переменные):   oCallback (Object)
 '                              nOrdinal (Long)
 '!--------------------------------------------------------------------------------
@@ -1274,10 +1320,9 @@ Private Function zAddressOf(ByVal oCallback As Object, ByVal nOrdinal As Long) A
 
 End Function
 
-'Probe at the specified start address for a method signature
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function zProbe
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Probe at the specified start address for a method signature]
 '! Parameters  (Переменные):   nStart (Long)
 '                              nMethod (Long)
 '                              bSub (Byte)
@@ -1293,10 +1338,10 @@ Private Function zProbe(ByVal nStart As Long, ByRef nMethod As Long, ByRef bSub 
     nLimit = nAddr + 32                                                       'Probe eight entries
 
     Do While nAddr < nLimit                                                   'While we've not reached our probe depth
-        RtlMoveMemory VarPtr(nEntry), nAddr, 4                                  'Get the vTable entry
+        RtlMoveMemory VarPtr(nEntry), nAddr, 4                                'Get the vTable entry
 
-        If nEntry <> 0 Then                                                     'If not an implemented interface
-            RtlMoveMemory VarPtr(bVal), nEntry, 1                                 'Get the value pointed at by the vTable entry
+        If nEntry <> 0 Then                                                   'If not an implemented interface
+            RtlMoveMemory VarPtr(bVal), nEntry, 1                             'Get the value pointed at by the vTable entry
 
             If bVal = &H33 Or bVal = &HE9 Then                                    'Check for a native or pcode method signature
                 nMethod = nAddr                                                     'Store the vTable entry
@@ -3136,7 +3181,7 @@ Public Function TrimPathByLen(ByVal sInput As String, ByVal iTextWidth As Intege
     'sInput As String :         the path to alter
     'iTextWidth as Integer :    the desired length of the inputted path in twips
     'sReplaceString as String : the string which is interted for missing text.  Default "..."
-    'sFont as String :          the font being used for display.  Default "MS Sans Serif"
+    'sFont as String :          the font being used for display.  Default "Tahoma"
     'iFontSize as Integer :     the font size being used for display.  Default "8"
     'Output:
     'TrimPathByLen intellengently cuts the input (sInput) to a string that fits
@@ -3919,10 +3964,9 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 
 End Sub
 
-'Read the properties from the property bag - also, a good place to start the subclassing (if we're running)
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UserControl_ReadProperties
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Read the properties from the property bag - also, a good place to start the subclassing (if we're running)]
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -4005,10 +4049,9 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     Call SetFocusAPI(UserControl.Parent.hWnd)
 End Sub
 
-'The control is terminating - a good place to stop the subclasser
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UserControl_Terminate
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [The control is terminating - a good place to stop the subclasser]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Terminate()

@@ -8,6 +8,15 @@ Begin VB.Form frmProgress
    ClientWidth     =   7170
    ClipControls    =   0   'False
    ControlBox      =   0   'False
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.25
+      Charset         =   204
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
    Icon            =   "frmProgress.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False

@@ -2,32 +2,36 @@ Attribute VB_Name = "mMain"
 Option Explicit
 
 ' Основные параметры программы
-Public Const strDateProgram         As String = "03/01/2014"
+Public Const strDateProgram         As String = "10/01/2013"
 
 ' Основные переменные проекта (название, версия и т.д)
 Public strProductName               As String
 Public strProductVersion            As String
 Public Const strProjectName         As String = "DriversBackuper"
+Public Const strUrl_MainWWWSite     As String = "http://adia-project.net/"                   ' Домашний сайт проекта
+Public Const strUrl_MainWWWForum    As String = "http://adia-project.net/forum/index.php"    ' Домашний форум проекта
+Public Const strUrlOsZoneNetThread  As String = "http://forum.oszone.net/thread-190814.html" ' Топик программы на сайте Oszone.net
 
 'Константы путей основных каталогов и файла настроек (вынесены отдельно для универсальности кода под разные проекты)
-Public Const strToolsLang_Path      As String = "Tools\LangDBS"            ' Каталог с языковыми файлами
-Public Const strToolsDocs_Path      As String = "Tools\DocsDBS"            ' Каталог с документацией на программу
-Public Const strToolsGraphics_Path  As String = "Tools\GraphicsDBS"        ' Каталог с графическими ресурсами программы
-Public Const strSettingIniFile      As String = "DriversBackuper.ini"  ' INI-Файл настроек программы
+Public Const strToolsLang_Path      As String = "Tools\LangDBS"         ' Каталог с языковыми файлами
+Public Const strToolsDocs_Path      As String = "Tools\DocsDBS"         ' Каталог с документацией на программу
+Public Const strToolsGraphics_Path  As String = "Tools\GraphicsDBS"     ' Каталог с графическими ресурсами программы
+Public Const strSettingIniFile      As String = "DriversBackuper.ini"   ' INI-Файл настроек программы
 
 ' Версии лицензионного соглашения и файла Donate
-Public Const strDONATE_MD5RTF               As String = "97f8178b2af5ba9377f76baf4ff71f78"
-Public Const strDONATE_MD5RTF_Eng           As String = "59bbfbf6decbf91023da434cbe940d33"
+Public Const strEULA_Version        As String = "02/02/2010"
+Public Const strEULA_MD5RTF         As String = "68da44c8b1027547e4763472e0ecb727"
+Public Const strEULA_MD5RTF_Eng     As String = "0cbd9d50eec41b26d24c5465c4be70bc"
+Public Const strDONATE_MD5RTF       As String = "97f8178b2af5ba9377f76baf4ff71f78"
+Public Const strDONATE_MD5RTF_Eng   As String = "59bbfbf6decbf91023da434cbe940d33"
 
 ' Массивы данных
 Public arrHwidsLocal()                      As String
 
-' Автообновление конфигурации при удалении драйвера
-Public mbDateFormatRus                   As Boolean
-
-' рабочий файл настроек
-Public strSysIni                            As String
+Public mbDateFormatRus                      As Boolean ' Автообновление конфигурации при удалении драйвера
+Public strSysIni                            As String ' рабочий файл настроек
 Public mbLoadIniTmpAfterRestart             As Boolean
+Public mbEULAAgree                          As Boolean
 Public strWorkTemp                          As String
 Public strWorkTempBackSL                    As String
 Public strWinTemp                           As String
@@ -56,15 +60,9 @@ Public strArh7zParam2                       As String
 Public strArh7zSFXPATH                      As String
 Public strArh7zSFXConfigPath                As String
 Public strArh7zSFXConfigPathEn              As String
-
-'режим работы с элементом listview - либо изменние либо добавление
-Public mbAddInList                       As Boolean
-
-'номер последнего элемента в списке ОС
-Public LastIdOS                          As Long
-
-'Маркер перезапуска программы
-Public mbRestartProgram                  As Boolean
+Public mbAddInList                       As Boolean 'режим работы с элементом listview - либо изменние либо добавление
+Public LastIdOS                          As Long 'номер последнего элемента в списке ОС
+Public mbRestartProgram                  As Boolean 'Маркер перезапуска программы
 Public mbStartMaximazed                  As Boolean
 Public strDPInstExePath                  As String
 Public strDPInstExePath64                As String
@@ -95,58 +93,54 @@ Public mbRunWithParam                    As Boolean
 Private mbRunWithParamS                  As Boolean
 Private strRunWithParam                  As String
 
-''Private strRunWithParam              As String
-' Пользователь администратор?
-Private mbIsUserAnAdmin                  As Boolean
+Private mbIsUserAnAdmin                  As Boolean ' Пользователь администратор?
 
 ' кэпшн основной формы
-Public strFrmMainCaptionTemp                As String
-Public strFrmMainCaptionTempDate            As String
+Public strFrmMainCaptionTemp             As String
+Public strFrmMainCaptionTempDate         As String
 
-'-------------------- Переменные размеров Формы и кнопок ------------------'
-Public lngMainFormWidth                        As Long
-Public lngMainFormHeight                       As Long
-
+'-------------------- Переменные размеров Форм ------------------'
+' Значения размеров формы
+Public lngMainFormWidth                  As Long
+Public lngMainFormHeight                 As Long
 ' Минимальные значения размеров формы
-Public Const lngMainFormWidthMin               As Long = 12700
-Public Const lngMainFormHeightMin              As Long = 6000
-
+Public Const lngMainFormWidthMin         As Long = 12700
+Public Const lngMainFormHeightMin        As Long = 6000
 ' Дефолтные значения размеров формы
-Private Const lngMainFormWidthDef              As Long = 12700
-Private Const lngMainFormHeightDef             As Long = 8000
+Private Const lngMainFormWidthDef        As Long = 12700
+Private Const lngMainFormHeightDef       As Long = 8000
 
 Public mbSaveSizeOnExit                  As Boolean
 Public mbCheckAllGroup                   As Boolean
 Public mbListOnlyGroup                   As Boolean
-Public miStartMode                          As Long
-Public miArchMode                           As Long
-Public arrOSList()                          As String
-Public OSCount                              As Long
+Public miStartMode                       As Long
+Public miArchMode                        As Long
+Public arrOSList()                       As String
+Public OSCount                           As Long
 Public mbBackFolderPredefine             As Boolean
 Public mbBlockListOnBackup               As Boolean
 
 ' Параметры каталога %Temp%
-Public mbTempPath          As Boolean
-Public strAlternativeTempPath As String
-Public mbPatnAbs           As Boolean
-Public lngArchNameMode        As Long
-Public strArchNameCustom      As String
+Public mbTempPath                        As Boolean
+Public strAlternativeTempPath            As String
+Public mbPatnAbs                         As Boolean
+Public lngArchNameMode                   As Long
+Public strArchNameCustom                 As String
 
-' Переменная для определения выключения DEP
-Public mbDisableDEP        As Boolean
+Public mbDisableDEP                      As Boolean ' Переменная для определения выключения DEP
 
 Private mbInitXPStyle                    As Boolean
 
 ' Переменные для определения модели компа
-Public strCompName            As String
-Public strMB_Model            As String
-Public strMB_Manufacturer     As String
-Public strCompModel           As String
-Public mbIsNotebok                       As Boolean
-Public mbCheckUpdNotEnd                  As Boolean
-Public mbChangeResolution                As Boolean ' Маркер, показывающий что проводилось измеенние разрешения экрана
-' Работаем в тихом режиме
-Public mbSilentRun                       As Boolean
+Public strCompName                       As String
+Public strMB_Model                       As String
+Public strMB_Manufacturer                As String
+Public strCompModel                      As String
+Public mbIsNotebok                       As Boolean ' Этот компьютер является ноутбуком
+
+Public mbCheckUpdNotEnd                  As Boolean ' Маркер, показывающий что еще идет проверка обновления программы
+Public mbChangeResolution                As Boolean ' Маркер, показывающий что проводилось изменение разрешения экрана
+Public mbSilentRun                       As Boolean ' Работаем в тихом режиме
 Public strThisBuildBy                    As String  ' Добавляем к описанию в главном окне в названии программы
 
 '!--------------------------------------------------------------------------------
@@ -388,8 +382,44 @@ Private Sub Main()
               "IE Version: " & regParam
     
     mbFirstStart = True
-    'Открываем основную форму
-    frmMain.Show vbModeless
+    ' Показ лицензионного соглашения
+    mbShowLicence = GetSetting(App.ProductName, "Licence", "Show at Startup", True)
+    strLicenceDate = GetSetting(App.ProductName, "Licence", "EULA_DATE", strEULA_Version)
+
+    If InStr(1, strLicenceDate, strEULA_Version, vbTextCompare) Then
+        If mbShowLicence Then
+            If Not mbRunWithParam Then
+                mbShowFormLicence = True
+            End If
+
+            If mbEULAAgree Then
+                mbShowFormLicence = False
+            End If
+
+        Else
+            mbShowFormLicence = False
+        End If
+
+    Else
+
+        If Not mbRunWithParam Then
+            mbShowFormLicence = True
+        End If
+
+        If mbEULAAgree Then
+            mbShowFormLicence = False
+        End If
+    End If
+
+    If mbShowFormLicence Then
+        'Открываем форму лицензионного соглашения
+        frmLicence.Show
+    Else
+        'Открываем основную форму
+        frmMain.Show vbModeless
+    End If
+
+
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -462,6 +492,8 @@ Private Sub CreateIni()
         IniWriteStrPrivate "Main", "DelTmpAfterClose", "1", strSysIni
         IniWriteStrPrivate "Main", "UpdateCheck", "1", strSysIni
         IniWriteStrPrivate "Main", "UpdateCheckBeta", "0", strSysIni
+        IniWriteStrPrivate "Main", "StartMode", "2", strSysIni
+        IniWriteStrPrivate "Main", "EULAAgree", "0", strSysIni
         IniWriteStrPrivate "Main", "HideOtherProcess", "0", strSysIni
         IniWriteStrPrivate "Main", "AlternativeTemp", "0", strSysIni
         IniWriteStrPrivate "Main", "AlternativeTempPath", "%Temp%", strSysIni
@@ -469,14 +501,14 @@ Private Sub CreateIni()
         IniWriteStrPrivate "Main", "StartLanguageID", "0409", strSysIni
         IniWriteStrPrivate "Main", "IconMainSkin", "Standart", strSysIni
         IniWriteStrPrivate "Main", "SilentDLL", "0", strSysIni
+        IniWriteStrPrivate "Main", "LoadIniTmpAfterRestart", "0", strSysIni
         IniWriteStrPrivate "Main", "DateFormatRus", "1", strSysIni
         IniWriteStrPrivate "Main", "CheckAllGroup", "1", strSysIni
         IniWriteStrPrivate "Main", "ListOnlyGroup", "1", strSysIni
-        IniWriteStrPrivate "Main", "StartMode", "2", strSysIni
         IniWriteStrPrivate "Main", "BlockListOnBackup", "1", strSysIni
         IniWriteStrPrivate "Main", "CalculateHashMode", "1", strSysIni
         IniWriteStrPrivate "Main", "ArchMode", "0", strSysIni
-        IniWriteStrPrivate "Main", "LoadIniTmpAfterRestart", "0", strSysIni
+
         'Секция Debug
         IniWriteStrPrivate "Debug", "DebugEnable", "1", strSysIni
         IniWriteStrPrivate "Debug", "DebugLogPath", "%SYSTEMDRIVE%", strSysIni
@@ -512,15 +544,12 @@ Private Sub CreateIni()
         IniWriteStrPrivate "OS", "OSCount", "4", strSysIni
         'Секция OS_1
         IniWriteStrPrivate "OS_1", "Ver", "5.0;5.1;5.2", strSysIni
-
-
-
-        IniWriteStrPrivate "OS_1", "is64bit", "0", strSysIni
         IniWriteStrPrivate "OS_1", "drpFolder", "drivers\2k_xp_2003\x32\", strSysIni
-        'Секция OS_1
+        IniWriteStrPrivate "OS_1", "is64bit", "0", strSysIni
+        'Секция OS_2
         IniWriteStrPrivate "OS_2", "Ver", "5.1;5.2", strSysIni
-        IniWriteStrPrivate "OS_2", "is64bit", "1", strSysIni
         IniWriteStrPrivate "OS_2", "drpFolder", "drivers\2k_xp_2003\x64\", strSysIni
+        IniWriteStrPrivate "OS_2", "is64bit", "1", strSysIni
 
 
 
@@ -532,8 +561,8 @@ Private Sub CreateIni()
 
         'Секция OS_3
         IniWriteStrPrivate "OS_3", "Ver", "6.0;6.1;6.2;6.3", strSysIni
-        IniWriteStrPrivate "OS_3", "is64bit", "0", strSysIni
         IniWriteStrPrivate "OS_3", "drpFolder", "drivers\vista_7_8\x32\", strSysIni
+        IniWriteStrPrivate "OS_3", "is64bit", "0", strSysIni
 
 
 
@@ -542,8 +571,8 @@ Private Sub CreateIni()
 
         'Секция OS_4
         IniWriteStrPrivate "OS_4", "Ver", "6.0;6.1;6.2;6.3", strSysIni
-        IniWriteStrPrivate "OS_4", "is64bit", "1", strSysIni
         IniWriteStrPrivate "OS_4", "drpFolder", "drivers\vista_7_8\x64\", strSysIni
+        IniWriteStrPrivate "OS_4", "is64bit", "1", strSysIni
         'Секция MainForm
         IniWriteStrPrivate "MainForm", "Width", CStr(lngMainFormWidthDef), strSysIni
         IniWriteStrPrivate "MainForm", "Height", CStr(lngMainFormHeightDef), strSysIni
@@ -595,8 +624,8 @@ Private Sub GetMainIniParam()
     strDebugLogPathTemp = PathNameFromPath(GetIniValueString(strSysIni, "Debug", "DebugLogPath", "%SYSTEMDRIVE%"))
     strDebugLogPath = PathCollect(PathNameFromPath(GetIniValueString(strSysIni, "Debug", "DebugLogPath", "%SYSTEMDRIVE%")))
     ' Имя лог-файла
-    strDebugLogNameTemp = GetIniValueString(strSysIni, "Debug", "DebugLogName", "DIA-LOG_%DATE%.txt")
-    strDebugLogName = ExpandFileNamebyEnvironment(GetIniValueString(strSysIni, "Debug", "DebugLogName", "DIA-LOG_%DATE%.txt"))
+    strDebugLogNameTemp = GetIniValueString(strSysIni, "Debug", "DebugLogName", "DBS-LOG_%DATE%.txt")
+    strDebugLogName = ExpandFileNamebyEnvironment(GetIniValueString(strSysIni, "Debug", "DebugLogName", "DBS-LOG_%DATE%.txt"))
     ' Деталировка отладки - по умолчанию=1
     lngDetailMode = GetIniValueLong(strSysIni, "Debug", "DetailMode", 1)
     ' Записывать время в лог-файл
@@ -644,6 +673,8 @@ Private Sub GetMainIniParam()
     mbUpdateCheck = GetIniValueBoolean(strSysIni, "Main", "UpdateCheck", 1)
     ' проверка обновлений при старте (Секция MAIN)
     mbUpdateCheckBeta = GetIniValueBoolean(strSysIni, "Main", "UpdateCheckBeta", 1)
+    ' погасить EULA
+    mbEULAAgree = GetIniValueBoolean(strSysIni, "Main", "EULAAgree", 0)
     ' Автоопределение языка
     mbAutoLanguage = GetIniValueBoolean(strSysIni, "Main", "AutoLanguage", 1)
 
@@ -653,7 +684,7 @@ Private Sub GetMainIniParam()
     ' Получение альтернативного пути Temp
     strAlternativeTempPath = IniStringPrivate("Main", "AlternativeTempPath", strSysIni)
 
-    If strAlternativeTempPath = "No Key" Then
+    If strAlternativeTempPath = "no_key" Then
         strAlternativeTempPath = strWinTemp
     End If
 

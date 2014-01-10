@@ -2,11 +2,11 @@ VERSION 5.00
 Begin VB.Form frmMain 
    Caption         =   "frmMain"
    ClientHeight    =   7185
-   ClientLeft      =   225
+   ClientLeft      =   165
    ClientTop       =   855
    ClientWidth     =   12480
    BeginProperty Font 
-      Name            =   "Arial"
+      Name            =   "Tahoma"
       Size            =   8.25
       Charset         =   204
       Weight          =   400
@@ -50,8 +50,7 @@ Begin VB.Form frmMain
       Width           =   12495
       _extentx        =   22040
       _extenty        =   10795
-      font            =   "frmMain.frx":0030
-      backcolor       =   14215660
+      font            =   "frmMain.frx":0034
       fillcolor       =   14215660
       style           =   8
       roundedcorner   =   0   'False
@@ -59,6 +58,7 @@ Begin VB.Form frmMain
       iconsize        =   48
       themecolor      =   2
       headerstyle     =   1
+      backcolor       =   14215660
       Begin prjDIADBS.ctlJCFrames frGroup 
          Height          =   2100
          Left            =   120
@@ -66,8 +66,7 @@ Begin VB.Form frmMain
          Width           =   5895
          _extentx        =   10398
          _extenty        =   3704
-         font            =   "frmMain.frx":0054
-         backcolor       =   15783104
+         font            =   "frmMain.frx":005C
          fillcolor       =   15783104
          style           =   4
          roundedcorner   =   0   'False
@@ -75,6 +74,7 @@ Begin VB.Form frmMain
          textboxheight   =   21
          headerstyle     =   1
          gradientheaderstyle=   2
+         backcolor       =   15783104
          Begin prjDIADBS.CheckBoxW chkHideOther 
             Height          =   400
             Left            =   75
@@ -84,7 +84,7 @@ Begin VB.Form frmMain
             _ExtentX        =   6165
             _ExtentY        =   714
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Arial"
+               Name            =   "Tahoma"
                Size            =   8.25
                Charset         =   204
                Weight          =   400
@@ -92,7 +92,7 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Caption         =   "frmMain.frx":0078
+            Caption         =   "frmMain.frx":0084
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp1 
@@ -104,7 +104,7 @@ Begin VB.Form frmMain
             _ExtentX        =   2831
             _ExtentY        =   450
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Arial"
+               Name            =   "Tahoma"
                Size            =   8.25
                Charset         =   204
                Weight          =   400
@@ -113,7 +113,7 @@ Begin VB.Form frmMain
                Strikethrough   =   0   'False
             EndProperty
             Value           =   0   'False
-            Caption         =   "frmMain.frx":00DE
+            Caption         =   "frmMain.frx":00EA
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp2 
@@ -125,7 +125,7 @@ Begin VB.Form frmMain
             _ExtentX        =   2831
             _ExtentY        =   450
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Arial"
+               Name            =   "Tahoma"
                Size            =   8.25
                Charset         =   204
                Weight          =   400
@@ -134,7 +134,7 @@ Begin VB.Form frmMain
                Strikethrough   =   0   'False
             EndProperty
             Value           =   0   'False
-            Caption         =   "frmMain.frx":0110
+            Caption         =   "frmMain.frx":011C
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp3 
@@ -146,7 +146,7 @@ Begin VB.Form frmMain
             _ExtentX        =   2831
             _ExtentY        =   450
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Arial"
+               Name            =   "Tahoma"
                Size            =   8.25
                Charset         =   204
                Weight          =   400
@@ -155,7 +155,7 @@ Begin VB.Form frmMain
                Strikethrough   =   0   'False
             EndProperty
             Value           =   0   'False
-            Caption         =   "frmMain.frx":0136
+            Caption         =   "frmMain.frx":0142
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp4 
@@ -167,7 +167,7 @@ Begin VB.Form frmMain
             _ExtentX        =   2831
             _ExtentY        =   450
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Arial"
+               Name            =   "Tahoma"
                Size            =   8.25
                Charset         =   204
                Weight          =   400
@@ -175,7 +175,7 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Caption         =   "frmMain.frx":015C
+            Caption         =   "frmMain.frx":0168
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.ctlJCbutton cmdCheckAll 
@@ -186,14 +186,14 @@ Begin VB.Form frmMain
             Width           =   2055
             _extentx        =   3625
             _extenty        =   900
-            font            =   "frmMain.frx":018E
+            font            =   "frmMain.frx":019A
             buttonstyle     =   10
             backcolor       =   12244692
             caption         =   "Выделить всё"
-            picturealign    =   0
-            picturepushonhover=   -1  'True
             pictureshadow   =   -1  'True
+            picturepushonhover=   -1  'True
             captioneffects  =   0
+            picturealign    =   0
             tooltipbackcolor=   0
             colorscheme     =   1
          End
@@ -205,14 +205,14 @@ Begin VB.Form frmMain
             Width           =   2055
             _extentx        =   3625
             _extenty        =   900
-            font            =   "frmMain.frx":01B2
+            font            =   "frmMain.frx":01C2
             buttonstyle     =   10
             backcolor       =   12244692
             caption         =   "Снять выделение"
-            picturealign    =   0
-            picturepushonhover=   -1  'True
             pictureshadow   =   -1  'True
+            picturepushonhover=   -1  'True
             captioneffects  =   0
+            picturealign    =   0
             tooltipbackcolor=   0
             colorscheme     =   1
          End
@@ -225,7 +225,7 @@ Begin VB.Form frmMain
             _ExtentX        =   6165
             _ExtentY        =   714
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Arial"
+               Name            =   "Tahoma"
                Size            =   8.25
                Charset         =   204
                Weight          =   400
@@ -233,7 +233,7 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Caption         =   "frmMain.frx":01D6
+            Caption         =   "frmMain.frx":01EA
             Transparent     =   -1  'True
          End
       End
@@ -244,8 +244,7 @@ Begin VB.Form frmMain
          Width           =   6255
          _extentx        =   11033
          _extenty        =   3704
-         font            =   "frmMain.frx":0232
-         backcolor       =   15783104
+         font            =   "frmMain.frx":0246
          fillcolor       =   15783104
          style           =   4
          roundedcorner   =   0   'False
@@ -253,16 +252,17 @@ Begin VB.Form frmMain
          textboxheight   =   21
          headerstyle     =   1
          gradientheaderstyle=   2
+         backcolor       =   15783104
          Begin prjDIADBS.ComboBoxW cmbTypeBackUp 
             Height          =   330
             Left            =   1800
             TabIndex        =   10
             Top             =   500
             Width           =   4335
-            _ExtentX        =   4233
-            _ExtentY        =   582
+            _ExtentX        =   7646
+            _ExtentY        =   556
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Arial"
+               Name            =   "Tahoma"
                Size            =   8.25
                Charset         =   204
                Weight          =   400
@@ -271,8 +271,8 @@ Begin VB.Form frmMain
                Strikethrough   =   0   'False
             EndProperty
             Style           =   2
-            Text            =   "frmMain.frx":0256
-            CueBanner       =   "frmMain.frx":0276
+            Text            =   "frmMain.frx":026E
+            CueBanner       =   "frmMain.frx":028E
          End
          Begin prjDIADBS.ctlJCbutton cmdStartBackUp 
             Height          =   510
@@ -282,14 +282,14 @@ Begin VB.Form frmMain
             Width           =   2175
             _extentx        =   3836
             _extenty        =   900
-            font            =   "frmMain.frx":0296
+            font            =   "frmMain.frx":02AE
             buttonstyle     =   10
             backcolor       =   12244692
             caption         =   "Start Backup"
-            picturealign    =   0
-            picturepushonhover=   -1  'True
             pictureshadow   =   -1  'True
+            picturepushonhover=   -1  'True
             captioneffects  =   0
+            picturealign    =   0
             tooltipbackcolor=   0
             colorscheme     =   1
          End
@@ -301,15 +301,15 @@ Begin VB.Form frmMain
             Width           =   2175
             _extentx        =   3836
             _extenty        =   900
-            font            =   "frmMain.frx":02BA
+            font            =   "frmMain.frx":02D6
             buttonstyle     =   10
-            enabled         =   0   'False
             backcolor       =   12244692
+            enabled         =   0   'False
             caption         =   "Break"
-            picturealign    =   0
-            picturepushonhover=   -1  'True
             pictureshadow   =   -1  'True
+            picturepushonhover=   -1  'True
             captioneffects  =   0
+            picturealign    =   0
             tooltipbackcolor=   0
             colorscheme     =   1
          End
@@ -320,20 +320,33 @@ Begin VB.Form frmMain
             Width           =   3855
             _extentx        =   6800
             _extenty        =   2064
-            font            =   "frmMain.frx":02DE
-            backcolor       =   14215660
+            font            =   "frmMain.frx":02FE
             fillcolor       =   14215660
             textboxcolor    =   12244692
             style           =   5
             roundedcorner   =   0   'False
             caption         =   "Имя Архива"
             alignment       =   0
-            Begin VB.TextBox txtArchName 
+            backcolor       =   14215660
+            Begin prjDIADBS.TextBoxW txtArchName 
                Height          =   350
                Left            =   120
                TabIndex        =   14
                Top             =   725
                Width           =   3615
+               _ExtentX        =   0
+               _ExtentY        =   0
+               BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+                  Name            =   "Tahoma"
+                  Size            =   8.25
+                  Charset         =   204
+                  Weight          =   400
+                  Underline       =   0   'False
+                  Italic          =   0   'False
+                  Strikethrough   =   0   'False
+               EndProperty
+               Text            =   "frmMain.frx":0326
+               CueBanner       =   "frmMain.frx":0346
             End
             Begin prjDIADBS.OptionButtonW optArchModelPC 
                Height          =   255
@@ -344,7 +357,7 @@ Begin VB.Form frmMain
                _ExtentX        =   3519
                _ExtentY        =   450
                BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-                  Name            =   "Arial"
+                  Name            =   "Tahoma"
                   Size            =   8.25
                   Charset         =   204
                   Weight          =   400
@@ -353,7 +366,7 @@ Begin VB.Form frmMain
                   Strikethrough   =   0   'False
                EndProperty
                Value           =   0   'False
-               Caption         =   "frmMain.frx":0302
+               Caption         =   "frmMain.frx":0366
                Transparent     =   -1  'True
             End
             Begin prjDIADBS.OptionButtonW optArchNamePC 
@@ -365,7 +378,7 @@ Begin VB.Form frmMain
                _ExtentX        =   3519
                _ExtentY        =   450
                BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-                  Name            =   "Arial"
+                  Name            =   "Tahoma"
                   Size            =   8.25
                   Charset         =   204
                   Weight          =   400
@@ -374,7 +387,7 @@ Begin VB.Form frmMain
                   Strikethrough   =   0   'False
                EndProperty
                Value           =   0   'False
-               Caption         =   "frmMain.frx":0344
+               Caption         =   "frmMain.frx":03A8
                Transparent     =   -1  'True
             End
             Begin prjDIADBS.OptionButtonW optArchCustom 
@@ -386,7 +399,7 @@ Begin VB.Form frmMain
                _ExtentX        =   2884
                _ExtentY        =   582
                BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-                  Name            =   "Arial"
+                  Name            =   "Tahoma"
                   Size            =   8.25
                   Charset         =   204
                   Weight          =   400
@@ -394,7 +407,7 @@ Begin VB.Form frmMain
                   Italic          =   0   'False
                   Strikethrough   =   0   'False
                EndProperty
-               Caption         =   "frmMain.frx":0380
+               Caption         =   "frmMain.frx":03E4
                Transparent     =   -1  'True
             End
          End
@@ -407,7 +420,7 @@ Begin VB.Form frmMain
             _ExtentX        =   3043
             _ExtentY        =   714
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-               Name            =   "Arial"
+               Name            =   "Tahoma"
                Size            =   8.25
                Charset         =   204
                Weight          =   400
@@ -425,8 +438,7 @@ Begin VB.Form frmMain
          Width           =   12255
          _extentx        =   21616
          _extenty        =   6509
-         font            =   "frmMain.frx":03B4
-         backcolor       =   14016736
+         font            =   "frmMain.frx":0418
          fillcolor       =   14016736
          textboxcolor    =   11595760
          txtboxshadow    =   1
@@ -436,6 +448,7 @@ Begin VB.Form frmMain
          textboxheight   =   21
          themecolor      =   3
          gradientheaderstyle=   1
+         backcolor       =   14016736
       End
    End
    Begin VB.Menu mnuReCollectHWID 
@@ -533,10 +546,13 @@ Private strTableHwidHeader10      As String
 Private strTableHwidHeader11      As String
 Private arrSourceDisksFiles()     As String
 Private arrSourceDisksNames()     As String
+
+Private strFormName               As String
 Private lngFrameTime              As Long
 Private lngFrameCount             As Long
 Private lngBorderWidthX           As Long
 Private lngBorderWidthY           As Long
+
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub BlockControl
@@ -1329,7 +1345,6 @@ Private Sub Form_Activate()
     If mbFirstStart Then
         If mbStartMaximazed Then
             Me.WindowState = vbMaximized
-            DoEvents
         End If
 
         DoEvents
@@ -1413,29 +1428,16 @@ Private Sub Form_Load()
     Dim i  As Long
     Dim ii As Long
 
-    DebugMode "FrmMainLoad-Start"
+    DebugMode "MainForm Show"
     SetupVisualStyles Me
-    'SetSmallIcon Me.hDc
-    mbFirstStart = True
-    
-    ' Sets an Alpha Icon as the Project Icon, this is not visible at Design Time
-    ' Once compiled the Icon will be displayed on the exe file
-    ' This is only required in the startup form!
-    Call SetIcon(Me.hWnd, "AMAINICO", True)
-    ' This icon is the form icon
-    ' Note: Add this line to all forms that you want to display Alpha Icons on, remember
-    '       you can change the FORMICON to be any name & icon you want in the AlphaIcon.rc file.
-    Call SetIcon(Me.hWnd, "FRMMAIN", False)
-    
-    ' Загрузка картинок для эементов и меню
-    LoadIconImage
-
-    'If Not mbIsDesignMode Then
-        'Hook Me.hWnd, (MainFormWidthMin \ Screen.TwipsPerPixelX), (MainFormHeightMin \ Screen.TwipsPerPixelY)
-    'End If
 
     With Me
+        ' изменяем иконки формы и приложения
+        ' Icon for Exe-file
+        SetIcon .hWnd, "APPICON", True
+        SetIcon .hWnd, "FRMMAIN", False
         ' Смена заголовка формы
+        strFormName = .Name
         ChangeFrmMainCaption
         ' Разворачиваем форму на весь экран
         .Width = lngMainFormWidth
@@ -1445,11 +1447,13 @@ Private Sub Form_Load()
         .Top = (lngBottomWorkArea - lngTopWorkArea) / 2 - .Height / 2
     End With
 
-    lngBorderWidthY = VPadding(Me)
-    lngBorderWidthX = HPadding(Me)
+    LoadIconImage
     ' Подчеркавание меню (аля 3D)
     Me.Line (0, 15)-(ScaleWidth, 15), vbWhite
     Me.Line (0, 0)-(ScaleWidth, 0), GetSysColor(COLOR_BTNSHADOW)
+
+    lngBorderWidthY = VPadding(Me)
+    lngBorderWidthX = HPadding(Me)
 
     ' Создаем StatusBar
     ctlUcStatusBar1.AddPanel strProductName
@@ -1503,17 +1507,31 @@ Private Sub Form_Load()
               "======================================================================="
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_QueryUnload
+'! Description (Описание)  :   [Корректная выгрузка формы]
+'! Parameters  (Переменные):   Cancel (Integer)
+'                              UnloadMode (Integer)
+'!--------------------------------------------------------------------------------
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-
-    Dim i As Integer
-
-    ' Выгружаем из памяти форму и другие компоненты
+    
+    ' Проверяем закончена ли проверка обновления, если нет то прерываем выход из программы, иначе программа вылетит
+    If mbCheckUpdNotEnd Then
+        Cancel = UnloadMode = vbFormControlMenu Or vbFormCode
+        Exit Sub
+    End If
+    
     ' Удаление временных файлов если есть и если опция включена
     If mbDelTmpAfterClose Then
-        ChangeStatusTextAndDebug strMessages(81)
-        DelTemp
-    End If
+        ChangeStatusTextAndDebug strMessages(81), , , , strMessages(130)
 
+        'Чистим если только не перезапуск программы
+        If Not mbRestartProgram Then
+            'Me.Hide
+            DelTemp
+        End If
+    End If
+    
     ' сохранение параметров при выходе
     If mbSaveSizeOnExit Then
         FRMStateSave
@@ -1522,7 +1540,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     ' Сохраняем язык при старте
     If Not mbIsDriveCDRoom Then
         If mnuLangStart.Checked Then
-            IniWriteStrPrivate "Main", "StartLanguageID", CStr(strPCLangCurrentID), strSysIni
+            IniWriteStrPrivate "Main", "StartLanguageID", strPCLangCurrentID, strSysIni
         End If
 
         IniWriteStrPrivate "Main", "AutoLanguage", CStr(Abs(Not mnuLangStart.Checked)), strSysIni
@@ -1542,35 +1560,48 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     If lngFrameCount < 1 Then lngFrameCount = 40
     If Me.WindowState <> vbMinimized Then
         AnimateForm Me, aUnload, eZoomOut, lngFrameTime, lngFrameCount
-        'AnimateForm Me, aUnload, eZoomOut
     End If
 
     ' Выгружаем из памяти форму и другие компоненты
     ' прочие компоненты
-    'Set CFm_sbStatusBar = Nothing
     lvDevices.Destroy
     Set lvDevices = Nothing
-    'Set TaskBar = Nothing
     Set frmMain = Nothing
 
-'    If Not mbIsDesignMode Then
-'        Unhook
-'    End If
-
-    For i = Forms.Count - 1 To 1 Step -1
-
-        If Forms(i).Name <> "frmMain" Then
-            Unload Forms(i)
-        End If
-
-    Next
+    ' Выгружаем из памяти формы
+    UnloadAllForms strFormName
+    
     Unload Me
     Set frmMain = Nothing
-    'FreeLibrary m_hMod
-    ' принудительный выход
-    'End
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub UnloadAllForms
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   FormToIgnore (String = vbNullString)
+'!--------------------------------------------------------------------------------
+Public Sub UnloadAllForms(Optional FormToIgnore As String = vbNullString)
+
+    Dim F As Form
+
+    For Each F In Forms
+
+        If Not F Is Nothing Then
+            If StrComp(F.Name, FormToIgnore, vbTextCompare) <> 0 Then
+                Unload F
+                Set F = Nothing
+            End If
+        End If
+
+    Next F
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Resize
+'! Description (Описание)  :   [Изменение размеров контролов при изменении размеров формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub Form_Resize()
 
     With Me
@@ -2043,12 +2074,12 @@ End Sub
 
 Private Sub mnuHomePage_Click()
 
-    RunUtilsShell Kavichki & "http://www.adia-project.net" & Kavichki, False
+    RunUtilsShell Kavichki & strUrl_MainWWWSite & Kavichki, False
 End Sub
 
 Private Sub mnuHomePageForum_Click()
 
-    RunUtilsShell Kavichki & "http://www.adia-project.net/forum/index.php" & Kavichki, False
+    RunUtilsShell Kavichki & strUrl_MainWWWForum & Kavichki, False
 End Sub
 
 Private Sub mnuLang_Click(Index As Integer)

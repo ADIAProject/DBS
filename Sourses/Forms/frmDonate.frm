@@ -6,7 +6,7 @@ Begin VB.Form frmDonate
    ClientTop       =   450
    ClientWidth     =   9480
    BeginProperty Font 
-      Name            =   "Arial Unicode MS"
+      Name            =   "Tahoma"
       Size            =   8.25
       Charset         =   204
       Weight          =   400
@@ -29,7 +29,7 @@ Begin VB.Form frmDonate
       _ExtentX        =   3625
       _ExtentY        =   1508
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial Unicode MS"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   204
          Weight          =   400
@@ -54,7 +54,7 @@ Begin VB.Form frmDonate
       _ExtentX        =   16457
       _ExtentY        =   9128
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial Unicode MS"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   204
          Weight          =   400
@@ -77,7 +77,7 @@ Begin VB.Form frmDonate
       _ExtentX        =   3625
       _ExtentY        =   1508
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial Unicode MS"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   204
          Weight          =   400
@@ -105,7 +105,7 @@ Begin VB.Form frmDonate
       _ExtentX        =   3836
       _ExtentY        =   1508
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial Unicode MS"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   204
          Weight          =   400
@@ -133,7 +133,7 @@ Begin VB.Form frmDonate
       _ExtentX        =   3836
       _ExtentY        =   1508
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Arial Unicode MS"
+         Name            =   "Tahoma"
          Size            =   8.25
          Charset         =   204
          Weight          =   400
