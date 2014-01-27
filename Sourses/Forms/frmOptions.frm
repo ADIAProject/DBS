@@ -2400,7 +2400,7 @@ End Sub
 
 Private Sub chkHideOther_Click()
 
-    chkCheckAll.Enabled = chkHideOther.Value
+    chkCheckAll.Enabled = CBool(chkHideOther.Value)
 End Sub
 
 Private Sub chkLegacyMode_Click()
@@ -2513,7 +2513,6 @@ Private Sub cmdDelOS_Click()
         End If
     End With
 
-    'LVOS
 End Sub
 
 '! -----------------------------------------------------------
@@ -2782,13 +2781,6 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     Set frmOptions = Nothing
 End Sub
 
-'Private Sub Form_Terminate()
-'
-'    If Forms.Count = 0 Then
-'        UnloadApp
-'    End If
-'End Sub
-
 Private Sub InitializeObjectProperties()
 
     ' изменение шрифта и текста
@@ -2821,7 +2813,6 @@ Private Sub LoadComboList()
         End If
     End With
 
-    'CMBTYPEBACKUP
 End Sub
 
 '! -----------------------------------------------------------
@@ -3062,17 +3053,17 @@ Private Sub ReadOptions()
     ' загрузить список ОС
     LoadList_OS
     ' Остальные параметры
-    chkUpdate.Value = mbUpdateCheck
-    chkUpdateBeta.Value = mbUpdateCheckBeta
-    chkSilentDll.Value = mbSilentDLL
-    chkRemoveTemp.Value = mbDelTmpAfterClose
-    chkDebug.Value = mbDebugEnable
-    chkRemoveHistory.Value = mbCleanHistory
-    chkFormMaximaze.Value = mbStartMaximazed
-    chkFormSizeSave.Value = mbSaveSizeOnExit
-    chkTempPath.Value = mbTempPath
+    chkUpdate.Value = Abs(mbUpdateCheck)
+    chkUpdateBeta.Value = Abs(mbUpdateCheckBeta)
+    chkSilentDll.Value = Abs(mbSilentDLL)
+    chkRemoveTemp.Value = Abs(mbDelTmpAfterClose)
+    chkDebug.Value = Abs(mbDebugEnable)
+    chkRemoveHistory.Value = Abs(mbCleanHistory)
+    chkFormMaximaze.Value = Abs(mbStartMaximazed)
+    chkFormSizeSave.Value = Abs(mbSaveSizeOnExit)
+    chkTempPath.Value = Abs(mbTempPath)
     ucTempPath.Path = strAlternativeTempPath
-    chkHideOtherProcess.Value = mbHideOtherProcess
+    chkHideOtherProcess.Value = Abs(mbHideOtherProcess)
     ucDebugLogPath.Path = strDebugLogPath
     txtDebugLogLevel.Text = lngDetailMode
     ' Режим при старте
@@ -3104,22 +3095,22 @@ Private Sub ReadOptions()
     End If
 
     ' Настройки DpInst
-    chkLegacyMode.Value = mbDpInstLegacyMode
-    chkPromptIfDriverIsNotBetter.Value = mbDpInstPromptIfDriverIsNotBetter
-    chkForceIfDriverIsNotBetter.Value = mbDpInstForceIfDriverIsNotBetter
-    chkSuppressAddRemovePrograms.Value = mbDpInstSuppressAddRemovePrograms
-    chkSuppressWizard.Value = mbDpInstSuppressWizard
-    chkQuietInstall.Value = mbDpInstQuietInstall
-    chkScanHardware.Value = mbDpInstScanHardware
+    chkLegacyMode.Value = Abs(mbDpInstLegacyMode)
+    chkPromptIfDriverIsNotBetter.Value = Abs(mbDpInstPromptIfDriverIsNotBetter)
+    chkForceIfDriverIsNotBetter.Value = Abs(mbDpInstForceIfDriverIsNotBetter)
+    chkSuppressAddRemovePrograms.Value = Abs(mbDpInstSuppressAddRemovePrograms)
+    chkSuppressWizard.Value = Abs(mbDpInstSuppressWizard)
+    chkQuietInstall.Value = Abs(mbDpInstQuietInstall)
+    chkScanHardware.Value = Abs(mbDpInstScanHardware)
     ' Другие настройки
     'txtCmdStringDPInst = CollectCmdString
     ' Загрузка списка скинов
     LoadListCombo cmbImageMain, strPathImageMain
     cmbImageMain.Text = strImageMainName
     ' изменение активности элементов
-    DebugCtlEnable chkDebug.Value
-    TempCtlEnable chkTempPath.Value
-    UpdateCtlEnable chkUpdate.Value
+    DebugCtlEnable CBool(chkDebug.Value)
+    TempCtlEnable CBool(chkTempPath.Value)
+    UpdateCtlEnable CBool(chkUpdate.Value)
     ' Имя архива при старте
     SelectStartArchName
     txtArchNameShablon.Text = strArchNameCustom
@@ -3161,14 +3152,14 @@ Private Sub SaveOptions()
     '**************************************************
     ' Секция MAIN
     'Удаление TEMP при выходе
-    IniWriteStrPrivate "Main", "DelTmpAfterClose", CStr(Abs(chkRemoveTemp.Value)), strSysIniTemp
+    IniWriteStrPrivate "Main", "DelTmpAfterClose", chkRemoveTemp.Value, strSysIniTemp
     ' Автообновление
-    IniWriteStrPrivate "Main", "UpdateCheck", CStr(Abs(chkUpdate.Value)), strSysIniTemp
+    IniWriteStrPrivate "Main", "UpdateCheck", chkUpdate.Value, strSysIniTemp
     ' Автообновление Beta
-    IniWriteStrPrivate "Main", "UpdateCheckBeta", CStr(Abs(chkUpdateBeta.Value)), strSysIniTemp
+    IniWriteStrPrivate "Main", "UpdateCheckBeta", chkUpdateBeta.Value, strSysIniTemp
     ' Режим запуска
-    IniWriteStrPrivate "Main", "CheckAllGroup", CStr(Abs(chkCheckAll.Value)), strSysIniTemp
-    IniWriteStrPrivate "Main", "ListOnlyGroup", CStr(Abs(chkHideOther.Value)), strSysIniTemp
+    IniWriteStrPrivate "Main", "CheckAllGroup", chkCheckAll.Value, strSysIniTemp
+    IniWriteStrPrivate "Main", "ListOnlyGroup", chkHideOther.Value, strSysIniTemp
 
     If optGrp1.Value Then
         miRezim = 1
@@ -3180,37 +3171,30 @@ Private Sub SaveOptions()
         miRezim = 4
     End If
 
-    IniWriteStrPrivate "Main", "StartMode", CStr(miRezim), strSysIniTemp
-    'IniWriteStrPrivate "Main", "EULAAgree", CStr(Abs(mbEULAAgree)), strSysIniTemp
-    IniWriteStrPrivate "Main", "HideOtherProcess", CStr(Abs(chkHideOtherProcess.Value)), strSysIniTemp
-    IniWriteStrPrivate "Main", "AlternativeTemp", CStr(Abs(chkTempPath.Value)), strSysIniTemp
+    IniWriteStrPrivate "Main", "StartMode", miRezim, strSysIniTemp
+    IniWriteStrPrivate "Main", "EULAAgree", Abs(mbEULAAgree), strSysIniTemp
+    IniWriteStrPrivate "Main", "HideOtherProcess", chkHideOtherProcess.Value, strSysIniTemp
+    IniWriteStrPrivate "Main", "AlternativeTemp", chkTempPath.Value, strSysIniTemp
     IniWriteStrPrivate "Main", "AlternativeTempPath", ucTempPath.Path, strSysIniTemp
     IniWriteStrPrivate "Main", "IconMainSkin", cmbImageMain.Text, strSysIniTemp
-    IniWriteStrPrivate "Main", "SilentDLL", CStr(Abs(chkSilentDll.Value)), strSysIniTemp
-    IniWriteStrPrivate "Main", "ArchMode", CStr(cmbTypeBackUp.ListIndex), strSysIni
+    IniWriteStrPrivate "Main", "SilentDLL", chkSilentDll.Value, strSysIniTemp
+    IniWriteStrPrivate "Main", "ArchMode", cmbTypeBackUp.ListIndex, strSysIni
 
     If mbLoadIniTmpAfterRestart Then
         IniWriteStrPrivate "Main", "LoadIniTmpAfterRestart", 1, strSysIniTemp
     End If
 
-    IniWriteStrPrivate "Main", "DisableDEP", CStr(Abs(mbDisableDEP)), strSysIniTemp
+    IniWriteStrPrivate "Main", "DisableDEP", Abs(mbDisableDEP), strSysIniTemp
     ' Секция Debug
-    IniWriteStrPrivate "Debug", "DebugEnable", CStr(Abs(chkDebug.Value)), strSysIniTemp
+    IniWriteStrPrivate "Debug", "DebugEnable", chkDebug.Value, strSysIniTemp
     ' Очистка истории:
-    IniWriteStrPrivate "Debug", "CleenHistory", CStr(Abs(chkRemoveHistory.Value)), strSysIniTemp
+    IniWriteStrPrivate "Debug", "CleenHistory", chkRemoveHistory.Value, strSysIniTemp
     ' Путь до лог-файла
     IniWriteStrPrivate "Debug", "DebugLogPath", ucDebugLogPath.Path, strSysIniTemp
-    IniWriteStrPrivate "Debug", "Detailmode", CStr(txtDebugLogLevel.Text), strSysIniTemp
+    IniWriteStrPrivate "Debug", "Detailmode", txtDebugLogLevel.Text, strSysIniTemp
     'Секция DPInst
     IniWriteStrPrivate "DPInst", "PathExe", ucDPInst86Path.Path, strSysIniTemp
     IniWriteStrPrivate "DPInst", "PathExe64", ucDPInst64Path.Path, strSysIniTemp
-    'IniWriteStrPrivate "DPInst", "LegacyMode", CStr(Abs(chkLegacyMode.Value)), strSysIniTemp
-    'IniWriteStrPrivate "DPInst", "PromptIfDriverIsNotBetter", CStr(Abs(chkPromptIfDriverIsNotBetter.Value)), strSysIniTemp
-    'IniWriteStrPrivate "DPInst", "ForceIfDriverIsNotBetter", CStr(Abs(chkForceIfDriverIsNotBetter.Value)), strSysIniTemp
-    'IniWriteStrPrivate "DPInst", "SuppressAddRemovePrograms", CStr(Abs(chkSuppressAddRemovePrograms.Value)), strSysIniTemp
-    'IniWriteStrPrivate "DPInst", "SuppressWizard", CStr(Abs(chkSuppressWizard.Value)), strSysIniTemp
-    'IniWriteStrPrivate "DPInst", "QuietInstall", CStr(Abs(chkQuietInstall.Value)), strSysIniTemp
-    'IniWriteStrPrivate "DPInst", "ScanHardware", CStr(Abs(chkScanHardware.Value)), strSysIniTemp
     'Секция Arc
     IniWriteStrPrivate "Arc", "PathExe", ucArchPath.Path, strSysIniTemp
     IniWriteStrPrivate "Arc", "CompressParam1", "-mmt=off -m0=BCJ2 -m1=LZMA2:d32m:fb273 -m2=LZMA2:d512k -m3=LZMA2:d512k -mb0:1 -mb0s1:2 -mb0s2:3 *.ini -ir!*.inf", strSysIni
@@ -3232,7 +3216,7 @@ Private Sub SaveOptions()
     IniWriteStrPrivate "ARCName", "CustomName", txtArchNameShablon, strSysIni
     'Секция OS
     OSCountNew = lvOS.Count
-    IniWriteStrPrivate "OS", "OSCount", CStr(OSCountNew), strSysIniTemp
+    IniWriteStrPrivate "OS", "OSCount", OSCountNew, strSysIniTemp
 
     'Заполяем в цикле подсекции ОС
     For cnt = 1 To OSCountNew
@@ -3248,17 +3232,17 @@ Private Sub SaveOptions()
     'Секция MainForm
     IniWriteStrPrivate "MainForm", "Width", txtFormWidth.Text, strSysIniTemp
     IniWriteStrPrivate "MainForm", "Height", txtFormHeight.Text, strSysIniTemp
-    IniWriteStrPrivate "MainForm", "StartMaximazed", CStr(Abs(chkFormMaximaze.Value)), strSysIniTemp
+    IniWriteStrPrivate "MainForm", "StartMaximazed", chkFormMaximaze.Value, strSysIniTemp
     mbSaveSizeOnExit = chkFormSizeSave.Value
-    IniWriteStrPrivate "MainForm", "SaveSizeOnExit", CStr(Abs(chkFormSizeSave.Value)), strSysIniTemp
+    IniWriteStrPrivate "MainForm", "SaveSizeOnExit", chkFormSizeSave.Value, strSysIniTemp
     IniWriteStrPrivate "MainForm", "HighlightColor", CStr(glHighlightColor), strSysIniTemp
     'Секция Buttons
     IniWriteStrPrivate "Button", "FontName", strFontBtn_Name, strSysIniTemp
-    IniWriteStrPrivate "Button", "FontSize", CStr(miFontBtn_Size), strSysIniTemp
-    IniWriteStrPrivate "Button", "FontUnderline", CStr(Abs(mbFontBtn_Underline)), strSysIniTemp
-    IniWriteStrPrivate "Button", "FontStrikethru", CStr(Abs(mbFontBtn_Strikethru)), strSysIniTemp
-    IniWriteStrPrivate "Button", "FontItalic", CStr(Abs(mbFontBtn_Italic)), strSysIniTemp
-    IniWriteStrPrivate "Button", "FontBold", CStr(Abs(mbFontBtn_Bold)), strSysIniTemp
+    IniWriteStrPrivate "Button", "FontSize", miFontBtn_Size, strSysIniTemp
+    IniWriteStrPrivate "Button", "FontUnderline", Abs(mbFontBtn_Underline), strSysIniTemp
+    IniWriteStrPrivate "Button", "FontStrikethru", Abs(mbFontBtn_Strikethru), strSysIniTemp
+    IniWriteStrPrivate "Button", "FontItalic", Abs(mbFontBtn_Italic), strSysIniTemp
+    IniWriteStrPrivate "Button", "FontBold", Abs(mbFontBtn_Bold), strSysIniTemp
     IniWriteStrPrivate "Button", "FontColor", CStr(cmdFutureButton.ForeColor), strSysIniTemp
     ' Приводим Ini файл к читабельному виду
     NormIniFile strSysIniTemp
@@ -3270,24 +3254,16 @@ Private Sub SelectStartArchName()
     Select Case lngArchNameMode
 
         Case 0
-            'optArchCustom.ClearChecks
             optArchCustom.Value = True
 
-            'optArchCustom_Click
         Case 1
-            'optArchNamePC.ClearChecks
             optArchNamePC.Value = True
-
-            'optArchNamePC_Click
+            
         Case 2
-            'optArchModelPC.ClearChecks
             optArchModelPC.Value = True
 
-            'optArchModelPC_Click
         Case Else
-            'optArchCustom.ClearChecks
             optArchCustom.Value = True
-            'optArchCustom_Click
     End Select
 End Sub
 
@@ -3297,19 +3273,15 @@ Private Sub SelectStartMode()
     Select Case miStartMode
 
         Case 1
-            'optGrp1.ClearChecks
             optGrp1.Value = True
 
         Case 2
-            'optGrp2.ClearChecks
             optGrp2.Value = True
 
         Case 3
-            'optGrp3.ClearChecks
             optGrp3.Value = True
 
         Case 4
-            'optGrp4.ClearChecks
             optGrp4.Value = True
     End Select
 End Sub
@@ -3340,7 +3312,6 @@ Private Sub TransferOSData()
         frmOSEdit.chk64bit.Value = CBool(.SubItemCaption(i, 1))
     End With
 
-    'LVOS
     frmOSEdit.Show vbModal, Me
 End Sub
 
@@ -3370,7 +3341,6 @@ Private Sub tvOptionsLoad()
         '.ImgLst_AddIcon LoadIconImageFromPath("OPT_DPINST", strPathImageMainWork)
     End With
 
-    'LVOPTIONS
 End Sub
 
 Private Sub txtArchNameShablon_GotFocus()
@@ -3530,22 +3500,6 @@ Private Sub ucArchPathSFXConfigEn_LostFocus()
 
     HighlightActiveControl Me, ucArchPathSFXConfigEn, False
 End Sub
-
-'Private Sub ucColorButton_Click()
-'
-'    'lngDialog_Color = ucColorButton.Color
-'    SetBtnFontProperties cmdFutureButton
-'End Sub
-'
-'Private Sub ucColorButton_GotFocus()
-'
-'    HighlightActiveControl Me, ucColorButton, True
-'End Sub
-'
-'Private Sub ucColorButton_LostFocus()
-'
-'    HighlightActiveControl Me, ucColorButton, False
-'End Sub
 
 '! -----------------------------------------------------------
 '!  Функция     :  ucDebugLogPath_Click

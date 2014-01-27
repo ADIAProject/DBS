@@ -2,7 +2,7 @@ Attribute VB_Name = "mMain"
 Option Explicit
 
 ' ќсновные параметры программы
-Public Const strDateProgram         As String = "10/01/2013"
+Public Const strDateProgram         As String = "21/01/2013"
 
 ' ќсновные переменные проекта (название, верси€ и т.д)
 Public strProductName               As String
@@ -1076,7 +1076,7 @@ Private Sub Win64ReloadOptions()
     DebugMode "CSIDL_SYSTEMX86: " & strSysDir64
 
     ' ≈сли определившийс€ путь существует, то принимаем его, елси нет, то тогда
-    If PathExists(strSysDir64) And InStr(1, strSysDir64, "64", vbTextCompare) > 0 Then
+    If PathExists(strSysDir64) And InStr(1, strSysDir64, "64") > 0 Then
         strSysDir = strSysDir64
     ElseIf PathExists(strWinDir & "SysWOW64") Then
         strSysDir = strWinDir & "SysWOW64"

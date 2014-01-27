@@ -27,10 +27,18 @@ Begin VB.Form frmMain
       TabIndex        =   15
       Top             =   6480
       Width           =   12480
-      _extentx        =   22013
-      _extenty        =   1244
-      font            =   "frmMain.frx":000C
-      theme           =   2
+      _ExtentX        =   22013
+      _ExtentY        =   1244
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   9
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Theme           =   2
    End
    Begin prjDIADBS.ProgressBar ProgressBar1 
       Align           =   2  'Align Bottom
@@ -48,33 +56,49 @@ Begin VB.Form frmMain
       Left            =   0
       Top             =   0
       Width           =   12495
-      _extentx        =   22040
-      _extenty        =   10795
-      font            =   "frmMain.frx":0034
-      fillcolor       =   14215660
-      style           =   8
-      roundedcorner   =   0   'False
-      caption         =   ""
-      iconsize        =   48
-      themecolor      =   2
-      headerstyle     =   1
-      backcolor       =   14215660
+      _ExtentX        =   22040
+      _ExtentY        =   10795
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   14215660
+      FillColor       =   14215660
+      Style           =   8
+      RoundedCorner   =   0   'False
+      Caption         =   ""
+      IconSize        =   48
+      ThemeColor      =   2
+      HeaderStyle     =   1
       Begin prjDIADBS.ctlJCFrames frGroup 
          Height          =   2100
          Left            =   120
          Top             =   75
          Width           =   5895
-         _extentx        =   10398
-         _extenty        =   3704
-         font            =   "frmMain.frx":005C
-         fillcolor       =   15783104
-         style           =   4
-         roundedcorner   =   0   'False
-         caption         =   "Выделение группы драйверов"
-         textboxheight   =   21
-         headerstyle     =   1
-         gradientheaderstyle=   2
-         backcolor       =   15783104
+         _ExtentX        =   10398
+         _ExtentY        =   3704
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15783104
+         FillColor       =   15783104
+         Style           =   4
+         RoundedCorner   =   0   'False
+         Caption         =   "Выделение группы драйверов"
+         TextBoxHeight   =   21
+         HeaderStyle     =   1
+         GradientHeaderStyle=   2
          Begin prjDIADBS.CheckBoxW chkHideOther 
             Height          =   400
             Left            =   75
@@ -92,7 +116,7 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Caption         =   "frmMain.frx":0084
+            Caption         =   "frmMain.frx":000C
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp1 
@@ -113,7 +137,7 @@ Begin VB.Form frmMain
                Strikethrough   =   0   'False
             EndProperty
             Value           =   0   'False
-            Caption         =   "frmMain.frx":00EA
+            Caption         =   "frmMain.frx":0072
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp2 
@@ -134,7 +158,7 @@ Begin VB.Form frmMain
                Strikethrough   =   0   'False
             EndProperty
             Value           =   0   'False
-            Caption         =   "frmMain.frx":011C
+            Caption         =   "frmMain.frx":00A4
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp3 
@@ -155,7 +179,7 @@ Begin VB.Form frmMain
                Strikethrough   =   0   'False
             EndProperty
             Value           =   0   'False
-            Caption         =   "frmMain.frx":0142
+            Caption         =   "frmMain.frx":00CA
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp4 
@@ -175,7 +199,7 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Caption         =   "frmMain.frx":0168
+            Caption         =   "frmMain.frx":00F0
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.ctlJCbutton cmdCheckAll 
@@ -184,18 +208,26 @@ Begin VB.Form frmMain
             TabIndex        =   8
             Top             =   500
             Width           =   2055
-            _extentx        =   3625
-            _extenty        =   900
-            font            =   "frmMain.frx":019A
-            buttonstyle     =   10
-            backcolor       =   12244692
-            caption         =   "Выделить всё"
-            pictureshadow   =   -1  'True
-            picturepushonhover=   -1  'True
-            captioneffects  =   0
-            picturealign    =   0
-            tooltipbackcolor=   0
-            colorscheme     =   1
+            _ExtentX        =   3625
+            _ExtentY        =   900
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   204
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ButtonStyle     =   10
+            BackColor       =   12244692
+            Caption         =   "Выделить всё"
+            PictureAlign    =   0
+            PicturePushOnHover=   -1  'True
+            PictureShadow   =   -1  'True
+            CaptionEffects  =   0
+            TooltipBackColor=   0
+            ColorScheme     =   1
          End
          Begin prjDIADBS.ctlJCbutton cmdUnCheckAll 
             Height          =   510
@@ -203,18 +235,26 @@ Begin VB.Form frmMain
             TabIndex        =   9
             Top             =   1100
             Width           =   2055
-            _extentx        =   3625
-            _extenty        =   900
-            font            =   "frmMain.frx":01C2
-            buttonstyle     =   10
-            backcolor       =   12244692
-            caption         =   "Снять выделение"
-            pictureshadow   =   -1  'True
-            picturepushonhover=   -1  'True
-            captioneffects  =   0
-            picturealign    =   0
-            tooltipbackcolor=   0
-            colorscheme     =   1
+            _ExtentX        =   3625
+            _ExtentY        =   900
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   204
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ButtonStyle     =   10
+            BackColor       =   12244692
+            Caption         =   "Снять выделение"
+            PictureAlign    =   0
+            PicturePushOnHover=   -1  'True
+            PictureShadow   =   -1  'True
+            CaptionEffects  =   0
+            TooltipBackColor=   0
+            ColorScheme     =   1
          End
          Begin prjDIADBS.CheckBoxW chkCheckAll 
             Height          =   400
@@ -233,7 +273,7 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            Caption         =   "frmMain.frx":01EA
+            Caption         =   "frmMain.frx":0122
             Transparent     =   -1  'True
          End
       End
@@ -242,17 +282,25 @@ Begin VB.Form frmMain
          Left            =   6120
          Top             =   75
          Width           =   6255
-         _extentx        =   11033
-         _extenty        =   3704
-         font            =   "frmMain.frx":0246
-         fillcolor       =   15783104
-         style           =   4
-         roundedcorner   =   0   'False
-         caption         =   "Создание резервной копии выбранных драйверов"
-         textboxheight   =   21
-         headerstyle     =   1
-         gradientheaderstyle=   2
-         backcolor       =   15783104
+         _ExtentX        =   11033
+         _ExtentY        =   3704
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   15783104
+         FillColor       =   15783104
+         Style           =   4
+         RoundedCorner   =   0   'False
+         Caption         =   "Создание резервной копии выбранных драйверов"
+         TextBoxHeight   =   21
+         HeaderStyle     =   1
+         GradientHeaderStyle=   2
          Begin prjDIADBS.ComboBoxW cmbTypeBackUp 
             Height          =   330
             Left            =   1800
@@ -271,8 +319,8 @@ Begin VB.Form frmMain
                Strikethrough   =   0   'False
             EndProperty
             Style           =   2
-            Text            =   "frmMain.frx":026E
-            CueBanner       =   "frmMain.frx":028E
+            Text            =   "frmMain.frx":017E
+            CueBanner       =   "frmMain.frx":019E
          End
          Begin prjDIADBS.ctlJCbutton cmdStartBackUp 
             Height          =   510
@@ -280,18 +328,26 @@ Begin VB.Form frmMain
             TabIndex        =   0
             Top             =   925
             Width           =   2175
-            _extentx        =   3836
-            _extenty        =   900
-            font            =   "frmMain.frx":02AE
-            buttonstyle     =   10
-            backcolor       =   12244692
-            caption         =   "Start Backup"
-            pictureshadow   =   -1  'True
-            picturepushonhover=   -1  'True
-            captioneffects  =   0
-            picturealign    =   0
-            tooltipbackcolor=   0
-            colorscheme     =   1
+            _ExtentX        =   3836
+            _ExtentY        =   900
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   204
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ButtonStyle     =   10
+            BackColor       =   12244692
+            Caption         =   "Start Backup"
+            PictureAlign    =   0
+            PicturePushOnHover=   -1  'True
+            PictureShadow   =   -1  'True
+            CaptionEffects  =   0
+            TooltipBackColor=   0
+            ColorScheme     =   1
          End
          Begin prjDIADBS.ctlJCbutton cmdBreak 
             Height          =   510
@@ -299,35 +355,51 @@ Begin VB.Form frmMain
             TabIndex        =   1
             Top             =   1500
             Width           =   2175
-            _extentx        =   3836
-            _extenty        =   900
-            font            =   "frmMain.frx":02D6
-            buttonstyle     =   10
-            backcolor       =   12244692
-            enabled         =   0   'False
-            caption         =   "Break"
-            pictureshadow   =   -1  'True
-            picturepushonhover=   -1  'True
-            captioneffects  =   0
-            picturealign    =   0
-            tooltipbackcolor=   0
-            colorscheme     =   1
+            _ExtentX        =   3836
+            _ExtentY        =   900
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   204
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            ButtonStyle     =   10
+            Enabled         =   0   'False
+            BackColor       =   12244692
+            Caption         =   "Break"
+            PictureAlign    =   0
+            PicturePushOnHover=   -1  'True
+            PictureShadow   =   -1  'True
+            CaptionEffects  =   0
+            TooltipBackColor=   0
+            ColorScheme     =   1
          End
          Begin prjDIADBS.ctlJCFrames frArchName 
             Height          =   1170
             Left            =   0
             Top             =   930
             Width           =   3855
-            _extentx        =   6800
-            _extenty        =   2064
-            font            =   "frmMain.frx":02FE
-            fillcolor       =   14215660
-            textboxcolor    =   12244692
-            style           =   5
-            roundedcorner   =   0   'False
-            caption         =   "Имя Архива"
-            alignment       =   0
-            backcolor       =   14215660
+            _ExtentX        =   6800
+            _ExtentY        =   2064
+            BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+               Name            =   "Tahoma"
+               Size            =   8.25
+               Charset         =   204
+               Weight          =   400
+               Underline       =   0   'False
+               Italic          =   0   'False
+               Strikethrough   =   0   'False
+            EndProperty
+            BackColor       =   14215660
+            FillColor       =   14215660
+            TextBoxColor    =   12244692
+            Style           =   5
+            RoundedCorner   =   0   'False
+            Caption         =   "Имя Архива"
+            Alignment       =   0
             Begin prjDIADBS.TextBoxW txtArchName 
                Height          =   350
                Left            =   120
@@ -345,8 +417,8 @@ Begin VB.Form frmMain
                   Italic          =   0   'False
                   Strikethrough   =   0   'False
                EndProperty
-               Text            =   "frmMain.frx":0326
-               CueBanner       =   "frmMain.frx":0346
+               Text            =   "frmMain.frx":01BE
+               CueBanner       =   "frmMain.frx":01DE
             End
             Begin prjDIADBS.OptionButtonW optArchModelPC 
                Height          =   255
@@ -366,7 +438,7 @@ Begin VB.Form frmMain
                   Strikethrough   =   0   'False
                EndProperty
                Value           =   0   'False
-               Caption         =   "frmMain.frx":0366
+               Caption         =   "frmMain.frx":01FE
                Transparent     =   -1  'True
             End
             Begin prjDIADBS.OptionButtonW optArchNamePC 
@@ -387,7 +459,7 @@ Begin VB.Form frmMain
                   Strikethrough   =   0   'False
                EndProperty
                Value           =   0   'False
-               Caption         =   "frmMain.frx":03A8
+               Caption         =   "frmMain.frx":0240
                Transparent     =   -1  'True
             End
             Begin prjDIADBS.OptionButtonW optArchCustom 
@@ -407,7 +479,7 @@ Begin VB.Form frmMain
                   Italic          =   0   'False
                   Strikethrough   =   0   'False
                EndProperty
-               Caption         =   "frmMain.frx":03E4
+               Caption         =   "frmMain.frx":027C
                Transparent     =   -1  'True
             End
          End
@@ -436,19 +508,27 @@ Begin VB.Form frmMain
          Left            =   120
          Top             =   2280
          Width           =   12255
-         _extentx        =   21616
-         _extenty        =   6509
-         font            =   "frmMain.frx":0418
-         fillcolor       =   14016736
-         textboxcolor    =   11595760
-         txtboxshadow    =   1
-         style           =   3
-         roundedcorner   =   0   'False
-         caption         =   "Список найденных драйверов устройств"
-         textboxheight   =   21
-         themecolor      =   3
-         gradientheaderstyle=   1
-         backcolor       =   14016736
+         _ExtentX        =   21616
+         _ExtentY        =   6509
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackColor       =   14016736
+         FillColor       =   14016736
+         TextBoxColor    =   11595760
+         TxtBoxShadow    =   1
+         Style           =   3
+         RoundedCorner   =   0   'False
+         Caption         =   "Список найденных драйверов устройств"
+         TextBoxHeight   =   21
+         ThemeColor      =   3
+         GradientHeaderStyle=   1
       End
    End
    Begin VB.Menu mnuReCollectHWID 
@@ -612,7 +692,7 @@ End Sub
 
 Private Sub chkHideOther_Click()
 
-    chkCheckAll.Enabled = chkHideOther.Value
+    chkCheckAll.Enabled = CBool(chkHideOther.Value)
 
     If optGrp1.Value Then
         optGrp1_Click
@@ -706,7 +786,7 @@ Private Sub CollectDestPathFiles(ByVal strPathInfFile As String)
         strDestPathTemp = vbNullString
         strDestPathTransform = vbNullString
         strDestPathTemp = arr1_SDN(lngArrCount, 2)
-        strDestPathTransform_x() = Split(strDestPathTemp, ",", , vbTextCompare)
+        strDestPathTransform_x() = Split(strDestPathTemp, ",")
 
         If UBound(strDestPathTransform_x) = 3 Then
             strDestPathTransform = strDestPathTransform_x(3)
@@ -730,7 +810,7 @@ Private Sub CollectDestPathFiles(ByVal strPathInfFile As String)
         strDestPathTemp = vbNullString
         strDestPathTransform = vbNullString
         strDestPathTemp = arr2_SDF(lngArrCount, 2)
-        strDestPathTransform_x() = Split(strDestPathTemp, ",", , vbTextCompare)
+        strDestPathTransform_x() = Split(strDestPathTemp, ",")
 
         If UBound(strDestPathTransform_x) >= 1 Then
             strDestPathTransform = strDestPathTransform_x(1)
@@ -771,11 +851,11 @@ Private Function CollectDpName(ByVal strPcName As String) As String
         strDPName_Part2 = "_x32_"
     End If
 
-    strDPName_Part3 = Replace$(CStr(Date), ".", "-", , , vbTextCompare)
+    strDPName_Part3 = Replace$(CStr(Date), ".", "-")
     strDPName_Part3 = SafeDir(strDPName_Part3)
     strDpName = "DP_" & strPcName & strDPName_Part1 & strDPName_Part2 & strDPName_Part3
     strDpName = SafeDir(strDpName)
-    CollectDpName = Replace$(strDpName, " ", "_", , , vbTextCompare)
+    CollectDpName = Replace$(strDpName, " ", "_")
 End Function
 
 Private Sub CopyFile2Dest(ByRef arrZ() As String, _
@@ -807,8 +887,8 @@ Private Sub CopyFile2Dest(ByRef arrZ() As String, _
         ' если пустое значение, то пропускаем
         If LenB(strFileName) > 0 Then
             If mbSectCopyFiles Then
-                If InStr(1, strFileName, ",", vbTextCompare) > 0 Then
-                    strFileName_x = Split(strFileName, ",", , vbTextCompare)
+                If InStr(1, strFileName, ",") Then
+                    strFileName_x = Split(strFileName, ",")
                     lngUBoundFileName = UBound(strFileName_x)
 
                     If lngUBoundFileName >= 1 Then
@@ -825,7 +905,7 @@ Private Sub CopyFile2Dest(ByRef arrZ() As String, _
             If LenB(strFileName) > 0 Then
 
                 ' Если строка содержит ".", значит это скорее все имя файла
-                If InStr(1, strFileName, ".", vbTextCompare) > 0 Then
+                If InStr(1, strFileName, ".") Then
 
                     ' Куда будет скопирован файл
                     Dim lngUBound As Long
@@ -1013,7 +1093,7 @@ Private Function DefineFolderBackUp() As String
             str_x64 = arrOSList(i, 1)
             strDestFolderTemp = arrOSList(i, 2)
 
-            If InStr(1, arrOSList(i, 0), strOsCurrentVersion, vbTextCompare) > 0 Then
+            If InStr(1, arrOSList(i, 0), strOsCurrentVersion) Then
                 If CBool(str_x64) = mbIsWin64 Then
                     strDestFolder = PathCollect(strDestFolderTemp)
 
@@ -1165,7 +1245,7 @@ Private Function ExpandArchNamebyEnvironment(ByVal strArchName As String) As Str
     Dim strDPName_OSBit As String
     Dim strDPName_DATE  As String
 
-    If InStr(1, strArchName, "%", vbTextCompare) > 0 Then
+    If InStr(1, strArchName, "%") Then
         ' Макроподстановка версия ОС %OSVer%
         strDPName_OSVer = "wnt" & Mid$(strOsCurrentVersion, 1, 1)
 
@@ -1177,12 +1257,12 @@ Private Function ExpandArchNamebyEnvironment(ByVal strArchName As String) As Str
         End If
 
         ' Макроподстановка ДАТА %DATE%
-        strDPName_DATE = Replace$(CStr(Date), ".", "-", , , vbTextCompare)
+        strDPName_DATE = Replace$(CStr(Date), ".", "-")
         strDPName_DATE = SafeDir(strDPName_DATE)
         ' Замена макросов значениями
         R = strArchName
         R = Replace$(R, "%PCNAME%", strCompName)
-        R = Replace$(R, "%PCMODEL%", Replace$(strCompModel, " ", "_", , , vbTextCompare))
+        R = Replace$(R, "%PCMODEL%", Replace$(strCompModel, " ", "_"))
         R = Replace$(R, "%OSVer%", strDPName_OSVer)
         R = Replace$(R, "%OSBit%", strDPName_OSBit)
         R = Replace$(R, "%DATE%", strDPName_DATE)
@@ -1488,8 +1568,8 @@ Private Sub Form_Load()
     LoadList_Device False
     'pbProgressBar.Visible = False
     ' Параметры выделения при старте
-    chkCheckAll.Value = mbCheckAllGroup
-    chkHideOther.Value = mbListOnlyGroup
+    chkCheckAll.Value = Abs(mbCheckAllGroup)
+    chkHideOther.Value = Abs(mbListOnlyGroup)
     ' Режим при старте
     SelectStartMode
     ' Имя архива при старте
@@ -1848,7 +1928,7 @@ Private Sub LoadList_Device(Optional ByVal mbViewed As Boolean = True, Optional 
 
             Case 1
 
-                If InStr(1, arrHwidsLocal(3, ii), "microsoft", vbTextCompare) > 0 Then
+                If InStr(1, arrHwidsLocal(3, ii), "microsoft", vbTextCompare) Then
 
                     With lvDevices
                         .AddItem arrHwidsLocal(0, ii), lngNumRow
@@ -2101,8 +2181,8 @@ Private Sub mnuLang_Click(Index As Integer)
     strPCLangCurrentIDTemp = arrLanguage(3, i)
     lngFont_Charset = GetCharsetFromLng(CLng(arrLanguage(6, i)))
 
-    If InStr(1, strPCLangCurrentIDTemp, ";", vbTextCompare) > 0 Then
-        strPCLangCurrentID_x = Split(strPCLangCurrentIDTemp, ";", , vbTextCompare)
+    If InStr(1, strPCLangCurrentIDTemp, ";") Then
+        strPCLangCurrentID_x = Split(strPCLangCurrentIDTemp, ";")
         strPCLangCurrentID = strPCLangCurrentID_x(0)
     Else
         strPCLangCurrentID = strPCLangCurrentIDTemp
@@ -2253,10 +2333,11 @@ Private Sub optGrp1_Click()
 
     Dim i As Integer
 
-    If Not chkHideOther.Value Then
+    If Not CBool(chkHideOther.Value) Then
         lvDevices.Clear
         lvDevices.Destroy
         Set lvDevices = Nothing
+        
         LoadList_Device False
         cmdUnCheckAll_Click
 
@@ -2264,9 +2345,11 @@ Private Sub optGrp1_Click()
 
             For i = 0 To .Count
 
-                If InStr(1, .ItemText(3, i), "microsoft", vbTextCompare) > 0 Then
+                If InStr(1, .ItemText(3, i), "microsoft", vbTextCompare) Then
                     If Not .ItemChecked(i) Then
-                        .ItemChecked(i) = True
+                        If chkCheckAll.Value Then
+                            .ItemChecked(i) = True
+                        End If
                     End If
 
                 Else
@@ -2298,7 +2381,7 @@ Private Sub optGrp2_Click()
 
     Dim i As Integer
 
-    If Not chkHideOther.Value Then
+    If Not CBool(chkHideOther.Value) Then
         lvDevices.Clear
         lvDevices.Destroy
         Set lvDevices = Nothing
@@ -2311,7 +2394,9 @@ Private Sub optGrp2_Click()
 
                 If InStr(1, .ItemText(3, i), "microsoft", vbTextCompare) = 0 Then
                     If Not .ItemChecked(i) Then
-                        .ItemChecked(i) = True
+                        If chkCheckAll.Value Then
+                            .ItemChecked(i) = True
+                        End If
                     End If
 
                 Else
@@ -2342,16 +2427,22 @@ End Sub
 
 Private Sub optGrp3_Click()
 
-    If Not chkHideOther.Value Then
-        cmdCheckAll_Click
+    If Not CBool(chkHideOther.Value) Then
+        If chkCheckAll.Value Then
+            cmdCheckAll_Click
+        End If
     Else
         lvDevices.Clear
         lvDevices.Destroy
         Set lvDevices = Nothing
         LoadList_Device False, 3
 
-        If chkCheckAll.Value And chkCheckAll.Enabled Then
-            cmdCheckAll_Click
+        If chkCheckAll.Value Then
+            If chkCheckAll.Enabled Then
+                If chkCheckAll.Value Then
+                    cmdCheckAll_Click
+                End If
+            End If
         End If
     End If
 
@@ -2363,7 +2454,7 @@ Private Sub optGrp4_Click()
 
     Dim i As Integer
 
-    If Not chkHideOther.Value Then
+    If Not CBool(chkHideOther.Value) Then
         lvDevices.Clear
         lvDevices.Destroy
         Set lvDevices = Nothing
@@ -2376,7 +2467,9 @@ Private Sub optGrp4_Click()
 
                 If LenB(.ItemText(7, i)) = 0 Then
                     If Not .ItemChecked(i) Then
-                        .ItemChecked(i) = True
+                        If chkCheckAll.Value Then
+                            .ItemChecked(i) = True
+                        End If
                     End If
 
                 Else
@@ -2460,12 +2553,12 @@ Private Function SearchSectInSect(ByRef arrZ() As String) As String()
         strFileNameSect = arrZ(D, 1)
 
         ' Отбрасываем все после ";"
-        If InStr(1, strFileName, ";", vbTextCompare) > 0 Then
+        If InStr(1, strFileName, ";", vbTextCompare) Then
             strFileName = Trim$(Left$(strFileName, InStrRev(strFileName, ";") - 1))
         End If
 
         If StrComp(strFileNameSect, "CopyFiles", vbTextCompare) = 0 Then
-            strFileName_x = Split(strFileName, ",", , vbTextCompare)
+            strFileName_x = Split(strFileName, ",")
 
             For i = 0 To UBound(strFileName_x)
 
@@ -3029,26 +3122,26 @@ Private Function StringCleaner(ByVal strString As String) As String
 
     Dim strString_x() As String
 
-    If InStr(1, strString, ";", vbTextCompare) > 0 Then
-        strString_x = Split(strString, ";", , vbTextCompare)
+    If InStr(1, strString, ";") Then
+        strString_x = Split(strString, ";")
         strString = Trim$(strString_x(0))
     End If
 
-    If InStr(1, strString, ",", vbTextCompare) > 0 Then
-        strString_x = Split(strString, ",", , vbTextCompare)
+    If InStr(1, strString, ",") Then
+        strString_x = Split(strString, ",")
         strString = strString_x(0)
     End If
 
-    If InStr(1, strString, vbNullChar, vbTextCompare) > 0 Then
+    If InStr(1, strString, vbNullChar) Then
         strString = TrimNull(strString)
     End If
 
-    If InStr(1, strString, vbTab, vbTextCompare) > 0 Then
-        strString = Replace$(strString, vbTab, vbNullString, , , vbTextCompare)
+    If InStr(1, strString, vbTab) Then
+        strString = Replace$(strString, vbTab, vbNullString)
     End If
 
-    If InStr(1, strString, Kavichki, vbTextCompare) > 0 Then
-        strString = Replace$(strString, Kavichki, vbNullString, , , vbTextCompare)
+    If InStr(1, strString, Kavichki) Then
+        strString = Replace$(strString, Kavichki, vbNullString)
     End If
 
     StringCleaner = strString
@@ -3060,7 +3153,7 @@ Private Sub txtArchName_KeyPress(KeyAscii As Integer)
 
     sTemplate = "!@#$%^&*()_+=\/:;?><|[],"
 
-    If InStr(1, sTemplate, Chr$(KeyAscii), vbTextCompare) > 0 Then
+    If InStr(1, sTemplate, Chr$(KeyAscii), vbTextCompare) Then
         KeyAscii = 0
     End If
 End Sub
