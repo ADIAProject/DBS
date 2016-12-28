@@ -8,10 +8,11 @@ BEGIN
 END
 Attribute VB_Name = "ISubclass"
 Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = True
+Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
 Public Function Message(ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
+Attribute Message.VB_Description = "Interface function to forward window messages."
 End Function

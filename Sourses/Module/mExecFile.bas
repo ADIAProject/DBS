@@ -52,12 +52,12 @@ Private Type PROCESS_INFORMATION
     hProcess                            As Long
     hThread                             As Long
     dwProcessId                         As Long
-    dwThreadId                          As Long
+    dwThreadID                          As Long
 End Type
 
-Private Const STARTF_USESHOWWINDOW  As Long = &H1
-Private Const INFINITE              As Long = -1&
-Private Const NORMAL_PRIORITY_CLASS As Long = &H20
+Private Const STARTF_USESHOWWINDOW   As Long = &H1
+Private Const INFINITE               As Long = -1&
+Private Const NORMAL_PRIORITY_CLASS  As Long = &H20
 
 Private Const ERROR_FILE_NOT_FOUND   As Long = 2
 Private Const ERROR_PATH_NOT_FOUND   As Long = 3
@@ -78,48 +78,8 @@ Private Declare Function CreateProcess Lib "kernel32.dll" Alias "CreateProcessA"
 Private Declare Function GetExitCodeProcess Lib "kernel32.dll" (ByVal hProcess As Long, lpExitCode As Long) As Long
 Private Declare Function WaitForSingleObject Lib "kernel32.dll" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
 Private Declare Function ShellExecuteForExplore Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, lpParameters As Any, lpDirectory As Any, ByVal nShowCmd As Long) As Long
+
 Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function RunAndWaitNew
-'! Description (Описание)  :   [запустить приложение с ожиданием завершения и отсутсвие заморозки экрана]
-'! Parameters  (Переменные):   ComLine (String)
-'                              DefaultDir (String)
-'                              ShowFlag (VbAppWinStyle)
-'!--------------------------------------------------------------------------------
-Public Function RunAndWaitNew(ComLine As String, DefaultDir As String, ShowFlag As VbAppWinStyle) As Boolean
-
-    Dim SI   As STARTUPINFO
-    Dim PI   As PROCESS_INFORMATION
-    Dim nRet As Long
-
-    DebugMode vbTab & "RunAndWait-Start" & vbNewLine & _
-              str2VbTab & "RunString: " & ComLine & vbNewLine & _
-              str2VbTab & "StartDir: " & DefaultDir
-    
-    If OsCurrVersionStruct.VerFull >= "5.1" Then
-        DoEvents
-        lngExitProc = 0
-    
-        If ShowFlag = vbHide Then
-            If Not mbHideOtherProcess Then
-                ShowFlag = vbNormalFocus
-            End If
-        End If
-    
-        nRet = ShellW(ComLine, ShowFlag, INFINITE)
-        lngExitProc = nRet
-        RunAndWaitNew = True
-        
-        DebugMode str2VbTab & "ReturnCode: " & CStr(nRet) & " - " & ApiErrorText(Err.LastDllError)
-    Else
-        ' Если Windows2k, то вызываем старую функцию RunAndWait
-        RunAndWaitNew = RunAndWait(ComLine, DefaultDir, ShowFlag)
-    End If
-    
-    DebugMode vbTab & "RunAndWaitNew-End"
-    DoEvents
-End Function
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function RunAndWait
@@ -134,9 +94,8 @@ Public Function RunAndWait(ComLine As String, DefaultDir As String, ShowFlag As 
     Dim PI   As PROCESS_INFORMATION
     Dim nRet As Long
 
-    DebugMode vbTab & "RunAndWait-Start" & vbNewLine & _
-              str2VbTab & "RunString: " & ComLine & vbNewLine & _
-              str2VbTab & "StartDir: " & DefaultDir
+    If mbDebugStandart Then DebugMode str2VbTab & "RunString: " & ComLine
+    If mbDebugDetail Then DebugMode str2VbTab & "StartDir: " & DefaultDir
     
     DoEvents
     lngExitProc = 0
@@ -153,13 +112,53 @@ Public Function RunAndWait(ComLine As String, DefaultDir As String, ShowFlag As 
     nRet = CreateProcess(vbNullString, ComLine, 0&, 0&, 1&, NORMAL_PRIORITY_CLASS, 0&, DefaultDir, SI, PI)
     WaitForSingleObject PI.hProcess, INFINITE
     GetExitCodeProcess PI.hProcess, nRet
-    DebugMode str2VbTab & "ReturnCode: " & CStr(nRet) & " - " & ApiErrorText(Err.LastDllError)
+    If mbDebugStandart Then DebugMode str2VbTab & "RunAndWait-ReturnCode: " & CStr(nRet) & " - " & ApiErrorText(Err.LastDllError)
     
     CloseHandle PI.hProcess
     lngExitProc = nRet
     RunAndWait = True
     
-    DebugMode vbTab & "RunAndWait-End"
+    DoEvents
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function RunAndWaitNew
+'! Description (Описание)  :   [запустить приложение с ожиданием завершения и отсутсвие заморозки экрана]
+'! Parameters  (Переменные):   ComLine (String)
+'                              DefaultDir (String)
+'                              ShowFlag (VbAppWinStyle)
+'!--------------------------------------------------------------------------------
+Public Function RunAndWaitNew(ComLine As String, DefaultDir As String, ShowFlag As VbAppWinStyle, Optional lngWaitTime As Long) As Boolean
+
+    Dim nRet As Long
+
+    If mbDebugStandart Then DebugMode str2VbTab & "RunAndWaitNew-RunString: " & ComLine
+    If mbDebugDetail Then DebugMode str2VbTab & "RunAndWaitNew-StartDir: " & DefaultDir
+    
+    If IsWinXPOrLater Then
+        DoEvents
+        lngExitProc = 0
+    
+        If ShowFlag = vbHide Then
+            If Not mbHideOtherProcess Then
+                ShowFlag = vbNormalFocus
+            End If
+        End If
+    
+        If lngWaitTime > 0 Then
+            nRet = ShellW(ComLine, ShowFlag, lngWaitTime)
+        Else
+            nRet = ShellW(ComLine, ShowFlag, INFINITE)
+        End If
+        lngExitProc = nRet
+        RunAndWaitNew = True
+        
+        If mbDebugStandart Then DebugMode str2VbTab & "RunAndWaitNew-ReturnCode: " & CStr(nRet) & " - " & ApiErrorText(Err.LastDllError)
+    Else
+        ' Если Windows2k, то вызываем старую функцию RunAndWait
+        RunAndWaitNew = RunAndWait(ComLine, DefaultDir, ShowFlag)
+    End If
+    
     DoEvents
 End Function
 
@@ -170,7 +169,7 @@ End Function
 '                              mbCollectPath (Boolean = True)
 '                              mbStartPathAsPathExe (Boolean = False)
 '!--------------------------------------------------------------------------------
-Public Sub RunUtilsShell(ByVal strPathUtils As String, Optional ByVal mbCollectPath As Boolean = True, Optional ByVal mbStartPathAsPathExe As Boolean = False)
+Public Sub RunUtilsShell(ByVal strPathUtils As String, Optional ByVal mbCollectPath As Boolean = True, Optional ByVal mbStartPathAsPathExe As Boolean = False, Optional ByVal mbPathQuoted As Boolean = True)
 
     Dim nRetShellEx  As Boolean
     Dim cmdString    As String
@@ -180,14 +179,18 @@ Public Sub RunUtilsShell(ByVal strPathUtils As String, Optional ByVal mbCollectP
         cmdString = PathCollect(strPathUtils)
 
         If mbStartPathAsPathExe Then
-            strStartPath = PathNameFromPath(cmdString)
+            strStartPath = GetPathNameFromPath(cmdString)
         End If
 
     Else
         cmdString = strPathUtils
     End If
 
-    DebugMode "cmdString: " & cmdString
+    If mbPathQuoted Then
+        cmdString = strQuotes & cmdString & strQuotes
+    End If
+    
+    If mbDebugStandart Then DebugMode "cmdString: " & cmdString
 
     If mbStartPathAsPathExe Then
         nRetShellEx = ShellEx(cmdString, essSW_SHOWDEFAULT, vbNullString, strStartPath, "open")
@@ -195,7 +198,7 @@ Public Sub RunUtilsShell(ByVal strPathUtils As String, Optional ByVal mbCollectP
         nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
     End If
 
-    DebugMode "cmdString: " & nRetShellEx
+    If mbDebugStandart Then DebugMode "cmdString: " & nRetShellEx
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -231,9 +234,12 @@ Public Function ShellEx(ByVal sFile As String, Optional ByVal eShowCmd As EShell
         lR = ShellExecute(Owner, sOperation, sFile, sParameters, sDefaultDir, eShowCmd)
     End If
 
-    If (lR < 0) Or (lR > 32) Then
+    If lR < 0 Then
         ShellEx = True
-        DebugMode "ShellExecute: True - and result API ShellExecute:" & ApiErrorText(lR)
+        If mbDebugStandart Then DebugMode "ShellExecute: True - and result API ShellExecute:" & ApiErrorText(lR)
+    ElseIf lR > 32 Then
+        ShellEx = True
+        If mbDebugStandart Then DebugMode "ShellExecute: True - and result API ShellExecute:" & ApiErrorText(lR)
     Else
         ' raise an appropriate error:
         lErr = vbObjectError + 1048 + lR
@@ -301,7 +307,7 @@ Public Function ShellEx(ByVal sFile As String, Optional ByVal eShowCmd As EShell
                 sErr = "An error occurred occurred whilst trying to open or print the selected file."
         End Select
 
-        DebugMode "ShellExecute: " & lErr & " - " & sErr & " - ErrAPI: " & ApiErrorText(lR)
+        If mbDebugStandart Then DebugMode "ShellExecute: " & lErr & " - " & sErr & " - ErrAPI: " & ApiErrorText(lR)
         ShellEx = False
     End If
 

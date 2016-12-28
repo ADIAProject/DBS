@@ -2,19 +2,14 @@ Attribute VB_Name = "mPrevInstance"
 'Активация ранее запущенной этой же программы
 Option Explicit
 
-Private Declare Function FindWindow Lib "user32" Alias "FindWindowW" (ByVal lpClassName As Long, ByVal lpWindowName As Long) As Long
-Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
-Private Declare Function SetForegroundWindow Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function FindWindow Lib "user32.dll" Alias "FindWindowW" (ByVal lpClassName As Long, ByVal lpWindowName As Long) As Long
+Private Declare Function ShowWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
+Private Declare Function SetForegroundWindow Lib "user32.dll" (ByVal hWnd As Long) As Long
 Private Declare Function OpenIcon Lib "user32.dll" (ByVal hWnd As Long) As Long
 
-'! -----------------------------------------------------------
-'!  Функция     :  ShowPrevInstance
-'!  Переменные  :
-'!  Описание    :  Отобразить предыдущую копию программы, если программа запущена дважды
-'! -----------------------------------------------------------
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ShowPrevInstance
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Отобразить предыдущую копию программы, если программа запущена дважды]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Sub ShowPrevInstance()

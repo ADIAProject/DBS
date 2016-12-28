@@ -23,15 +23,6 @@ Begin VB.UserControl ctlColorButton
    Begin VB.PictureBox picDropDown 
       AutoRedraw      =   -1  'True
       BorderStyle     =   0  'None
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Height          =   1860
       Left            =   0
       ScaleHeight     =   124
@@ -43,7 +34,7 @@ Begin VB.UserControl ctlColorButton
       Width           =   2310
    End
    Begin VB.Image imgIcon 
-      Height          =   240
+      Height          =   225
       Left            =   0
       Picture         =   "ctlColorButton.ctx":00FA
       Top             =   0
@@ -53,7 +44,7 @@ Begin VB.UserControl ctlColorButton
    Begin VB.Image imgDropDown 
       Height          =   45
       Left            =   360
-      Picture         =   "ctlColorButton.ctx":0244
+      Picture         =   "ctlColorButton.ctx":0670
       Top             =   120
       Visible         =   0   'False
       Width           =   75
@@ -64,12 +55,12 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'Note: this file has been modified for use within Drivers Installer Assistant.
+'This code was originally written by Grid2000.com.
+'You may download the original version of this code from the following link (good as of June '12):
+' http://www.freevbcode.com/ShowCode.Asp?ID=6638
 '---------------------------------------------------------
-'Excel Style Color Picker
-'Version 1.0
-'
-'Copyright © 2004 by Grid2000.com. All Rights Reserved.
-'
+
 'Copyright notice:
 'This can be considered to be Version 2.0 :))
 'The code of this module was downloaded from the following
@@ -95,40 +86,63 @@ Attribute VB_Exposed = False
 'a.k.a. Comanche, e-mail: pc-er@mail.ru.
 '
 '---------------------------------------------------------
+' More changed by @AdiaProject Mar 2014
+' Remove ChoseColor declaration  - change call to CommonDialog class by Kroll http://www.vbforums.com/showthread.php?698563-CommonControls-%28Replacement-of-the-MS-common-controls%29/page1
+' Added Unicode support for DropDownCaption
+'---------------------------------------------------------
+
 Option Explicit
 
-Private Const BDR_RAISED  As Long = &H5
-
-' *********** FOR COLOR SELECT DIALOG: *************************************************
-Private Const CC_ANYCOLOR As Long = &H100
-Private Const CC_RGBINIT  As Long = &H1
-Private Const CC_FULLOPEN As Long = &H2
-
-Private Type CHOOSECOLOR_TYPE
-    lStructSize                             As Long
-    hWndOwner                           As Long
-    hInstance                           As Long
-    RGBResult                           As Long
-    lpCustColors                        As Long
-    Flags                               As Long
-    lCustData                           As Long
-    lpfnHook                            As Long
-    lpTemplateName                      As String
+'---------------------------------------------------------
+'API-Declaration
+'---------------------------------------------------------
+Private Type RECT
+    Left                                As Long
+    Top                                 As Long
+    Right                               As Long
+    Bottom                              As Long
 End Type
 
-' **************************************************************************************
-'---------------------------------------------------------
-'Events
-'---------------------------------------------------------
-Public Event Click()
-Public Event TrackColor(ByVal HighlightedColor As Long)
-Attribute TrackColor.VB_Description = "Fires when you move mouse over color cells in the dropdown part of the control."
-Public Event MouseIn()
-Public Event MouseOut()
-Public Event DropDownOpen()
-Public Event DropDownClose()
+' --Formatting Text Consts
+Private Const DT_LEFT           As Long = &H0
+Private Const DT_CENTER         As Long = &H1
+Private Const DT_RIGHT          As Long = &H2
+Private Const DT_NOCLIP         As Long = &H100
+Private Const DT_WORDBREAK      As Long = &H10
+Private Const DT_CALCRECT       As Long = &H400
+Private Const DT_RTLREADING     As Long = &H20000
+Private Const DT_DRAWFLAG       As Long = DT_CENTER Or DT_WORDBREAK
+Private Const DT_TOP            As Long = &H0
+Private Const DT_BOTTOM         As Long = &H8
+Private Const DT_VCENTER        As Long = &H4
+Private Const DT_SINGLELINE     As Long = &H20
+Private Const DT_WORD_ELLIPSIS  As Long = &H40000
 
-Private runOnce As Boolean
+Private Const DI_NORMAL                 As Long = &H3
+Private Const BF_RECT                   As Long = &HF
+Private Const BDR_SUNKENOUTER           As Long = &H2
+Private Const BDR_RAISEDINNER           As Long = &H4
+Private Const BDR_RAISED                As Long = &H5
+Private Const GWL_EXSTYLE               As Integer = -20
+Private Const WS_EX_TOPMOST             As Long = &H8
+Private Const WS_EX_TOOLWINDOW          As Long = &H80
+
+Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
+Private Declare Function CreatePen Lib "gdi32.dll" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
+Private Declare Function CreateSolidBrush Lib "gdi32.dll" (ByVal crColor As Long) As Long
+Private Declare Function Rectangle Lib "gdi32.dll" (ByVal hDC As Long, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
+Private Declare Function DrawEdge Lib "user32.dll" (ByVal hDC As Long, qRC As RECT, ByVal Edge As Long, ByVal grfFlags As Long) As Long
+Private Declare Function DrawIconEx Lib "user32.dll" (ByVal hDC As Long, ByVal XLeft As Long, ByVal YTop As Long, ByVal hIcon As Long, ByVal CXWidth As Long, ByVal CYWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
+Private Declare Function DrawText Lib "user32.dll" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpchText As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal uFormat As Long) As Long
+Private Declare Function FillRect Lib "user32.dll" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+Private Declare Function SetCapture Lib "user32.dll" (ByVal hWnd As Long) As Long
+Private Declare Function ReleaseCapture Lib "user32.dll" () As Long
+Private Declare Function SetRect Lib "user32.dll" (lpRect As RECT, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
+Private Declare Function GetWindowRect Lib "user32.dll" (ByVal hWnd As Long, lpRect As RECT) As Long
+Private Declare Function SetParent Lib "user32.dll" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
+Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function OleTranslateColor Lib "oleaut32.dll" (ByVal lOleColor As Long, ByVal lHPalette As Long, lColorRef As Long) As Long
 
 Public Enum ColorButtonStyles
     ColorRectAndIconAbove = 0
@@ -136,7 +150,6 @@ Public Enum ColorButtonStyles
 End Enum
 
 #If False Then
-
     Private ColorRectAndIconAbove, ColorRectOnly
 #End If
 
@@ -146,58 +159,56 @@ Public Enum ColorPalettes
 End Enum
 
 #If False Then
-
     Private System, VGA
 #End If
-
-Private Const Def_DropDownCaption As String = "Additional colors..."
 
 '---------------------------------------------------------
 'Private variables
 '---------------------------------------------------------
-Private m_iXIndex                 As Integer
-Private m_iYIndex                 As Integer
-Private m_nBackColor              As OLE_COLOR
-Private m_nBorderColor            As Long
-Private m_nFillColor              As Long
-Private m_nDarkFillColor          As Long
-Private m_nShadowColor            As Long
-Private m_nSelectedColor          As OLE_COLOR
-Private m_arrColor()              As Long
-Private m_Style                   As ColorButtonStyles
-Private m_ColorPalette            As ColorPalettes
-Private m_DropDownCaption         As String
-Private m_nForbiddenColor         As OLE_COLOR
-Private m_UseForbiddenColor       As Boolean
-Private m_Step                    As Long
-Private m_RectSize                As Long
-Private m_ColorsInRow             As Long
-Private m_ColorsInColumn          As Long
-Private m_OffsetTop               As Long
-Private previousTrackedColor      As Long
-Private mouseIsIn                 As Boolean
-Private isDropped                 As Boolean
-Private Flag                      As Boolean
+Private runOnce                         As Boolean 'needed because repeated clicks on arrow area should (see picDropDown_MouseDown for details)
+Private Const Def_DropDownCaption       As String = "Additional colors..."
+Private m_iXIndex                       As Integer
+Private m_iYIndex                       As Integer
+Private m_nBackColor                    As OLE_COLOR
+Private m_nBorderColor                  As Long
+Private m_nFillColor                    As Long
+Private m_nDarkFillColor                As Long
+Private m_nShadowColor                  As Long
+Private m_nSelectedColor                As OLE_COLOR
+Private m_arrColor()                    As Long
+Private m_Style                         As ColorButtonStyles
+Private m_ColorPalette                  As ColorPalettes
+Private m_DropDownCaption               As String
+Private m_nForbiddenColor               As OLE_COLOR
+Private m_UseForbiddenColor             As Boolean
+Private m_Step                          As Long
+Private m_RectSize                      As Long
+Private m_ColorsInRow                   As Long
+Private m_ColorsInColumn                As Long
+Private m_OffsetTop                     As Long
+Private previousTrackedColor            As Long
+Private mouseIsIn                       As Boolean
+Private isDropped                       As Boolean
+Private Flag                            As Boolean
+'---------------------------------------------------------
+'Events
+'---------------------------------------------------------
+Public Event Click()
+Public Event TrackColor(ByVal HighlightedColor As Long)
+Public Event MouseIn()
+Public Event MouseOut()
+Public Event DropDownOpen()
+Public Event DropDownClose()
 
-' see picDropDown_MouseDown for details; needed because repeated clicks on arrow area should
-Private Declare Function CreatePen Lib "gdi32.dll" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
-Private Declare Function Rectangle Lib "gdi32.dll" (ByVal hDC As Long, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
-Private Declare Function DrawIconEx Lib "user32.dll" (ByVal hDC As Long, ByVal XLeft As Long, ByVal YTop As Long, ByVal hIcon As Long, ByVal CXWidth As Long, ByVal CYWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
-Private Declare Function DrawText Lib "user32.dll" Alias "DrawTextA" (ByVal hDC As Long, ByVal lpStr As String, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
-Private Declare Function GetWindowRect Lib "user32.dll" (ByVal hWnd As Long, lpRect As RECT) As Long
-Private Declare Function SetParent Lib "user32.dll" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
+Implements OLEGuids.IOleInPlaceActiveObjectVB
 
-'Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongW" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (lpcc As CHOOSECOLOR_TYPE) As Long
-
-'BackColor Property
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Property BackColor
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [BackColor Property]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Property Get BackColor() As OLE_COLOR
+Attribute BackColor.VB_UserMemId = 1745027079
     BackColor = m_nBackColor
 End Property
 
@@ -213,13 +224,13 @@ Public Property Let BackColor(ByVal NewValue As OLE_COLOR)
     picDropDown.BackColor = m_nBackColor
 End Property
 
-'Palette Property
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Property ColorPalette
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Palette Property]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Property Get ColorPalette() As ColorPalettes
+Attribute ColorPalette.VB_UserMemId = 1745027078
     ColorPalette = m_ColorPalette
 End Property
 
@@ -230,8 +241,8 @@ End Property
 '!--------------------------------------------------------------------------------
 Public Property Let ColorPalette(ByVal NewValue As ColorPalettes)
 
-    Dim nW As Single
-    Dim nH As Single
+Dim nW                                  As Single
+Dim nH                                  As Single
 
     m_ColorPalette = NewValue
     Redraw
@@ -257,15 +268,136 @@ Public Property Let ColorPalette(ByVal NewValue As ColorPalettes)
 End Property
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property DropDownCaption
+'! Description (Описание)  :   [DropDownCaption property]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get DropDownCaption() As String
+Attribute DropDownCaption.VB_UserMemId = 1745027077
+    DropDownCaption = m_DropDownCaption
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property DropDownCaption
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   NewValue (String)
+'!--------------------------------------------------------------------------------
+Public Property Let DropDownCaption(ByVal NewValue As String)
+    m_DropDownCaption = NewValue
+    PropertyChanged ("DropDownCaption")
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ForbiddenColor
+'! Description (Описание)  :   [ForbiddenColor property]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ForbiddenColor() As OLE_COLOR
+Attribute ForbiddenColor.VB_Description = "Defines color that can't be selected from the dropdown part. Has meaning only if UseForbiddenColor = True. TrackColor event isn't fired for such color."
+    ForbiddenColor = m_nForbiddenColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ForbiddenColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   NewValue (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let ForbiddenColor(ByVal NewValue As OLE_COLOR)
+    m_nForbiddenColor = NewValue
+    Redraw
+    PropertyChanged ("ForbiddenColor")
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Icon
+'! Description (Описание)  :   [Icon property]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get Icon() As StdPicture
+    Set Icon = imgIcon.Picture
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Icon
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   NewValue (StdPicture)
+'!--------------------------------------------------------------------------------
+Public Property Set Icon(ByVal NewValue As StdPicture)
+    Set imgIcon.Picture = NewValue
+    Redraw
+    PropertyChanged ("Icon")
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Style
+'! Description (Описание)  :   [Style Property]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get Style() As ColorButtonStyles
+    Style = m_Style
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Style
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   NewValue (ColorButtonStyles)
+'!--------------------------------------------------------------------------------
+Public Property Let Style(ByVal NewValue As ColorButtonStyles)
+    m_Style = NewValue
+    Redraw
+    PropertyChanged ("Style")
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UseForbiddenColor
+'! Description (Описание)  :   [UseForbiddenColor property]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get UseForbiddenColor() As Boolean
+    UseForbiddenColor = m_UseForbiddenColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UseForbiddenColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   NewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let UseForbiddenColor(ByVal NewValue As Boolean)
+    m_UseForbiddenColor = NewValue
+    Redraw
+    PropertyChanged ("UseForbiddenColor")
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Value
+'! Description (Описание)  :   [Value property]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get Value() As OLE_COLOR
+    Value = m_nSelectedColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Value
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   NewValue (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let Value(ByVal NewValue As OLE_COLOR)
+    m_nSelectedColor = NewValue
+    Redraw
+    PropertyChanged ("Value")
+End Property
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub DrawAllColors
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub DrawAllColors()
 
-    Dim i  As Integer
-    Dim j  As Integer
-    Dim RC As RECT
+Dim I                                   As Integer
+Dim J                                   As Integer
+Dim RC                                  As RECT
 
     picDropDown.Cls
 
@@ -273,7 +405,8 @@ Private Sub DrawAllColors()
     If m_ColorPalette = System Then
         DrawRectangle picDropDown.hDC, 8, 8, 138, 18, &H808080, , True
         SetRect RC, 8, 8, 138 + 8, 18 + 8
-        DrawText picDropDown.hDC, m_DropDownCaption, Len(m_DropDownCaption), RC, DT_VCENTER Or DT_CENTER Or DT_SINGLELINE
+        'DrawText picDropDown.hDC, m_DropDownCaption, Len(m_DropDownCaption), RC, DT_VCENTER Or DT_CENTER Or DT_SINGLELINE
+        DrawText picDropDown.hDC, StrPtr(m_DropDownCaption), -1, RC, DT_VCENTER Or DT_CENTER Or DT_SINGLELINE Or IIf(Ambient.RightToLeft, DT_RTLREADING, 0)
     End If
 
     'Selected color
@@ -288,11 +421,11 @@ Private Sub DrawAllColors()
     End If
 
     'Other colors
-    For i = 0 To m_ColorsInColumn - 1
-        For j = 0 To m_ColorsInRow - 1
-            DrawRectangle picDropDown.hDC, 8 + j * m_Step, m_OffsetTop + i * m_Step, m_RectSize, m_RectSize, &H808080, m_arrColor(i, j)
-        Next
-    Next
+    For I = 0 To m_ColorsInColumn - 1
+        For J = 0 To m_ColorsInRow - 1
+            DrawRectangle picDropDown.hDC, 8 + J * m_Step, m_OffsetTop + I * m_Step, m_RectSize, m_RectSize, &H808080, m_arrColor(I, J)
+        Next J
+    Next I
 
     'Window border
     SetRect RC, 0, 0, picDropDown.ScaleWidth, picDropDown.ScaleHeight
@@ -311,12 +444,12 @@ End Sub
 '                              BrushColor (Long = &HFFFFFF)
 '                              Transparent (Boolean)
 '!--------------------------------------------------------------------------------
-Public Sub DrawRectangle(ByVal lngHDc As Long, ByVal X As Long, ByVal Y As Long, ByVal CX As Long, ByVal CY As Long, Optional ByVal PenColor As Long = 0, Optional ByVal BrushColor As Long = &HFFFFFF, Optional ByVal Transparent As Boolean)
+Public Sub DrawRectangle(ByVal lngHDc As Long, ByVal X As Long, ByVal Y As Long, ByVal Cx As Long, ByVal Cy As Long, Optional ByVal PenColor As Long = 0, Optional ByVal BrushColor As Long = &HFFFFFF, Optional ByVal Transparent As Boolean)
 
-    Dim hPen   As Long
-    Dim hBrush As Long
+Dim hPen                                As Long
+Dim hBrush                              As Long
 
-    If Not CX < 0 Or CY < 0 Then
+    If Not Cx < 0 Or Cy < 0 Then
         hPen = SelectObject(lngHDc, CreatePen(0, 1, PenColor))
 
         If hPen Then
@@ -324,7 +457,7 @@ Public Sub DrawRectangle(ByVal lngHDc As Long, ByVal X As Long, ByVal Y As Long,
                 hBrush = SelectObject(lngHDc, CreateSolidBrush(BrushColor))
             End If
 
-            Rectangle lngHDc, X, Y, X + CX, Y + CY
+            Rectangle lngHDc, X, Y, X + Cx, Y + Cy
 
             If Not Transparent Then
                 DeleteObject SelectObject(lngHDc, hBrush)
@@ -362,37 +495,37 @@ End Sub
 '                              CX (Long)
 '                              CY (Long)
 '!--------------------------------------------------------------------------------
-Private Sub DrawSelectedColorBackground(lngHDc As Long, X As Long, Y As Long, CX As Long, CY As Long)
+Private Sub DrawSelectedColorBackground(lngHDc As Long, X As Long, Y As Long, Cx As Long, Cy As Long)
 
-    Dim i      As Long
-    Dim j      As Long
-    Dim RC     As RECT
-    Dim hBrush As Long
+Dim I                                   As Long
+Dim J                                   As Long
+Dim RC                                  As RECT
+Dim hBrush                              As Long
 
     hBrush = CreateSolidBrush(&HFFFFFF)
 
-    For i = X To X + CX - 1
+    For I = X To X + Cx - 1
 
-        If i Mod 2 = 0 Then
+        If I Mod 2 = 0 Then
 
-            For j = Y + 1 To Y + CY - 1 Step 2
-                SetRect RC, i, j, i + 1, j + 1
+            For J = Y + 1 To Y + Cy - 1 Step 2
+                SetRect RC, I, J, I + 1, J + 1
                 FillRect lngHDc, RC, hBrush
-            Next
+            Next J
 
         Else
 
-            For j = Y To Y + CY - 1 Step 2
-                SetRect RC, i, j, i + 1, j + 1
+            For J = Y To Y + Cy - 1 Step 2
+                SetRect RC, I, J, I + 1, J + 1
                 FillRect lngHDc, RC, hBrush
-            Next
+            Next J
 
         End If
 
-    Next
+    Next I
 
     DeleteObject hBrush
-    SetRect RC, X, Y, X + CX, Y + CY
+    SetRect RC, X, Y, X + Cx, Y + Cy
     DrawEdge lngHDc, RC, BDR_SUNKENOUTER, BF_RECT
 End Sub
 
@@ -403,28 +536,28 @@ End Sub
 '!--------------------------------------------------------------------------------
 Public Sub DropDown()
 
-    Dim ListTop  As Single
-    Dim ListLeft As Single
-    Dim RC       As RECT
-    Dim i        As Integer
-    Dim j        As Integer
+Dim ListTop                             As Single
+Dim ListLeft                            As Single
+Dim RC                                  As RECT
+Dim I                                   As Integer
+Dim J                                   As Integer
 
     'Get m_ixIndex and m_iyIndex
     m_iXIndex = -1
     m_iYIndex = -1
 
-    For i = 0 To m_ColorsInColumn - 1
-        For j = 0 To m_ColorsInRow - 1
+    For I = 0 To m_ColorsInColumn - 1
+        For J = 0 To m_ColorsInRow - 1
 
-            If m_arrColor(i, j) = m_nSelectedColor Then
-                m_iXIndex = j
-                m_iYIndex = i
+            If m_arrColor(I, J) = m_nSelectedColor Then
+                m_iXIndex = J
+                m_iYIndex = I
 
                 Exit For
 
             End If
 
-        Next
+        Next J
 
         If m_iXIndex > -1 Or m_iYIndex > -1 Then
 
@@ -432,9 +565,8 @@ Public Sub DropDown()
 
         End If
 
-    Next
+    Next I
 
-    '
     GetWindowRect UserControl.hWnd, RC
 
     If RC.Bottom < (Screen.Height - picDropDown.Height) / Screen.TwipsPerPixelY Then
@@ -449,7 +581,6 @@ Public Sub DropDown()
         ListLeft = (RC.Right + 1) * Screen.TwipsPerPixelX - picDropDown.Width
     End If
 
-    '
     SetWindowLong picDropDown.hWnd, GWL_EXSTYLE, WS_EX_TOPMOST Or WS_EX_TOOLWINDOW
     SetParent picDropDown.hWnd, 0
 
@@ -458,11 +589,11 @@ Public Sub DropDown()
     End If
 
     picDropDown.Move ListLeft, ListTop, picDropDown.Width, picDropDown.Height
-    '
+
     picDropDown.Visible = True
     DrawAllColors
     SetCapture picDropDown.hWnd
-    '
+
     DrawRectangle UserControl.hDC, 0, 0, 23, 22, m_nBorderColor, m_nFillColor
     DrawRectangle UserControl.hDC, 22, 0, 13, 22, m_nBorderColor, m_nDarkFillColor
     DrawSelectedColor
@@ -471,93 +602,6 @@ Public Sub DropDown()
     isDropped = True
     previousTrackedColor = -1
 End Sub
-
-'DropDownCaption property
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property DropDownCaption
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get DropDownCaption() As String
-    DropDownCaption = m_DropDownCaption
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property DropDownCaption
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   NewValue (String)
-'!--------------------------------------------------------------------------------
-Public Property Let DropDownCaption(ByVal NewValue As String)
-    m_DropDownCaption = NewValue
-    PropertyChanged ("DropDownCaption")
-End Property
-
-'ForbiddenColor property
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ForbiddenColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ForbiddenColor() As OLE_COLOR
-    ForbiddenColor = m_nForbiddenColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ForbiddenColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   NewValue (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let ForbiddenColor(ByVal NewValue As OLE_COLOR)
-Attribute ForbiddenColor.VB_Description = "Defines color that can't be selected from the dropdown part. Has meaning only if UseForbiddenColor = True. TrackColor event isn't fired for such color."
-    m_nForbiddenColor = NewValue
-    Redraw
-    PropertyChanged ("ForbiddenColor")
-End Property
-
-' toogle dropped state of picDropDown - in the original version of this module picDropDown
-' just remained dropped, what seems incorrect to me.
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function GetColorFromDialog
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   ownerHwnd (Long)
-'                              DefColor (Long)
-'!--------------------------------------------------------------------------------
-Public Function GetColorFromDialog(ByVal ownerHwnd As Long, ByVal DefColor As Long) As Long
-
-    Dim cc                As CHOOSECOLOR_TYPE
-    Dim custcols(0 To 15) As Long
-    Dim C                 As Integer
-
-    For C = 240 To 15 Step -15
-        custcols((C \ 15) - 1) = RGB(C, C, C)
-    Next
-
-    With cc
-        .lStructSize = Len(cc)
-        ' size of the structure
-        .hWndOwner = ownerHwnd
-        ' handle of form opening the Choose Color box
-        .hInstance = 0
-        ' not needed
-        .RGBResult = DefColor
-        ' set default selected color to DefColor
-        .lpCustColors = VarPtr(custcols(0))
-        ' pointer to list of custom colors
-        .Flags = CC_ANYCOLOR Or CC_RGBINIT Or CC_FULLOPEN
-        ' allow any color, use rgbResult as default selection, open "Define Custom Colors" part
-        .lCustData = 0
-        ' not needed
-        .lpfnHook = 0
-        ' not needed
-        .lpTemplateName = vbNullString
-        ' not needed
-        ChooseColor cc
-        GetColorFromDialog = .RGBResult
-    End With
-
-    'CC
-    'CC
-End Function
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function GetColorIndex
@@ -569,64 +613,42 @@ End Function
 '!--------------------------------------------------------------------------------
 Private Function GetColorIndex(ByVal X As Single, ByVal Y As Single, ByRef XIndex As Integer, ByRef YIndex As Integer) As Boolean
 
-    Dim i As Integer
-    Dim j As Integer
+Dim I                                   As Integer
+Dim J                                   As Integer
 
-    For i = 0 To m_ColorsInRow - 1
+    For I = 0 To m_ColorsInRow - 1
 
-        If X >= 8 + i * m_Step - 3 Then
-            If X <= 8 + i * m_Step + m_RectSize + 3 Then
-
-                Exit For
-
-            End If
-        End If
-
-    Next
-
-    For j = 0 To m_ColorsInColumn - 1
-
-        If Y >= m_OffsetTop + j * m_Step - 3 Then
-            If Y <= m_OffsetTop + j * m_Step + m_RectSize + 3 Then
+        If X >= 8 + I * m_Step - 3 Then
+            If X <= 8 + I * m_Step + m_RectSize + 3 Then
 
                 Exit For
 
             End If
         End If
 
-    Next
+    Next I
 
-    If i >= m_ColorsInRow Or j >= m_ColorsInColumn Then
+    For J = 0 To m_ColorsInColumn - 1
+
+        If Y >= m_OffsetTop + J * m_Step - 3 Then
+            If Y <= m_OffsetTop + J * m_Step + m_RectSize + 3 Then
+
+                Exit For
+
+            End If
+        End If
+
+    Next J
+
+    If I >= m_ColorsInRow Or J >= m_ColorsInColumn Then
         GetColorIndex = False
     Else
-        XIndex = i
-        YIndex = j
+        XIndex = I
+        YIndex = J
         GetColorIndex = True
     End If
 
 End Function
-
-'Icon property
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Icon
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get Icon() As StdPicture
-    Set Icon = imgIcon.Picture
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Icon
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   NewValue (StdPicture)
-'!--------------------------------------------------------------------------------
-Public Property Set Icon(ByVal NewValue As StdPicture)
-Attribute Icon.VB_Description = "Property has meaning only if Style property is set to ColorRectAndIconAbove."
-    Set imgIcon.Picture = NewValue
-    Redraw
-    PropertyChanged ("Icon")
-End Property
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub InitColorArray
@@ -635,7 +657,7 @@ End Property
 '!--------------------------------------------------------------------------------
 Private Sub InitColorArray()
 
-    'Initialize color array
+'Initialize color array
     If ColorPalette = System Then
 
         ReDim m_arrColor(4, 7)
@@ -705,6 +727,39 @@ Private Sub InitColorArray()
 End Sub
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Redraw
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub Redraw()
+    UserControl.Cls
+    UserControl.BackColor = m_nBackColor
+    DrawSelectedColor
+    UserControl.Refresh
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function VBColorToRGB
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   VBColor (Long)
+'!--------------------------------------------------------------------------------
+Public Function VBColorToRGB(ByVal VBColor As Long) As Long
+
+    If OleTranslateColor(VBColor, 0, VBColorToRGB) Then
+        VBColorToRGB = VBColor
+    End If
+
+End Function
+
+Private Sub IOleInPlaceActiveObjectVB_TranslateAccelerator(ByRef Handled As Boolean, ByRef RetVal As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal Shift As Long)
+    On Error Resume Next
+    Dim This As OLEGuids.IOleInPlaceActiveObjectVB
+    
+    Set This = UserControl.ActiveControl.Object
+    This.TranslateAccelerator Handled, RetVal, wMsg, wParam, lParam, Shift
+End Sub
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub picDropDown_MouseDown
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):   Button (Integer)
@@ -714,10 +769,10 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub picDropDown_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
-    Dim RC                 As RECT
-    Dim i                  As Integer
-    Dim j                  As Integer
-    Dim clickedOnArrowArea As Boolean
+Dim RC                                  As RECT
+Dim I                                   As Integer
+Dim J                                   As Integer
+Dim clickedOnArrowArea                  As Boolean
 
     DrawAllColors
 
@@ -749,9 +804,9 @@ Private Sub picDropDown_MouseDown(Button As Integer, Shift As Integer, X As Sing
                 'Other colors
                 SetCapture picDropDown.hWnd
 
-                If GetColorIndex(X, Y, i, j) Then
-                    If Not (m_UseForbiddenColor And (m_arrColor(j, i) = m_nForbiddenColor)) Then
-                        SetRect RC, 8 + i * m_Step - 3, m_OffsetTop + j * m_Step - 3, 8 + i * m_Step + m_RectSize + 3, m_OffsetTop + j * m_Step + m_RectSize + 3
+                If GetColorIndex(X, Y, I, J) Then
+                    If Not (m_UseForbiddenColor And (m_arrColor(J, I) = m_nForbiddenColor)) Then
+                        SetRect RC, 8 + I * m_Step - 3, m_OffsetTop + J * m_Step - 3, 8 + I * m_Step + m_RectSize + 3, m_OffsetTop + J * m_Step + m_RectSize + 3
                         DrawEdge picDropDown.hDC, RC, BDR_SUNKENOUTER, BF_RECT
                         picDropDown.Refresh
                     End If
@@ -772,9 +827,9 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub picDropDown_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
-    Dim RC As RECT
-    Dim i  As Integer
-    Dim j  As Integer
+Dim RC                                  As RECT
+Dim I                                   As Integer
+Dim J                                   As Integer
 
     DrawAllColors
 
@@ -795,11 +850,11 @@ Private Sub picDropDown_MouseMove(Button As Integer, Shift As Integer, X As Sing
         Else
 
             'Other colors
-            If GetColorIndex(X, Y, i, j) Then
-                If Not (m_UseForbiddenColor And (m_arrColor(j, i) = m_nForbiddenColor)) Then
-                    SetRect RC, 8 + i * m_Step - 3, m_OffsetTop + j * m_Step - 3, 8 + i * m_Step + m_RectSize + 3, m_OffsetTop + j * m_Step + m_RectSize + 3
+            If GetColorIndex(X, Y, I, J) Then
+                If Not (m_UseForbiddenColor And (m_arrColor(J, I) = m_nForbiddenColor)) Then
+                    SetRect RC, 8 + I * m_Step - 3, m_OffsetTop + J * m_Step - 3, 8 + I * m_Step + m_RectSize + 3, m_OffsetTop + J * m_Step + m_RectSize + 3
 
-                    If m_iXIndex = i And m_iYIndex = j Then
+                    If m_iXIndex = I And m_iYIndex = J Then
                         DrawEdge picDropDown.hDC, RC, BDR_SUNKENOUTER, BF_RECT
                     Else
 
@@ -810,9 +865,9 @@ Private Sub picDropDown_MouseMove(Button As Integer, Shift As Integer, X As Sing
                         End If
                     End If
 
-                    If m_arrColor(j, i) <> previousTrackedColor Then
-                        RaiseEvent TrackColor(m_arrColor(j, i))
-                        previousTrackedColor = m_arrColor(j, i)
+                    If m_arrColor(J, I) <> previousTrackedColor Then
+                        RaiseEvent TrackColor(m_arrColor(J, I))
+                        previousTrackedColor = m_arrColor(J, I)
                     End If
 
                     picDropDown.Refresh
@@ -833,8 +888,8 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub picDropDown_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
-    Dim i As Integer
-    Dim j As Integer
+Dim I                                   As Integer
+Dim J                                   As Integer
 
     If X >= 8 And X <= 8 + 138 And Y >= 8 And Y <= 8 + 18 And m_ColorPalette = System Then
 
@@ -847,7 +902,14 @@ Private Sub picDropDown_MouseUp(Button As Integer, Shift As Integer, X As Single
             RaiseEvent DropDownClose
             Flag = True
             isDropped = False
-            m_nSelectedColor = GetColorFromDialog(UserControl.hWnd, m_nSelectedColor)
+            
+            'change by AdiaProject - Call Color Dialog
+            With New CommonDialog
+                .flags = CdlCCRGBInit Or CdlCCFullOpen Or CdlCCAnyColor
+                .Color = m_nSelectedColor
+                If .ShowColor = True Then m_nSelectedColor = .Color
+            End With
+                        
             RaiseEvent Click
             Redraw
         End If
@@ -855,11 +917,11 @@ Private Sub picDropDown_MouseUp(Button As Integer, Shift As Integer, X As Single
     Else
 
         'Other colors
-        If GetColorIndex(X, Y, i, j) Then
-            If Not (m_UseForbiddenColor And (m_arrColor(j, i) = m_nForbiddenColor)) Then
-                m_iXIndex = i
-                m_iYIndex = j
-                m_nSelectedColor = m_arrColor(j, i)
+        If GetColorIndex(X, Y, I, J) Then
+            If Not (m_UseForbiddenColor And (m_arrColor(J, I) = m_nForbiddenColor)) Then
+                m_iXIndex = I
+                m_iYIndex = J
+                m_nSelectedColor = m_arrColor(J, I)
                 ReleaseCapture
                 Redraw
                 picDropDown.Visible = False
@@ -874,69 +936,13 @@ Private Sub picDropDown_MouseUp(Button As Integer, Shift As Integer, X As Single
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Redraw
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub Redraw()
-    UserControl.Cls
-    UserControl.BackColor = m_nBackColor
-    DrawSelectedColor
-    UserControl.Refresh
-End Sub
-
-'Style Property
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Style
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get Style() As ColorButtonStyles
-    Style = m_Style
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Style
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   NewValue (ColorButtonStyles)
-'!--------------------------------------------------------------------------------
-Public Property Let Style(ByVal NewValue As ColorButtonStyles)
-Attribute Style.VB_Description = "Indicates whether the button part of the control has color rect only or also with icon above (icon is taken from the Icon property)."
-    m_Style = NewValue
-    Redraw
-    PropertyChanged ("Style")
-End Property
-
-'UseForbiddenColor property
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UseForbiddenColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get UseForbiddenColor() As Boolean
-Attribute UseForbiddenColor.VB_Description = "If set to True, you can't select cell with ForbiddenColor in the dropdown part."
-    UseForbiddenColor = m_UseForbiddenColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UseForbiddenColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   NewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let UseForbiddenColor(ByVal NewValue As Boolean)
-    m_UseForbiddenColor = NewValue
-    Redraw
-    PropertyChanged ("UseForbiddenColor")
-End Property
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UserControl_ExitFocus
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_ExitFocus()
 
-    'Hide dropdown window
+'Hide dropdown window
     If picDropDown.Visible Then
         picDropDown.Visible = False
         ReleaseCapture
@@ -1121,37 +1127,3 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     End With
 
 End Sub
-
-'Value property
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Value
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get Value() As OLE_COLOR
-    Value = m_nSelectedColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Value
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   NewValue (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let Value(ByVal NewValue As OLE_COLOR)
-    m_nSelectedColor = NewValue
-    Redraw
-    PropertyChanged ("Value")
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function VBColorToRGB
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   VBColor (Long)
-'!--------------------------------------------------------------------------------
-Public Function VBColorToRGB(ByVal VBColor As Long) As Long
-
-    If OleTranslateColorByRef(VBColor, 0, VBColorToRGB) Then
-        VBColorToRGB = VBColor
-    End If
-
-End Function

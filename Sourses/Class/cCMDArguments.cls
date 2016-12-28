@@ -51,6 +51,24 @@ Private Declare Function LocalFree Lib "kernel32.dll" (ByVal hMem As Long) As Lo
 Private Declare Function SysAllocString Lib "oleaut32.dll" (ByVal nString As Long) As Long
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property CommandLine
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get CommandLine() As String
+    CommandLine = cFm_CommandLine
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property CommandLine
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   sNewString (String)
+'!--------------------------------------------------------------------------------
+Public Property Let CommandLine(ByVal sNewString As String)
+    cFm_CommandLine = sNewString
+End Property
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function Arguments
 '! Description (Описание)  :   [Get unicode supporting unicode]
 '! Parameters  (Переменные):
@@ -60,7 +78,7 @@ Public Function Arguments() As Collection
     Dim lngRet   As Long
     Dim retCount As Long
     Dim rt       As String
-    Dim i        As Integer
+    Dim I        As Integer
     Dim sPtr     As Long
     Dim cmdLine  As String
     Dim retColl  As Collection
@@ -69,10 +87,10 @@ Public Function Arguments() As Collection
     cmdLine = cFm_CommandLine
     lngRet = CommandLineToArgvW(StrPtr(cmdLine & vbNullChar), retCount)
 
-    If retCount > 0 Then
+    If retCount Then
 
-        For i = 0 To retCount - 1
-            CopyMemoryLong VarPtr(sPtr), lngRet + i * 4, 4
+        For I = 0 To retCount - 1
+            CopyMemoryLong VarPtr(sPtr), lngRet + I * 4, 4
             CopyMemoryLong VarPtr(rt), VarPtr(SysAllocString(sPtr)), 4
             retColl.Add rt
         Next
@@ -121,14 +139,14 @@ Attribute ArgumentsClassical.VB_Description = "Returns the collection of command
 
         Select Case curChar
 
-            Case " ", vbTab
+            Case strSpace, vbTab
                 Append = False
 
                 If InvertStart Then
                     Append = True
                 End If
 
-            Case Kavichki
+            Case strQuotes
                 InvertStart = Not InvertStart
 
                 If InvertStart Then
@@ -144,7 +162,7 @@ Attribute ArgumentsClassical.VB_Description = "Returns the collection of command
 
             Case True
 
-                If curChar <> Kavichki Then
+                If curChar <> strQuotes Then
                     CurArg = CurArg & curChar
                 End If
 
@@ -165,21 +183,3 @@ Attribute ArgumentsClassical.VB_Description = "Returns the collection of command
     On Error GoTo 0
 
 End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property CommandLine
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get CommandLine() As String
-    CommandLine = cFm_CommandLine
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property CommandLine
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   sNewString (String)
-'!--------------------------------------------------------------------------------
-Public Property Let CommandLine(ByVal sNewString As String)
-    cFm_CommandLine = sNewString
-End Property

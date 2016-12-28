@@ -30,9 +30,6 @@ Private Const KEY_WOW64_64KEY        As Long = &H200
 Private Const KEY_CREATE_SUB_KEY     As Long = &H4
 Private Const KEY_SET_VALUE          As Long = &H2
 
-Private Declare Function RegQueryValueExString Lib "advapi32.dll" Alias "RegQueryValueExA" (ByVal hkey As Long, ByVal lpValueName As String, ByVal lpReserved As Long, lpType As Long, ByVal lpData As String, lpcbData As Long) As Long
-Private Declare Function RegQueryValueExLong Lib "advapi32.dll" Alias "RegQueryValueExA" (ByVal hkey As Long, ByVal lpValueName As String, ByVal lpReserved As Long, lpType As Long, lpData As Long, lpcbData As Long) As Long
-Private Declare Function RegQueryValueExNULL Lib "advapi32.dll" Alias "RegQueryValueExA" (ByVal hkey As Long, ByVal lpValueName As String, ByVal lpReserved As Long, lpType As Long, ByVal lpData As Long, lpcbData As Long) As Long
 Private Declare Function RegEnumKey Lib "advapi32.dll" Alias "RegEnumKeyA" (ByVal hkey As Long, ByVal dwIndex As Long, ByVal lpName As String, ByVal cbName As Long) As Long
 Private Declare Function RegOpenKey Lib "advapi32.dll" Alias "RegOpenKeyA" (ByVal hkey As Long, ByVal lpSubKey As String, phkResult As Long) As Long
 Private Declare Function RegOpenKeyEx Lib "advapi32.dll" Alias "RegOpenKeyExA" (ByVal hkey As Long, ByVal lpSubKey As String, ByVal ulOptions As Long, ByVal samDesired As Long, ByRef phkResult As Long) As Long
@@ -53,7 +50,7 @@ Private Declare Function RegSetValueEx Lib "advapi32.dll" Alias "RegSetValueExA"
 '!--------------------------------------------------------------------------------
 Public Function GetKeyValue(ByVal KeyRoot As Long, ByVal KeyName As String, ByVal SubKeyRef As String, Optional ByVal mbReadKeyRights As Boolean = False) As String
 
-    Dim i                    As Long
+    Dim I                    As Long
     Dim RC                   As Long
     Dim hkey                 As Long
     Dim sKeyVal              As String
@@ -124,10 +121,10 @@ Public Function GetKeyValue(ByVal KeyRoot As Long, ByVal KeyName As String, ByVa
             ' Double Word Registry Key Data Type
             If LenB(tmpVal) Then
 
-                For i = Len(tmpVal) To 1 Step -1
+                For I = Len(tmpVal) To 1 Step -1
                     ' Convert Each Bit
                     ' Build Value Char. By Char.
-                    sKeyVal = sKeyVal + Hex$(Asc(Mid$(tmpVal, i, 1)))
+                    sKeyVal = sKeyVal + Hex$(Asc(Mid$(tmpVal, I, 1)))
                 Next
 
                 sKeyVal = Format$("&h" & sKeyVal)
@@ -141,12 +138,12 @@ Public Function GetKeyValue(ByVal KeyRoot As Long, ByVal KeyName As String, ByVa
             tmpVal = Left$(tmpVal, intTemp)
             sKeyVal_x = Split(tmpVal, vbNullChar)
 
-            ReDim GetKeyValueMultiSZ(UBound(sKeyVal_x)) As String
+            ReDim GetKeyValueMultiSZ(UBound(sKeyVal_x))
 
             Do Until LenB(tmpVal) = 0
                 intTempSmallBuff = InStrRev(tmpVal, vbNullChar)
 
-                If intTempSmallBuff > 0 Then
+                If intTempSmallBuff Then
                     intTemp = InStr(tmpVal, vbNullChar)
                     strstr = Left$(tmpVal, intTemp)
                     GetKeyValueMultiSZ(Index) = TrimNull(strstr)
@@ -158,17 +155,17 @@ Public Function GetKeyValue(ByVal KeyRoot As Long, ByVal KeyName As String, ByVa
 
             Loop
 
-            ReDim Preserve GetKeyValueMultiSZ(Index) As String
+            ReDim Preserve GetKeyValueMultiSZ(Index)
 
-            For i = LBound(GetKeyValueMultiSZ) To UBound(GetKeyValueMultiSZ) - 1
+            For I = LBound(GetKeyValueMultiSZ) To UBound(GetKeyValueMultiSZ) - 1
 
-                If LenB(sKeyVal) > 0 Then
-                    If LenB(GetKeyValueMultiSZ(i)) > 0 Then
-                        sKeyVal = sKeyVal & " | " & GetKeyValueMultiSZ(i)
+                If LenB(sKeyVal) Then
+                    If LenB(GetKeyValueMultiSZ(I)) Then
+                        sKeyVal = sKeyVal & " | " & GetKeyValueMultiSZ(I)
                     End If
 
                 Else
-                    sKeyVal = GetKeyValueMultiSZ(i)
+                    sKeyVal = GetKeyValueMultiSZ(I)
                 End If
 
             Next
@@ -189,21 +186,15 @@ Public Function GetKeyValue(ByVal KeyRoot As Long, ByVal KeyName As String, ByVa
 GetKeyError:
     ' Cleanup After An Error Has Occured...
     GetKeyValue = vbNullString
-    DebugMode "Error read RegistryParam: Key:" & KeyName & " Param:" & SubKeyRef & " Error: №" & RC & " - " & ApiErrorText(RC), 2
+    If mbDebugDetail Then DebugMode "Error read RegistryParam: Key:" & KeyName & " Param:" & SubKeyRef & " Error: №" & RC & " - " & ApiErrorText(RC)
     ' Set Return Val To Empty String
     RC = RegCloseKey(hkey)
     ' Close Registry Key
 End Function
 
-'! -----------------------------------------------------------
-'!  Функция     :  GetRegString
-'!  Переменные  :  hKey As Long, strSubKey As String, strValueName As String
-'!  Возвр. знач.:  As String
-'!  Описание    :  Получение значение ключа из реестра
-'! -----------------------------------------------------------
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function GetRegString
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Получение значение ключа из реестра]
 '! Parameters  (Переменные):   hkey (Long)
 '                              strSubKey (String)
 '                              strValueName (String)
@@ -215,7 +206,7 @@ Public Function GetRegString(hkey As Long, strSubKey As String, strValueName As 
     Dim lngRes     As Long
 
     If RegOpenKey(hkey, strSubKey, lngRes) = ERROR_SUCCESS Then
-        strSetting = String$(MAX_PATH, vbNullChar)
+        strSetting = FillNullChar(MAX_PATH)
         lngDataLen = MAX_PATH
 
         If RegQueryValueEx(lngRes, strValueName, ByVal 0, REG_EXPAND_SZ, ByVal strSetting, lngDataLen) = ERROR_SUCCESS Then
@@ -232,15 +223,9 @@ Public Function GetRegString(hkey As Long, strSubKey As String, strValueName As 
 
 End Function
 
-'! -----------------------------------------------------------
-'!  Функция     :  IsAppPresent
-'!  Переменные  :  strSubKey$, strValueName$
-'!  Возвр. знач.:  As Boolean
-'!  Описание    :  Присутствует ли данное приложение в реестре
-'! -----------------------------------------------------------
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function IsAppPresent
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Присутствует ли данное приложение в реестре]
 '! Parameters  (Переменные):   strSubKey (String)
 '                              strValueName (String)
 '!--------------------------------------------------------------------------------
@@ -283,7 +268,7 @@ Public Function ListKey(ByVal hkey, ByVal Key, Optional ByVal mbReadKeyRights As
     ' максимальное кол-во элементов в массиве
     miMaxCountArr = 500
 
-    ReDim K(miMaxCountArr) As String
+    ReDim K(miMaxCountArr)
 
     lRetVal = RegOpenKeyEx(hkey, Key, 0, lngKeyRights, hKeyResult)
 
@@ -326,14 +311,10 @@ Public Function ListKey(ByVal hkey, ByVal Key, Optional ByVal mbReadKeyRights As
     End If
 
     ' Итоговое переобъявление массива на реальное кол-во записей
-    If lCurIdx > 0 Then
-
-        ReDim Preserve K(lCurIdx - 1) As String
-
+    If lCurIdx Then
+        ReDim Preserve K(lCurIdx - 1)
     Else
-
         ReDim Preserve K(0)
-
     End If
 
     ListKey = K

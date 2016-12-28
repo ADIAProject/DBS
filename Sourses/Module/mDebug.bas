@@ -1,53 +1,59 @@
 Attribute VB_Name = "mDebug"
 Option Explicit
 
+' Модуль для организации записи отладочных сообщений в лог-файл
+' Имееется возможность задания режима детализации отладочных сообщений
+
 '==========================================================================
 '------------------ Параметры отладочного режима --------------------------'
 '==========================================================================
-Public mbDebugEnable           As Boolean
+' Параметры считываются из ini-файла при запуске программы
+Public mbDebugStandart         As Boolean   'Стандартная отладка
+Public mbDebugDetail           As Boolean   'Детальная отладка, больше отладочных сообщений
+Public mbCleanHistory          As Boolean   'Очистка истории отладочного режима
+Public mbDebugTime2File        As Boolean   'Записывать время события в лог-файл
+Public mbDebugLog2AppPath      As Boolean   'Каталог Logs находится в папке с программой
+Public lngDetailMode           As Long      'Режим детализации лог-файла
+Public strDebugLogPathTemp     As String    'Директория создания лог-файла (путь может быть относительный и с environment-переменными)
+Public strDebugLogNameTemp     As String    'Имя лог-файла (поддерживаются переменные)
+' Параметры рассчитываемые в ходе работы программы
 Public strDebugLogFullPath     As String
 Public strDebugLogPath         As String
-Public strDebugLogPathTemp     As String
 Public strDebugLogName         As String
-Public strDebugLogNameTemp     As String
-Public strDebugLogPath2AppPath As String
-Public mbCleanHistory          As Boolean     'Очистка истории отладочного режима
-Public lngDetailMode           As Long
-Public mbDebugLog2AppPath      As Boolean
-Public mbDebugTime2File        As Boolean
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub DebugMode
 '! Description (Описание)  :   [Функция отладочных сообщений]
 '! Parameters  (Переменные):   Msg (String)
-'                              lngDetailModeTemp (Long = 1)
 '!--------------------------------------------------------------------------------
-Public Sub DebugMode(ByVal Msg As String, Optional ByVal lngDetailModeTemp As Long = 1)
-
-    Dim tsLogFile As TextStream
-
-    ' создается ли новый файл или открывается для дозаписи
-    If mbDebugEnable Then
-        If Not mbLogNotOnCDRoom Then
-            If lngDetailModeTemp <= lngDetailMode Then
-                If LenB(Msg) > 0 Then
-                    If objFSO.FileExists(strDebugLogFullPath) Then
-                        Set tsLogFile = objFSO.OpenTextFile(strDebugLogFullPath, ForAppending, False, TristateTrue)
-                    Else
-                        Set tsLogFile = objFSO.OpenTextFile(strDebugLogFullPath, ForWriting, True, TristateTrue)
-                    End If
-
-                    If mbDebugTime2File Then
-                        tsLogFile.WriteLine CStr(Now()) & vbTab & Msg
-                    Else
-                        tsLogFile.WriteLine Msg
-                    End If
-
-                    tsLogFile.Close
-                End If
-            End If
+Public Sub DebugMode(ByVal strMsg As String)
+    
+    Dim mbFileExist As Boolean
+    Dim fNum        As Integer
+    
+    mbFileExist = FileExists(strDebugLogFullPath)
+    
+    fNum = FreeFile
+    Open strDebugLogFullPath For Binary Access Write As fNum
+    
+    If Not mbDebugTime2File Then
+        ' создается ли новый файл или открывается для дозаписи
+        If mbFileExist Then
+            Put #fNum, LOF(fNum), strMsg & vbNewLine
+        Else
+            Put #fNum, , strMsg & vbNewLine
         End If
+    Else
+        ' создается ли новый файл или открывается для дозаписи
+        If mbFileExist Then
+            Put #fNum, LOF(fNum), (vbNewLine & CStr(Now()) & vbTab) & strMsg
+        Else
+            Put #fNum, , (vbNewLine & CStr(Now()) & vbTab) & strMsg
+        End If
+
     End If
+    
+    Close #fNum
 
 End Sub
 
@@ -56,21 +62,26 @@ End Sub
 '! Description (Описание)  :   [Проверка на хранение лог-файла на CD]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Public Function LogNotOnCDRoom() As Boolean
+Public Function LogNotOnCDRoom(Optional ByVal strLogFolder As String) As Boolean
 
     Dim strDriveName As String
-    Dim xDrv         As Drive
+    Dim xDrv         As Long
 
-    LogNotOnCDRoom = False
-    strDriveName = Left$(strDebugLogPath, 2)
-
+    If LenB(strLogFolder) = 0 Then
+        strDriveName = Left$(strDebugLogPath, 3)
+    Else
+        strDriveName = Left$(strLogFolder, 3)
+    End If
+    
     ' Проверяем на запуск из сети
-    If InStr(strDriveName, vbBackslash) = 0 Then
+    If InStr(strDriveName, vbBackslashDouble) = 0 Then
         'получаем тип диска
-        Set xDrv = objFSO.GetDrive(strDriveName)
-
-        If xDrv.DriveType = CDRom Then
-            LogNotOnCDRoom = True
+        If PathIsRoot(strDriveName) Then
+            xDrv = GetDriveType(strDriveName)
+    
+            If xDrv = DRIVE_CDROM Then
+                LogNotOnCDRoom = True
+            End If
         End If
     End If
 
@@ -83,13 +94,10 @@ End Function
 '!--------------------------------------------------------------------------------
 Public Sub MakeCleanHistory()
 
-    Dim FileDel As File
-
     If mbCleanHistory Then
-        If objFSO.FileExists(strDebugLogFullPath) Then
-            If Not mbLogNotOnCDRoom Then
-                Set FileDel = objFSO.GetFile(strDebugLogFullPath)
-                FileDel.Delete
+        If FileExists(strDebugLogFullPath) Then
+            If Not LogNotOnCDRoom Then
+                DeleteFiles (strDebugLogFullPath)
             End If
         End If
     End If
@@ -102,20 +110,17 @@ End Sub
 '! Parameters  (Переменные):   strFilePath (String)
 '!--------------------------------------------------------------------------------
 Public Sub PrintFileInDebugLog(ByVal strFilePath As String)
-
-    Dim objTxtFile    As TextStream
     Dim strTxtFileAll As String
-
-    If PathExists(strFilePath) Then
-        If Not PathIsAFolder(strFilePath) Then
-            If GetFileSizeByPath(strFilePath) > 0 Then
-                Set objTxtFile = objFSO.OpenTextFile(strFilePath, ForReading, False, TristateUseDefault)
-                strTxtFileAll = objTxtFile.ReadAll
-                objTxtFile.Close
+    
+    If FileExists(strFilePath) Then
+        If GetFileSizeByPath(strFilePath) Then
+                    
+            If mbDebugStandart Then
+                FileReadData strFilePath, strTxtFileAll
                 DebugMode vbTab & "Content of file: " & strFilePath & vbNewLine & "*********************BEGIN FILE**************************" & vbNewLine & strTxtFileAll & vbNewLine & "**********************END FILE***************************"
-            Else
-                DebugMode vbTab & "Content of file: " & strFilePath & " Error - 0 bytes"
             End If
+        Else
+            If mbDebugStandart Then DebugMode vbTab & "Content of file: " & strFilePath & " Error - 0 bytes"
         End If
     End If
 

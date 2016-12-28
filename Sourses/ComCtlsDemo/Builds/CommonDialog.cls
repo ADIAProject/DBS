@@ -13,15 +13,18 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 #If False Then
-Private CdlCancel, CdlBufferTooSmall, CdlInvalidFileName, CdlSubclassFailure, CdlMaxLessThanMin, CdlNoFonts, CdlPrinterNotFound, CdlCreateICFailure, CdlDndmMismatch, CdlNoDefaultPrn, CdlNoDevices, CdlInitFailure, CdlGetDevModeFail, CdlLoadDrvFailure, CdlRetDefFailure, CdlParseFailure, CdlHelp
+Private CdlCancel, CdlBufferTooSmall, CdlInvalidFileName, CdlSubclassFailure, CdlMaxLessThanMin, CdlNoFonts, CdlPrinterNotFound, CdlCreateICFailure, CdlDndmMismatch, CdlNoDefaultPrn, CdlNoDevices, CdlInitFailure, CdlGetDevModeFail, CdlLoadDrvFailure, CdlRetDefFailure, CdlParseFailure, CdlHelp, CdlBufferLengthZero
 Private CdlOFNReadOnly, CdlOFNOverwritePrompt, CdlOFNHideReadOnly, CdlOFNNoChangeDir, CdlOFNHelpButton, CdlOFNNoValidate, CdlOFNAllowMultiSelect, CdlOFNExtensionDifferent, CdlOFNPathMustExist, CdlOFNFileMustExist, CdlOFNCreatePrompt, CdlOFNShareAware, CdlOFNNoReadOnlyReturn, CdlOFNNoNetworkButton, CdlOFNExplorer, CdlOFNNoDereferenceLinks, CdlOFNDontAddToRecent, CdlOFNForcesShowHidden
+Private CdlOFNShareViResultWarn, CdlOFNShareViResultNoWarn, CdlOFNShareViResultFallThrough
 Private CdlCCRGBInit, CdlCCFullOpen, CdlCCPreventFullOpen, CdlCCHelpButton, CdlCCSolidColor, CdlCCAnyColor
-Private CdlCFScreenFonts, CdlCFPrinterFonts, CdlCFHelpButton, CdlCFEffects, CdlCFScriptsOnly, CdlCFNoVectorFonts, CdlCFLimitSize, CdlCFFixedPitchOnly, CdlCFForceFontExist, CdlCFScalableOnly, CdlCFTTOnly, CdlCFNoFaceSel, CdlCFNoStyleSel, CdlCFNoSizeSel, CdlCFSelectScript, CdlCFNoScriptSel, CdlCFNoVertFonts
-Private CdlPDAllPages, CdlPDSelection, CdlPDPageNums, CdlPDNoSelection, CdlPDNoPageNums, CdlPDCollate, CdlPDPrintToFile, CdlPDPrintSetup, CdlPDNoWarning, CdlPDReturnDC, CdlPDReturnIC, CdlPDReturnDefault, CdlPDHelpButton, CdlPDUseDevModeCopiesAndCollate, CdlPDDisablePrintToFile, CdlPDCurrentPage, CdlPDHidePrintToFile, CdlPDNoNetworkButton, CdlPDNoCurrentPage
+Private CdlCFScreenFonts, CdlCFPrinterFonts, CdlCFHelpButton, CdlCFEffects, CdlCFApply, CdlCFScriptsOnly, CdlCFNoVectorFonts, CdlCFLimitSize, CdlCFFixedPitchOnly, CdlCFForceFontExist, CdlCFScalableOnly, CdlCFTTOnly, CdlCFNoFaceSel, CdlCFNoStyleSel, CdlCFNoSizeSel, CdlCFSelectScript, CdlCFNoScriptSel, CdlCFNoVertFonts
+Private CdlPDAllPages, CdlPDSelection, CdlPDPageNums, CdlPDNoSelection, CdlPDNoPageNums, CdlPDCollate, CdlPDPrintToFile, CdlPDPrintSetup, CdlPDNoWarning, CdlPDReturnDC, CdlPDReturnIC, CdlPDReturnDefault, CdlPDHelpButton, CdlPDUseDevModeCopies, CdlPDUseDevModeCopiesAndCollate, CdlPDDisablePrintToFile, CdlPDCurrentPage, CdlPDHidePrintToFile, CdlPDNoNetworkButton, CdlPDNoCurrentPage
 Private CdlPDResultCancel, CdlPDResultPrint, CdlPDResultApply
 Private CdlHelpContext, CdlHelpQuit, CdlHelpIndex, CdlHelpContents, CdlHelpHelpOnHelp, CdlHelpSetIndex, CdlHelpSetContents, CdlHelpContextPopup, CdlHelpForceFile, CdlHelpKey, CdlHelpCommandHelp, CdlHelpPartialKey
 Private CdlPSDDefaultMinMargins, CdlPSDMinMargins, CdlPSDMargins, CdlPSDInThousandthsOfInches, CdlPSDInHundredthsOfMillimeters, CdlPSDDisableMargins, CdlPSDDisablePrinter, CdlPSDNoWarning, CdlPSDDisableOrientation, CdlPSDDisablePaper, CdlPSDReturnDefault, CdlPSDHelpButton, CdlPSDDisablePagePainting, CdlPSDNoNetworkButton
-Private CdlBIFReturnOnlyFSDirs, CdlBIFDontGoBelowDomain, CdlBIFReturnFSAncestors, CdlBIFEditBox, CdlBIFNewDialogStyle, CdlBIFBrowseIncludeURLs, CdlBIFUseNewUI, CdlBIFUAHint, CdlBIFNoNewFolderButton, CdlBIFNoTranslateTargets, CdlBIFBrowseForComputer, CdlBIFBrowseForPrinter, CdlBIFBrowseIncludeFiles, CdlBIFShareable, CdlBIFBrowseFileJunctions
+Private CdlBIFReturnOnlyFSDirs, CdlBIFDontGoBelowDomain, CdlBIFStatusText, CdlBIFReturnFSAncestors, CdlBIFEditBox, CdlBIFValidate, CdlBIFNewDialogStyle, CdlBIFBrowseIncludeURLs, CdlBIFUseNewUI, CdlBIFUAHint, CdlBIFNoNewFolderButton, CdlBIFNoTranslateTargets, CdlBIFBrowseForComputer, CdlBIFBrowseForPrinter, CdlBIFBrowseIncludeFiles, CdlBIFShareable, CdlBIFBrowseFileJunctions
+Private CdlFRDown, CdlFRWholeWord, CdlFRMatchCase, CdlFRFindNext, CdlFRReplace, CdlFRReplaceAll, CdlFRHelpButton, CdlFRNoUpDown, CdlFRNoMatchCase, CdlFRNoWholeWord, CdlFRHideUpDown, CdlFRHideMatchCase, CdlFRHideWholeWord
+Private CdlOAIFAllowRegistration, CdlOAIFRegisterExt, CdlOAIFExecute, CdlOAIFForceRegistration, CdlOAIFHideRegistration, CdlOAIFURLProtocol
 #End If
 Private Const FNERR_BUFFERTOOSMALL As Long = &H3003
 Private Const FNERR_INVALIDFILENAME As Long = &H3002
@@ -38,6 +41,7 @@ Private Const PDERR_GETDEVMODEFAIL As Long = &H1005
 Private Const PDERR_LOADDRVFAILURE As Long = &H1004
 Private Const PDERR_RETDEFFAILURE As Long = &H1003
 Private Const PDERR_PARSEFAILURE As Long = &H1002
+Private Const FRERR_BUFFERLENGTHZERO As Long = &H4001
 Public Enum CdlErrorConstants
 CdlCancel = 32755
 CdlBufferTooSmall = 20476
@@ -56,12 +60,14 @@ CdlLoadDrvFailure = 28667
 CdlRetDefFailure = 28668
 CdlParseFailure = 28669
 CdlHelp = 32751
+CdlBufferLengthZero = 36848
 End Enum
 Private Const OFN_READONLY As Long = &H1
 Private Const OFN_OVERWRITEPROMPT As Long = &H2
 Private Const OFN_HIDEREADONLY As Long = &H4
 Private Const OFN_NOCHANGEDIR As Long = &H8
 Private Const OFN_SHOWHELP As Long = &H10
+Private Const OFN_ENABLEHOOK As Long = &H20 ' Internal use only
 Private Const OFN_NOVALIDATE As Long = &H100
 Private Const OFN_ALLOWMULTISELECT As Long = &H200
 Private Const OFN_EXTENSIONDIFFERENT As Long = &H400
@@ -73,6 +79,7 @@ Private Const OFN_NOREADONLYRETURN As Long = &H8000&
 Private Const OFN_NONETWORKBUTTON As Long = &H20000
 Private Const OFN_EXPLORER As Long = &H80000
 Private Const OFN_NODEREFERENCELINKS As Long = &H100000
+Private Const OFN_ENABLESIZING As Long = &H800000 ' Internal use only. Necessary only if a callback procedure or custom template is provided
 Private Const OFN_DONTADDTORECENT As Long = &H2000000
 Private Const OFN_FORCESHOWHIDDEN As Long = &H10000000
 Public Enum CdlOFNConstants
@@ -95,10 +102,19 @@ CdlOFNNoDereferenceLinks = OFN_NODEREFERENCELINKS
 CdlOFNDontAddToRecent = OFN_DONTADDTORECENT
 CdlOFNForcesShowHidden = OFN_FORCESHOWHIDDEN
 End Enum
+Private Const OFN_SHAREWARN As Long = &H0
+Private Const OFN_SHARENOWARN As Long = &H1
+Private Const OFN_SHAREFALLTHROUGH As Long = &H2
+Public Enum CdlOFNShareViResultConstants
+CdlOFNShareViResultWarn = OFN_SHAREWARN
+CdlOFNShareViResultNoWarn = OFN_SHARENOWARN
+CdlOFNShareViResultFallThrough = OFN_SHAREFALLTHROUGH
+End Enum
 Private Const CC_RGBINIT As Long = &H1
 Private Const CC_FULLOPEN As Long = &H2
 Private Const CC_PREVENTFULLOPEN As Long = &H4
 Private Const CC_SHOWHELP As Long = &H8
+Private Const CC_ENABLEHOOK As Long = &H10 ' Internal use only
 Private Const CC_SOLIDCOLOR As Long = &H80
 Private Const CC_ANYCOLOR As Long = &H100
 Public Enum CdlCCConstants
@@ -112,7 +128,10 @@ End Enum
 Private Const CF_SCREENFONTS As Long = &H1
 Private Const CF_PRINTERFONTS As Long = &H2
 Private Const CF_SHOWHELP As Long = &H4
+Private Const CF_ENABLEHOOK As Long = &H8 ' Internal use only
+Private Const CF_INITTOLOGFONTSTRUCT As Long = &H40 ' Internal use only
 Private Const CF_EFFECTS As Long = &H100
+Private Const CF_APPLY As Long = &H200
 Private Const CF_SCRIPTSONLY As Long = &H400
 Private Const CF_NOVECTORFONTS As Long = &H800
 Private Const CF_LIMITSIZE As Long = &H2000
@@ -131,6 +150,7 @@ CdlCFScreenFonts = CF_SCREENFONTS
 CdlCFPrinterFonts = CF_PRINTERFONTS
 CdlCFHelpButton = CF_SHOWHELP
 CdlCFEffects = CF_EFFECTS
+CdlCFApply = CF_APPLY
 CdlCFScriptsOnly = CF_SCRIPTSONLY
 CdlCFNoVectorFonts = CF_NOVECTORFONTS
 CdlCFLimitSize = CF_LIMITSIZE
@@ -158,6 +178,9 @@ Private Const PD_RETURNDC As Long = &H100
 Private Const PD_RETURNIC As Long = &H200
 Private Const PD_RETURNDEFAULT As Long = &H400
 Private Const PD_SHOWHELP As Long = &H800 ' PRINTDLG only
+Private Const PD_ENABLEPRINTHOOK As Long = &H1000 ' Internal use only
+Private Const PD_ENABLESETUPHOOK As Long = &H2000 ' Internal use only
+Private Const PD_USEDEVMODECOPIES As Long = &H40000
 Private Const PD_USEDEVMODECOPIESANDCOLLATE As Long = &H40000
 Private Const PD_DISABLEPRINTTOFILE As Long = &H80000
 Private Const PD_CURRENTPAGE As Long = &H400000 ' PRINTDLGEX only
@@ -178,6 +201,7 @@ CdlPDReturnDC = PD_RETURNDC
 CdlPDReturnIC = PD_RETURNIC
 CdlPDReturnDefault = PD_RETURNDEFAULT
 CdlPDHelpButton = PD_SHOWHELP
+CdlPDUseDevModeCopies = PD_USEDEVMODECOPIES
 CdlPDUseDevModeCopiesAndCollate = PD_USEDEVMODECOPIESANDCOLLATE
 CdlPDDisablePrintToFile = PD_DISABLEPRINTTOFILE
 CdlPDCurrentPage = PD_CURRENTPAGE
@@ -231,6 +255,7 @@ Private Const PSD_DISABLEORIENTATION As Long = &H100
 Private Const PSD_DISABLEPAPER As Long = &H200
 Private Const PSD_RETURNDEFAULT As Long = &H400
 Private Const PSD_SHOWHELP As Long = &H800
+Private Const PSD_ENABLEPAGESETUPHOOK As Long = &H2000 ' Internal use only
 Private Const PSD_DISABLEPAGEPAINTING As Long = &H80000
 Private Const PSD_NONETWORKBUTTON As Long = &H200000
 Public Enum CdlPSDConstants
@@ -251,8 +276,10 @@ CdlPSDNoNetworkButton = PSD_NONETWORKBUTTON
 End Enum
 Private Const BIF_RETURNONLYFSDIRS As Long = &H1
 Private Const BIF_DONTGOBELOWDOMAIN As Long = &H2
+Private Const BIF_STATUSTEXT As Long = &H4
 Private Const BIF_RETURNFSANCESTORS As Long = &H8
 Private Const BIF_EDITBOX As Long = &H10
+Private Const BIF_VALIDATE As Long = &H20
 Private Const BIF_NEWDIALOGSTYLE As Long = &H40
 Private Const BIF_BROWSEINCLUDEURLS As Long = &H80
 Private Const BIF_USENEWUI As Long = BIF_EDITBOX Or BIF_NEWDIALOGSTYLE
@@ -267,8 +294,10 @@ Private Const BIF_BROWSEFILEJUNCTIONS As Long = &H10000
 Public Enum CdlBIFConstants
 CdlBIFReturnOnlyFSDirs = BIF_RETURNONLYFSDIRS
 CdlBIFDontGoBelowDomain = BIF_DONTGOBELOWDOMAIN
+CdlBIFStatusText = BIF_STATUSTEXT
 CdlBIFReturnFSAncestors = BIF_RETURNFSANCESTORS
 CdlBIFEditBox = BIF_EDITBOX
+CdlBIFValidate = BIF_VALIDATE
 CdlBIFNewDialogStyle = BIF_NEWDIALOGSTYLE
 CdlBIFBrowseIncludeURLs = BIF_BROWSEINCLUDEURLS
 CdlBIFUseNewUI = BIF_USENEWUI
@@ -280,6 +309,36 @@ CdlBIFBrowseForPrinter = BIF_BROWSEFORPRINTER
 CdlBIFBrowseIncludeFiles = BIF_BROWSEINCLUDEFILES
 CdlBIFShareable = BIF_SHAREABLE
 CdlBIFBrowseFileJunctions = BIF_BROWSEFILEJUNCTIONS
+End Enum
+Private Const FR_DOWN As Long = &H1
+Private Const FR_WHOLEWORD As Long = &H2
+Private Const FR_MATCHCASE As Long = &H4
+Private Const FR_FINDNEXT As Long = &H8
+Private Const FR_REPLACE As Long = &H10
+Private Const FR_REPLACEALL As Long = &H20
+Private Const FR_DIALOGTERM As Long = &H40 ' Internal use only
+Private Const FR_SHOWHELP As Long = &H80
+Private Const FR_ENABLEHOOK As Long = &H100 ' Internal use only
+Private Const FR_NOUPDOWN As Long = &H400
+Private Const FR_NOMATCHCASE As Long = &H800
+Private Const FR_NOWHOLEWORD As Long = &H1000
+Private Const FR_HIDEUPDOWN As Long = &H4000
+Private Const FR_HIDEMATCHCASE As Long = &H8000
+Private Const FR_HIDEWHOLEWORD As Long = &H10000
+Public Enum CdlFRConstants
+CdlFRDown = FR_DOWN
+CdlFRWholeWord = FR_WHOLEWORD
+CdlFRMatchCase = FR_MATCHCASE
+CdlFRFindNext = FR_FINDNEXT
+CdlFRReplace = FR_REPLACE
+CdlFRReplaceAll = FR_REPLACEALL
+CdlFRHelpButton = FR_SHOWHELP
+CdlFRNoUpDown = FR_NOUPDOWN
+CdlFRNoMatchCase = FR_NOMATCHCASE
+CdlFRNoWholeWord = FR_NOWHOLEWORD
+CdlFRHideUpDown = FR_HIDEUPDOWN
+CdlFRHideMatchCase = FR_HIDEMATCHCASE
+CdlFRHideWholeWord = FR_HIDEWHOLEWORD
 End Enum
 Private Type RECT
 Left As Long
@@ -312,6 +371,9 @@ lpstrDefExt As Long
 lCustData As Long
 lpfnHook As Long
 lpTemplateName As Long
+pvReserved As Long
+dwReserved As Long
+FlagsEx As Long
 End Type
 Private Type TCHOOSECOLOR
 lStructSize As Long
@@ -373,14 +435,22 @@ nToPage As Integer
 nMinPage As Integer
 nMaxPage As Integer
 nCopies As Integer
-hInstance As Long
-lCustData As Long
-lpfnPrintHook As Long
-lpfnSetupHook As Long
-lpPrintTemplateName As Long
-lpSetupTemplateName As Long
-hPrintTemplate As Long
-hSetupTemplate As Long
+hInstanceLo As Integer
+hInstanceHi As Integer
+lCustDataLo As Integer
+lCustDataHi As Integer
+lpfnPrintHookLo As Integer
+lpfnPrintHookHi As Integer
+lpfnSetupHookLo As Integer
+lpfnSetupHookHi As Integer
+lpPrintTemplateNameLo As Integer
+lpPrintTemplateNameHi As Integer
+lpSetupTemplateNameLo As Integer
+lpSetupTemplateNameHi As Integer
+hPrintTemplateLo As Integer
+hPrintTemplateHi As Integer
+hSetupTemplateLo As Integer
+hSetupTemplateHi As Integer
 End Type
 Private Type PRINTPAGERANGE
 nFromPage As Long
@@ -489,8 +559,49 @@ lpfnCallback As Long
 lParam As Long
 iImage As Long
 End Type
-Public Event Help(ByRef Handled As Boolean, ByVal Action As Integer, ByVal hDialog As Long)
-Attribute Help.VB_Description = "Occurs when the user clicks the Help button."
+Private Type FINDREPLACE
+lStructSize As Long
+hWndOwner As Long
+hInstance As Long
+Flags As Long
+lpstrFindWhat As Long
+lpstrReplaceWith As Long
+wFindWhatLen As Integer
+wReplaceWithLen As Integer
+lCustData As Long
+lpfnHook As Long
+lpTemplateName As Long
+End Type
+Private Type NMHDR
+hWndFrom As Long
+IDFrom As Long
+Code As Long
+End Type
+Private Type NMOFNOTIFY
+hdr As NMHDR
+lpOFN As Long
+lpszFileShareVi As Long
+End Type
+Public Event InitDialog(ByVal Action As Integer, ByVal hDlg As Long)
+Attribute InitDialog.VB_Description = "Occurs when a dialog box has finished initializing."
+Public Event Help(ByRef Handled As Boolean, ByVal Action As Integer, ByVal hDlg As Long)
+Attribute Help.VB_Description = "Occurs when the user clicks the help button in a dialog box."
+Public Event FileShareViolation(ByVal FileName As String, ByRef Result As CdlOFNShareViResultConstants, ByVal hDlg As Long)
+Attribute FileShareViolation.VB_Description = "Occurs when the user clicked the OK button and a network sharing violation occurs for the selected file in a open or save dialog box."
+Public Event FileValidate(ByVal FileName As String, ByVal FileTitle As String, ByVal FileOffset As Integer, ByRef Cancel As Boolean, ByVal hDlg As Long)
+Attribute FileValidate.VB_Description = "Occurs when the user clicked the OK button in a open or save dialog box."
+Public Event ColorValidate(ByRef RGBColor As Long, ByRef Cancel As Boolean, ByVal hDlg As Long)
+Attribute ColorValidate.VB_Description = "Occurs when the user clicked the OK button in a color dialog box."
+Public Event FontApply(ByVal Flags As Long, ByVal FontName As String, ByVal FontSize As Single, ByVal FontBold As Boolean, ByVal FontItalic As Boolean, ByVal FontStrikethru As Boolean, ByVal FontUnderline As Boolean, ByVal FontCharset As Integer, ByVal RGBColor As Long, ByVal hDlg As Long)
+Attribute FontApply.VB_Description = "Occurs when the user clicked the apply button in a font dialog box."
+Public Event FolderBrowserValidateFailed(ByVal Text As String, ByRef Cancel As Boolean, ByVal hDlg As Long)
+Attribute FolderBrowserValidateFailed.VB_Description = "Occurs when the user typed an invalid name into the edit box in a folder browser dialog box."
+Public Event FindNext()
+Attribute FindNext.VB_Description = "Occurs when the user clicked the find next button in a find or replace dialog box."
+Public Event Replace()
+Attribute Replace.VB_Description = "Occurs when the user clicked the replace button in a replace dialog box."
+Public Event ReplaceAll()
+Attribute ReplaceAll.VB_Description = "Occurs when the user clicked the replace all button in a replace dialog box."
 Private Declare Sub CoTaskMemFree Lib "ole32" (ByVal hMem As Long)
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 Private Declare Function CommDlgExtendedError Lib "comdlg32" () As Long
@@ -499,8 +610,9 @@ Private Declare Function GetSaveFileName Lib "comdlg32" Alias "GetSaveFileNameW"
 Private Declare Function ChooseColor Lib "comdlg32" Alias "ChooseColorW" (ByRef lpChooseColor As TCHOOSECOLOR) As Long
 Private Declare Function ChooseFont Lib "comdlg32" Alias "ChooseFontW" (ByRef lpChooseFont As TCHOOSEFONT) As Long
 Private Declare Function WinHelp Lib "user32" Alias "WinHelpW" (ByVal hWnd As Long, ByVal lpHelpFile As Long, ByVal wCommand As Long, ByVal dwData As Long) As Long
-Private Declare Function GetSysColor Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function GetActiveWindow Lib "user32" () As Long
+Private Declare Function IsWindow Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongW" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function GetFocus Lib "user32" () As Long
 Private Declare Function SetFocusAPI Lib "user32" Alias "SetFocus" (ByVal hWnd As Long) As Long
 Private Declare Function SHBrowseForFolder Lib "shell32" Alias "SHBrowseForFolderW" (ByRef lpBrowseInfo As BROWSEINFO) As Long
@@ -509,25 +621,50 @@ Private Declare Function ILCreateFromPath Lib "shell32" (ByVal lpszPath As Long)
 Private Declare Function ILCreateFromPath_W2K Lib "shell32" Alias "#157" (ByVal lpszPath As Long) As Long
 Private Declare Function SHGetPathFromIDList Lib "shell32" Alias "SHGetPathFromIDListW" (ByVal lpIDList As Long, ByVal lpBuffer As Long) As Long
 Private Declare Function RegisterWindowMessage Lib "user32" Alias "RegisterWindowMessageW" (ByVal lpString As Long) As Long
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageW" (ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
+Private Declare Function SendDlgItemMessage Lib "user32" Alias "SendDlgItemMessageW" (ByVal hDlg As Long, ByVal nIDDlgItem As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
 Private Declare Function PrintDialog Lib "comdlg32" Alias "PrintDlgW" (ByRef lpPrintDlg As PRINTDLG) As Long
 Private Declare Function PrintDialogEx Lib "comdlg32" Alias "PrintDlgExW" (ByRef lpPrintDlgEx As PRINTDLGEX) As Long
 Private Declare Function PageSetupDialog Lib "comdlg32" Alias "PageSetupDlgW" (ByRef lpPageSetupDlg As PAGESETUPDLG) As Long
 Private Declare Function GetDefaultPrinter Lib "winspool.drv" Alias "GetDefaultPrinterW" (ByVal lpszPrinterName As Long, ByRef cch As Long) As Long
 Private Declare Function SetDefaultPrinter Lib "winspool.drv" Alias "SetDefaultPrinterW" (ByVal lpszPrinterName As Long) As Long
+Private Declare Function FindText Lib "comdlg32" Alias "FindTextW" (ByRef lpFindReplace As FINDREPLACE) As Long
+Private Declare Function ReplaceText Lib "comdlg32" Alias "ReplaceTextW" (ByRef lpFindReplace As FINDREPLACE) As Long
+Private Declare Function lstrlen Lib "kernel32" Alias "lstrlenW" (ByVal lpString As Long) As Long
 Private Declare Function MulDiv Lib "kernel32" (ByVal nNumber As Long, ByVal nNumerator As Long, ByVal nDenominator As Long) As Long
 Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
 Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
 Private Const HELPMSGSTRING As String = "commdlg_help"
+Private Const SHAREVISTRING As String = "commdlg_ShareViolation"
+Private Const FILEOKSTRING As String = "commdlg_FileNameOK"
+Private Const COLOROKSTRING As String = "commdlg_ColorOK"
+Private Const SETRGBSTRING As String = "commdlg_SetRGBColor"
+Private Const FINDMSGSTRING As String = "commdlg_FindReplace"
+Private Const WM_INITDIALOG As Long = &H110
+Private Const WM_COMMAND As Long = &H111
+Private Const WM_NOTIFY As Long = &H4E
+Private Const WM_USER As Long = &H400
+Private Const BN_CLICKED As Long = 0
+Private Const DWL_MSGRESULT As Long = 0
 Private Const GMEM_MOVEABLE As Long = &H2
 Private Const GMEM_ZEROINIT As Long = &H40
 Private Const MAX_PATH As Long = 260
 Private Const S_OK As Long = &H0
 Implements ISubclass
 Private CommonDialogHelpMsg As Long
+Private CommonDialogShareViMsg As Long
+Private CommonDialogFileOKMsg As Long
+Private CommonDialogColorOKMsg As Long
+Private CommonDialogSetRGBMsg As Long
+Private CommonDialogFindMsg As Long
+Private CommonDialogFR As FINDREPLACE
+Private CommonDialogFRDialogHandle As Long
+Private CommonDialogFRBufferFindWhat As String
+Private CommonDialogFRBufferReplaceWith As String
 Private PropCancelError As Boolean
+Private PropHookEvents As Boolean
 Private PropTag As String
 Private PropDC As Long
 Private PropFlags As Long
@@ -539,20 +676,35 @@ Private PropFilter As String, PropFilterIndex As Long
 Private PropInitDir As String
 Private PropDefaultExt As String
 Private PropColor As Long
-Private PropFont As StdFont
-Attribute PropFont.VB_VarHelpID = -1
+Private PropFontName As String, PropFontSize As Single, PropFontBold As Boolean, PropFontItalic As Boolean, PropFontStrikethru As Boolean, PropFontUnderline As Boolean, PropFontCharset As Integer
 Private PropMin As Long, PropMax As Long
 Private PropFromPage As Long, PropToPage As Long
 Private PropPrinterDefault As Boolean
-Private PropPageLeftMargin As Long, PropPageTopMargin As Long, PropPageRightMargin As Long, PropPageBottomMargin As Long
 Private PropHelpFile As String
 Private PropHelpCommand As CdlHelpConstants
 Private PropHelpContext As Long
 Private PropHelpKey As String
+Private PropPageLeftMargin As Long, PropPageTopMargin As Long, PropPageRightMargin As Long, PropPageBottomMargin As Long
+Private PropPageLeftMinMargin As Long, PropPageTopMinMargin As Long, PropPageRightMinMargin As Long, PropPageBottomMinMargin As Long
+Private PropRootFolder As Variant
+Private PropFindWhat As String
+Private PropReplaceWith As String
 
 Private Sub Class_Initialize()
 PropMaxFileSize = MAX_PATH
-Set PropFont = New StdFont
+PropFontSize = 8
+End Sub
+
+Private Sub Class_Terminate()
+If CommonDialogFRDialogHandle <> 0 Then
+    If IsWindow(CommonDialogFRDialogHandle) = 0 Then
+        Call ComCtlsCdlFRReleaseHook(CommonDialogFRDialogHandle)
+    Else
+        Const WM_CLOSE As Long = &H10
+        SendMessage CommonDialogFRDialogHandle, WM_CLOSE, 0, ByVal 0&
+        DoEvents
+    End If
+End If
 End Sub
 
 Public Property Get Object() As Object
@@ -567,6 +719,15 @@ End Property
 
 Public Property Let CancelError(ByVal Value As Boolean)
 PropCancelError = Value
+End Property
+
+Public Property Get HookEvents() As Boolean
+Attribute HookEvents.VB_Description = "Returns/sets a value indicating if the dialog box can raise events that requires a hook callback."
+HookEvents = PropHookEvents
+End Property
+
+Public Property Let HookEvents(ByVal Value As Boolean)
+PropHookEvents = Value
 End Property
 
 Public Property Get Tag() As String
@@ -688,17 +849,67 @@ Public Property Let Color(ByVal Value As Long)
 PropColor = Value
 End Property
 
-Public Property Get Font() As StdFont
-Attribute Font.VB_Description = "Returns a Font object."
-Set Font = PropFont
+Public Property Get FontName() As String
+Attribute FontName.VB_Description = "Specifies the name of the font that appears in each row for the given level."
+FontName = PropFontName
 End Property
 
-Public Property Let Font(ByVal NewFont As StdFont)
-Set Me.Font = NewFont
+Public Property Let FontName(ByVal Value As String)
+PropFontName = Value
 End Property
 
-Public Property Set Font(ByVal NewFont As StdFont)
-Set PropFont = NewFont
+Public Property Get FontSize() As Single
+Attribute FontSize.VB_Description = "Specifies the size (in points) of the font that appears in each row for the given level."
+FontSize = PropFontSize
+End Property
+
+Public Property Let FontSize(ByVal Value As Single)
+PropFontSize = Value
+End Property
+
+Public Property Get FontBold() As Boolean
+Attribute FontBold.VB_Description = "Returns/sets bold font styles."
+FontBold = PropFontBold
+End Property
+
+Public Property Let FontBold(ByVal Value As Boolean)
+PropFontBold = Value
+End Property
+
+Public Property Get FontItalic() As Boolean
+Attribute FontItalic.VB_Description = "Returns/sets italic font styles."
+FontItalic = PropFontItalic
+End Property
+
+Public Property Let FontItalic(ByVal Value As Boolean)
+PropFontItalic = Value
+End Property
+
+Public Property Get FontStrikethru() As Boolean
+Attribute FontStrikethru.VB_Description = "Returns/sets strikethrough font styles."
+FontStrikethru = PropFontStrikethru
+End Property
+
+Public Property Let FontStrikethru(ByVal Value As Boolean)
+PropFontStrikethru = Value
+End Property
+
+Public Property Get FontUnderline() As Boolean
+Attribute FontUnderline.VB_Description = "Returns/sets underline font styles."
+FontUnderline = PropFontUnderline
+End Property
+
+Public Property Let FontUnderline(ByVal Value As Boolean)
+PropFontUnderline = Value
+End Property
+
+Public Property Get FontCharset() As Integer
+Attribute FontCharset.VB_Description = "Returns/sets the charset of the font."
+FontCharset = PropFontCharset
+End Property
+
+Public Property Let FontCharset(ByVal Value As Integer)
+PropFontCharset = Value
 End Property
 
 Public Property Get Min() As Long
@@ -750,46 +961,6 @@ Public Property Let PrinterDefault(ByVal Value As Boolean)
 PropPrinterDefault = Value
 End Property
 
-Public Property Get PageLeftMargin() As Long
-Attribute PageLeftMargin.VB_Description = "Returns/sets the size in device units of the paper's left margin."
-PageLeftMargin = PropPageLeftMargin
-End Property
-
-Public Property Let PageLeftMargin(ByVal Value As Long)
-If Value < 0 Then Err.Raise 380
-PropPageLeftMargin = Value
-End Property
-
-Public Property Get PageTopMargin() As Long
-Attribute PageTopMargin.VB_Description = "Returns/sets the size in device units of the paper's top margin."
-PageTopMargin = PropPageTopMargin
-End Property
-
-Public Property Let PageTopMargin(ByVal Value As Long)
-If Value < 0 Then Err.Raise 380
-PropPageTopMargin = Value
-End Property
-
-Public Property Get PageRightMargin() As Long
-Attribute PageRightMargin.VB_Description = "Returns/sets the size in device units of the paper's right margin."
-PageRightMargin = PropPageRightMargin
-End Property
-
-Public Property Let PageRightMargin(ByVal Value As Long)
-If Value < 0 Then Err.Raise 380
-PropPageRightMargin = Value
-End Property
-
-Public Property Get PageBottomMargin() As Long
-Attribute PageBottomMargin.VB_Description = "Returns/sets the size in device units of the paper's bottom margin."
-PageBottomMargin = PropPageBottomMargin
-End Property
-
-Public Property Let PageBottomMargin(ByVal Value As Long)
-If Value < 0 Then Err.Raise 380
-PropPageBottomMargin = Value
-End Property
-
 Public Property Get HelpFile() As String
 Attribute HelpFile.VB_Description = "Returns/sets the name of the help file associated with the project."
 HelpFile = PropHelpFile
@@ -831,6 +1002,118 @@ Public Property Let HelpKey(ByVal Value As String)
 PropHelpKey = Value
 End Property
 
+Public Property Get PageLeftMargin() As Long
+Attribute PageLeftMargin.VB_Description = "Returns/sets the size in device units of the paper's left margin."
+PageLeftMargin = PropPageLeftMargin
+End Property
+
+Public Property Let PageLeftMargin(ByVal Value As Long)
+If Value < 0 Then Err.Raise 380
+PropPageLeftMargin = Value
+End Property
+
+Public Property Get PageTopMargin() As Long
+Attribute PageTopMargin.VB_Description = "Returns/sets the size in device units of the paper's top margin."
+PageTopMargin = PropPageTopMargin
+End Property
+
+Public Property Let PageTopMargin(ByVal Value As Long)
+If Value < 0 Then Err.Raise 380
+PropPageTopMargin = Value
+End Property
+
+Public Property Get PageRightMargin() As Long
+Attribute PageRightMargin.VB_Description = "Returns/sets the size in device units of the paper's right margin."
+PageRightMargin = PropPageRightMargin
+End Property
+
+Public Property Let PageRightMargin(ByVal Value As Long)
+If Value < 0 Then Err.Raise 380
+PropPageRightMargin = Value
+End Property
+
+Public Property Get PageBottomMargin() As Long
+Attribute PageBottomMargin.VB_Description = "Returns/sets the size in device units of the paper's bottom margin."
+PageBottomMargin = PropPageBottomMargin
+End Property
+
+Public Property Let PageBottomMargin(ByVal Value As Long)
+If Value < 0 Then Err.Raise 380
+PropPageBottomMargin = Value
+End Property
+
+Public Property Get PageLeftMinMargin() As Long
+Attribute PageLeftMinMargin.VB_Description = "Returns/sets the size in device units of the paper's left minimum margin."
+PageLeftMinMargin = PropPageLeftMinMargin
+End Property
+
+Public Property Let PageLeftMinMargin(ByVal Value As Long)
+If Value < 0 Then Err.Raise 380
+PropPageLeftMinMargin = Value
+End Property
+
+Public Property Get PageTopMinMargin() As Long
+Attribute PageTopMinMargin.VB_Description = "Returns/sets the size in device units of the paper's top minimum margin."
+PageTopMinMargin = PropPageTopMinMargin
+End Property
+
+Public Property Let PageTopMinMargin(ByVal Value As Long)
+If Value < 0 Then Err.Raise 380
+PropPageTopMinMargin = Value
+End Property
+
+Public Property Get PageRightMinMargin() As Long
+Attribute PageRightMinMargin.VB_Description = "Returns/sets the size in device units of the paper's right minimum margin."
+PageRightMinMargin = PropPageRightMinMargin
+End Property
+
+Public Property Let PageRightMinMargin(ByVal Value As Long)
+If Value < 0 Then Err.Raise 380
+PropPageRightMinMargin = Value
+End Property
+
+Public Property Get PageBottomMinMargin() As Long
+Attribute PageBottomMinMargin.VB_Description = "Returns/sets the size in device units of the paper's bottom minimum margin."
+PageBottomMinMargin = PropPageBottomMinMargin
+End Property
+
+Public Property Let PageBottomMinMargin(ByVal Value As Long)
+If Value < 0 Then Err.Raise 380
+PropPageBottomMinMargin = Value
+End Property
+
+Public Property Get RootFolder() As Variant
+Attribute RootFolder.VB_Description = "Returns/sets the root folder where the browsing starts from."
+RootFolder = PropRootFolder
+End Property
+
+Public Property Let RootFolder(ByVal Value As Variant)
+Select Case VarType(Value)
+    Case vbEmpty, vbLong, vbInteger, vbByte, vbString, vbDouble, vbSingle
+        PropRootFolder = Value
+    Case Else
+        Err.Raise 380
+End Select
+End Property
+
+Public Property Get FindWhat() As String
+Attribute FindWhat.VB_Description = "Returns/sets the search string for the dialog box."
+FindWhat = PropFindWhat
+End Property
+
+Public Property Let FindWhat(ByVal Value As String)
+PropFindWhat = Value
+End Property
+
+Public Property Get ReplaceWith() As String
+Attribute ReplaceWith.VB_Description = "Returns/sets the replacement string for the dialog box."
+ReplaceWith = PropReplaceWith
+End Property
+
+Public Property Let ReplaceWith(ByVal Value As String)
+PropReplaceWith = Value
+End Property
+
 Public Property Get Action() As Integer
 Attribute Action.VB_Description = "Sets the type of dialog box to be displayed."
 Attribute Action.VB_UserMemId = 0
@@ -854,7 +1137,11 @@ Select Case Value
     Case 7
         Me.ShowPageSetup
     Case 8
-        Me.ShowFolder
+        Me.ShowFolderBrowser
+    Case 9
+        Me.ShowFind
+    Case 10
+        Me.ShowReplace
     Case Else
         Err.Raise 380
 End Select
@@ -876,11 +1163,24 @@ End If
 Filter = ProperFilter(PropFilter)
 .lpstrFilter = StrPtr(Filter)
 .nFilterIndex = PropFilterIndex
+If Not PropFileName = vbNullString Then Mid$(Buffer, 1, Len(PropFileName)) = PropFileName
 .lpstrFile = StrPtr(Buffer)
 .nMaxFile = Len(Buffer)
 .lpstrInitialDir = StrPtr(PropInitDir)
 .lpstrTitle = StrPtr(PropDialogTitle)
-.Flags = PropFlags
+If PropHookEvents = False Then
+    .Flags = PropFlags
+Else
+    .Flags = (OFN_ENABLEHOOK Or OFN_ENABLESIZING) Or PropFlags
+    If (PropFlags And CdlOFNExplorer) = CdlOFNExplorer Then
+        .lpfnHook = ProcPtr(AddressOf ComCtlsCdlOFN1CallbackProc)
+    Else
+        .lpfnHook = ProcPtr(AddressOf ComCtlsCdlOFN1CallbackProcOldStyle)
+    End If
+    Dim This As ISubclass
+    Set This = Me
+    .lCustData = ObjPtr(This)
+End If
 End With
 Dim RetVal As Long
 If (PropFlags And CdlOFNHelpButton) = CdlOFNHelpButton Then
@@ -892,14 +1192,21 @@ Else
     RetVal = GetOpenFileName(OFN)
 End If
 If RetVal <> 0 Then
-    PropFlags = OFN.Flags
-    If Mid$(Buffer, OFN.nFileOffset, 1) = vbNullChar Then
-        PropFileName = Left$(Buffer, InStr(Buffer, vbNullChar & vbNullChar) - 1)
-        PropFileTitle = vbNullString
+    If (OFN.Flags And (OFN_ENABLEHOOK Or OFN_ENABLESIZING)) = 0 Then
+        PropFlags = OFN.Flags
     Else
-        PropFileName = Left$(Buffer, InStr(Buffer, vbNullChar) - 1)
-        PropFileTitle = Mid$(PropFileName, OFN.nFileOffset + 1)
+        PropFlags = OFN.Flags And Not (OFN_ENABLEHOOK Or OFN_ENABLESIZING)
     End If
+    If OFN.nFileOffset > 0 Then
+        If Mid$(Buffer, OFN.nFileOffset, 1) = vbNullChar Then
+            PropFileName = Left$(Buffer, InStr(Buffer & vbNullChar & vbNullChar, vbNullChar & vbNullChar) - 1)
+            PropFileTitle = vbNullString
+        Else
+            PropFileName = Left$(Buffer, InStr(Buffer & vbNullChar, vbNullChar) - 1)
+            PropFileTitle = Mid$(PropFileName, OFN.nFileOffset + 1)
+        End If
+    End If
+    PropFilterIndex = OFN.nFilterIndex
     PropFileOffset = OFN.nFileOffset
     ShowOpen = True
 Else
@@ -922,7 +1229,7 @@ End Function
 
 Public Function ShowSave() As Boolean
 Attribute ShowSave.VB_Description = "Displays the save dialog box."
-Dim Buffer As String, Filter As String, Length As Long
+Dim Buffer As String, Filter As String, DefaultExt As String
 Buffer = String(PropMaxFileSize, vbNullChar)
 Dim OFN As OPENFILENAME
 With OFN
@@ -936,20 +1243,26 @@ End If
 Filter = ProperFilter(PropFilter)
 .lpstrFilter = StrPtr(Filter)
 .nFilterIndex = PropFilterIndex
-If Not PropFileName = vbNullString Then
-    If Len(PropFileName) > (PropMaxFileSize + 1) Then
-        Length = PropMaxFileSize * 2
-    Else
-        Length = LenB(PropFileName)
-    End If
-    CopyMemory ByVal StrPtr(Buffer), ByVal StrPtr(PropFileName), Length
-End If
+If Not PropFileName = vbNullString Then Mid$(Buffer, 1, Len(PropFileName)) = PropFileName
 .lpstrFile = StrPtr(Buffer)
 .nMaxFile = Len(Buffer)
 .lpstrInitialDir = StrPtr(PropInitDir)
 .lpstrTitle = StrPtr(PropDialogTitle)
-.Flags = PropFlags
-.lpstrDefExt = StrPtr(PropDefaultExt)
+If PropHookEvents = False Then
+    .Flags = PropFlags
+Else
+    .Flags = (OFN_ENABLEHOOK Or OFN_ENABLESIZING) Or PropFlags
+    If (PropFlags And CdlOFNExplorer) = CdlOFNExplorer Then
+        .lpfnHook = ProcPtr(AddressOf ComCtlsCdlOFN2CallbackProc)
+    Else
+        .lpfnHook = ProcPtr(AddressOf ComCtlsCdlOFN2CallbackProcOldStyle)
+    End If
+    Dim This As ISubclass
+    Set This = Me
+    .lCustData = ObjPtr(This)
+End If
+If PropDefaultExt = vbNullString Then DefaultExt = vbNullChar Else DefaultExt = PropDefaultExt
+.lpstrDefExt = StrPtr(DefaultExt)
 End With
 Dim RetVal As Long
 If (PropFlags And CdlOFNHelpButton) = CdlOFNHelpButton Then
@@ -961,14 +1274,21 @@ Else
     RetVal = GetSaveFileName(OFN)
 End If
 If RetVal <> 0 Then
-    PropFlags = OFN.Flags
-    If Mid$(Buffer, OFN.nFileOffset, 1) = vbNullChar Then
-        PropFileName = Left$(Buffer, InStr(Buffer, vbNullChar & vbNullChar) - 1)
-        PropFileTitle = vbNullString
+    If (OFN.Flags And (OFN_ENABLEHOOK Or OFN_ENABLESIZING)) = 0 Then
+        PropFlags = OFN.Flags
     Else
-        PropFileName = Left$(Buffer, InStr(Buffer, vbNullChar) - 1)
-        PropFileTitle = Mid$(PropFileName, OFN.nFileOffset + 1)
+        PropFlags = OFN.Flags And Not (OFN_ENABLEHOOK Or OFN_ENABLESIZING)
     End If
+    If OFN.nFileOffset > 0 Then
+        If Mid$(Buffer, OFN.nFileOffset, 1) = vbNullChar Then
+            PropFileName = Left$(Buffer, InStr(Buffer & vbNullChar & vbNullChar, vbNullChar & vbNullChar) - 1)
+            PropFileTitle = vbNullString
+        Else
+            PropFileName = Left$(Buffer, InStr(Buffer & vbNullChar, vbNullChar) - 1)
+            PropFileTitle = Mid$(PropFileName, OFN.nFileOffset + 1)
+        End If
+    End If
+    PropFilterIndex = OFN.nFilterIndex
     PropFileOffset = OFN.nFileOffset
     ShowSave = True
 Else
@@ -1020,11 +1340,20 @@ Else
 End If
 .hInstance = App.hInstance
 .RGBResult = WinColor(PropColor)
-.Flags = PropFlags
+If PropHookEvents = False Then
+    .Flags = PropFlags
+Else
+    .Flags = CC_ENABLEHOOK Or PropFlags
+    .lpfnHook = ProcPtr(AddressOf ComCtlsCdlCCCallbackProc)
+    Dim This As ISubclass
+    Set This = Me
+    .lCustData = ObjPtr(This)
+End If
 If CustomColorsInitialized = False Then
-    Dim i As Long
+    Dim i As Long, IntValue As Integer
     For i = 0 To 15
-        CustomColors(i) = GetSysColor(i)
+        IntValue = 255 - (i * 16)
+        CustomColors(i) = RGB(IntValue, IntValue, IntValue)
     Next i
     CustomColorsInitialized = True
 End If
@@ -1040,6 +1369,11 @@ Else
     RetVal = ChooseColor(CHCLR)
 End If
 If RetVal <> 0 Then
+    If (CHCLR.Flags And CC_ENABLEHOOK) = 0 Then
+        PropFlags = CHCLR.Flags
+    Else
+        PropFlags = CHCLR.Flags And Not CC_ENABLEHOOK
+    End If
     PropColor = CHCLR.RGBResult
     ShowColor = True
 Else
@@ -1056,9 +1390,18 @@ End Function
 
 Public Function ShowFont() As Boolean
 Attribute ShowFont.VB_Description = "Displays the font dialog box."
-Const CF_INITTOLOGFONTSTRUCT As Long = &H40
-Dim CHFONT As TCHOOSEFONT, LF As LOGFONT
-Call OLEFontToLogFont(PropFont, LF)
+Dim CHFONT As TCHOOSEFONT, LF As LOGFONT, FontName As String
+With LF
+FontName = Left$(PropFontName, LF_FACESIZE)
+CopyMemory .LFFaceName(0), ByVal StrPtr(FontName), LenB(FontName)
+.LFHeight = -MulDiv(CLng(PropFontSize), DPI_Y(), 72)
+If PropFontBold = True Then .LFWeight = FW_BOLD Else .LFWeight = FW_NORMAL
+.LFItalic = IIf(PropFontItalic = True, 1, 0)
+.LFStrikeOut = IIf(PropFontStrikethru = True, 1, 0)
+.LFUnderline = IIf(PropFontUnderline = True, 1, 0)
+.LFQuality = DEFAULT_QUALITY
+.LFCharset = CByte(PropFontCharset And &HFF)
+End With
 With CHFONT
 .lStructSize = LenB(CHFONT)
 If Not Screen.ActiveForm Is Nothing Then
@@ -1067,8 +1410,16 @@ Else
     .hWndOwner = GetActiveWindow()
 End If
 .lpLogFont = VarPtr(LF)
-.Flags = CF_INITTOLOGFONTSTRUCT Or PropFlags
-.RGBColor = PropColor
+If PropHookEvents = False Then
+    .Flags = CF_INITTOLOGFONTSTRUCT Or PropFlags
+Else
+    .Flags = (CF_INITTOLOGFONTSTRUCT Or CF_ENABLEHOOK) Or PropFlags
+    .lpfnHook = ProcPtr(AddressOf ComCtlsCdlCFCallbackProc)
+    Dim This As ISubclass
+    Set This = Me
+    .lCustData = ObjPtr(This)
+End If
+.RGBColor = WinColor(PropColor)
 .nSizeMin = PropMin
 .nSizeMax = PropMax
 End With
@@ -1082,20 +1433,24 @@ Else
     RetVal = ChooseFont(CHFONT)
 End If
 If RetVal <> 0 Then
-    PropFlags = CHFONT.Flags And Not CF_INITTOLOGFONTSTRUCT
-    With PropFont
-    If (CHFONT.Flags And CF_NOFACESEL) = 0 Then .Name = Left$(LF.LFFaceName(), InStr(LF.LFFaceName(), vbNullChar) - 1)
-    If (CHFONT.Flags And CF_NOSTYLESEL) = 0 Then
-        .Bold = CBool(LF.LFWeight = FW_BOLD)
-        .Italic = CBool(LF.LFItalic <> 0)
+    With CHFONT
+    If (.Flags And CF_ENABLEHOOK) = 0 Then
+        PropFlags = .Flags And Not CF_INITTOLOGFONTSTRUCT
+    Else
+        PropFlags = .Flags And Not (CF_INITTOLOGFONTSTRUCT Or CF_ENABLEHOOK)
     End If
-    If (CHFONT.Flags And CF_NOSIZESEL) = 0 Then .Size = CSng(CHFONT.iPointSize / 10)
-    If (CHFONT.Flags And CF_EFFECTS) <> 0 Then
-        .Strikethrough = CBool(LF.LFStrikeOut <> 0)
-        .Underline = CBool(LF.LFUnderline <> 0)
-        PropColor = CHFONT.RGBColor
+    If (.Flags And CF_NOFACESEL) = 0 Then PropFontName = Left$(LF.LFFaceName(), InStr(LF.LFFaceName(), vbNullChar) - 1)
+    If (.Flags And CF_NOSTYLESEL) = 0 Then
+        PropFontBold = CBool(LF.LFWeight = FW_BOLD)
+        PropFontItalic = CBool(LF.LFItalic <> 0)
     End If
-    If (CHFONT.Flags And CF_NOSCRIPTSEL) = 0 Then .Charset = CInt(LF.LFCharset)
+    If (.Flags And CF_NOSIZESEL) = 0 Then PropFontSize = CSng(.iPointSize / 10)
+    If (.Flags And CF_EFFECTS) <> 0 Then
+        PropFontStrikethru = CBool(LF.LFStrikeOut <> 0)
+        PropFontUnderline = CBool(LF.LFUnderline <> 0)
+        PropColor = .RGBColor
+    End If
+    If (.Flags And CF_NOSCRIPTSEL) = 0 Then PropFontCharset = CInt(LF.LFCharset)
     End With
     ShowFont = True
 Else
@@ -1114,37 +1469,39 @@ Else
 End If
 End Function
 
-Private Sub OLEFontToLogFont(ByVal Font As StdFont, ByRef LF As LOGFONT)
-Dim FontName As String
-With LF
-FontName = Left$(Font.Name, LF_FACESIZE)
-CopyMemory .LFFaceName(0), ByVal StrPtr(FontName), LenB(FontName)
-.LFHeight = -MulDiv(CLng(Font.Size), DPI_Y(), 72)
-If Font.Bold = True Then .LFWeight = FW_BOLD Else .LFWeight = FW_NORMAL
-.LFItalic = IIf(Font.Italic = True, 1, 0)
-.LFStrikeOut = IIf(Font.Strikethrough = True, 1, 0)
-.LFUnderline = IIf(Font.Underline = True, 1, 0)
-.LFQuality = DEFAULT_QUALITY
-.LFCharset = CByte(Font.Charset And &HFF)
-End With
-End Sub
-
 Public Function ShowPrinter() As Boolean
 Attribute ShowPrinter.VB_Description = "Displays the printer dialog box."
 Dim PDLG As PRINTDLG, DMODE As DEVMODE, DNAMES As DEVNAMES
 Dim lpDevMode As Long, lpDevNames As Long
 Dim ObjPrinter As VB.Printer, NewPrinterName As String, Buffer As String
-PDLG.lStructSize = Len(PDLG)
+With PDLG
+.lStructSize = Len(PDLG) ' LenB() is not applicable due to padding bytes.
 If Not Screen.ActiveForm Is Nothing Then
-    PDLG.hWndOwner = Screen.ActiveForm.hWnd
+    .hWndOwner = Screen.ActiveForm.hWnd
 Else
-    PDLG.hWndOwner = GetActiveWindow()
+    .hWndOwner = GetActiveWindow()
 End If
-PDLG.Flags = PropFlags
-PDLG.nFromPage = CUIntToInt(PropFromPage And &HFFFF&)
-PDLG.nToPage = CUIntToInt(PropToPage And &HFFFF&)
-PDLG.nMinPage = CUIntToInt(PropMin And &HFFFF&)
-PDLG.nMaxPage = CUIntToInt(PropMax And &HFFFF&)
+If PropHookEvents = False Then
+    .Flags = PropFlags
+Else
+    .Flags = (PD_ENABLEPRINTHOOK Or PD_ENABLESETUPHOOK) Or PropFlags
+    Dim DWord As Long
+    DWord = ProcPtr(AddressOf ComCtlsCdlPDCallbackProc)
+    .lpfnPrintHookLo = LoWord(DWord)
+    .lpfnPrintHookHi = HiWord(DWord)
+    .lpfnSetupHookLo = .lpfnPrintHookLo
+    .lpfnSetupHookHi = .lpfnPrintHookHi
+    Dim This As ISubclass
+    Set This = Me
+    DWord = ObjPtr(This)
+    .lCustDataLo = LoWord(DWord)
+    .lCustDataHi = HiWord(DWord)
+End If
+.nFromPage = CUIntToInt(PropFromPage And &HFFFF&)
+.nToPage = CUIntToInt(PropToPage And &HFFFF&)
+.nMinPage = CUIntToInt(PropMin And &HFFFF&)
+.nMaxPage = CUIntToInt(PropMax And &HFFFF&)
+End With
 If VB.Printers.Count > 0 And (PDLG.Flags And CdlPDReturnDefault) = 0 Then
     With VB.Printer
     DMODE.DMSize = LenB(DMODE)
@@ -1165,7 +1522,6 @@ If VB.Printers.Count > 0 And (PDLG.Flags And CdlPDReturnDefault) = 0 Then
     DNAMES.wDefault = 0
     Buffer = Left$(.DriverName & vbNullChar & .DeviceName & vbNullChar & .Port & vbNullChar, CCHDEVNAMESEXTRA)
     CopyMemory DNAMES.wExtra(0), ByVal StrPtr(Buffer), LenB(Buffer)
-    PDLG.hDC = .hDC
     PDLG.nCopies = .Copies
     PDLG.hDevMode = GlobalAlloc(GMEM_MOVEABLE Or GMEM_ZEROINIT, LenB(DMODE))
     lpDevMode = GlobalLock(PDLG.hDevMode)
@@ -1195,27 +1551,39 @@ If RetVal <> 0 Then
     CopyMemory DNAMES, ByVal lpDevNames, LenB(DNAMES)
     GlobalUnlock PDLG.hDevNames
     GlobalFree PDLG.hDevNames
-    NewPrinterName = Left$(DMODE.DMDeviceName(), InStr(DMODE.DMDeviceName(), vbNullChar) - 1)
+    NewPrinterName = Mid$(DNAMES.wExtra, DNAMES.wDeviceOffset - DNAMES.wDriverOffset + 1)
+    NewPrinterName = Left$(NewPrinterName, InStr(NewPrinterName, vbNullChar) - 1)
+    Dim PrinterFound As Boolean
     If StrComp(VB.Printer.DeviceName, NewPrinterName, vbTextCompare) <> 0 Then
         For Each ObjPrinter In VB.Printers
             If StrComp(ObjPrinter.DeviceName, NewPrinterName, vbTextCompare) = 0 Then
                 Set VB.Printer = ObjPrinter
+                PrinterFound = True
+                Exit For
             End If
         Next ObjPrinter
+    Else
+        PrinterFound = True
     End If
-    If PropPrinterDefault = True Then Call CheckPrinterDefault(NewPrinterName)
-    On Error Resume Next
-    With VB.Printer
-    .Copies = DMODE.DMCopies
-    .Duplex = DMODE.DMDuplex
-    .Orientation = DMODE.DMOrientation
-    .PaperSize = DMODE.DMPaperSize
-    .PrintQuality = DMODE.DMPrintQuality
-    .ColorMode = DMODE.DMColor
-    .PaperBin = DMODE.DMDefaultSource
-    End With
-    On Error GoTo 0
-    PropFlags = PDLG.Flags
+    If PropPrinterDefault = True Then Call SetPrinterDefault(NewPrinterName)
+    If PrinterFound = True Then
+        On Error Resume Next
+        With VB.Printer
+        .Copies = DMODE.DMCopies
+        .Duplex = DMODE.DMDuplex
+        .Orientation = DMODE.DMOrientation
+        .PaperSize = DMODE.DMPaperSize
+        .PrintQuality = DMODE.DMPrintQuality
+        .ColorMode = DMODE.DMColor
+        .PaperBin = DMODE.DMDefaultSource
+        End With
+        On Error GoTo 0
+    End If
+    If (PDLG.Flags And (PD_ENABLEPRINTHOOK Or PD_ENABLESETUPHOOK)) = 0 Then
+        PropFlags = PDLG.Flags
+    Else
+        PropFlags = PDLG.Flags And Not (PD_ENABLEPRINTHOOK Or PD_ENABLESETUPHOOK)
+    End If
     If (PropFlags And CdlPDUseDevModeCopiesAndCollate) <> 0 Then
         If DMODE.DMCollate = 1 And (PropFlags And CdlPDCollate) = 0 Then PropFlags = PropFlags Or CdlPDCollate
     End If
@@ -1223,7 +1591,7 @@ If RetVal <> 0 Then
     PropToPage = CIntToUInt(PDLG.nToPage)
     PropMin = CIntToUInt(PDLG.nMinPage)
     PropMax = CIntToUInt(PDLG.nMaxPage)
-    If (PDLG.Flags And (CdlPDReturnDC Or CdlPDReturnIC)) <> 0 Then PropDC = PDLG.hDC
+    If (PropFlags And (CdlPDReturnDC Or CdlPDReturnIC)) <> 0 Then PropDC = PDLG.hDC
     ShowPrinter = True
 Else
     If PDLG.hDevMode <> 0 Then GlobalFree PDLG.hDevMode
@@ -1264,22 +1632,24 @@ Attribute ShowPrinterEx.VB_Description = "Displays the extended printer dialog b
 Dim PDLGEX As PRINTDLGEX, PPAGERANGE As PRINTPAGERANGE, DMODE As DEVMODE, DNAMES As DEVNAMES
 Dim lpDevMode As Long, lpDevNames As Long
 Dim ObjPrinter As VB.Printer, NewPrinterName As String, Buffer As String
-PDLGEX.lStructSize = LenB(PDLGEX)
+With PDLGEX
+.lStructSize = LenB(PDLGEX)
 If Not Screen.ActiveForm Is Nothing Then
-    PDLGEX.hWndOwner = Screen.ActiveForm.hWnd
+    .hWndOwner = Screen.ActiveForm.hWnd
 Else
-    PDLGEX.hWndOwner = GetActiveWindow()
+    .hWndOwner = GetActiveWindow()
 End If
-PDLGEX.Flags = PropFlags
-PDLGEX.nPageRanges = 1
-PDLGEX.nMaxPageRanges = 1
+.Flags = PropFlags
+.nPageRanges = 1
+.nMaxPageRanges = 1
 PPAGERANGE.nFromPage = PropFromPage
 PPAGERANGE.nToPage = PropToPage
-PDLGEX.nMinPage = PropMin
-PDLGEX.nMaxPage = PropMax
-PDLGEX.lpPageRanges = VarPtr(PPAGERANGE)
+.nMinPage = PropMin
+.nMaxPage = PropMax
+.lpPageRanges = VarPtr(PPAGERANGE)
 Const START_PAGE_GENERAL As Long = &HFFFFFFFF
-PDLGEX.nStartPage = START_PAGE_GENERAL
+.nStartPage = START_PAGE_GENERAL
+End With
 If VB.Printers.Count > 0 And (PDLGEX.Flags And CdlPDReturnDefault) = 0 Then
     With VB.Printer
     DMODE.DMSize = LenB(DMODE)
@@ -1300,7 +1670,6 @@ If VB.Printers.Count > 0 And (PDLGEX.Flags And CdlPDReturnDefault) = 0 Then
     DNAMES.wDefault = 0
     Buffer = Left$(.DriverName & vbNullChar & .DeviceName & vbNullChar & .Port & vbNullChar, CCHDEVNAMESEXTRA)
     CopyMemory DNAMES.wExtra(0), ByVal StrPtr(Buffer), LenB(Buffer)
-    PDLGEX.hDC = .hDC
     PDLGEX.nCopies = .Copies
     PDLGEX.hDevMode = GlobalAlloc(GMEM_MOVEABLE Or GMEM_ZEROINIT, LenB(DMODE))
     lpDevMode = GlobalLock(PDLGEX.hDevMode)
@@ -1313,7 +1682,13 @@ If VB.Printers.Count > 0 And (PDLGEX.Flags And CdlPDReturnDefault) = 0 Then
     End With
 End If
 Dim ErrVal As Long
-ErrVal = PrintDialogEx(PDLGEX)
+If PropHookEvents = False Then
+    ErrVal = PrintDialogEx(PDLGEX)
+Else
+    Call ComCtlsCdlPDEXSetHook(Me)
+    ErrVal = PrintDialogEx(PDLGEX)
+    Call ComCtlsCdlPDEXRemoveHook
+End If
 If ErrVal = S_OK Then
     If PDLGEX.dwResultAction <> CdlPDResultCancel Then
         lpDevMode = GlobalLock(PDLGEX.hDevMode)
@@ -1324,26 +1699,34 @@ If ErrVal = S_OK Then
         CopyMemory DNAMES, ByVal lpDevNames, LenB(DNAMES)
         GlobalUnlock PDLGEX.hDevNames
         GlobalFree PDLGEX.hDevNames
-        NewPrinterName = Left$(DMODE.DMDeviceName(), InStr(DMODE.DMDeviceName(), vbNullChar) - 1)
+        NewPrinterName = Mid$(DNAMES.wExtra, DNAMES.wDeviceOffset - DNAMES.wDriverOffset + 1)
+        NewPrinterName = Left$(NewPrinterName, InStr(NewPrinterName, vbNullChar) - 1)
+        Dim PrinterFound As Boolean
         If StrComp(VB.Printer.DeviceName, NewPrinterName, vbTextCompare) <> 0 Then
             For Each ObjPrinter In VB.Printers
                 If StrComp(ObjPrinter.DeviceName, NewPrinterName, vbTextCompare) = 0 Then
                     Set VB.Printer = ObjPrinter
+                    PrinterFound = True
+                    Exit For
                 End If
             Next ObjPrinter
+        Else
+            PrinterFound = True
         End If
-        If PropPrinterDefault = True Then Call CheckPrinterDefault(NewPrinterName)
-        On Error Resume Next
-        With VB.Printer
-        .Copies = DMODE.DMCopies
-        .Duplex = DMODE.DMDuplex
-        .Orientation = DMODE.DMOrientation
-        .PaperSize = DMODE.DMPaperSize
-        .PrintQuality = DMODE.DMPrintQuality
-        .ColorMode = DMODE.DMColor
-        .PaperBin = DMODE.DMDefaultSource
-        End With
-        On Error GoTo 0
+        If PropPrinterDefault = True Then Call SetPrinterDefault(NewPrinterName)
+        If PrinterFound = True Then
+            On Error Resume Next
+            With VB.Printer
+            .Copies = DMODE.DMCopies
+            .Duplex = DMODE.DMDuplex
+            .Orientation = DMODE.DMOrientation
+            .PaperSize = DMODE.DMPaperSize
+            .PrintQuality = DMODE.DMPrintQuality
+            .ColorMode = DMODE.DMColor
+            .PaperBin = DMODE.DMDefaultSource
+            End With
+            On Error GoTo 0
+        End If
         PropFlags = PDLGEX.Flags
         If (PropFlags And CdlPDUseDevModeCopiesAndCollate) <> 0 Then
             If DMODE.DMCollate = 1 And (PropFlags And CdlPDCollate) = 0 Then PropFlags = PropFlags Or CdlPDCollate
@@ -1352,7 +1735,7 @@ If ErrVal = S_OK Then
         PropToPage = PPAGERANGE.nToPage
         PropMin = PDLGEX.nMinPage
         PropMax = PDLGEX.nMaxPage
-        If (PDLGEX.Flags And (CdlPDReturnDC Or CdlPDReturnIC)) <> 0 Then PropDC = PDLGEX.hDC
+        If (PropFlags And (CdlPDReturnDC Or CdlPDReturnIC)) <> 0 Then PropDC = PDLGEX.hDC
         ShowPrinterEx = PDLGEX.dwResultAction
     Else
         If PropCancelError = True Then Err.Raise Number:=CdlCancel, Description:="Cancel was selected."
@@ -1385,26 +1768,36 @@ End Select
 If WinHelp(0, StrPtr(PropHelpFile), PropHelpCommand, dwData) = 0 Then Err.Raise Number:=CdlHelp, Description:="Call to windows help failed."
 End Sub
 
-Public Function ShowPageSetup(Optional ByVal PageLeftMinMargin As Long, Optional ByVal PageTopMinMargin As Long, Optional ByVal PageRightMinMargin As Long, Optional ByVal PageBottomMinMargin As Long) As Boolean
+Public Function ShowPageSetup() As Boolean
 Attribute ShowPageSetup.VB_Description = "Displays the page setup dialog box."
 Dim PSDLG As PAGESETUPDLG, DMODE As DEVMODE, DNAMES As DEVNAMES
 Dim lpDevMode As Long, lpDevNames As Long
 Dim ObjPrinter As VB.Printer, NewPrinterName As String, Buffer As String
-PSDLG.lStructSize = LenB(PSDLG)
+With PSDLG
+.lStructSize = LenB(PSDLG)
 If Not Screen.ActiveForm Is Nothing Then
-    PSDLG.hWndOwner = Screen.ActiveForm.hWnd
+    .hWndOwner = Screen.ActiveForm.hWnd
 Else
-    PSDLG.hWndOwner = GetActiveWindow()
+    .hWndOwner = GetActiveWindow()
 End If
-PSDLG.Flags = PropFlags
-PSDLG.RCMargin.Left = PropPageLeftMargin
-PSDLG.RCMargin.Top = PropPageTopMargin
-PSDLG.RCMargin.Right = PropPageRightMargin
-PSDLG.RCMargin.Bottom = PropPageBottomMargin
-PSDLG.RCMinMargin.Left = PageLeftMinMargin
-PSDLG.RCMinMargin.Top = PageTopMinMargin
-PSDLG.RCMinMargin.Right = PageRightMinMargin
-PSDLG.RCMinMargin.Bottom = PageBottomMinMargin
+If PropHookEvents = False Then
+    .Flags = PropFlags
+Else
+    .Flags = PSD_ENABLEPAGESETUPHOOK Or PropFlags
+    .lpfnPageSetupHook = ProcPtr(AddressOf ComCtlsCdlPSDCallbackProc)
+    Dim This As ISubclass
+    Set This = Me
+    .lCustData = ObjPtr(This)
+End If
+.RCMargin.Left = PropPageLeftMargin
+.RCMargin.Top = PropPageTopMargin
+.RCMargin.Right = PropPageRightMargin
+.RCMargin.Bottom = PropPageBottomMargin
+.RCMinMargin.Left = PropPageLeftMinMargin
+.RCMinMargin.Top = PropPageTopMinMargin
+.RCMinMargin.Right = PropPageRightMinMargin
+.RCMinMargin.Bottom = PropPageBottomMinMargin
+End With
 If VB.Printers.Count > 0 And (PSDLG.Flags And CdlPSDReturnDefault) = 0 Then
     With VB.Printer
     DMODE.DMSize = LenB(DMODE)
@@ -1448,23 +1841,35 @@ If RetVal <> 0 Then
     CopyMemory DNAMES, ByVal lpDevNames, LenB(DNAMES)
     GlobalUnlock PSDLG.hDevNames
     GlobalFree PSDLG.hDevNames
-    NewPrinterName = Left$(DMODE.DMDeviceName(), InStr(DMODE.DMDeviceName(), vbNullChar) - 1)
+    NewPrinterName = Mid$(DNAMES.wExtra, DNAMES.wDeviceOffset - DNAMES.wDriverOffset + 1)
+    NewPrinterName = Left$(NewPrinterName, InStr(NewPrinterName, vbNullChar) - 1)
+    Dim PrinterFound As Boolean
     If StrComp(VB.Printer.DeviceName, NewPrinterName, vbTextCompare) <> 0 Then
         For Each ObjPrinter In VB.Printers
             If StrComp(ObjPrinter.DeviceName, NewPrinterName, vbTextCompare) = 0 Then
                 Set VB.Printer = ObjPrinter
+                PrinterFound = True
+                Exit For
             End If
         Next ObjPrinter
+    Else
+        PrinterFound = True
     End If
-    If PropPrinterDefault = True Then Call CheckPrinterDefault(NewPrinterName)
-    On Error Resume Next
-    With VB.Printer
-    .Orientation = DMODE.DMOrientation
-    .PaperSize = DMODE.DMPaperSize
-    .PaperBin = DMODE.DMDefaultSource
-    End With
-    On Error GoTo 0
-    PropFlags = PSDLG.Flags
+    If PropPrinterDefault = True Then Call SetPrinterDefault(NewPrinterName)
+    If PrinterFound = True Then
+        On Error Resume Next
+        With VB.Printer
+        .Orientation = DMODE.DMOrientation
+        .PaperSize = DMODE.DMPaperSize
+        .PaperBin = DMODE.DMDefaultSource
+        End With
+        On Error GoTo 0
+    End If
+    If (PSDLG.Flags And PSD_ENABLEPAGESETUPHOOK) = 0 Then
+        PropFlags = PSDLG.Flags
+    Else
+        PropFlags = PSDLG.Flags And Not PSD_ENABLEPAGESETUPHOOK
+    End If
     PropPageLeftMargin = PSDLG.RCMargin.Left
     PropPageTopMargin = PSDLG.RCMargin.Top
     PropPageRightMargin = PSDLG.RCMargin.Right
@@ -1504,7 +1909,7 @@ Else
 End If
 End Function
 
-Private Sub CheckPrinterDefault(ByVal NewPrinterName As String)
+Private Sub SetPrinterDefault(ByVal NewPrinterName As String)
 Dim Length As Long
 GetDefaultPrinter 0, Length
 If Length > 0 Then
@@ -1515,8 +1920,8 @@ If Length > 0 Then
 End If
 End Sub
 
-Public Function ShowFolder(Optional ByVal RootFolder As Variant) As Boolean
-Attribute ShowFolder.VB_Description = "Displays the folder dialog box."
+Public Function ShowFolderBrowser() As Boolean
+Attribute ShowFolderBrowser.VB_Description = "Displays the folder browser dialog box."
 Dim BIF As BROWSEINFO, IDList As Long
 With BIF
 If Not Screen.ActiveForm Is Nothing Then
@@ -1524,37 +1929,33 @@ If Not Screen.ActiveForm Is Nothing Then
 Else
     .hWndOwner = GetActiveWindow()
 End If
-If IsMissing(RootFolder) Then
-    .pIDLRoot = 0
-Else
-    Select Case VarType(RootFolder)
-        Case vbLong, vbInteger, vbByte
-            SHGetFolderLocation 0, RootFolder, 0, 0, .pIDLRoot
-        Case vbString
-            If ComCtlsW2KCompatibility() = False Then
-                .pIDLRoot = ILCreateFromPath(StrPtr(Left$(RootFolder, MAX_PATH)))
-            Else
-                .pIDLRoot = ILCreateFromPath_W2K(StrPtr(Left$(RootFolder, MAX_PATH)))
-            End If
-        Case Else
-            Err.Raise 380
-    End Select
-End If
+Select Case VarType(PropRootFolder)
+    Case vbEmpty
+        .pIDLRoot = 0
+    Case vbLong, vbInteger, vbByte
+        SHGetFolderLocation 0, PropRootFolder, 0, 0, .pIDLRoot
+    Case vbString
+        If ComCtlsW2KCompatibility() = False Then
+            .pIDLRoot = ILCreateFromPath(StrPtr(Left$(PropRootFolder, MAX_PATH)))
+        Else
+            .pIDLRoot = ILCreateFromPath_W2K(StrPtr(Left$(PropRootFolder, MAX_PATH)))
+        End If
+    Case vbDouble, vbSingle
+        SHGetFolderLocation 0, CLng(PropRootFolder), 0, 0, .pIDLRoot
+End Select
 .lpszTitle = StrPtr(PropDialogTitle)
 .ulFlags = PropFlags
-If Not PropInitDir = vbNullString Then
-    .lpfnCallback = ProcPtr(AddressOf CdlShowFolderCallback)
-    .lParam = StrPtr(PropInitDir)
-End If
+.lpfnCallback = ProcPtr(AddressOf ComCtlsCdlBIFCallbackProc)
+Dim This As ISubclass
+Set This = Me
+.lParam = ObjPtr(This)
 IDList = SHBrowseForFolder(BIF)
 If .pIDLRoot <> 0 Then CoTaskMemFree .pIDLRoot
 End With
 If IDList <> 0 Then
     Dim Buffer As String, PathName As String
     Buffer = String(MAX_PATH, vbNullChar)
-    SHGetPathFromIDList IDList, StrPtr(Buffer)
-    If Left$(Buffer, 2) = vbNullChar & ":" Then Buffer = Mid$(Buffer, 3)
-    PathName = Left$(Buffer, InStr(Buffer, vbNullChar) - 1)
+    If SHGetPathFromIDList(IDList, StrPtr(Buffer)) <> 0 Then PathName = Left$(Buffer, InStr(Buffer, vbNullChar) - 1)
     CoTaskMemFree IDList
     On Error Resume Next
     Dim Attributes As VbFileAttribute
@@ -1562,28 +1963,405 @@ If IDList <> 0 Then
     On Error GoTo 0
     If (Attributes And (vbDirectory Or vbVolume)) <> 0 Then
         If Not PathName = vbNullString Then PathName = PathName & IIf(Right$(PathName, 1) = "\", "", "\")
+        PropFileOffset = 0
         PropFileTitle = vbNullString
     Else
-        Dim i As Long, Pos As Long
-        For i = 1 To Len(PathName)
-            If Mid$(PathName, i, 1) = "\" Then Pos = i
-        Next i
-        PropFileTitle = Right$(PathName, Len(PathName) - Pos)
+        PropFileOffset = InStrRev(PathName, "\")
+        PropFileTitle = Mid$(PathName, PropFileOffset + 1)
     End If
     PropFileName = PathName
-    ShowFolder = True
+    ShowFolderBrowser = True
 Else
     If PropCancelError = True Then Err.Raise Number:=CdlCancel, Description:="Cancel was selected."
 End If
 End Function
 
+Public Function ShowFind() As Long
+Attribute ShowFind.VB_Description = "Displays the find dialog box."
+If CommonDialogFRDialogHandle <> 0 Then Exit Function
+Dim FR As FINDREPLACE
+LSet CommonDialogFR = FR
+With CommonDialogFR
+.lStructSize = LenB(CommonDialogFR)
+If Not Screen.ActiveForm Is Nothing Then
+    .hWndOwner = Screen.ActiveForm.hWnd
+Else
+    .hWndOwner = GetActiveWindow()
+End If
+If PropHookEvents = False Then
+    .Flags = PropFlags
+Else
+    .Flags = FR_ENABLEHOOK Or PropFlags
+    .lpfnHook = ProcPtr(AddressOf ComCtlsCdlFR1CallbackProc)
+    Dim This As ISubclass
+    Set This = Me
+    .lCustData = ObjPtr(This)
+End If
+CommonDialogFRBufferFindWhat = PropFindWhat
+If StrPtr(CommonDialogFRBufferFindWhat) = 0 Then CommonDialogFRBufferFindWhat = ""
+.lpstrFindWhat = StrPtr(CommonDialogFRBufferFindWhat)
+.wFindWhatLen = 256
+End With
+If (PropFlags And CdlFRHelpButton) = CdlFRHelpButton Then
+    If CommonDialogHelpMsg = 0 Then CommonDialogHelpMsg = RegisterWindowMessage(StrPtr(HELPMSGSTRING))
+End If
+If CommonDialogFindMsg = 0 Then CommonDialogFindMsg = RegisterWindowMessage(StrPtr(FINDMSGSTRING))
+CommonDialogFRDialogHandle = FindText(CommonDialogFR)
+If CommonDialogFRDialogHandle <> 0 Then
+    With CommonDialogFR
+    .lCustData = CommonDialogFRDialogHandle
+    Call ComCtlsSetSubclass(.hWndOwner, Me, 9, FINDMSGSTRING & "_9_" & CStr(.lCustData))
+    Call ComCtlsCdlFRAddHook(.lCustData)
+    ShowFind = .lCustData
+    End With
+Else
+    Dim ErrVal As Long
+    ErrVal = CommDlgExtendedError()
+    Select Case ErrVal
+        Case FRERR_BUFFERLENGTHZERO
+            Err.Raise Number:=CdlBufferLengthZero, Description:="The buffer at which the member LpstrFindWhat points is invalid."
+        Case Else
+            Err.Raise Number:=ErrVal, Description:="Unexpected error."
+    End Select
+End If
+End Function
+
+Public Function ShowReplace() As Long
+Attribute ShowReplace.VB_Description = "Displays the replace dialog box."
+If CommonDialogFRDialogHandle <> 0 Then Exit Function
+Dim FR As FINDREPLACE
+LSet CommonDialogFR = FR
+With CommonDialogFR
+.lStructSize = LenB(CommonDialogFR)
+If Not Screen.ActiveForm Is Nothing Then
+    .hWndOwner = Screen.ActiveForm.hWnd
+Else
+    .hWndOwner = GetActiveWindow()
+End If
+If PropHookEvents = False Then
+    .Flags = PropFlags
+Else
+    .Flags = FR_ENABLEHOOK Or PropFlags
+    .lpfnHook = ProcPtr(AddressOf ComCtlsCdlFR2CallbackProc)
+    Dim This As ISubclass
+    Set This = Me
+    .lCustData = ObjPtr(This)
+End If
+CommonDialogFRBufferFindWhat = PropFindWhat
+If StrPtr(CommonDialogFRBufferFindWhat) = 0 Then CommonDialogFRBufferFindWhat = ""
+.lpstrFindWhat = StrPtr(CommonDialogFRBufferFindWhat)
+CommonDialogFRBufferReplaceWith = PropReplaceWith
+If StrPtr(CommonDialogFRBufferReplaceWith) = 0 Then CommonDialogFRBufferReplaceWith = ""
+.lpstrReplaceWith = StrPtr(CommonDialogFRBufferReplaceWith)
+.wFindWhatLen = 256
+.wReplaceWithLen = 256
+End With
+If (PropFlags And CdlFRHelpButton) = CdlFRHelpButton Then
+    If CommonDialogHelpMsg = 0 Then CommonDialogHelpMsg = RegisterWindowMessage(StrPtr(HELPMSGSTRING))
+End If
+If CommonDialogFindMsg = 0 Then CommonDialogFindMsg = RegisterWindowMessage(StrPtr(FINDMSGSTRING))
+CommonDialogFRDialogHandle = ReplaceText(CommonDialogFR)
+If CommonDialogFRDialogHandle <> 0 Then
+    With CommonDialogFR
+    .lCustData = CommonDialogFRDialogHandle
+    Call ComCtlsSetSubclass(.hWndOwner, Me, 10, FINDMSGSTRING & "_10_" & CStr(.lCustData))
+    Call ComCtlsCdlFRAddHook(.lCustData)
+    ShowReplace = .lCustData
+    End With
+Else
+    Dim ErrVal As Long
+    ErrVal = CommDlgExtendedError()
+    Select Case ErrVal
+        Case FRERR_BUFFERLENGTHZERO
+            Err.Raise Number:=CdlBufferLengthZero, Description:="The buffer at which the member LpstrFindWhat and/or LpstrReplaceWith points is invalid."
+        Case Else
+            Err.Raise Number:=ErrVal, Description:="Unexpected error."
+    End Select
+End If
+End Function
+
 Private Function ISubclass_Message(ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
-If wMsg = CommonDialogHelpMsg Then
-    Dim hWndFocus As Long, Handled As Boolean
+If dwRefData > 0 Then
+    ISubclass_Message = WindowProcOwner(hWnd, wMsg, wParam, lParam, dwRefData)
+Else
+    ISubclass_Message = CallbackProcDialog(hWnd, wMsg, wParam, lParam, dwRefData)
+End If
+End Function
+
+Private Function WindowProcOwner(ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
+Dim hWndFocus As Long
+If wMsg = CommonDialogHelpMsg And CommonDialogHelpMsg <> 0 Then
+    Dim Handled As Boolean
     hWndFocus = GetFocus()
-    RaiseEvent Help(Handled, CInt(dwRefData And &HFFFF&), wParam)
+    RaiseEvent Help(Handled, CUIntToInt(dwRefData And &HFFFF&), wParam)
     If GetFocus() <> hWndFocus And hWndFocus <> 0 Then SetFocusAPI hWndFocus
     If Handled = False Then Me.ShowHelp
 End If
-ISubclass_Message = ComCtlsDefaultProc(hWnd, wMsg, wParam, lParam)
+If wMsg = CommonDialogFindMsg And CommonDialogFindMsg <> 0 Then
+    Dim FR As FINDREPLACE
+    CopyMemory ByVal VarPtr(FR), ByVal lParam, LenB(FR)
+    If (FR.lCustData = CommonDialogFRDialogHandle Or FR.lCustData = 0) And CommonDialogFRDialogHandle <> 0 Then
+        If (FR.Flags And FR_DIALOGTERM) = FR_DIALOGTERM Then
+            WindowProcOwner = ComCtlsDefaultProc(hWnd, wMsg, wParam, lParam)
+            Call ComCtlsRemoveSubclass(hWnd, FINDMSGSTRING & "_" & CStr(dwRefData) & "_" & CStr(CommonDialogFRDialogHandle))
+            Call ComCtlsCdlFRReleaseHook(CommonDialogFRDialogHandle)
+            CommonDialogFRDialogHandle = 0
+            Exit Function
+        Else
+            If (FR.Flags And FR_ENABLEHOOK) = 0 Then
+                PropFlags = FR.Flags
+            Else
+                PropFlags = FR.Flags And Not FR_ENABLEHOOK
+            End If
+            Dim Length As Long
+            If FR.lpstrFindWhat <> 0 Then
+                Length = lstrlen(FR.lpstrFindWhat)
+                PropFindWhat = String(Length, vbNullChar)
+                CopyMemory ByVal StrPtr(PropFindWhat), ByVal FR.lpstrFindWhat, Length * 2
+            End If
+            If FR.lpstrReplaceWith <> 0 Then
+                Length = lstrlen(FR.lpstrReplaceWith)
+                PropReplaceWith = String(Length, vbNullChar)
+                CopyMemory ByVal StrPtr(PropReplaceWith), ByVal FR.lpstrReplaceWith, Length * 2
+            End If
+            hWndFocus = GetFocus()
+            Select Case True
+                Case CBool((FR.Flags And CdlFRFindNext) = CdlFRFindNext)
+                    RaiseEvent FindNext
+                Case CBool((FR.Flags And CdlFRReplace) = CdlFRReplace)
+                    RaiseEvent Replace
+                Case CBool((FR.Flags And CdlFRReplaceAll) = CdlFRFindNext)
+                    RaiseEvent ReplaceAll
+            End Select
+            If GetFocus() <> hWndFocus And hWndFocus <> 0 Then SetFocusAPI hWndFocus
+        End If
+    End If
+End If
+WindowProcOwner = ComCtlsDefaultProc(hWnd, wMsg, wParam, lParam)
+End Function
+
+Private Function CallbackProcDialog(ByVal hDlg As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal dwRefData As Long) As Long
+Dim hWndFocus As Long, Cancel As Boolean, Buffer As String, Length As Long
+CallbackProcDialog = 0
+Select Case dwRefData
+    Case -1, -2, -1001, -1002
+        Dim OFN As OPENFILENAME, FileName As String, Result As CdlOFNShareViResultConstants
+        If dwRefData > -1000 Then
+            If wMsg = WM_NOTIFY Then
+                Dim NM As NMHDR, NMOFN As NMOFNOTIFY
+                CopyMemory NM, ByVal lParam, LenB(NM)
+                Const H_MAX As Long = (&HFFFF + 1)
+                Const CDN_FIRST As Long = (H_MAX - 601)
+                Const CDN_INITDONE As Long = (CDN_FIRST - 0)
+                Const CDN_SHAREVIOLATION As Long = (CDN_FIRST - 3)
+                Const CDN_FILEOK As Long = (CDN_FIRST - 5)
+                Select Case NM.Code
+                    Case CDN_INITDONE
+                        RaiseEvent InitDialog(CUIntToInt(-dwRefData And &HFFFF&), hDlg)
+                    Case CDN_SHAREVIOLATION
+                        CopyMemory NMOFN, ByVal lParam, LenB(NMOFN)
+                        Buffer = String(PropMaxFileSize, vbNullChar)
+                        With NMOFN
+                        If .lpszFileShareVi <> 0 Then
+                            Length = lstrlen(.lpszFileShareVi)
+                            If Length > PropMaxFileSize Then Length = PropMaxFileSize
+                            CopyMemory ByVal StrPtr(Buffer), ByVal .lpszFileShareVi, Length * 2
+                        End If
+                        End With
+                        hWndFocus = GetFocus()
+                        FileName = Left$(Buffer, InStr(Buffer & vbNullChar, vbNullChar) - 1)
+                        RaiseEvent FileShareViolation(FileName, Result, hDlg)
+                        If GetFocus() <> hWndFocus And hWndFocus <> 0 Then SetFocusAPI hWndFocus
+                        CallbackProcDialog = Result
+                        SetWindowLong hDlg, DWL_MSGRESULT, Result
+                    Case CDN_FILEOK
+                        CopyMemory NMOFN, ByVal lParam, LenB(NMOFN)
+                        If NMOFN.lpOFN <> 0 Then CopyMemory OFN, ByVal NMOFN.lpOFN, ByVal LenB(OFN)
+                        With OFN
+                        Buffer = String(PropMaxFileSize, vbNullChar)
+                        If .lpstrFile <> 0 Then
+                            Length = lstrlen(.lpstrFile)
+                            If Length > PropMaxFileSize Then Length = PropMaxFileSize
+                            CopyMemory ByVal StrPtr(Buffer), ByVal .lpstrFile, Length * 2
+                        End If
+                        hWndFocus = GetFocus()
+                        If .nFileOffset > 0 Then
+                            If Mid$(Buffer, .nFileOffset, 1) = vbNullChar Then
+                                FileName = Left$(Buffer, InStr(Buffer & vbNullChar & vbNullChar, vbNullChar & vbNullChar) - 1)
+                                RaiseEvent FileValidate(FileName, vbNullString, .nFileOffset, Cancel, hDlg)
+                            Else
+                                FileName = Left$(Buffer, InStr(Buffer & vbNullChar, vbNullChar) - 1)
+                                RaiseEvent FileValidate(FileName, Mid$(FileName, .nFileOffset + 1), .nFileOffset, Cancel, hDlg)
+                            End If
+                        End If
+                        If GetFocus() <> hWndFocus And hWndFocus <> 0 Then SetFocusAPI hWndFocus
+                        End With
+                        If Cancel = True Then
+                            CallbackProcDialog = 1
+                            SetWindowLong hDlg, DWL_MSGRESULT, 1
+                        End If
+                End Select
+            End If
+        Else
+            If wMsg = WM_INITDIALOG Then
+                If CommonDialogShareViMsg = 0 Then CommonDialogShareViMsg = RegisterWindowMessage(StrPtr(SHAREVISTRING))
+                If CommonDialogFileOKMsg = 0 Then CommonDialogFileOKMsg = RegisterWindowMessage(StrPtr(FILEOKSTRING))
+                RaiseEvent InitDialog(CUIntToInt(-(dwRefData + 1000) And &HFFFF&), hDlg)
+            ElseIf wMsg = CommonDialogShareViMsg And CommonDialogShareViMsg <> 0 Then
+                Buffer = String(PropMaxFileSize, vbNullChar)
+                If lParam <> 0 Then
+                    Length = lstrlen(lParam)
+                    If Length > PropMaxFileSize Then Length = PropMaxFileSize
+                    CopyMemory ByVal StrPtr(Buffer), ByVal lParam, Length * 2
+                End If
+                hWndFocus = GetFocus()
+                FileName = Left$(Buffer, InStr(Buffer & vbNullChar, vbNullChar) - 1)
+                RaiseEvent FileShareViolation(FileName, Result, hDlg)
+                If GetFocus() <> hWndFocus And hWndFocus <> 0 Then SetFocusAPI hWndFocus
+                CallbackProcDialog = Result
+            ElseIf wMsg = CommonDialogFileOKMsg And CommonDialogFileOKMsg <> 0 Then
+                CopyMemory OFN, ByVal lParam, LenB(OFN)
+                With OFN
+                Buffer = String(PropMaxFileSize, vbNullChar)
+                If .lpstrFile <> 0 Then
+                    Length = lstrlen(.lpstrFile)
+                    If Length > PropMaxFileSize Then Length = PropMaxFileSize
+                    CopyMemory ByVal StrPtr(Buffer), ByVal .lpstrFile, Length * 2
+                End If
+                hWndFocus = GetFocus()
+                If .nFileOffset > 0 Then
+                    If Mid$(Buffer, .nFileOffset, 1) = vbNullChar Then
+                        FileName = Left$(Buffer, InStr(Buffer & vbNullChar & vbNullChar, vbNullChar & vbNullChar) - 1)
+                        RaiseEvent FileValidate(FileName, vbNullString, .nFileOffset, Cancel, hDlg)
+                    Else
+                        FileName = Left$(Buffer, InStr(Buffer & vbNullChar, vbNullChar) - 1)
+                        RaiseEvent FileValidate(FileName, Mid$(FileName, .nFileOffset + 1), .nFileOffset, Cancel, hDlg)
+                    End If
+                End If
+                If GetFocus() <> hWndFocus And hWndFocus <> 0 Then SetFocusAPI hWndFocus
+                End With
+                If Cancel = True Then CallbackProcDialog = 1
+            End If
+        End If
+    Case -3
+        If wMsg = WM_INITDIALOG Then
+            If CommonDialogColorOKMsg = 0 Then CommonDialogColorOKMsg = RegisterWindowMessage(StrPtr(COLOROKSTRING))
+            RaiseEvent InitDialog(CUIntToInt(-dwRefData And &HFFFF&), hDlg)
+        ElseIf wMsg = CommonDialogColorOKMsg And CommonDialogColorOKMsg <> 0 Then
+            Dim CHCLR As TCHOOSECOLOR, OldColor As Long
+            CopyMemory CHCLR, ByVal lParam, LenB(CHCLR)
+            With CHCLR
+            OldColor = .RGBResult
+            hWndFocus = GetFocus()
+            RaiseEvent ColorValidate(.RGBResult, Cancel, hDlg)
+            If GetFocus() <> hWndFocus And hWndFocus <> 0 Then SetFocusAPI hWndFocus
+            If Cancel = True Then
+                CallbackProcDialog = 1
+                If OldColor <> .RGBResult Then ' The SetRGB message works only properly when the callback procedure returns a nonzero value
+                    If CommonDialogSetRGBMsg = 0 Then CommonDialogSetRGBMsg = RegisterWindowMessage(StrPtr(SETRGBSTRING))
+                    SendMessage hDlg, CommonDialogSetRGBMsg, 0, ByVal .RGBResult
+                End If
+            End If
+            End With
+        End If
+    Case -4
+        If wMsg = WM_INITDIALOG Then
+            RaiseEvent InitDialog(CUIntToInt(-dwRefData And &HFFFF&), hDlg)
+        ElseIf wMsg = WM_COMMAND Then
+            If HiWord(wParam) = BN_CLICKED Then
+                Const IDC_APPLY_BUTTON As Long = 1026
+                If LoWord(wParam) = IDC_APPLY_BUTTON Then
+                    Const IDC_FACE_COMBOBOX As Long = 1136, IDC_STYLE_COMBOBOX As Long = 1137, IDC_SIZE_COMBOBOX As Long = 1138, IDC_COLOR_COMBOBOX As Long = 1139, IDC_SCRIPT_COMBOBOX As Long = 1140
+                    Const CB_ERR As Long = (-1)
+                    Const CB_GETCURSEL As Long = &H147
+                    Const CB_GETITEMDATA As Long = &H150
+                    Dim Flags As Long, iItem As Long
+                    Flags = PropFlags
+                    ' The CdlCFNo***Sel flags needs to be adjusted, if necessary.
+                    iItem = SendDlgItemMessage(hDlg, IDC_FACE_COMBOBOX, CB_GETCURSEL, 0, ByVal 0&)
+                    If (Flags And CdlCFNoFaceSel) = 0 Then
+                        If iItem = CB_ERR Then Flags = Flags Or CdlCFNoFaceSel
+                    ElseIf (Flags And CdlCFNoFaceSel) = CdlCFNoFaceSel Then
+                        If Not iItem = CB_ERR Then Flags = Flags And Not CdlCFNoFaceSel
+                    End If
+                    iItem = SendDlgItemMessage(hDlg, IDC_STYLE_COMBOBOX, CB_GETCURSEL, 0, ByVal 0&)
+                    If (Flags And CdlCFNoStyleSel) = 0 Then
+                        If iItem = CB_ERR Then Flags = Flags Or CdlCFNoStyleSel
+                    ElseIf (Flags And CdlCFNoStyleSel) = CdlCFNoStyleSel Then
+                        If Not iItem = CB_ERR Then Flags = Flags And Not CdlCFNoStyleSel
+                    End If
+                    iItem = SendDlgItemMessage(hDlg, IDC_SIZE_COMBOBOX, CB_GETCURSEL, 0, ByVal 0&)
+                    If (Flags And CdlCFNoSizeSel) = 0 Then
+                        If iItem = CB_ERR Then Flags = Flags Or CdlCFNoSizeSel
+                    ElseIf (Flags And CdlCFNoSizeSel) = CdlCFNoSizeSel Then
+                        If Not iItem = CB_ERR Then Flags = Flags And Not CdlCFNoSizeSel
+                    End If
+                    iItem = SendDlgItemMessage(hDlg, IDC_SCRIPT_COMBOBOX, CB_GETCURSEL, 0, ByVal 0&)
+                    If (Flags And CdlCFNoScriptSel) = 0 Then
+                        If iItem = CB_ERR Then Flags = Flags Or CdlCFNoScriptSel
+                    ElseIf (Flags And CdlCFNoScriptSel) = CdlCFNoScriptSel Then
+                        If Not iItem = CB_ERR Then Flags = Flags And Not CdlCFNoScriptSel
+                    End If
+                    Const WM_CHOOSEFONT_GETLOGFONT As Long = (WM_USER + 1)
+                    Dim LF As LOGFONT, FontName As String, RGBColor As Long
+                    SendMessage hDlg, WM_CHOOSEFONT_GETLOGFONT, 0, ByVal VarPtr(LF)
+                    iItem = SendDlgItemMessage(hDlg, IDC_COLOR_COMBOBOX, CB_GETCURSEL, 0, ByVal 0&)
+                    If Not iItem = CB_ERR Then RGBColor = SendDlgItemMessage(hDlg, IDC_COLOR_COMBOBOX, CB_GETITEMDATA, iItem, ByVal 0&)
+                    With LF
+                    RaiseEvent FontApply(Flags, Left$(.LFFaceName(), InStr(.LFFaceName(), vbNullChar) - 1), CSng(MulDiv(-.LFHeight, 72, DPI_Y())), CBool(.LFWeight = FW_BOLD), CBool(.LFItalic <> 0), CBool(.LFStrikeOut <> 0), CBool(.LFUnderline <> 0), CInt(.LFCharset), RGBColor, hDlg)
+                    End With
+                End If
+            End If
+        End If
+    Case -5, -7
+        If wMsg = WM_INITDIALOG Then RaiseEvent InitDialog(CUIntToInt(-dwRefData And &HFFFF&), hDlg)
+    Case -8
+        Dim Text As String
+        Const BFFM_INITIALIZED As Long = 1, BFFM_SELCHANGED As Long = 2, BFFM_VALIDATEFAILED As Long = 4
+        Const BFFM_SETSTATUSTEXTA As Long = (WM_USER + 100)
+        Const BFFM_SETSTATUSTEXTW As Long = (WM_USER + 104)
+        Const BFFM_SETSTATUSTEXT As Long = BFFM_SETSTATUSTEXTW
+        Const BFFM_ENABLEOK As Long = (WM_USER + 101)
+        Const BFFM_SETSELECTIONA As Long = (WM_USER + 102)
+        Const BFFM_SETSELECTIONW As Long = (WM_USER + 103)
+        Const BFFM_SETSELECTION As Long = BFFM_SETSELECTIONW
+        Select Case wMsg
+            Case BFFM_INITIALIZED
+                If Not PropInitDir = vbNullString Then SendMessage hDlg, BFFM_SETSELECTION, 1, ByVal StrPtr(PropInitDir)
+                RaiseEvent InitDialog(CUIntToInt(-dwRefData And &HFFFF&), hDlg)
+            Case BFFM_SELCHANGED
+                Dim RetVal As Long
+                If lParam <> 0 Then
+                    Buffer = String(MAX_PATH, vbNullChar)
+                    RetVal = SHGetPathFromIDList(lParam, StrPtr(Buffer))
+                    If RetVal <> 0 Then
+                        Text = Left$(Buffer, InStr(Buffer, vbNullChar) - 1)
+                        On Error Resume Next
+                        Dim Attributes As VbFileAttribute
+                        Attributes = GetAttr(Text)
+                        On Error GoTo 0
+                        If (Attributes And (vbDirectory Or vbVolume)) <> 0 Then If Not Text = vbNullString Then Text = Text & IIf(Right$(Text, 1) = "\", "", "\")
+                    End If
+                End If
+                If (PropFlags And CdlBIFStatusText) = CdlBIFStatusText Then SendMessage hDlg, BFFM_SETSTATUSTEXT, 0, ByVal StrPtr(Text)
+                If (PropFlags And CdlBIFReturnOnlyFSDirs) = CdlBIFReturnOnlyFSDirs Then
+                    ' If the CdlBIFReturnOnlyFSDirs flag is set, the OK button remains enabled if the user selects a "\\ServerName" item.
+                    ' "\\ServerName" is not a file system path, but a machine name. Whereas "\\ServerName\ShareName\" is a file system path.
+                    ' Therefore it is necessary to check the return value of SHGetPathFromIDList and enable/disable the OK button accordingly.
+                    SendMessage hDlg, BFFM_ENABLEOK, 0, ByVal RetVal
+                End If
+            Case BFFM_VALIDATEFAILED
+                If lParam <> 0 Then
+                    Length = lstrlen(lParam)
+                    Text = String(Length, vbNullChar)
+                    CopyMemory ByVal StrPtr(Text), ByVal lParam, Length * 2
+                End If
+                hWndFocus = GetFocus()
+                RaiseEvent FolderBrowserValidateFailed(Text, Cancel, hDlg)
+                If GetFocus() <> hWndFocus And hWndFocus <> 0 Then SetFocusAPI hWndFocus
+                If Cancel = True Then CallbackProcDialog = 1
+        End Select
+    Case -9, -10
+        If wMsg = WM_INITDIALOG Then RaiseEvent InitDialog(CUIntToInt(-dwRefData And &HFFFF&), hDlg)
+End Select
 End Function

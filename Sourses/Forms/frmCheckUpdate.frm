@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form frmCheckUpdate 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Обновление: Обнаружена новая версия программы"
-   ClientHeight    =   6000
+   ClientHeight    =   5895
    ClientLeft      =   45
    ClientTop       =   540
    ClientWidth     =   11340
@@ -20,13 +20,13 @@ Begin VB.Form frmCheckUpdate
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   6000
+   ScaleHeight     =   5895
    ScaleWidth      =   11340
    StartUpPosition =   1  'CenterOwner
    Begin prjDIADBS.ComboBoxW cmbVersions 
       Height          =   315
       Left            =   5100
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   450
       Width           =   1335
       _ExtentX        =   2355
@@ -43,137 +43,137 @@ Begin VB.Form frmCheckUpdate
       Style           =   2
       Sorted          =   -1  'True
    End
-   Begin prjDIADBS.ctlXpButton cmdExit 
-      Height          =   750
+   Begin prjDIADBS.ctlJCbutton cmdExit 
+      Default         =   -1  'True
+      Height          =   650
       Left            =   9345
-      TabIndex        =   0
+      TabIndex        =   10
       Top             =   5160
       Width           =   1935
       _ExtentX        =   3413
-      _ExtentY        =   1323
+      _ExtentY        =   1138
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   8.25
+         Size            =   9
          Charset         =   204
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      ButtonStyle     =   8
+      BackColor       =   12244692
       Caption         =   "Закрыть"
-      ButtonStyle     =   3
-      PictureWidth    =   0
-      PictureHeight   =   0
-      ShowFocusRect   =   0   'False
-      XPColor_Pressed =   15116940
-      XPColor_Hover   =   4692449
+      CaptionEffects  =   0
+      PictureAlign    =   0
+      ColorScheme     =   3
    End
-   Begin prjDIADBS.ctlXpButton cmdHistory 
-      Height          =   750
+   Begin prjDIADBS.ctlJCbutton cmdHistory 
+      Height          =   650
       Left            =   4700
-      TabIndex        =   1
+      TabIndex        =   8
       Top             =   5160
       Width           =   2175
       _ExtentX        =   3836
-      _ExtentY        =   1323
+      _ExtentY        =   1138
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   8.25
+         Size            =   9
          Charset         =   204
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      ButtonStyle     =   8
+      BackColor       =   12244692
       Caption         =   "История изменений"
-      ButtonStyle     =   3
-      PictureWidth    =   0
-      PictureHeight   =   0
-      ShowFocusRect   =   0   'False
-      XPColor_Pressed =   15116940
-      XPColor_Hover   =   4692449
+      CaptionEffects  =   0
+      PictureAlign    =   0
+      ColorScheme     =   3
    End
-   Begin prjDIADBS.ctlXpButton cmdUpdateFull 
-      Height          =   750
+   Begin prjDIADBS.ctlJCbutton cmdUpdateFull 
+      Height          =   650
       Left            =   2415
-      TabIndex        =   2
+      TabIndex        =   7
       Top             =   5160
       Width           =   2175
       _ExtentX        =   3836
-      _ExtentY        =   1323
+      _ExtentY        =   1138
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   8.25
+         Size            =   9
          Charset         =   204
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      ButtonStyle     =   8
+      BackColor       =   12244692
       Caption         =   "Скачать дистрибутив"
-      ButtonStyle     =   3
-      PictureWidth    =   0
-      PictureHeight   =   0
-      ShowFocusRect   =   0   'False
-      XPColor_Pressed =   15116940
-      XPColor_Hover   =   4692449
+      CaptionEffects  =   0
+      PictureAlign    =   0
+      DropDownSymbol  =   6
+      DropDownSeparator=   -1  'True
+      DropDownEnable  =   -1  'True
+      ColorScheme     =   3
    End
-   Begin prjDIADBS.ctlXpButton cmdUpdate 
-      Height          =   750
+   Begin prjDIADBS.ctlJCbutton cmdUpdate 
+      Height          =   650
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   6
       Top             =   5160
       Width           =   2175
       _ExtentX        =   3836
-      _ExtentY        =   1323
+      _ExtentY        =   1138
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   8.25
+         Size            =   9
          Charset         =   204
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      ButtonStyle     =   8
+      BackColor       =   12244692
       Caption         =   "Скачать обновление"
-      ButtonStyle     =   3
-      PictureWidth    =   0
-      PictureHeight   =   0
-      ShowFocusRect   =   0   'False
-      XPColor_Pressed =   15116940
-      XPColor_Hover   =   4692449
+      CaptionEffects  =   0
+      PictureAlign    =   0
+      DropDownSymbol  =   6
+      DropDownSeparator=   -1  'True
+      DropDownEnable  =   -1  'True
+      ColorScheme     =   3
    End
-   Begin prjDIADBS.ctlXpButton cmdDonate 
-      Height          =   750
+   Begin prjDIADBS.ctlJCbutton cmdDonate 
+      Height          =   650
       Left            =   6990
-      TabIndex        =   5
+      TabIndex        =   9
       Top             =   5160
       Width           =   2220
       _ExtentX        =   3916
-      _ExtentY        =   1323
+      _ExtentY        =   1138
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   8.25
+         Size            =   9
          Charset         =   204
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      ButtonStyle     =   8
+      BackColor       =   12244692
       Caption         =   "Поддержать проект"
-      ButtonStyle     =   3
-      PictureWidth    =   51
-      PictureHeight   =   28
-      ShowFocusRect   =   0   'False
-      XPColor_Pressed =   15116940
-      XPColor_Hover   =   4692449
-      TextColor       =   0
-      MenuCaption0    =   "#"
+      CaptionEffects  =   0
+      PictureAlign    =   0
+      ColorScheme     =   3
    End
    Begin prjDIADBS.RichTextBox rtfDescription 
       Height          =   4275
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   800
       Visible         =   0   'False
       Width           =   11130
@@ -194,14 +194,12 @@ Begin VB.Form frmCheckUpdate
       MultiLine       =   -1  'True
       ScrollBars      =   2
       WantReturn      =   -1  'True
-      FileName        =   "frmCheckUpdate.frx":000C
-      Text            =   "frmCheckUpdate.frx":002C
-      TextRTF         =   "frmCheckUpdate.frx":004C
+      TextRTF         =   "frmCheckUpdate.frx":000C
    End
    Begin prjDIADBS.LabelW lblWait 
       Height          =   375
       Left            =   0
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   2640
       Width           =   11160
       _ExtentX        =   0
@@ -222,7 +220,7 @@ Begin VB.Form frmCheckUpdate
    Begin prjDIADBS.LabelW lblVersionList 
       Height          =   315
       Left            =   120
-      TabIndex        =   8
+      TabIndex        =   1
       Top             =   450
       Width           =   4965
       _ExtentX        =   8758
@@ -243,7 +241,7 @@ Begin VB.Form frmCheckUpdate
    Begin prjDIADBS.LabelW lblWWW 
       Height          =   315
       Left            =   8100
-      TabIndex        =   9
+      TabIndex        =   3
       Top             =   450
       Width           =   3060
       _ExtentX        =   5398
@@ -266,7 +264,7 @@ Begin VB.Form frmCheckUpdate
    Begin prjDIADBS.LabelW lblVersion 
       Height          =   315
       Left            =   120
-      TabIndex        =   10
+      TabIndex        =   0
       Top             =   45
       Width           =   11085
       _ExtentX        =   0
@@ -284,6 +282,52 @@ Begin VB.Form frmCheckUpdate
       BackStyle       =   0
       Caption         =   "Последняя версия программы: "
    End
+   Begin VB.Menu mnuContextMenu1 
+      Caption         =   "Контекстное меню 1"
+      Begin VB.Menu mnuContextLinkFull 
+         Caption         =   "Посетить сайт 1"
+         Index           =   0
+      End
+      Begin VB.Menu mnuContextLinkFull 
+         Caption         =   "-"
+         Index           =   1
+      End
+      Begin VB.Menu mnuContextLinkFull 
+         Caption         =   "Посетить сайт 2"
+         Index           =   2
+      End
+      Begin VB.Menu mnuContextLinkFull 
+         Caption         =   "-"
+         Index           =   3
+      End
+      Begin VB.Menu mnuContextLinkFull 
+         Caption         =   "Посетить сайт 3"
+         Index           =   4
+      End
+   End
+   Begin VB.Menu mnuContextMenu2 
+      Caption         =   "Контекстное меню 2"
+      Begin VB.Menu mnuContextLinkUpdate 
+         Caption         =   "Посетить сайт 1"
+         Index           =   0
+      End
+      Begin VB.Menu mnuContextLinkUpdate 
+         Caption         =   "-"
+         Index           =   1
+      End
+      Begin VB.Menu mnuContextLinkUpdate 
+         Caption         =   "Посетить сайт 2"
+         Index           =   2
+      End
+      Begin VB.Menu mnuContextLinkUpdate 
+         Caption         =   "-"
+         Index           =   3
+      End
+      Begin VB.Menu mnuContextLinkUpdate 
+         Caption         =   "Посетить сайт 3"
+         Index           =   4
+      End
+   End
 End
 Attribute VB_Name = "frmCheckUpdate"
 Attribute VB_GlobalNameSpace = False
@@ -294,6 +338,18 @@ Option Explicit
 
 Private mbFirstStartUpdate As Boolean
 Private strFormName        As String
+
+Public Property Get CaptionW() As String
+    Dim lngLenStr As Long
+    
+    lngLenStr = DefWindowProc(Me.hWnd, WM_GETTEXTLENGTH, 0, ByVal 0)
+    CaptionW = Space$(lngLenStr)
+    DefWindowProc Me.hWnd, WM_GETTEXT, Len(CaptionW) + 1, ByVal StrPtr(CaptionW)
+End Property
+
+Public Property Let CaptionW(ByVal NewValue As String)
+    DefWindowProc Me.hWnd, WM_SETTEXT, 0, ByVal StrPtr(NewValue & vbNullChar)
+End Property
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub FontCharsetChange
@@ -309,11 +365,221 @@ Private Sub FontCharsetChange()
         .Charset = lngFont_Charset
     End With
 
-    SetBtnFontProperties cmdUpdate
-    SetBtnFontProperties cmdUpdateFull
-    SetBtnFontProperties cmdHistory
-    SetBtnFontProperties cmdDonate
-    SetBtnFontProperties cmdExit
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadButtonLinkFull
+'! Description (Описание)  :   [Контекстное меню для кнопки скачать дистрибутив]
+'! Parameters  (Переменные):   strMassivLink() (String)
+'!--------------------------------------------------------------------------------
+Private Sub LoadButtonLinkFull(strMassivLink() As String)
+
+    Dim strMirrorText As String
+
+    If cmbVersions.ListIndex > -1 Then
+
+        ' Отличия работы если русский или английский
+        Select Case strPCLangCurrentID
+
+            Case "0419"
+                strMirrorText = "Зеркало"
+
+            Case Else
+                strMirrorText = "Mirror"
+        End Select
+
+        If InStr(1, strMassivLink(cmbVersions.ListIndex, 0), "http", vbTextCompare) Then
+            cmdUpdateFull.DropDownEnable = True
+        ElseIf InStr(1, strMassivLink(cmbVersions.ListIndex, 2), "http", vbTextCompare) Then
+            cmdUpdateFull.DropDownEnable = True
+        Else
+            cmdUpdateFull.DropDownEnable = False
+        End If
+
+        If cmdUpdateFull.DropDownEnable Then
+                            
+            If InStr(1, strMassivLink(cmbVersions.ListIndex, 2), "http", vbTextCompare) = 0 Then
+                mnuContextLinkFull(2).Enabled = False
+            End If
+
+            If InStr(1, strMassivLink(cmbVersions.ListIndex, 4), "http", vbTextCompare) = 0 Then
+                mnuContextLinkFull(4).Enabled = False
+            End If
+
+            If LenB(strMassivLink(cmbVersions.ListIndex, 1)) Then
+                mnuContextLinkFull(0).Visible = True
+                mnuContextLinkFull(1).Visible = True
+                SetUniMenu 0, 0, -1, mnuContextMenu1, strMassivLink(cmbVersions.ListIndex, 1)
+            Else
+                mnuContextLinkFull(0).Visible = False
+                mnuContextLinkFull(1).Visible = False
+            End If
+
+            If LenB(strMassivLink(cmbVersions.ListIndex, 3)) Then
+                mnuContextLinkFull(1).Visible = True
+                mnuContextLinkFull(2).Visible = True
+                SetUniMenu 0, 2, -1, mnuContextMenu1, strMassivLink(cmbVersions.ListIndex, 3)
+            Else
+                mnuContextLinkFull(1).Visible = False
+                mnuContextLinkFull(2).Visible = False
+            End If
+
+            If LenB(strMassivLink(cmbVersions.ListIndex, 5)) Then
+                mnuContextLinkFull(3).Visible = True
+                mnuContextLinkFull(4).Visible = True
+                SetUniMenu 0, 4, -1, mnuContextMenu1, strMassivLink(cmbVersions.ListIndex, 5)
+            Else
+                mnuContextLinkFull(3).Visible = False
+                mnuContextLinkFull(4).Visible = False
+            End If
+        End If
+
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadButtonLinkUpdate
+'! Description (Описание)  :   [Контекстное меню для кнопки скачать обновление]
+'! Parameters  (Переменные):   strMassivLink() (String)
+'!--------------------------------------------------------------------------------
+Private Sub LoadButtonLinkUpdate(strMassivLink() As String)
+
+    Dim strMirrorText As String
+
+    If cmbVersions.ListIndex > -1 Then
+
+        ' Отличия работы если русский или английский
+        Select Case strPCLangCurrentID
+
+            Case "0419"
+                strMirrorText = "Зеркало"
+
+            Case Else
+                strMirrorText = "Mirror"
+        End Select
+
+        If InStr(1, strMassivLink(cmbVersions.ListIndex, 0), "http", vbTextCompare) Then
+            cmdUpdate.DropDownEnable = True
+        ElseIf InStr(1, strMassivLink(cmbVersions.ListIndex, 2), "http", vbTextCompare) Then
+            cmdUpdate.DropDownEnable = True
+        Else
+            cmdUpdate.DropDownEnable = False
+        End If
+
+        If cmdUpdate.DropDownEnable Then
+                            
+            If InStr(1, strMassivLink(cmbVersions.ListIndex, 2), "http", vbTextCompare) = 0 Then
+                mnuContextLinkUpdate(2).Enabled = False
+            End If
+
+            If InStr(1, strMassivLink(cmbVersions.ListIndex, 4), "http", vbTextCompare) = 0 Then
+                mnuContextLinkUpdate(4).Enabled = False
+            End If
+
+            If LenB(strMassivLink(cmbVersions.ListIndex, 1)) Then
+                mnuContextLinkUpdate(0).Visible = True
+                mnuContextLinkUpdate(1).Visible = True
+                SetUniMenu 1, 0, -1, mnuContextMenu2, strMassivLink(cmbVersions.ListIndex, 1)
+            Else
+                mnuContextLinkUpdate(0).Visible = False
+                mnuContextLinkUpdate(1).Visible = False
+            End If
+
+            If LenB(strMassivLink(cmbVersions.ListIndex, 3)) Then
+                mnuContextLinkUpdate(1).Visible = True
+                mnuContextLinkUpdate(2).Visible = True
+                SetUniMenu 1, 2, -1, mnuContextMenu2, strMassivLink(cmbVersions.ListIndex, 3)
+            Else
+                mnuContextLinkUpdate(1).Visible = False
+                mnuContextLinkUpdate(2).Visible = False
+            End If
+
+            If LenB(strMassivLink(cmbVersions.ListIndex, 5)) Then
+                mnuContextLinkUpdate(3).Visible = True
+                mnuContextLinkUpdate(4).Visible = True
+                SetUniMenu 1, 4, -1, mnuContextMenu2, strMassivLink(cmbVersions.ListIndex, 5)
+            Else
+                mnuContextLinkUpdate(3).Visible = False
+                mnuContextLinkUpdate(4).Visible = False
+            End If
+        End If
+
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadDescriptionAndLinks
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub LoadDescriptionAndLinks()
+
+    Dim strDescriptionTemp As String
+
+    ' Отличия работы если русский или английский
+    Select Case strPCLangCurrentID
+
+        Case "0419"
+            strDescriptionTemp = Replace$(strDescription, vbLf, vbNewLine)
+
+        Case Else
+            strDescriptionTemp = Replace$(strDescription_en, vbLf, vbNewLine)
+    End Select
+
+    ' Кнопка Скачать обновление
+    LoadButtonLinkUpdate strLink
+    ' Кнопка Скачать дистрибутив
+    LoadButtonLinkFull strLinkFull
+
+    ' Описание изменений
+    If LenB(strDescriptionTemp) Then
+        rtfDescription.TextRTF = strDescriptionTemp
+    Else
+        rtfDescription.TextRTF = "Error on load ChangeLog. Please inform the developer"
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Localise
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   StrPathFile (String)
+'!--------------------------------------------------------------------------------
+Private Sub Localise(ByVal strPathFile As String)
+    ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
+    FontCharsetChange
+    ' Название формы
+    Me.CaptionW = LocaliseString(strPathFile, strFormName, strFormName, Me.Caption)
+    ' Кнопки
+    cmdUpdate.Caption = LocaliseString(strPathFile, strFormName, "cmdUpdate", cmdUpdate.Caption)
+    cmdUpdateFull.Caption = LocaliseString(strPathFile, strFormName, "cmdUpdateFull", cmdUpdateFull.Caption)
+    cmdHistory.Caption = LocaliseString(strPathFile, strFormName, "cmdHistory", cmdHistory.Caption)
+    cmdDonate.Caption = LocaliseString(strPathFile, strFormName, "cmdDonate", cmdDonate.Caption)
+    cmdExit.Caption = LocaliseString(strPathFile, strFormName, "cmdExit", cmdExit.Caption)
+    ' Лейблы
+    lblVersion.Caption = LocaliseString(strPathFile, strFormName, "lblVersion", lblVersion.Caption) & strSpace & strVersion & " (" & strDateProg & ")"
+    ' Меню
+    LocaliseMenu strPathFile
+
+    If InStr(1, strRelease, "beta", vbTextCompare) Then
+        lblVersion.Caption = lblVersion.Caption & " This version may be Unstable!!!"
+        lblVersion.ForeColor = vbRed
+    End If
+
+    lblVersionList.Caption = LocaliseString(strPathFile, strFormName, "lblVersionList", lblVersionList.Caption)
+    lblWait.Caption = LocaliseString(strPathFile, strFormName, "lblWait", lblWait.Caption)
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LocaliseMenu
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strPathFile (String)
+'!--------------------------------------------------------------------------------
+Private Sub LocaliseMenu(ByVal strPathFile As String)
+    SetUniMenu -1, 0, -1, mnuContextMenu1, LocaliseString(strPathFile, strFormName, "cmdUpdateFull", cmdUpdateFull.Caption)
+    SetUniMenu -1, 1, -1, mnuContextMenu2, LocaliseString(strPathFile, strFormName, "cmdUpdate", cmdUpdate.Caption)
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -363,21 +629,15 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub cmdHistory_Click()
 
-    Dim nRetShellEx As Boolean
-    Dim cmdString   As String
-
     Select Case strPCLangCurrentID
 
         Case "0419"
-            cmdString = Kavichki & strLinkHistory & Kavichki
+            RunUtilsShell strLinkHistory, False
 
         Case Else
-            cmdString = Kavichki & strLinkHistory_en & Kavichki
+            RunUtilsShell strLinkHistory_en, False
     End Select
-
-    DebugMode "cmdString: " & cmdString
-    nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
-    DebugMode "cmdString: " & nRetShellEx
+    
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -386,41 +646,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdUpdate_Click()
-
-    Dim nRetShellEx As Boolean
-    Dim cmdString   As String
-
-    cmdString = Kavichki & strLink(cmbVersions.ListIndex, 0) & Kavichki
-    DebugMode "cmdString: " & cmdString
-    nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
-    DebugMode "cmdString: " & nRetShellEx
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdUpdate_ClickMenu
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   mnuIndex (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub cmdUpdate_ClickMenu(mnuIndex As Integer)
-
-    Dim nRetShellEx As Boolean
-    Dim cmdString   As String
-
-    Select Case mnuIndex
-
-        Case 0
-            cmdString = Kavichki & strLink(cmbVersions.ListIndex, 0) & Kavichki
-
-        Case 2
-            cmdString = Kavichki & strLink(cmbVersions.ListIndex, 2) & Kavichki
-
-        Case 4
-            cmdString = Kavichki & strLink(cmbVersions.ListIndex, 4) & Kavichki
-    End Select
-
-    DebugMode "cmdString: " & cmdString
-    nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
-    DebugMode "cmdString: " & nRetShellEx
+    RunUtilsShell strLink(cmbVersions.ListIndex, 0), False
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -429,41 +655,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdUpdateFull_Click()
-
-    Dim nRetShellEx As Boolean
-    Dim cmdString   As String
-
-    cmdString = Kavichki & strLinkFull(cmbVersions.ListIndex, 0) & Kavichki
-    DebugMode "cmdString: " & cmdString
-    nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
-    DebugMode "cmdString: " & nRetShellEx
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdUpdateFull_ClickMenu
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   mnuIndex (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub cmdUpdateFull_ClickMenu(mnuIndex As Integer)
-
-    Dim nRetShellEx As Boolean
-    Dim cmdString   As String
-
-    Select Case mnuIndex
-
-        Case 0
-            cmdString = Kavichki & strLinkFull(cmbVersions.ListIndex, 0) & Kavichki
-
-        Case 2
-            cmdString = Kavichki & strLinkFull(cmbVersions.ListIndex, 2) & Kavichki
-
-        Case 4
-            cmdString = Kavichki & strLinkFull(cmbVersions.ListIndex, 4) & Kavichki
-    End Select
-
-    DebugMode "cmdString: " & cmdString
-    nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
-    DebugMode "cmdString: " & nRetShellEx
+    RunUtilsShell strLinkFull(cmbVersions.ListIndex, 0), False
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -473,7 +665,7 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub Form_Activate()
 
-    Dim i As Long
+    Dim ii As Long
 
     If mbFirstStartUpdate Then
         lblWait.Visible = True
@@ -488,14 +680,24 @@ Private Sub Form_Activate()
         rtfDescription.Visible = True
         cmbVersions.Left = lblVersionList.Left + lblVersionList.Width + 50
 
-        For i = LBound(strUpdVersions) To UBound(strUpdVersions)
-            cmbVersions.AddItem strUpdVersions(i), i
+        For ii = LBound(strUpdVersions) To UBound(strUpdVersions)
+            cmbVersions.AddItem strUpdVersions(ii), ii
         Next
 
         cmbVersions.ListIndex = 0
+        
+        rtfDescription.SetFocus
     End If
 
     mbFirstStartUpdate = False
+    cmdUpdate.Enabled = True
+    cmdUpdateFull.Enabled = True
+    cmdHistory.Enabled = True
+    cmdDonate.Enabled = True
+    cmdExit.Enabled = True
+    cmbVersions.Enabled = True
+    mnuContextMenu1.Enabled = True
+    mnuContextMenu2.Enabled = True
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -522,23 +724,32 @@ Private Sub Form_Load()
 
     With Me
         strFormName = .Name
-        SetIcon .hWnd, "frmUpdate", False
+        SetIcon .hWnd, strFormName, False
         .Left = (lngRightWorkArea - lngLeftWorkArea) / 2 - .Width / 2
         .Top = (lngBottomWorkArea - lngTopWorkArea) / 2 - .Height / 2
     End With
 
+    cmdUpdate.Enabled = False
+    cmdUpdateFull.Enabled = False
+    cmdHistory.Enabled = False
+    cmdDonate.Enabled = False
+    cmdExit.Enabled = False
+    cmbVersions.Enabled = False
+    mnuContextMenu1.Enabled = False
+    mnuContextMenu2.Enabled = False
+    
     mbFirstStartUpdate = True
     lblWait.Visible = True
     DoEvents
     lblWait.Left = 100
     lblWait.Width = Me.Width - 200
-    LoadIconImage2Btn cmdExit, "BTN_EXIT", strPathImageMainWork
-    LoadIconImage2Btn cmdUpdate, "BTN_UPDATE", strPathImageMainWork
-    LoadIconImage2Btn cmdUpdateFull, "BTN_UPDATEFULL", strPathImageMainWork
-    LoadIconImage2Btn cmdHistory, "BTN_HISTORY", strPathImageMainWork
-    LoadIconImage2Btn cmdDonate, "BTN_DONATE", strPathImageMainWork
+    LoadIconImage2Object cmdExit, "BTN_EXIT", strPathImageMainWork
+    LoadIconImage2Object cmdUpdate, "BTN_UPDATE", strPathImageMainWork
+    LoadIconImage2Object cmdUpdateFull, "BTN_UPDATEFULL", strPathImageMainWork
+    LoadIconImage2Object cmdHistory, "BTN_HISTORY", strPathImageMainWork
+    LoadIconImage2Object cmdDonate, "BTN_DONATE", strPathImageMainWork
 
-    ' Локализациz приложения
+    ' Локализация приложения
     If mbMultiLanguage Then
         Localise strPCLangCurrentPath
     Else
@@ -546,6 +757,17 @@ Private Sub Form_Load()
         FontCharsetChange
     End If
 
+    ' Контекстное меню для кнопки скачать дистрибутив
+    cmdUpdateFull.SetPopupMenu mnuContextMenu1
+
+    ' Контекстное меню для кнопки скачать обновление
+    cmdUpdate.SetPopupMenu mnuContextMenu2
+
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    cmdUpdate.UnsetPopupMenu
+    cmdUpdateFull.UnsetPopupMenu
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -557,150 +779,47 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub lblWWW_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-
-    Dim cmdString   As String
-    Dim nRetShellEx As Boolean
-
-    cmdString = Kavichki & strUrl_MainWWWSite & Kavichki
-    DebugMode "cmdString: " & cmdString
-    nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
-    DebugMode "cmdString: " & nRetShellEx
+    RunUtilsShell strUrl_MainWWWSite, False
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub LoadButtonLink
+'! Procedure   (Функция)   :   Sub mnuContextLinkFull_Click
 '! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   ButtonName (ctlXpButton)
-'                              strMassivLink() (String)
+'! Parameters  (Переменные):   Index (Integer)
 '!--------------------------------------------------------------------------------
-Private Sub LoadButtonLink(ButtonName As ctlXpButton, strMassivLink() As String)
+Private Sub mnuContextLinkFull_Click(Index As Integer)
+    
+    Select Case Index
 
-    Dim strMirrorText As String
+        Case 0
+            RunUtilsShell strLinkFull(cmbVersions.ListIndex, 0), False
 
-    If cmbVersions.ListIndex > -1 Then
-
-        ' Отличия работы если русский или английский
-        Select Case strPCLangCurrentID
-
-            Case "0419"
-                strMirrorText = "Зеркало"
-
-            Case Else
-                strMirrorText = "Mirror"
-        End Select
-
-        With ButtonName
-
-            If InStr(1, strMassivLink(cmbVersions.ListIndex, 0), "http", vbTextCompare) Then
-                .MenuExist = True
-            ElseIf InStr(1, strMassivLink(cmbVersions.ListIndex, 2), "http", vbTextCompare) Then
-                .MenuExist = True
-            Else
-                .MenuExist = False
-            End If
-
-            If .MenuExist Then
-                If .MenuCount = 0 Then
-                    .AddMenu strMirrorText & " 1"
-                    .AddMenu "-"
-                    .AddMenu strMirrorText & " 2"
-                    .AddMenu "-"
-                    .AddMenu strMirrorText & " 3"
-                End If
-
-                If InStr(1, strMassivLink(cmbVersions.ListIndex, 2), "http", vbTextCompare) = 0 Then
-                    .MenuEnabled(2) = False
-                End If
-
-                If InStr(1, strMassivLink(cmbVersions.ListIndex, 4), "http", vbTextCompare) = 0 Then
-                    .MenuEnabled(4) = False
-                End If
-
-                If LenB(strMassivLink(cmbVersions.ListIndex, 1)) = 0 Then
-                    .MenuVisible(0) = False
-                    .MenuVisible(1) = False
-                Else
-                    .MenuCaption(0) = strMassivLink(cmbVersions.ListIndex, 1)
-                End If
-
-                If LenB(strMassivLink(cmbVersions.ListIndex, 3)) = 0 Then
-                    .MenuVisible(1) = False
-                    .MenuVisible(2) = False
-                Else
-                    .MenuCaption(2) = strMassivLink(cmbVersions.ListIndex, 3)
-                End If
-
-                If LenB(strMassivLink(cmbVersions.ListIndex, 5)) = 0 Then
-                    .MenuVisible(3) = False
-                    .MenuVisible(4) = False
-                Else
-                    .MenuCaption(4) = strMassivLink(cmbVersions.ListIndex, 5)
-                End If
-            End If
-
-        End With
-
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub LoadDescriptionAndLinks
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub LoadDescriptionAndLinks()
-
-    Dim strDescriptionTemp As String
-
-    ' Отличия работы если русский или английский
-    Select Case strPCLangCurrentID
-
-        Case "0419"
-            strDescriptionTemp = Replace$(strDescription, vbLf, vbNewLine)
-
-        Case Else
-            strDescriptionTemp = Replace$(strDescription_en, vbLf, vbNewLine)
+        Case 2
+            RunUtilsShell strLinkFull(cmbVersions.ListIndex, 2), False
+            
+        Case 4
+            RunUtilsShell strLinkFull(cmbVersions.ListIndex, 4), False
     End Select
-
-    ' Кнопка Скачать обновление
-    LoadButtonLink cmdUpdate, strLink
-    ' Кнопка Скачать дистрибутив
-    LoadButtonLink cmdUpdateFull, strLinkFull
-
-    ' Описание изменений
-    If LenB(strDescriptionTemp) > 0 Then
-        rtfDescription.TextRTF = strDescriptionTemp
-    Else
-        rtfDescription.TextRTF = "Error on load ChangeLog. Please inform the developer"
-    End If
-
+    
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Localise
+'! Procedure   (Функция)   :   Sub mnuContextLinkUpdate_Click
 '! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   StrPathFile (String)
+'! Parameters  (Переменные):   Index (Integer)
 '!--------------------------------------------------------------------------------
-Private Sub Localise(ByVal StrPathFile As String)
-    ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
-    FontCharsetChange
-    ' Название формы
-    Me.Caption = LocaliseString(StrPathFile, strFormName, strFormName, Me.Caption)
-    'Кнопки
-    cmdUpdate.Caption = LocaliseString(StrPathFile, strFormName, "cmdUpdate", cmdUpdate.Caption)
-    cmdUpdateFull.Caption = LocaliseString(StrPathFile, strFormName, "cmdUpdateFull", cmdUpdateFull.Caption)
-    cmdHistory.Caption = LocaliseString(StrPathFile, strFormName, "cmdHistory", cmdHistory.Caption)
-    cmdDonate.Caption = LocaliseString(StrPathFile, strFormName, "cmdDonate", cmdDonate.Caption)
-    cmdExit.Caption = LocaliseString(StrPathFile, strFormName, "cmdExit", cmdExit.Caption)
-    ' Лейблы
-    lblVersion.Caption = LocaliseString(StrPathFile, strFormName, "lblVersion", lblVersion.Caption) & " " & strVersion & " (" & strDateProg & ")"
+Private Sub mnuContextLinkUpdate_Click(Index As Integer)
+    
+    Select Case Index
 
-    If InStr(1, strRelease, "beta", vbTextCompare) Then
-        lblVersion.Caption = lblVersion.Caption & " This version may be Unstable!!!"
-        lblVersion.ForeColor = vbRed
-    End If
+        Case 0
+            RunUtilsShell strLink(cmbVersions.ListIndex, 0), False
 
-    lblVersionList.Caption = LocaliseString(StrPathFile, strFormName, "lblVersionList", lblVersionList.Caption)
-    lblWait.Caption = LocaliseString(StrPathFile, strFormName, "lblWait", lblWait.Caption)
+        Case 2
+            RunUtilsShell strLink(cmbVersions.ListIndex, 2), False
+
+        Case 4
+            RunUtilsShell strLink(cmbVersions.ListIndex, 4), False
+    End Select
+    
 End Sub

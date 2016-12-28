@@ -5,6 +5,7 @@ Begin VB.PropertyPage PPTextBoxWText
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   5925
+   LockControls    =   -1  'True
    PaletteMode     =   0  'Halftone
    ScaleHeight     =   3450
    ScaleWidth      =   5925
@@ -21,6 +22,7 @@ Private WithEvents TextObjectEvents As TextBoxW
 Attribute TextObjectEvents.VB_VarHelpID = -1
 
 Private Sub PropertyPage_Initialize()
+Call ComCtlsShowAllUIStates(PropertyPage.hWnd)
 On Error Resume Next
 Err.Raise 5
 Set TextObject = PropertyPage.Controls.Add(Err.Source & ".TextBoxW", "TextObject", Me)
@@ -40,10 +42,10 @@ Private Sub PropertyPage_ApplyChanges()
 With PropertyPage.SelectedControls(0)
 If Not TextObject Is Nothing Then .Text = TextObject.Text
 End With
+Call PropertyPage_SelectionChanged
 End Sub
 
 Private Sub PropertyPage_SelectionChanged()
-Dim i As Long
 FreezeChanged = True
 With PropertyPage.SelectedControls(0)
 If Not TextObject Is Nothing Then

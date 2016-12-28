@@ -4,11 +4,11 @@ Option Explicit
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function GetBinaryFileFromResource
 '! Description (Описание)  :   [Извлечение бинарного ресурса программы в файла по имени ресурса и его ID]
-'! Parameters  (Переменные):   File_Path (String)
+'! Parameters  (Переменные):   strFilePath (String)
 '                              ID (String)
 '                              Resource (String)
 '!--------------------------------------------------------------------------------
-Public Function GetBinaryFileFromResource(ByVal File_Path As String, ByVal ID As String, ByVal Resource As String) As Boolean
+Public Function GetBinaryFileFromResource(ByVal strFilePath As String, ByVal strID As String, ByVal strResource As String) As Boolean
 
     Dim iFile        As Long
     Dim BinaryData() As Byte
@@ -19,11 +19,11 @@ Public Function GetBinaryFileFromResource(ByVal File_Path As String, ByVal ID As
     'загрузка из ресурсов
     On Error GoTo HandErr
 
-    BinaryData = LoadResData(ID, Resource)
+    BinaryData = LoadResData(strID, strResource)
 
-    If LenB(BinaryData(1)) > 0 Then
+    If LenB(BinaryData(1)) Then
         'Если что - то есть, то все гуд
-        Open File_Path For Binary Access Write As #iFile
+        Open strFilePath For Binary Access Write Lock Write As #iFile
         'запись в файл
         Put #iFile, 1, BinaryData
         Close #iFile
@@ -62,14 +62,14 @@ Public Function ExtractResource(ByVal strOCXFileName As String, ByVal strPathOcx
 
     Dim strCopyOcxFileTo As String
 
-    strCopyOcxFileTo = BackslashAdd2Path(strPathOcx) & strOCXFileName
+    strCopyOcxFileTo = PathCombine(strPathOcx, strOCXFileName)
 
     ' Извлекаем ресурс в файл
-    If GetBinaryFileFromResource(strCopyOcxFileTo, "OCX_" & FileName_woExt(strOCXFileName), "CUSTOM") Then
-        DebugMode str2VbTab & strOCXFileName & ": BinaryFileFromResourse: True"
+    If GetBinaryFileFromResource(strCopyOcxFileTo, "OCX_" & GetFileName_woExt(strOCXFileName), "CUSTOM") Then
+        If mbDebugStandart Then DebugMode str2VbTab & strOCXFileName & ": BinaryFileFromResourse: True"
         ExtractResource = True
     Else
-        DebugMode str2VbTab & strOCXFileName & ": BinaryFileFromResourse: False"
+        If mbDebugStandart Then DebugMode str2VbTab & strOCXFileName & ": BinaryFileFromResourse: False"
     End If
 
 End Function
@@ -80,7 +80,7 @@ End Function
 '! Parameters  (Переменные):   strPathOcxTo (String)
 '!--------------------------------------------------------------------------------
 Public Function ExtractResourceAll(ByVal strPathOcxTo As String) As Boolean
-    DebugMode "ExtractResourceAll - Start"
+    If mbDebugStandart Then DebugMode "ExtractResourceAll - Start"
     ExtractResourceAll = True
 
     If ExtractResource("MSFLXGRD.OCX", strPathOcxTo) = False Then
@@ -93,19 +93,7 @@ Public Function ExtractResourceAll(ByVal strPathOcxTo As String) As Boolean
         ExtractResourceAll = False
     End If
 
-'    DebugMode vbTab & "ExtractResourceAll - *****************Check Next File********************"
-'
-'    If ExtractResource("RICHTX32.OCX", strPathOcxTo) = False Then
-'        If MsgBox("Extract OCX or DLL: 'RICHTX32.OCX' - False" & str2vbNewLine & strMessages(134), vbYesNo + vbQuestion, strProductName) = vbNo Then
-'
-'            End
-'
-'        End If
-'
-'        ExtractResourceAll = False
-'    End If
-
-    DebugMode vbTab & "ExtractResourceAll - *****************Check Next File********************"
+    If mbDebugStandart Then DebugMode vbTab & "ExtractResourceAll - *****************Check Next File********************"
 
     If ExtractResource("TABCTL32.OCX", strPathOcxTo) = False Then
         If MsgBox("Extract OCX or DLL: 'TABCTL32.OCX' - False" & str2vbNewLine & strMessages(134), vbYesNo + vbQuestion, strProductName) = vbNo Then
@@ -117,7 +105,7 @@ Public Function ExtractResourceAll(ByVal strPathOcxTo As String) As Boolean
         ExtractResourceAll = False
     End If
 
-    DebugMode vbTab & "ExtractResourceAll - *****************Check Next File********************"
+    If mbDebugStandart Then DebugMode vbTab & "ExtractResourceAll - *****************Check Next File********************"
 
     If ExtractResource("vbscript.dll", strPathOcxTo) = False Then
         If MsgBox("Extract OCX or DLL: 'vbscript.dll' - False" & str2vbNewLine & strMessages(134), vbYesNo + vbQuestion, strProductName) = vbNo Then
@@ -129,7 +117,7 @@ Public Function ExtractResourceAll(ByVal strPathOcxTo As String) As Boolean
         ExtractResourceAll = False
     End If
 
-'    DebugMode vbTab & "ExtractResourceAll - *****************Check Next File********************"
+'    if mbDebugStandart then DebugMode vbTab & "ExtractResourceAll - *****************Check Next File********************"
 '
 '    If ExtractResource("capicom.dll", strPathOcxTo) = False Then
 '        If MsgBox("Extract OCX or DLL: capicom.dll' - False" & str2vbNewLine & strMessages(20), vbYesNo + vbQuestion, strProductName) = vbNo Then
@@ -140,7 +128,7 @@ Public Function ExtractResourceAll(ByVal strPathOcxTo As String) As Boolean
 '        ExtractResourceAll = False
 '
 '    End If
-    DebugMode "ExtractResourceAll - End"
+    If mbDebugStandart Then DebugMode "ExtractResourceAll - End"
 End Function
 
 '!--------------------------------------------------------------------------------
@@ -150,7 +138,6 @@ End Function
 '!--------------------------------------------------------------------------------
 Public Sub ExtractrResToFolder(strArg As String)
 
-    Dim strArg_x()    As String
     Dim strPathToTemp As String
     Dim strPathTo     As String
 
@@ -158,7 +145,7 @@ Public Sub ExtractrResToFolder(strArg As String)
     strPathToTemp = strArg
 
     ' Проверяем существоание каталога
-    If LenB(strPathToTemp) > 0 Then
+    If LenB(strPathToTemp) Then
         If PathExists(strPathToTemp) = False Then
             CreateNewDirectory strPathToTemp
         End If

@@ -1,6 +1,8 @@
 Attribute VB_Name = "mUpdate"
 Option Explicit
 
+Public mbCheckUpdNotEnd         As Boolean ' Флаг, показывающий окончание процесса обновления (так как асинхронный режим)
+
 Public strLink()                As String
 Public strLinkFull()            As String
 Public strLinkHistory           As String
@@ -23,6 +25,7 @@ Private Const strUrl_TestFile      As String = "test.txt"                   ' Фа
 Private Const strUrl_TestWWW       As String = "http://ya.ru/"              ' Сайт для проверки наличия соединения интернет
 
 Private Declare Function InternetGetConnectedStateEx Lib "wininet.dll" (ByRef lpdwFlags As Long, ByVal lpszConnectionName As String, ByVal dwNameLen As Integer, ByVal dwReserved As Long) As Long
+Private Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function CheckConnection2Server
@@ -79,10 +82,10 @@ Function CheckConnection2Server(ByVal URL As String) As String
 
 ErrCode:
     errNum = Err.Number
-    Debug.Print Err.Number & " " & Err.Description & " " & Err.LastDllError
+    Debug.Print Err.Number & strSpace & Err.Description & strSpace & Err.LastDllError
 
     If errNum <> 0 Then
-        DebugMode str5VbTab & "CheckConnection2Server: " & " Error: №" & Err.LastDllError & " - " & ApiErrorText(Err.LastDllError) & vbNewLine & _
+        If mbDebugStandart Then DebugMode str5VbTab & "CheckConnection2Server: " & " Error: №" & Err.LastDllError & " - " & ApiErrorText(Err.LastDllError) & vbNewLine & _
                   str5VbTab & "CheckConnection2Server: Err.Number: " & Err.Number & " Err.Description: " & Err.Description
     End If
 
@@ -118,14 +121,14 @@ Public Sub CheckUpd(Optional ByVal Start As Boolean = True)
     Dim strTextNodeName         As String
     Dim miNodeIndex             As Integer
     Dim strVerTemp              As String
-    Dim strResultCompare        As String
+    Dim lngResultCompare        As eVerCompareResult
     Dim strUrl_TestWWW_Result   As String
     Dim strUrl_Test_Site        As String
     Dim strUrl_Test_Site_Result As String
     Dim strUrl_Request          As String
     
 
-    DebugMode "CheckUpd-Start" & vbNewLine & _
+    If mbDebugStandart Then DebugMode "CheckUpd-Start" & vbNewLine & _
                vbTab & "CheckUpd-Options: " & Start
     
     ' Маркер окончания процесса проверки обновления
@@ -163,7 +166,7 @@ Public Sub CheckUpd(Optional ByVal Start As Boolean = True)
             
             ' загружаем файл реестра обновления
             If Not xmlDoc.Load(strUrl_Request) Then
-                ChangeStatusTextAndDebug strMessages(126)
+                ChangeStatusBarText strMessages(126)
 
                 If Not Start Then
                     MsgBox strMessages(126), vbInformation, strMessages(54)
@@ -207,17 +210,17 @@ Public Sub CheckUpd(Optional ByVal Start As Boolean = True)
                 Next
 
                 '**** Сравнение версий программ
-                strResultCompare = CompareByVersion(strVersion, strVerTemp)
+                lngResultCompare = CompareByVersion(strVersion, strVerTemp)
 
                 ' Анализ итога сравнения и показ окна
-                Select Case strResultCompare
+                Select Case lngResultCompare
 
-                    Case ">"
+                    Case crGreaterVer
 
                         If StrComp(strRelease, "beta", vbTextCompare) = 0 Then
                             If Not mbUpdateCheckBeta Then
-                                DebugMode vbTab & "The version on the site is Beta. In options check for beta are disable. Break function!!!"
-                                ChangeStatusTextAndDebug strMessages(56)
+                                If mbDebugStandart Then DebugMode vbTab & "The version on the site is Beta. In options check for beta are disable. Break function!!!"
+                                ChangeStatusBarText strMessages(56)
 
                                 If Not Start Then
                                     If MsgBox(strMessages(56) & strMessages(144), vbQuestion + vbYesNo, strProductName) = vbYes Then
@@ -229,7 +232,7 @@ Public Sub CheckUpd(Optional ByVal Start As Boolean = True)
                                     End If
 
                                 Else
-                                    ChangeStatusTextAndDebug strMessages(56)
+                                    ChangeStatusBarText strMessages(56)
                                 End If
 
                             Else
@@ -240,8 +243,8 @@ Public Sub CheckUpd(Optional ByVal Start As Boolean = True)
                             frmCheckUpdate.Show vbModal, frmMain
                         End If
 
-                    Case "="
-                        ChangeStatusTextAndDebug strMessages(56)
+                    Case crEqualVer
+                        ChangeStatusBarText strMessages(56)
 
                         If Not Start Then
                             If MsgBox(strMessages(56) & strMessages(144), vbQuestion + vbYesNo, strProductName) = vbYes Then
@@ -249,8 +252,8 @@ Public Sub CheckUpd(Optional ByVal Start As Boolean = True)
                             End If
                         End If
 
-                    Case "<"
-                        ChangeStatusTextAndDebug strMessages(55)
+                    Case crLessVer
+                        ChangeStatusBarText strMessages(55)
 
                         If Not Start Then
                             If MsgBox(strMessages(55) & strMessages(144), vbQuestion + vbYesNo, strProductName) = vbYes Then
@@ -259,7 +262,7 @@ Public Sub CheckUpd(Optional ByVal Start As Boolean = True)
                         End If
 
                     Case Else
-                        ChangeStatusTextAndDebug strMessages(102)
+                        ChangeStatusBarText strMessages(102)
 
                         If Not Start Then
                             MsgBox strMessages(102), vbInformation, strProductName
@@ -272,8 +275,8 @@ Public Sub CheckUpd(Optional ByVal Start As Boolean = True)
             End If
 
         Else
-            DebugMode vbTab & "CheckUPD-Site: " & strMessages(53) & vbNewLine & "Error: " & strUrl_Test_Site_Result
-            ChangeStatusTextAndDebug strMessages(143)
+            If mbDebugStandart Then DebugMode vbTab & "CheckUPD-Site: " & strMessages(53) & vbNewLine & "Error: " & strUrl_Test_Site_Result
+            ChangeStatusBarText strMessages(143)
 
             If Not Start Then
                 MsgBox strMessages(143) & vbNewLine & "Error: " & strUrl_Test_Site_Result, vbInformation, strMessages(54)
@@ -282,8 +285,8 @@ Public Sub CheckUpd(Optional ByVal Start As Boolean = True)
 
     ' на 99% интернет отсутствует
     Else
-        DebugMode vbTab & "CheckUPD-Inet: " & strMessages(53) & vbNewLine & "Error: " & strUrl_TestWWW_Result
-        ChangeStatusTextAndDebug strMessages(53)
+        If mbDebugStandart Then DebugMode vbTab & "CheckUPD-Inet: " & strMessages(53) & vbNewLine & "Error: " & strUrl_TestWWW_Result
+        ChangeStatusBarText strMessages(53)
 
         If Not Start Then
             MsgBox strMessages(53) & vbNewLine & "Error: " & strUrl_TestWWW_Result, vbInformation, strMessages(54)
@@ -297,7 +300,7 @@ Public Sub CheckUpd(Optional ByVal Start As Boolean = True)
 
     On Error GoTo 0
 
-    DebugMode "CheckUpd-End"
+    If mbDebugStandart Then DebugMode "CheckUpd-End"
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -326,6 +329,7 @@ Public Sub LoadUpdateData()
     Dim strVersionsTemp As String
     Dim i               As Long
     Dim strUrl_Request  As String
+    Dim lngUbound       As Long
 
     On Error Resume Next
    
@@ -337,7 +341,7 @@ Public Sub LoadUpdateData()
     xmlDoc.async = False
             
     If Not xmlDoc.Load(strUrl_Request) Then
-        ChangeStatusTextAndDebug strMessages(53)
+        ChangeStatusBarText strMessages(53)
         MsgBox strMessages(53), vbInformation, strMessages(54)
     Else
         Set nodeList = xmlDoc.documentElement.selectNodes(strXMLMainSection)
@@ -354,14 +358,15 @@ Public Sub LoadUpdateData()
             If StrComp(strTextNodeName, "versions") = 0 Then
             
                 strVersionsTemp = xmlNode.childNodes(miNodeIndex).Text
-                strUpdVersions = Split(strVersionsTemp, ";")
+                strUpdVersions = Split(strVersionsTemp, strSemiColon)
+                lngUbound = UBound(strUpdVersions)
 
-                ReDim strUpdDescription(UBound(strUpdVersions), 2) As String
-                ReDim strLink(UBound(strUpdVersions), 6) As String
-                ReDim strLinkFull(UBound(strUpdVersions), 6) As String
+                ReDim strUpdDescription(lngUbound, 2)
+                ReDim strLink(lngUbound, 6)
+                ReDim strLinkFull(lngUbound, 6)
 
                 ' Данные из файла %ver%.xml - Загрузка описаний изменений
-                For i = LBound(strUpdVersions) To UBound(strUpdVersions)
+                For i = 0 To lngUbound
                     LoadUpdDescription strUpdVersions(i), i
                 Next i
 
@@ -405,7 +410,7 @@ Public Sub LoadUpdDescription(ByVal strVer As String, ByVal lngIndexVer As Long)
     xmlDocVers.async = False
     
     If Not xmlDocVers.Load(strUrl_Request) Then
-        ChangeStatusTextAndDebug strMessages(53)
+        ChangeStatusBarText strMessages(53)
         MsgBox strMessages(53), vbInformation, strMessages(54)
     Else
         Set nodeListVers = xmlDocVers.documentElement.selectNodes(strXMLMainSection)
@@ -518,3 +523,4 @@ Public Sub ShowUpdateToolTip()
     End If
 
 End Sub
+

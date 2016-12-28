@@ -13,7 +13,7 @@ Begin VB.PropertyPage PPSpinBoxGeneral
       Caption         =   "HideSelection"
       Height          =   285
       Left            =   4200
-      TabIndex        =   26
+      TabIndex        =   24
       Top             =   2280
       Width           =   1800
    End
@@ -21,27 +21,19 @@ Begin VB.PropertyPage PPSpinBoxGeneral
       Height          =   315
       Left            =   1800
       Style           =   2  'Dropdown List
-      TabIndex        =   18
-      Top             =   3000
+      TabIndex        =   16
+      Top             =   2640
       Width           =   2235
    End
    Begin VB.ComboBox ComboTextAlignment 
       Height          =   315
       Left            =   1800
       Style           =   2  'Dropdown List
-      TabIndex        =   20
-      Top             =   3360
+      TabIndex        =   18
+      Top             =   3000
       Width           =   2235
    End
    Begin VB.ComboBox ComboAlignment 
-      Height          =   315
-      Left            =   1800
-      Style           =   2  'Dropdown List
-      TabIndex        =   16
-      Top             =   2640
-      Width           =   2235
-   End
-   Begin VB.ComboBox ComboOrientation 
       Height          =   315
       Left            =   1800
       Style           =   2  'Dropdown List
@@ -61,7 +53,7 @@ Begin VB.PropertyPage PPSpinBoxGeneral
       Caption         =   "AllowOnlyNumbers"
       Height          =   285
       Left            =   4200
-      TabIndex        =   25
+      TabIndex        =   23
       Top             =   1920
       Width           =   1800
    End
@@ -69,7 +61,7 @@ Begin VB.PropertyPage PPSpinBoxGeneral
       Caption         =   "ArrowKeysChange"
       Height          =   285
       Left            =   4200
-      TabIndex        =   24
+      TabIndex        =   22
       Top             =   1560
       Width           =   1800
    End
@@ -85,15 +77,15 @@ Begin VB.PropertyPage PPSpinBoxGeneral
       Caption         =   "ThousandsSeparator"
       Height          =   285
       Left            =   4200
-      TabIndex        =   23
+      TabIndex        =   21
       Top             =   1200
       Width           =   1800
    End
-   Begin VB.CheckBox CheckHotTrack 
-      Caption         =   "HotTrack"
+   Begin VB.CheckBox CheckHotTracking 
+      Caption         =   "HotTracking"
       Height          =   285
       Left            =   4200
-      TabIndex        =   22
+      TabIndex        =   20
       Top             =   840
       Width           =   1800
    End
@@ -129,7 +121,7 @@ Begin VB.PropertyPage PPSpinBoxGeneral
       Caption         =   "Wrap"
       Height          =   285
       Left            =   4200
-      TabIndex        =   21
+      TabIndex        =   19
       Top             =   480
       Width           =   1800
    End
@@ -153,28 +145,20 @@ Begin VB.PropertyPage PPSpinBoxGeneral
       Caption         =   "NumberStyle:"
       Height          =   240
       Left            =   120
-      TabIndex        =   17
-      Top             =   3000
+      TabIndex        =   15
+      Top             =   2640
       Width           =   1620
    End
    Begin VB.Label LabelTextAlignment 
       Caption         =   "TextAlignment:"
       Height          =   240
       Left            =   120
-      TabIndex        =   19
-      Top             =   3360
+      TabIndex        =   17
+      Top             =   3000
       Width           =   1620
    End
    Begin VB.Label LabelAlignment 
       Caption         =   "Alignment:"
-      Height          =   240
-      Left            =   120
-      TabIndex        =   15
-      Top             =   2640
-      Width           =   1620
-   End
-   Begin VB.Label LabelOrientation 
-      Caption         =   "Orientation:"
       Height          =   240
       Left            =   120
       TabIndex        =   13
@@ -231,31 +215,26 @@ Option Explicit
 Private FreezeChanged As Boolean
 
 Private Sub PropertyPage_Initialize()
-Call ComCtlsMousePointerPPInitCombo(ComboMousePointer)
-With ComboOrientation
-.AddItem "0 - Vertical"
-.ItemData(.NewIndex) = SpbOrientationVertical
-.AddItem "1 - Horizontal"
-.ItemData(.NewIndex) = SpbOrientationHorizontal
-End With
+Call ComCtlsShowAllUIStates(PropertyPage.hWnd)
+Call ComCtlsPPInitComboMousePointer(ComboMousePointer)
 With ComboAlignment
-.AddItem "0 - Left"
-.ItemData(.NewIndex) = SpbAlignmentLeft
-.AddItem "1 - Right"
-.ItemData(.NewIndex) = SpbAlignmentRight
+.AddItem CCLeftRightAlignmentLeft & " - Left"
+.ItemData(.NewIndex) = CCLeftRightAlignmentLeft
+.AddItem CCLeftRightAlignmentRight & " - Right"
+.ItemData(.NewIndex) = CCLeftRightAlignmentRight
 End With
 With ComboNumberStyle
-.AddItem "0 - Decimal"
+.AddItem SpbNumberStyleDecimal & " - Decimal"
 .ItemData(.NewIndex) = SpbNumberStyleDecimal
-.AddItem "1 - Hexadecimal"
+.AddItem SpbNumberStyleHexadecimal & " - Hexadecimal"
 .ItemData(.NewIndex) = SpbNumberStyleHexadecimal
 End With
 With ComboTextAlignment
-.AddItem "0 - Left Justify"
+.AddItem vbLeftJustify & " - Left Justify"
 .ItemData(.NewIndex) = vbLeftJustify
-.AddItem "1 - Right Justify"
+.AddItem vbRightJustify & " - Right Justify"
 .ItemData(.NewIndex) = vbRightJustify
-.AddItem "2 - Center"
+.AddItem vbCenter & " - Center"
 .ItemData(.NewIndex) = vbCenter
 End With
 End Sub
@@ -274,17 +253,17 @@ With PropertyPage.SelectedControls(0)
 .Value = CLng(TextValue.Text)
 .Increment = CLng(TextIncrement.Text)
 .MousePointer = ComboMousePointer.ItemData(ComboMousePointer.ListIndex)
-.Orientation = ComboOrientation.ItemData(ComboOrientation.ListIndex)
 .Alignment = ComboAlignment.ItemData(ComboAlignment.ListIndex)
 .NumberStyle = ComboNumberStyle.ItemData(ComboNumberStyle.ListIndex)
 .TextAlignment = ComboTextAlignment.ItemData(ComboTextAlignment.ListIndex)
 .Wrap = CBool(CheckWrap.Value = vbChecked)
-.HotTrack = CBool(CheckHotTrack.Value = vbChecked)
+.HotTracking = CBool(CheckHotTracking.Value = vbChecked)
 .ThousandsSeparator = CBool(CheckThousandsSeparator.Value = vbChecked)
 .ArrowKeysChange = CBool(CheckArrowKeysChange.Value = vbChecked)
 .AllowOnlyNumbers = CBool(CheckAllowOnlyNumbers.Value = vbChecked)
 .HideSelection = CBool(CheckHideSelection.Value = vbChecked)
 End With
+Call PropertyPage_SelectionChanged
 End Sub
 
 Private Sub PropertyPage_SelectionChanged()
@@ -294,19 +273,13 @@ With PropertyPage.SelectedControls(0)
 CheckEnabled.Value = IIf(.Enabled = True, vbChecked, vbUnchecked)
 CheckLocked.Value = IIf(.Locked = True, vbChecked, vbUnchecked)
 CheckVisualStyles.Value = IIf(.VisualStyles = True, vbChecked, vbUnchecked)
-TextMin.Text = .Min
-TextMax.Text = .Max
-TextValue.Text = .Value
-TextIncrement.Text = .Increment
+TextMin.Text = CStr(.Min)
+TextMax.Text = CStr(.Max)
+TextValue.Text = CStr(.Value)
+TextIncrement.Text = CStr(.Increment)
 For i = 0 To ComboMousePointer.ListCount - 1
     If ComboMousePointer.ItemData(i) = .MousePointer Then
         ComboMousePointer.ListIndex = i
-        Exit For
-    End If
-Next i
-For i = 0 To ComboOrientation.ListCount - 1
-    If ComboOrientation.ItemData(i) = .Orientation Then
-        ComboOrientation.ListIndex = i
         Exit For
     End If
 Next i
@@ -329,7 +302,7 @@ For i = 0 To ComboTextAlignment.ListCount - 1
     End If
 Next i
 CheckWrap.Value = IIf(.Wrap = True, vbChecked, vbUnchecked)
-CheckHotTrack.Value = IIf(.HotTrack = True, vbChecked, vbUnchecked)
+CheckHotTracking.Value = IIf(.HotTracking = True, vbChecked, vbUnchecked)
 CheckThousandsSeparator.Value = IIf(.ThousandsSeparator = True, vbChecked, vbUnchecked)
 CheckArrowKeysChange.Value = IIf(.ArrowKeysChange = True, vbChecked, vbUnchecked)
 CheckAllowOnlyNumbers.Value = IIf(.AllowOnlyNumbers = True, vbChecked, vbUnchecked)
@@ -379,7 +352,18 @@ If Not IsNumeric(TextMin.Text) Then
     TextMin.SetFocus
     Cancel = True
 Else
-    TextMin.Text = CLng(TextMin.Text)
+    Dim LngValue As Long
+    On Error Resume Next
+    LngValue = CLng(TextMin.Text)
+    Cancel = CBool(Err.Number <> 0)
+    On Error GoTo 0
+    If Cancel = False Then
+        TextMin.Text = LngValue
+    Else
+        MsgBox "Invalid property value", vbCritical + vbOKOnly
+        TextMin.Text = PropertyPage.SelectedControls(0).Min
+        TextMin.SetFocus
+    End If
 End If
 End Sub
 
@@ -409,7 +393,18 @@ If Not IsNumeric(TextMax.Text) Then
     TextMax.SetFocus
     Cancel = True
 Else
-    TextMax.Text = CLng(TextMax.Text)
+    Dim LngValue As Long
+    On Error Resume Next
+    LngValue = CLng(TextMax.Text)
+    Cancel = CBool(Err.Number <> 0)
+    On Error GoTo 0
+    If Cancel = False Then
+        TextMax.Text = LngValue
+    Else
+        MsgBox "Invalid property value", vbCritical + vbOKOnly
+        TextMax.Text = PropertyPage.SelectedControls(0).Max
+        TextMax.SetFocus
+    End If
 End If
 End Sub
 
@@ -439,7 +434,18 @@ If Not IsNumeric(TextValue.Text) Then
     TextValue.SetFocus
     Cancel = True
 Else
-    TextValue.Text = CLng(TextValue.Text)
+    Dim LngValue As Long
+    On Error Resume Next
+    LngValue = CLng(TextValue.Text)
+    Cancel = CBool(Err.Number <> 0)
+    On Error GoTo 0
+    If Cancel = False Then
+        TextValue.Text = LngValue
+    Else
+        MsgBox "Invalid property value", vbCritical + vbOKOnly
+        TextValue.Text = PropertyPage.SelectedControls(0).Value
+        TextValue.SetFocus
+    End If
 End If
 End Sub
 
@@ -455,7 +461,7 @@ End Sub
 Private Sub TextIncrement_Change()
 If FreezeChanged = True Then Exit Sub
 If TextIncrement.Text = vbNullString Then
-    TextIncrement.Text = PropertyPage.SelectedControls(0).SmallChange
+    TextIncrement.Text = PropertyPage.SelectedControls(0).Increment
     TextIncrement.SelStart = 0
     TextIncrement.SelLength = Len(TextIncrement.Text)
 End If
@@ -465,20 +471,26 @@ End Sub
 Private Sub TextIncrement_Validate(Cancel As Boolean)
 If Not IsNumeric(TextIncrement.Text) Then
     MsgBox "Invalid property value", vbCritical + vbOKOnly
-    TextIncrement.Text = PropertyPage.SelectedControls(0).SmallChange
+    TextIncrement.Text = PropertyPage.SelectedControls(0).Increment
     TextIncrement.SetFocus
     Cancel = True
 Else
-    TextIncrement.Text = CLng(TextIncrement.Text)
+    Dim LngValue As Long
+    On Error Resume Next
+    LngValue = CLng(TextIncrement.Text)
+    Cancel = CBool(Err.Number <> 0)
+    On Error GoTo 0
+    If Cancel = False Then
+        TextIncrement.Text = LngValue
+    Else
+        MsgBox "Invalid property value", vbCritical + vbOKOnly
+        TextIncrement.Text = PropertyPage.SelectedControls(0).Increment
+        TextIncrement.SetFocus
+    End If
 End If
 End Sub
 
 Private Sub ComboMousePointer_Click()
-If FreezeChanged = True Then Exit Sub
-PropertyPage.Changed = True
-End Sub
-
-Private Sub ComboOrientation_Click()
 If FreezeChanged = True Then Exit Sub
 PropertyPage.Changed = True
 End Sub
@@ -503,7 +515,7 @@ If FreezeChanged = True Then Exit Sub
 PropertyPage.Changed = True
 End Sub
 
-Private Sub CheckHotTrack_Click()
+Private Sub CheckHotTracking_Click()
 If FreezeChanged = True Then Exit Sub
 PropertyPage.Changed = True
 End Sub

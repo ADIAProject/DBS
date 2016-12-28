@@ -21,7 +21,7 @@ Private Type PSP_ALTPLATFORM_INFO_V2
     MinorVersion As Long
     ProcessorArchitecture As Integer
     Reserved As Integer
-    Flags As Integer
+    flags As Integer
     FirstValidatedMajorVersion As Long
     FirstValidatedMinorVersion As Long
 End Type
@@ -58,35 +58,35 @@ Public Function GetInfDriverStorePath(sInfPath As String) As String
             End If
 
             .Reserved = 0
-            .Flags = SP_ALTPLATFORM_FLAGS_VERSION_RANGE
+            .flags = SP_ALTPLATFORM_FLAGS_VERSION_RANGE
         End With
 
-        DebugMode "******GetInfDriverStorePath: " & sInfPath
+        If mbDebugStandart Then DebugMode "******GetInfDriverStorePath: " & sInfPath
         ret = SetupGetInfDriverStoreLocationW(ByVal StrPtr(sInfPath), as12, StrPtr(vbNullString), ByVal 0&, 0&, lngSizeBuff)
         sBuffer = String$(lngSizeBuff, 0)
         ret = SetupGetInfDriverStoreLocationW(ByVal StrPtr(sInfPath), as12, StrPtr(vbNullString), ByVal StrPtr(sBuffer), Len(sBuffer), 0&)
         GetInfDriverStorePath = TrimNull(sBuffer)
 
         If ret = 0 Then
-            DebugMode "******GetInfDriverStorePath: Err №" & Err.LastDllError & " - " & ApiErrorText(Err.LastDllError)
+            If mbDebugStandart Then DebugMode "******GetInfDriverStorePath: Err №" & Err.LastDllError & " - " & ApiErrorText(Err.LastDllError)
         Else
-            DebugMode "******GetInfDriverStorePath: ResultValue - " & GetInfDriverStorePath
+            If mbDebugStandart Then DebugMode "******GetInfDriverStorePath: ResultValue - " & GetInfDriverStorePath
         End If
 
     Else
-        DebugMode "******GetInfDriverStorePath: ApiFunction not Supported"
+        If mbDebugStandart Then DebugMode "******GetInfDriverStorePath: ApiFunction not Supported"
     End If
 End Function
 
 Public Sub ReadDrivers()
 
-    Dim CH()                As String
-    Dim Z()                 As String
-    Dim U()                 As String
-    Dim n                   As Long
-    Dim i                   As Long
-    Dim j                   As Long
-    Dim H                   As Long
+    Dim arr_CH()            As String
+    Dim arr_Z()             As String
+    Dim arr_U()             As String
+    Dim nn                  As Long
+    Dim ii                  As Long
+    Dim jj                  As Long
+    Dim hh                  As Long
     Dim miMaxCountArr       As Long
     Dim miPbInterval        As Long
     Dim miPbNext            As Long
@@ -102,16 +102,18 @@ Public Sub ReadDrivers()
     Dim strInfSectionExt    As String
     Dim strMatchingDeviceId As String
     Dim regNameClass        As String
-    Dim R                   As Boolean
-    Dim ss                  As String
+    Dim mbR                 As Boolean
+    Dim strSS               As String
     Dim StringHash          As Scripting.Dictionary
+    Dim lngUBoundCH         As Long
+    Dim lngUBoundZ          As Long
+    Dim lngUBoundU          As Long
 
     'Откуда берем данные CurrentControlSet
     strControlSet = "SYSTEM\CurrentControlSet"
-    'strControlSet = "SYSTEM\ControlSet001"
     Set StringHash = CreateObject("Scripting.Dictionary")
     StringHash.CompareMode = 1
-    DebugMode "ReadDrivers-Start"
+    If mbDebugDetail Then DebugMode "ReadDrivers-Start"
 
     '# sub to read drivers and populate grid #
     On Error Resume Next
@@ -123,89 +125,83 @@ Public Sub ReadDrivers()
     frmProgress.ChangeProgressBarStatus miPbNext, 100
     
     '# list all class of drivers installed
-    DebugMode "***ReadDrivers: ListKey - HKEY_LOCAL_MACHINE\" & strControlSet & "\Control\Class"
-    Z = ListKey(HKEY_LOCAL_MACHINE, strControlSet & "\Control\Class", False)
-    DebugMode "***ReadDrivers: ListKey Class - " & UBound(Z)
+    If mbDebugStandart Then DebugMode "***ReadDrivers: ListKey - HKEY_LOCAL_MACHINE\" & strControlSet & "\Control\Class"
+    arr_Z = ListKey(HKEY_LOCAL_MACHINE, strControlSet & "\Control\Class", False)
+    If mbDebugStandart Then DebugMode "***ReadDrivers: ListKey Class - " & UBound(arr_Z)
     ' Изменяем прогресс
     frmProgress.ChangeProgressBarStatus miPbNext, 1000
     miMaxCountArr = 200
     ' максимальное кол-во элементов в массиве
-    ReDim CH(miMaxCountArr) As String
+    ReDim arr_CH(miMaxCountArr) As String
 
     ' Переменная для прогресса
-    If UBound(Z) > 0 Then
-        miPbInterval = Round(2000 / UBound(Z))
+    If UBound(arr_Z) > 0 Then
+        miPbInterval = Round(2000 / UBound(arr_Z))
     Else
         miPbInterval = 1900
     End If
 
-    Dim lngUBoundZ As Long
+    lngUBoundZ = UBound(arr_Z)
 
-    lngUBoundZ = UBound(Z)
+    For ii = 0 To lngUBoundZ
+        arr_U = ListKey(HKEY_LOCAL_MACHINE, strControlSet & "\Control\Class\" & arr_Z(ii), False)
 
-    For i = 0 To lngUBoundZ
-        U = ListKey(HKEY_LOCAL_MACHINE, strControlSet & "\Control\Class\" & Z(i), False)
+        lngUBoundU = UBound(arr_U)
 
-        Dim lngUBoundU As Long
-
-        lngUBoundU = UBound(U)
-
-        For j = 0 To lngUBoundU
+        For jj = 0 To lngUBoundU
 
             ' Если записей в массиве становится больше чем объявлено, то увеличиваем размерность массива
-            If n = miMaxCountArr Then
+            If nn = miMaxCountArr Then
                 miMaxCountArr = miMaxCountArr + miMaxCountArr
-                ReDim Preserve CH(miMaxCountArr)
+                ReDim Preserve arr_CH(miMaxCountArr)
             End If
 
-            If LenB(U(j)) = 0 Then
-                CH(n) = Z(i)
+            If LenB(arr_U(jj)) = 0 Then
+                arr_CH(nn) = arr_Z(ii)
             Else
-                CH(n) = Z(i) & vbBackslash & U(j)
+                arr_CH(nn) = arr_Z(ii) & vbBackslash & arr_U(jj)
             End If
 
-            DebugMode "******ReadDrivers: ListKey Result - " & CH(n), 2
-            n = n + 1
+            If mbDebugDetail Then DebugMode "******ReadDrivers: ListKey Result - " & arr_CH(nn)
+            nn = nn + 1
         Next
         ' Изменяем прогресс
         frmProgress.ChangeProgressBarStatus miPbNext, miPbInterval
     Next
 
-    If n > 0 Then
-        ReDim Preserve CH(n - 1)
+    If nn > 0 Then
+        ReDim Preserve arr_CH(nn - 1)
     Else
-        ReDim Preserve CH(0)
+        ReDim Preserve arr_CH(0)
     End If
 
-    DebugMode "***ReadDrivers-Start: ListKey Result- " & UBound(CH)
+    If mbDebugStandart Then DebugMode "***ReadDrivers-Start: ListKey Result- " & UBound(arr_CH)
     '# get all info of each instaled driver #
-    H = 0
+    hh = 0
     miMaxCountArr = 200
     ' максимальное кол-во элементов в массиве
-    ReDim arrHwidsLocal(10, miMaxCountArr) As String
-    DebugMode "***ReadDrivers: Collect Full Info"
-    DebugMode "*****************************************"
+    ReDim arrHwidsLocal(miMaxCountArr)
+    If mbDebugStandart Then DebugMode "***ReadDrivers: Collect Full Info"
+    If mbDebugStandart Then DebugMode "*****************************************"
 
     ' Переменная для прогресса
-    If UBound(CH) > 0 Then
-        miPbInterval = Round(7000 / UBound(CH))
+    If UBound(arr_CH) > 0 Then
+        miPbInterval = Round(7000 / UBound(arr_CH))
     Else
         miPbInterval = 6500
     End If
 
-    Dim lngUBoundCH As Long
+    lngUBoundCH = UBound(arr_CH)
 
-    lngUBoundCH = UBound(CH)
-
-    For i = 0 To lngUBoundCH
+    For ii = 0 To lngUBoundCH
 
         ' Если записей в массиве становится больше чем объявлено, то увеличиваем размерность массива
-        If H = miMaxCountArr Then
+        If hh = miMaxCountArr Then
             miMaxCountArr = miMaxCountArr + miMaxCountArr
-            ReDim Preserve arrHwidsLocal(10, miMaxCountArr)
+            ReDim Preserve arrHwidsLocal(miMaxCountArr)
         End If
 
-        strClassID = CH(i)
+        strClassID = arr_CH(ii)
         regNameClass = strControlSet & "\Control\Class\" & strClassID
         strDriverDesc = GetKeyValue(HKEY_LOCAL_MACHINE, regNameClass, "DriverDesc", True)
 
@@ -228,44 +224,42 @@ Public Sub ReadDrivers()
             strInfSectionExt = GetKeyValue(HKEY_LOCAL_MACHINE, regNameClass, "InfSectionExt", True)
             strMatchingDeviceId = GetKeyValue(HKEY_LOCAL_MACHINE, regNameClass, "MatchingDeviceId", True)
             ' Если нет повторов, то заносим данные в массив
-            ss = strDriverDesc & strInfPath & strInfSection & strInfSectionExt & strMatchingDeviceId
-            R = StringHash.Exists(ss)
+            strSS = strDriverDesc & strInfPath & strInfSection & strInfSectionExt & strMatchingDeviceId
+            mbR = StringHash.Exists(strSS)
 
-            If Not R Then
-                StringHash.Item(ss) = "+"
+            If Not mbR Then
+                StringHash.item(strSS) = "+"
                 'Заполняем массив даными
-                arrHwidsLocal(0, H) = strDriverDesc
-                arrHwidsLocal(1, H) = strDriverDate
-                arrHwidsLocal(2, H) = strDriverVersion
-                arrHwidsLocal(3, H) = strProviderName
+                arrHwidsLocal(hh).i0_DriverDesc = strDriverDesc
+                arrHwidsLocal(hh).i1_DriverDate = strDriverDate
+                arrHwidsLocal(hh).i2_DriverVersion = strDriverVersion
+                arrHwidsLocal(hh).i3_ProviderName = strProviderName
                 
                 If LenB(strClassName) = 0 Then
-                    arrHwidsLocal(4, H) = strClass
+                    arrHwidsLocal(hh).i4_ClassName = strClass
                 Else
-                    arrHwidsLocal(4, H) = strClassName
+                    arrHwidsLocal(hh).i4_ClassName = strClassName
                 End If
 
-                arrHwidsLocal(5, H) = strClass
-                arrHwidsLocal(6, H) = strInfPath
-                arrHwidsLocal(7, H) = strInfSection & strInfSectionExt
-                arrHwidsLocal(8, H) = strMatchingDeviceId
-                arrHwidsLocal(9, H) = strClassID
+                arrHwidsLocal(hh).i5_Class = strClass
+                arrHwidsLocal(hh).i6_InfPath = strInfPath
+                arrHwidsLocal(hh).i7_InfSection = strInfSection & strInfSectionExt
+                arrHwidsLocal(hh).i8_MatchingDeviceId = strMatchingDeviceId
+                arrHwidsLocal(hh).i9_ClassID = strClassID
 
                 'Вывод инфо в лог
-                If mbDebugEnable Then
-                    DebugMode "RowNum: " & H & " From: " & regNameClass
-                    DebugMode "ClassID: " & strClassID
-                    DebugMode "DriverDesc: " & strDriverDesc
-                    DebugMode "ClassName: " & strClass & " : " & strClassName
-                    DebugMode "ProviderName: " & strProviderName
-                    DebugMode "InfPath: " & strInfPath & ", " & strInfSection & strInfSectionExt
-                    DebugMode "DriverDate: " & strDriverDate
-                    DebugMode "DriverVersion: " & strDriverVersion
-                    DebugMode "MatchingDeviceId: " & strMatchingDeviceId
-                    DebugMode "*****************************************"
-                End If
+                If mbDebugStandart Then DebugMode "RowNum: " & hh & " From: " & regNameClass
+                If mbDebugStandart Then DebugMode "ClassID: " & strClassID
+                If mbDebugStandart Then DebugMode "DriverDesc: " & strDriverDesc
+                If mbDebugStandart Then DebugMode "ClassName: " & strClass & " : " & strClassName
+                If mbDebugStandart Then DebugMode "ProviderName: " & strProviderName
+                If mbDebugStandart Then DebugMode "InfPath: " & strInfPath & ", " & strInfSection & strInfSectionExt
+                If mbDebugStandart Then DebugMode "DriverDate: " & strDriverDate
+                If mbDebugStandart Then DebugMode "DriverVersion: " & strDriverVersion
+                If mbDebugStandart Then DebugMode "MatchingDeviceId: " & strMatchingDeviceId
+                If mbDebugStandart Then DebugMode "*****************************************"
 
-                H = H + 1
+                hh = hh + 1
             End If
         End If
 
@@ -280,14 +274,14 @@ Public Sub ReadDrivers()
     DoEvents
     
     ' Переобъявляем массив на реальное кол-во записей
-    If H > 0 Then
-        ReDim Preserve arrHwidsLocal(10, H - 1)
+    If hh > 0 Then
+        ReDim Preserve arrHwidsLocal(hh - 1)
     Else
-        ReDim Preserve arrHwidsLocal(10, 0)
+        ReDim Preserve arrHwidsLocal(0)
     End If
 
-    DebugMode "*****************************************"
-    DebugMode "ReadDrivers-Finish"
+    If mbDebugStandart Then DebugMode "*****************************************"
+    If mbDebugStandart Then DebugMode "ReadDrivers-Finish"
 End Sub
 
 '!--------------------------------------------------------------------------------

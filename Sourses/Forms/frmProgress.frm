@@ -45,6 +45,9 @@ Option Explicit
 Private mbRunProgress As Boolean
 'Private WithEvents TaskBar2 As cITaskBarList3
 
+'[Function]
+Private Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
+
 Private Sub FontCharsetChange()
 
     ' Выставляем шрифт
@@ -87,22 +90,14 @@ Private Sub Form_Load()
 
     ProgressBar1.Height = Me.Height - VPadding(Me)
 
-'    If strOsCurrentVersion > "5.2" Then
-'        ProgressBar1 = CCBorderStyleSingle
-'    Else
-'        ProgressBar1.BorderStyle = CCBorderStyleNone
-'    End If
 End Sub
 
-'Private Sub Form_Terminate()
-'
-'    'Set TaskBar2 = Nothing
-'    If Forms.Count = 0 Then
-'        UnloadApp
-'    End If
-'End Sub
-
-Private Sub Localise(StrPathFile As String)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Localise
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strPathFile (String)
+'!--------------------------------------------------------------------------------
+Private Sub Localise(strPathFile As String)
 
     Dim strFormName As String
 
@@ -110,7 +105,7 @@ Private Sub Localise(StrPathFile As String)
     ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
     FontCharsetChange
     ' Название формы
-    Me.Caption = LocaliseString(StrPathFile, strFormName, strFormName, Me.Caption)
+    Me.Caption = LocaliseString(strPathFile, strFormName, strFormName, Me.Caption)
 End Sub
 
 Public Sub ChangeProgressBarStatus(ByRef lngProgressValue As Long, ByVal lngProgressValuePlus As Long)

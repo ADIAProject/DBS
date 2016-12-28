@@ -93,7 +93,7 @@ Select Case OLEInterface
     Case VTableInterfacePerPropertyBrowsing
         If VTableSupported(This, VTableInterfacePerPropertyBrowsing) = True Then Call ReplaceIPPB(This)
     Case VTableInterfaceEnumeration
-        If VTableSupported(This, VTableInterfaceEnumeration) = True Then Call ReplaceIEnumeration(This)
+        If VTableSupported(This, VTableInterfaceEnumeration) = True Then Call ReplaceIEnumVARIANT(This)
 End Select
 End Sub
 
@@ -106,7 +106,7 @@ Select Case OLEInterface
     Case VTableInterfacePerPropertyBrowsing
         If VTableSupported(This, VTableInterfacePerPropertyBrowsing) = True Then Call RestoreIPPB(This)
     Case VTableInterfaceEnumeration
-        If VTableSupported(This, VTableInterfaceEnumeration) = True Then Call RestoreIEnumeration(This)
+        If VTableSupported(This, VTableInterfaceEnumeration) = True Then Call RestoreIEnumVARIANT(This)
 End Select
 End Sub
 
@@ -145,9 +145,9 @@ Select Case OLEInterface
         Set ShadowIPerPropertyBrowsingVB = This
         VTableSupported = Not CBool(ShadowIPPB Is Nothing Or ShadowIPerPropertyBrowsingVB Is Nothing)
     Case VTableInterfaceEnumeration
-        Dim ShadowIEnumeration As OLEGuids.IEnumeration
-        Set ShadowIEnumeration = This
-        VTableSupported = Not CBool(ShadowIEnumeration Is Nothing)
+        Dim ShadowIEnumVARIANT As OLEGuids.IEnumVARIANTUnrestricted
+        Set ShadowIEnumVARIANT = This
+        VTableSupported = Not CBool(ShadowIEnumVARIANT Is Nothing)
 End Select
 Cancel:
 End Function
@@ -225,7 +225,7 @@ If VarPtr(Msg) = 0 Then
 End If
 Set ShadowIOleInPlaceActiveObjectVB = This
 IOleIPAO_TranslateAccelerator = S_OK
-ShadowIOleInPlaceActiveObjectVB.TranslateAccelerator Handled, IOleIPAO_TranslateAccelerator, Msg.Message, Msg.wParam, Msg.lParam, GetShiftState()
+ShadowIOleInPlaceActiveObjectVB.TranslateAccelerator Handled, IOleIPAO_TranslateAccelerator, Msg.Message, Msg.wParam, Msg.lParam, GetShiftStateFromMsg()
 If Handled = False Then IOleIPAO_TranslateAccelerator = Original_IOleIPAO_TranslateAccelerator(This, Msg)
 Exit Function
 CATCH_EXCEPTION:
@@ -255,7 +255,7 @@ If Not VTableSubclassControl Is Nothing Then
 End If
 End Sub
 
-Public Sub OnControlInfoChanged(ByVal This As Object)
+Public Sub OnControlInfoChanged(ByVal This As Object, Optional ByVal OnFocus As Boolean)
 Dim PropOleObject As OLEGuids.IOleObject
 Dim PropClientSite As OLEGuids.IOleClientSite
 Dim PropUnknown As IUnknown
@@ -266,6 +266,7 @@ Set PropClientSite = PropOleObject.GetClientSite
 Set PropUnknown = PropClientSite
 Set PropControlSite = PropUnknown
 PropControlSite.OnControlInfoChanged
+If OnFocus = True Then PropControlSite.OnFocus 1
 End Sub
 
 Private Function IOleControl_GetControlInfo(ByVal This As Object, ByRef CI As OLEGuids.OLECONTROLINFO) As Long
@@ -302,7 +303,7 @@ If VarPtr(Msg) = 0 Then
     Exit Function
 End If
 Set ShadowIOleControlVB = This
-ShadowIOleControlVB.OnMnemonic Handled, Msg.Message, Msg.wParam, Msg.lParam, GetShiftState()
+ShadowIOleControlVB.OnMnemonic Handled, Msg.Message, Msg.wParam, Msg.lParam, GetShiftStateFromMsg()
 If Handled = False Then
     IOleControl_OnMnemonic = Original_IOleControl_OnMnemonic(This, Msg)
 Else
@@ -345,9 +346,9 @@ End Sub
 
 Public Function GetDispID(ByVal This As Object, ByRef MethodName As String) As Long
 Dim IDispatch As OLEGuids.IDispatch
-Dim IID_Null As OLEGuids.OLECLSID
+Dim IID_NULL As OLEGuids.OLECLSID
 Set IDispatch = This
-IDispatch.GetIDsOfNames IID_Null, StrConv(MethodName, vbUnicode), 1, 0, GetDispID
+IDispatch.GetIDsOfNames IID_NULL, MethodName, 1, 0, GetDispID
 End Function
 
 Private Function IPPB_GetDisplayString(ByVal This As Object, ByVal DispID As Long, ByVal lpDisplayName As Long) As Long
@@ -381,8 +382,7 @@ If VarPtr(pCaStringsOut) = 0 Or VarPtr(pCaCookiesOut) = 0 Then
     IPPB_GetPredefinedStrings = E_POINTER
     Exit Function
 End If
-Dim cElems As Long
-Dim pElems As Long
+Dim cElems As Long, pElems As Long
 Dim nElemCount As Integer
 Dim lpString As Long
 ReDim StringsOutArray(0) As String
@@ -430,26 +430,26 @@ CATCH_EXCEPTION:
 IPPB_GetPredefinedValue = E_NOTIMPL
 End Function
 
-Private Sub ReplaceIEnumeration(ByVal This As OLEGuids.IEnumeration)
+Private Sub ReplaceIEnumVARIANT(ByVal This As OLEGuids.IEnumVARIANTUnrestricted)
 If VTableSubclassEnumeration Is Nothing Then Set VTableSubclassEnumeration = New VTableSubclass
 If VTableSubclassEnumeration.RefCount = 0 Then
     VTableSubclassEnumeration.Subclass ObjPtr(This), VTableIndexEnumerationNext, VTableIndexEnumerationClone, _
-    AddressOf IEnumeration_Next, _
-    AddressOf IEnumeration_Skip, _
-    AddressOf IEnumeration_Reset, _
-    AddressOf IEnumeration_Clone
+    AddressOf IEnumVARIANT_Next, _
+    AddressOf IEnumVARIANT_Skip, _
+    AddressOf IEnumVARIANT_Reset, _
+    AddressOf IEnumVARIANT_Clone
 End If
 VTableSubclassEnumeration.AddRef
 End Sub
 
-Private Sub RestoreIEnumeration(ByVal This As OLEGuids.IEnumeration)
+Private Sub RestoreIEnumVARIANT(ByVal This As OLEGuids.IEnumVARIANTUnrestricted)
 If Not VTableSubclassEnumeration Is Nothing Then
     VTableSubclassEnumeration.Release
     If VTableSubclassEnumeration.RefCount = 0 Then VTableSubclassEnumeration.UnSubclass
 End If
 End Sub
 
-Private Function IEnumeration_Next(ByVal This As Object, ByVal VntCount As Long, ByRef VntArray As Variant, ByVal pcvFetched As Long) As Long
+Private Function IEnumVARIANT_Next(ByVal This As Object, ByVal VntCount As Long, ByRef VntArray As Variant, ByVal pcvFetched As Long) As Long
 On Error GoTo CATCH_EXCEPTION
 Dim ThisEnum As Enumeration
 Dim liFetched As Long, NoMoreItems As Boolean, i As Long
@@ -457,62 +457,61 @@ Call InitSafeArray(VarPtr(VntArray), VntCount)
 Set ThisEnum = This
 For i = 0 To VntCount - 1
     ThisEnum.GetNextItem VariantArray(i), NoMoreItems
-    If NoMoreItems Then Exit For
+    If NoMoreItems = True Then Exit For
     liFetched = liFetched + 1
 Next i
 If liFetched = VntCount Then
-    IEnumeration_Next = S_OK
+    IEnumVARIANT_Next = S_OK
 Else
-    IEnumeration_Next = S_FALSE
+    IEnumVARIANT_Next = S_FALSE
 End If
 If pcvFetched <> 0 Then CopyMemory ByVal pcvFetched, liFetched, 4
 Call InitSafeArray(0, 0)
 Exit Function
 CATCH_EXCEPTION:
-IEnumeration_Next = MapCOMErr(Err.Number)
+IEnumVARIANT_Next = MapCOMErr(Err.Number)
 For i = i To 0 Step -1
     VariantArray(i) = Empty
 Next i
 If pcvFetched <> 0 Then CopyMemory ByVal pcvFetched, 0&, 4
 End Function
 
-Private Function IEnumeration_Skip(ByVal This As Object, ByVal cV As Long) As Long
+Private Function IEnumVARIANT_Skip(ByVal This As Object, ByVal cV As Long) As Long
 Dim ThisEnum As Enumeration
 Dim SkippedAll As Boolean
 On Error GoTo CATCH_EXCEPTION
 Set ThisEnum = This
 ThisEnum.Skip cV, SkippedAll
-If SkippedAll = True Then IEnumeration_Skip = S_OK Else IEnumeration_Skip = S_FALSE
+If SkippedAll = True Then IEnumVARIANT_Skip = S_OK Else IEnumVARIANT_Skip = S_FALSE
 Exit Function
 CATCH_EXCEPTION:
-IEnumeration_Skip = MapCOMErr(Err.Number)
+IEnumVARIANT_Skip = MapCOMErr(Err.Number)
 End Function
 
-Private Function IEnumeration_Reset(ByVal This As Object) As Long
+Private Function IEnumVARIANT_Reset(ByVal This As Object) As Long
 Dim ThisEnum As Enumeration
 On Error GoTo CATCH_EXCEPTION
 Set ThisEnum = This
 ThisEnum.Reset
-IEnumeration_Reset = S_OK
+IEnumVARIANT_Reset = S_OK
 Exit Function
 CATCH_EXCEPTION:
-IEnumeration_Reset = MapCOMErr(Err.Number)
+IEnumVARIANT_Reset = MapCOMErr(Err.Number)
 End Function
 
-Private Function IEnumeration_Clone(ByVal This As Object, ByRef ppEnum As IEnumVARIANT) As Long
-IEnumeration_Clone = E_NOTIMPL
+Private Function IEnumVARIANT_Clone(ByVal This As Object, ByRef ppEnum As IEnumVARIANT) As Long
+IEnumVARIANT_Clone = E_NOTIMPL
 End Function
 
 Private Sub InitSafeArray(ByVal Addr As Long, ByVal cElt As Long)
 Const FADF_STATIC As Long = &H2
 Const FADF_FIXEDSIZE As Long = &H10
 Const FADF_VARIANT As Long = &H800
-Const FADF_Flags As Long = FADF_STATIC Or FADF_FIXEDSIZE Or FADF_VARIANT
 With SAHeader
 If .cDims = 0 Then
     .cbElements = 16
     .cDims = 1
-    .fFeatures = FADF_Flags
+    .fFeatures = FADF_STATIC Or FADF_FIXEDSIZE Or FADF_VARIANT
     CopyMemory ByVal ArrPtr(VariantArray), VarPtr(SAHeader), 4
 End If
 .Bounds(0).cElements = cElt + 1

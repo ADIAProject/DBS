@@ -20,7 +20,7 @@ Begin VB.UserControl ctlUcPickBox
       EndProperty
       Height          =   275
       Left            =   720
-      TabIndex        =   3
+      TabIndex        =   5
       TabStop         =   0   'False
       ToolTipText     =   "Click Here to View Selected Files."
       Top             =   720
@@ -65,7 +65,7 @@ Begin VB.UserControl ctlUcPickBox
       Picture         =   "ctlUcPickBox.ctx":0312
       ScaleHeight     =   285
       ScaleWidth      =   255
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   720
       Visible         =   0   'False
       Width           =   255
@@ -81,7 +81,7 @@ Begin VB.UserControl ctlUcPickBox
       Picture         =   "ctlUcPickBox.ctx":0717
       ScaleHeight     =   285
       ScaleWidth      =   255
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   720
       Visible         =   0   'False
       Width           =   255
@@ -500,6 +500,7 @@ Attribute VB_Exposed = False
 '       10Dec13 - Repaint Subsclass Code from SelfSub 2.1 Paul Caton - http://www.Planet-Source-Code.com/vb/scripts/ShowCode.asp?txtCodeId=64867&lngWId=1.
 '                 Added Unicode Support for FileOperation Dialog
 '                 Added Unicode Support for Text Properties
+'       05Mar14   Change subsclass to class cSelfSubHookCallback
 '
 '   Force Declarations
 '   Oroginal Build Date & Time: 8/8/2007 10:22:17 AM
@@ -508,6 +509,17 @@ Option Explicit
 '   Private API Declarations
 Private Declare Function GetOpenFileName Lib "comdlg32.dll" Alias "GetOpenFileNameW" (ByVal pOpenfilename As Long) As Long
 Private Declare Function GetSaveFileName Lib "comdlg32.dll" Alias "GetSaveFileNameW" (ByVal pOpenfilename As Long) As Long
+Private Declare Function SetWindowLongA Lib "user32.dll" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function LockWindowUpdate Lib "user32.dll" (ByVal hWndLock As Long) As Long
+Private Declare Function OpenThemeData Lib "uxtheme.dll" (ByVal hWnd As Long, ByVal pszClassList As Long) As Long
+Private Declare Function CloseThemeData Lib "uxtheme.dll" (ByVal hTheme As Long) As Long
+Private Declare Function GetCurrentThemeName Lib "uxtheme.dll" (ByVal pszThemeFileName As Long, ByVal dwMaxNameChars As Long, ByVal pszColorBuff As Long, ByVal cchMaxColorChars As Long, ByVal pszSizeBuff As Long, ByVal cchMaxSizeChars As Long) As Long
+Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
+Private Declare Function GetCursorPos Lib "user32.dll" (lpPoint As POINTAPI) As Long
+Private Declare Function ScreenToClient Lib "user32.dll" (ByVal hWnd As Long, lpPoint As POINTAPI) As Long
+Private Declare Function PathAddBackslash Lib "shlwapi.dll" Alias "PathAddBackslashA" (ByVal Path As String) As Long
+Private Declare Function OleTranslateColor Lib "olepro32.dll" (ByVal OLE_COLOR As Long, ByVal HPALETTE As Long, pccolorref As Long) As Long
+Private Declare Function SetFocusAPI Lib "user32.dll" Alias "SetFocus" (ByVal hWnd As Long) As Long
 
 'Private Const BFFM_SETSELECTIONA        As Long = (WM_USER + 102)
 Private Const FILE_ATTRIBUTE_DIR = &H10
@@ -536,6 +548,8 @@ End Enum
 '   Flat Button API Constants
 '   The button style BS_FLAT used to change a button to a Flat one
 Private Const BS_FLAT = &H8000&
+Private Const GWL_STYLE        As Long = -16
+Private Const WS_CHILD           As Long = &H40000000
 
 '   GWL_Style is the attribute we will use for changing the style of the button
 '   To set the button as a child window and not as a self dependent window
@@ -578,10 +592,8 @@ Public Enum ucDialogConstant
     [ucSave] = &H2
 End Enum
 
-Private Const OUT_DEFAULT_PRECIS = 0
-Private Const CLIP_DEFAULT_PRECIS = 0
-Private Const DEFAULT_QUALITY = 0
-Private Const DEFAULT_PITCH = 0
+Private Const str2vbNullChar     As String = vbNullChar & vbNullChar
+
 Private Const MAX_PATH As Long = 4096    '260
 
 Private Type OPENFILENAME
@@ -598,7 +610,7 @@ Private Type OPENFILENAME
     nTitleSize                          As Long
     sInitDir                            As String
     sDlgTitle                           As String
-    Flags                               As Long
+    flags                               As Long
     nFileOffset                         As Integer
     nFileExt                            As Integer
     sDefFileExt                         As String
@@ -615,6 +627,18 @@ Private Type SelectedFile
     sFiles()                            As String
     sLastDirectory                      As String
     bCanceled                           As Boolean
+End Type
+
+Private Type RECT
+    Left                                As Long
+    Top                                 As Long
+    Right                               As Long
+    Bottom                              As Long
+End Type
+
+Private Type POINTAPI
+    X                                   As Long
+    Y                                   As Long
 End Type
 
 '   Private Dialog Structure Definitions
@@ -635,12 +659,12 @@ Private m_Filters          As String
 Private m_Font             As StdFont
 Private m_FontColor        As OLE_COLOR
 Private m_Forecolor        As OLE_COLOR
-Private m_hWnd             As Long
+Private m_Hwnd             As Long
 Private m_MultiSelect      As Boolean
 Private m_Path             As String
-Private m_Pnt              As POINT
+Private m_Pnt              As POINTAPI
 Private m_PrevBackColor    As OLE_COLOR
-Private m_PrevLoc          As POINT
+Private m_PrevLoc          As POINTAPI
 Private m_State            As pbStateEnum
 Private m_ToolTipText(2)   As String
 Private m_Theme            As pbThemeEnum
@@ -649,8 +673,15 @@ Private m_UseDialogText    As Boolean
 Private m_Locked           As Boolean
 Private m_QualifyPaths     As Boolean
 Private m_bIsWinXpOrLater  As Boolean
+Private Const Def_DialogMsgFile       As String = "Locate File..."
+Private Const Def_DialogMsgFolder     As String = "Locate Folder..."
+Private Const Def_ToolTipMsgFile      As String = "Click Here to Locate File"
+Private Const Def_ToolTipMsgFiles     As String = "Click Here to Locate Files"
+Private Const Def_ToolTipMsgFolder    As String = "Click Here to Locate Folder"
 
+'*************************************************************
 '   Public UserControl Events
+'*************************************************************
 Public Event Click()
 Public Event DropClick()
 Public Event KeyDown(KeyCode As Integer, Shift As Integer)
@@ -661,59 +692,19 @@ Public Event MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Si
 Public Event MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
 Public Event PathChanged()
 
-'*************************************************************************************************
-'* uSample - uSelfSub based sample
-'*
-'* Paul_Caton@hotmail.com
-'* Copyright free, use and abuse as you see fit.
-'*
-'* v1.0 Re-write of the SelfSub/WinSubHook-2 submission to Planet Source Code............ 20060322
-'* v1.1 VirtualAlloc memory to prevent Data Execution Prevention faults on Win64......... 20060324
-'* v1.2 Thunk redesigned to handle unsubclassing and memory release...................... 20060325
-'* v1.3 Data array scrapped in favour of property accessors.............................. 20060405
-'* v1.4 Optional IDE protection added
-'*      User-defined callback parameter added
-'*      All user routines that pass in a hWnd get additional validation
-'*      End removed from zError.......................................................... 20060411
-'* v1.5 Added nOrdinal parameter to sc_Subclass
-'*      Switched machine-code array from Currency to Long................................ 20060412
-'* v1.6 Added an optional callback target object
-'*      Added an IsBadCodePtr on the callback address in the thunk prior to callback..... 20060413
-'*************************************************************************************************
-'-Selfsub declarations----------------------------------------------------------------------------
-Private Enum eMsgWhen                                                       'When to callback
-    MSG_BEFORE = 1                                                          'Callback before the original WndProc
-    MSG_AFTER = 2                                                           'Callback after the original WndProc
-    MSG_BEFORE_AFTER = MSG_BEFORE Or MSG_AFTER                              'Callback before and after the original WndProc
-End Enum
+'*************************************************************
+'   Windows Messages
+'*************************************************************
+Private Const WM_THEMECHANGED   As Long = &H31A
+Private Const WM_SYSCOLORCHANGE As Long = &H15
+Private Const WM_NCACTIVATE     As Long = &H86
+Private Const WM_ACTIVATE       As Long = &H6
+Private Const WM_SETCURSOR As Long = &H20
+Private Const WM_SIZING         As Long = &H214
+Private Const WM_NCPAINT        As Long = &H85
+Private Const WM_MOVING         As Long = &H216
+Private Const WM_EXITSIZEMOVE   As Long = &H232
 
-Private Const ALL_MESSAGES  As Long = -1                                    'All messages callback
-Private Const MSG_ENTRIES   As Long = 32                                    'Number of msg table entries
-Private Const WNDPROC_OFF   As Long = &H38                                  'Thunk offset to the WndProc execution address
-Private Const GWL_WNDPROC   As Long = -4                                    'SetWindowsLong WndProc index
-Private Const IDX_SHUTDOWN  As Long = 1                                     'Thunk data index of the shutdown flag
-Private Const IDX_HWND      As Long = 2                                     'Thunk data index of the subclassed hWnd
-Private Const IDX_WNDPROC   As Long = 9                                     'Thunk data index of the original WndProc
-Private Const IDX_BTABLE    As Long = 11                                    'Thunk data index of the Before table
-Private Const IDX_ATABLE    As Long = 12                                    'Thunk data index of the After table
-Private Const IDX_PARM_USER As Long = 13                                    'Thunk data index of the User-defined callback parameter data index
-
-Private z_ScMem             As Long                                         'Thunk base address
-Private z_Sc(64)            As Long                                         'Thunk machine-code initialised here
-Private z_Funk              As Collection                                   'hWnd/thunk-address collection
-Private Declare Function CallWindowProcA Lib "user32" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
-Private Declare Function GetModuleHandleA Lib "kernel32" (ByVal lpModuleName As String) As Long
-Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
-Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
-Private Declare Function IsBadCodePtr Lib "kernel32" (ByVal lpfn As Long) As Long
-Private Declare Function IsWindow Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function SetWindowLongA Lib "user32" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function VirtualAlloc Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
-Private Declare Function VirtualFree Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
-Private Declare Sub RtlMoveMemory Lib "kernel32" (ByVal Destination As Long, ByVal Source As Long, ByVal Length As Long)
-
-'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 '*************************************************************
 '   TRACK MOUSE
 '*************************************************************
@@ -721,13 +712,7 @@ Public Event MouseEnter()
 Public Event MouseLeave()
 
 Private Const WM_MOUSELEAVE     As Long = &H2A3
-Private Const WM_THEMECHANGED   As Long = &H31A
-Private Const WM_SYSCOLORCHANGE As Long = &H15
 Private Const WM_MOUSEMOVE      As Long = &H200
-Private Const WM_SIZING         As Long = &H214
-Private Const WM_NCPAINT        As Long = &H85
-Private Const WM_MOVING         As Long = &H216
-Private Const WM_EXITSIZEMOVE   As Long = &H232
 
 Private Enum TRACKMOUSEEVENT_FLAGS
     TME_HOVER = &H1&
@@ -743,643 +728,28 @@ Private Type TRACKMOUSEEVENT_STRUCT
     dwHoverTime                         As Long
 End Type
 
-Private Declare Function TrackMouseEvent Lib "user32.dll" (lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
-Private Declare Function TrackMouseEventComCtl Lib "Comctl32.dll" Alias "_TrackMouseEvent" (lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
 Private bTrack       As Boolean
 Private bTrackUser32 As Boolean
 Private bInCtrl      As Boolean
 
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub TrackMouseLeave
-'! Description (Описание)  :   [Track the mouse leaving the indicated window]
-'! Parameters  (Переменные):   lng_hWnd (Long)
-'!--------------------------------------------------------------------------------
-Private Sub TrackMouseLeave(ByVal lng_hWnd As Long)
+Private Declare Function TrackMouseEvent Lib "user32.dll" (ByRef lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
+Private Declare Function TrackMouseEventComCtl Lib "comctl32.dll" Alias "_TrackMouseEvent" (lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
+
+'*************************************************************
+'   Subsclass
+'*************************************************************
+Private m_cSubclass                                    As cSelfSubHookCallback
+
+Private Enum eParamUser
+    exParentForm = 1
+    exUserControl = 2
+End Enum
+
+'*************************************************************
+'   Пока не знаю нужно или нет, добавил на всякий случай так как использую класс CommonDialog
+'*************************************************************
+Implements OLEGuids.IOleInPlaceActiveObjectVB
 
-    Dim TME As TRACKMOUSEEVENT_STRUCT
-
-    If bTrack Then
-
-        With TME
-            .cbSize = Len(TME)
-            .dwFlags = TME_LEAVE
-            .hWndTrack = lng_hWnd
-        End With
-
-        If bTrackUser32 Then
-            TrackMouseEvent TME
-        Else
-            TrackMouseEventComCtl TME
-        End If
-    End If
-
-End Sub
-
-'-SelfSub code------------------------------------------------------------------------------------
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function sc_Subclass
-'! Description (Описание)  :   [SelfSub code]
-'! Parameters  (Переменные):   lng_hWnd (Long)
-'                              lParamUser (Long = 0)
-'                              nOrdinal (Long = 1)
-'                              oCallback (Object = Nothing)
-'                              bIdeSafety (Boolean = True)
-'!--------------------------------------------------------------------------------
-Private Function sc_Subclass(ByVal lng_hWnd As Long, Optional ByVal lParamUser As Long = 0, Optional ByVal nOrdinal As Long = 1, Optional ByVal oCallback As Object = Nothing, Optional ByVal bIdeSafety As Boolean = True) As Boolean 'Subclass the specified window handle
-
-    '*************************************************************************************************
-    '* lng_hWnd   - Handle of the window to subclass
-    '* lParamUser - Optional, user-defined callback parameter
-    '* nOrdinal   - Optional, ordinal index of the callback procedure. 1 = last private method, 2 = second last private method, etc.
-    '* oCallback  - Optional, the object that will receive the callback. If undefined, callbacks are sent to this object's instance
-    '* bIdeSafety - Optional, enable/disable IDE safety measures. NB: you should really only disable IDE safety in a UserControl for design-time subclassing
-    '*************************************************************************************************
-    Const CODE_LEN     As Long = 260                                          'Thunk length in bytes
-    Const MEM_LEN      As Long = CODE_LEN + (8 * (MSG_ENTRIES + 1))           'Bytes to allocate per thunk, data + code + msg tables
-    Const PAGE_RWX     As Long = &H40&                                        'Allocate executable memory
-    Const MEM_COMMIT   As Long = &H1000&                                      'Commit allocated memory
-    Const MEM_RELEASE  As Long = &H8000&                                      'Release allocated memory flag
-    Const IDX_EBMODE   As Long = 3                                            'Thunk data index of the EbMode function address
-    Const IDX_CWP      As Long = 4                                            'Thunk data index of the CallWindowProc function address
-    Const IDX_SWL      As Long = 5                                            'Thunk data index of the SetWindowsLong function address
-    Const IDX_FREE     As Long = 6                                            'Thunk data index of the VirtualFree function address
-    Const IDX_BADPTR   As Long = 7                                            'Thunk data index of the IsBadCodePtr function address
-    Const IDX_OWNER    As Long = 8                                            'Thunk data index of the Owner object's vTable address
-    Const IDX_CALLBACK As Long = 10                                           'Thunk data index of the callback method address
-    Const IDX_EBX      As Long = 16                                           'Thunk code patch index of the thunk data
-    Const SUB_NAME     As String = "sc_Subclass"                              'This routine's name
-
-    Dim nAddr          As Long
-    Dim nID            As Long
-    Dim nMyID          As Long
-
-    'Ensure the window handle is valid
-    If IsWindow(lng_hWnd) = 0 Then
-        zError SUB_NAME, "Invalid window handle"
-        Exit Function
-    End If
-
-    'Get this process's ID
-    nMyID = GetCurrentProcessId
-    'Get the process ID associated with the window handle
-    GetWindowThreadProcessId lng_hWnd, nID
-
-    'Ensure that the window handle doesn't belong to another process
-    If nID <> nMyID Then
-        zError SUB_NAME, "Window handle belongs to another process"
-        Exit Function
-    End If
-
-    'If the user hasn't specified the callback owner
-    If oCallback Is Nothing Then
-        'Then it is me
-        Set oCallback = Me
-    End If
-
-    'Get the address of the specified ordinal method
-    nAddr = zAddressOf(oCallback, nOrdinal)
-
-    'Ensure that we've found the ordinal method
-    If nAddr = 0 Then
-        zError SUB_NAME, "Callback method not found"
-
-        Exit Function
-
-    End If
-
-    'If this is the first time through, do the one-time initialization
-    If z_Funk Is Nothing Then
-    
-        'Create the hWnd/thunk-address collection
-        Set z_Funk = New Collection
-        z_Sc(14) = &HD231C031
-        z_Sc(15) = &HBBE58960
-        z_Sc(17) = &H4339F631
-        z_Sc(18) = &H4A21750C
-        z_Sc(19) = &HE82C7B8B
-        z_Sc(20) = &H74&
-        z_Sc(21) = &H75147539
-        z_Sc(22) = &H21E80F
-        z_Sc(23) = &HD2310000
-        z_Sc(24) = &HE8307B8B
-        z_Sc(25) = &H60&
-        z_Sc(26) = &H10C261
-        z_Sc(27) = &H830C53FF
-        z_Sc(28) = &HD77401F8
-        z_Sc(29) = &H2874C085
-        z_Sc(30) = &H2E8&
-        z_Sc(31) = &HFFE9EB00
-        z_Sc(32) = &H75FF3075
-        z_Sc(33) = &H2875FF2C
-        z_Sc(34) = &HFF2475FF
-        z_Sc(35) = &H3FF2473
-        z_Sc(36) = &H891053FF
-        z_Sc(37) = &HBFF1C45
-        z_Sc(38) = &H73396775
-        z_Sc(39) = &H58627404
-        z_Sc(40) = &H6A2473FF
-        z_Sc(41) = &H873FFFC
-        z_Sc(42) = &H891453FF
-        z_Sc(43) = &H7589285D
-        z_Sc(44) = &H3045C72C
-        z_Sc(45) = &H8000&
-        z_Sc(46) = &H8920458B
-        z_Sc(47) = &H4589145D
-        z_Sc(48) = &HC4836124
-        z_Sc(49) = &H1862FF04
-        z_Sc(50) = &H35E30F8B
-        z_Sc(51) = &HA78C985
-        z_Sc(52) = &H8B04C783
-        z_Sc(53) = &HAFF22845
-        z_Sc(54) = &H73FF2775
-        z_Sc(55) = &H1C53FF28
-        z_Sc(56) = &H438D1F75
-        z_Sc(57) = &H144D8D34
-        z_Sc(58) = &H1C458D50
-        z_Sc(59) = &HFF3075FF
-        z_Sc(60) = &H75FF2C75
-        z_Sc(61) = &H873FF28
-        z_Sc(62) = &HFF525150
-        z_Sc(63) = &H53FF2073
-        z_Sc(64) = &HC328&
-        'Store CallWindowProc function address in the thunk data
-        z_Sc(IDX_CWP) = zFnAddr("user32", "CallWindowProcA")
-        'Store the SetWindowLong function address in the thunk data
-        z_Sc(IDX_SWL) = zFnAddr("user32", "SetWindowLongA")
-        'Store the VirtualFree function address in the thunk data
-        z_Sc(IDX_FREE) = zFnAddr("kernel32", "VirtualFree")
-        'Store the IsBadCodePtr function address in the thunk data
-        z_Sc(IDX_BADPTR) = zFnAddr("kernel32", "IsBadCodePtr")
-    End If
-
-    'Allocate executable memory
-    z_ScMem = VirtualAlloc(0, MEM_LEN, MEM_COMMIT, PAGE_RWX)
-    
-    'Ensure the allocation succeeded
-    If z_ScMem <> 0 Then
-    
-        'Catch double subclassing
-        On Error GoTo CatchDoubleSub
-        
-        'Add the hWnd/thunk-address to the collection
-        z_Funk.Add z_ScMem, "h" & lng_hWnd
-
-        On Error GoTo 0
-
-        'If the user wants IDE protection
-        If bIdeSafety Then
-            'Store the EbMode function address in the thunk data
-            z_Sc(IDX_EBMODE) = zFnAddr("vba6", "EbMode")
-        End If
-
-        'Patch the thunk data address
-        z_Sc(IDX_EBX) = z_ScMem
-        'Store the window handle in the thunk data
-        z_Sc(IDX_HWND) = lng_hWnd
-        'Store the address of the before table in the thunk data
-        z_Sc(IDX_BTABLE) = z_ScMem + CODE_LEN
-        'Store the address of the after table in the thunk data
-        z_Sc(IDX_ATABLE) = z_ScMem + CODE_LEN + ((MSG_ENTRIES + 1) * 4)
-        'Store the callback owner's object address in the thunk data
-        z_Sc(IDX_OWNER) = ObjPtr(oCallback)
-        'Store the callback address in the thunk data
-        z_Sc(IDX_CALLBACK) = nAddr
-        'Store the lParamUser callback parameter in the thunk data
-        z_Sc(IDX_PARM_USER) = lParamUser
-        'Set the new WndProc, return the address of the original WndProc
-        nAddr = SetWindowLongA(lng_hWnd, GWL_WNDPROC, z_ScMem + WNDPROC_OFF)
-        
-        'Ensure the new WndProc was set correctly
-        If nAddr = 0 Then
-            zError SUB_NAME, "SetWindowLong failed, error #" & Err.LastDllError
-            GoTo ReleaseMemory
-        End If
-        
-        'Store the original WndProc address in the thunk data
-        z_Sc(IDX_WNDPROC) = nAddr
-        'Copy the thunk code/data to the allocated memory
-        RtlMoveMemory z_ScMem, VarPtr(z_Sc(0)), CODE_LEN
-        'Indicate success
-        sc_Subclass = True
-    Else
-        zError SUB_NAME, "VirtualAlloc failed, error: " & Err.LastDllError
-    End If
-
-    'Exit sc_Subclass
-    Exit Function
-
-CatchDoubleSub:
-    zError SUB_NAME, "Window handle is already subclassed"
-
-ReleaseMemory:
-    'sc_Subclass has failed after memory allocation, so release the memory
-    VirtualFree z_ScMem, 0, MEM_RELEASE
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub sc_Terminate
-'! Description (Описание)  :   [Terminate all subclassing]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub sc_Terminate()
-
-    Dim i As Long
-
-    'Ensure that subclassing has been started
-    If Not (z_Funk Is Nothing) Then
-
-        With z_Funk
-
-            'Loop through the collection of window handles in reverse order
-            For i = .Count To 1 Step -1
-                'Get the thunk address
-                z_ScMem = .Item(i)
-
-                'Ensure that the thunk hasn't already released its memory
-                If IsBadCodePtr(z_ScMem) = 0 Then
-                    'UnSubclass
-                    sc_UnSubclass zData(IDX_HWND)
-                End If
-
-            'Next member of the collection
-            Next i
-
-        End With
-
-        'Destroy the hWnd/thunk-address collection
-        Set z_Funk = Nothing
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub sc_UnSubclass
-'! Description (Описание)  :   [UnSubclass the specified window handle]
-'! Parameters  (Переменные):   lng_hWnd (Long)
-'!--------------------------------------------------------------------------------
-Private Sub sc_UnSubclass(ByVal lng_hWnd As Long)
-
-    If z_Funk Is Nothing Then                                                 'Ensure that subclassing has been started
-        zError "sc_UnSubclass", "Window handle isn't subclassed"
-    Else
-
-        If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then                           'Ensure that the thunk hasn't already released its memory
-            zData(IDX_SHUTDOWN) = -1                                              'Set the shutdown indicator
-            zDelMsg ALL_MESSAGES, IDX_BTABLE                                      'Delete all before messages
-            zDelMsg ALL_MESSAGES, IDX_ATABLE                                      'Delete all after messages
-        End If
-
-        z_Funk.Remove "h" & lng_hWnd                                            'Remove the specified window handle from the collection
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub sc_AddMsg
-'! Description (Описание)  :   [Add the message value to the window handle's specified callback table]
-'! Parameters  (Переменные):   lng_hWnd (Long)
-'                              uMsg (Long)
-'                              When (eMsgWhen = eMsgWhen.MSG_AFTER)
-'!--------------------------------------------------------------------------------
-Private Sub sc_AddMsg(ByVal lng_hWnd As Long, ByVal uMsg As Long, Optional ByVal When As eMsgWhen = eMsgWhen.MSG_AFTER)
-
-    'Ensure that the thunk hasn't already released its memory
-    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then
-        'If the message is to be added to the before original WndProc table...
-        If When And MSG_BEFORE Then
-            'Add the message to the before table
-            zAddMsg uMsg, IDX_BTABLE
-        End If
-
-        'If message is to be added to the after original WndProc table...
-        If When And MSG_AFTER Then
-            'Add the message to the after table
-            zAddMsg uMsg, IDX_ATABLE
-        End If
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub sc_DelMsg
-'! Description (Описание)  :   [Delete the message value from the window handle's specified callback table]
-'! Parameters  (Переменные):   lng_hWnd (Long)
-'                              uMsg (Long)
-'                              When (eMsgWhen = eMsgWhen.MSG_AFTER)
-'!--------------------------------------------------------------------------------
-Private Sub sc_DelMsg(ByVal lng_hWnd As Long, ByVal uMsg As Long, Optional ByVal When As eMsgWhen = eMsgWhen.MSG_AFTER)
-
-    'Ensure that the thunk hasn't already released its memory
-    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then
-        'If the message is to be deleted from the before original WndProc table...
-        If When And MSG_BEFORE Then
-            'Delete the message from the before table
-            zDelMsg uMsg, IDX_BTABLE
-        End If
-
-        'If the message is to be deleted from the after original WndProc table...
-        If When And MSG_AFTER Then
-            'Delete the message from the after table
-            zDelMsg uMsg, IDX_ATABLE
-        End If
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function sc_CallOrigWndProc
-'! Description (Описание)  :   [Call the original WndProc]
-'! Parameters  (Переменные):   lng_hWnd (Long)
-'                              uMsg (Long)
-'                              wParam (Long)
-'                              lParam (Long)
-'!--------------------------------------------------------------------------------
-Private Function sc_CallOrigWndProc(ByVal lng_hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-
-    'Ensure that the thunk hasn't already released its memory
-    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then
-        'Call the original WndProc of the passed window handle parameter
-        sc_CallOrigWndProc = CallWindowProcA(zData(IDX_WNDPROC), lng_hWnd, uMsg, wParam, lParam)
-    End If
-
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property sc_lParamUser
-'! Description (Описание)  :   [Get the subclasser lParamUser callback parameter]
-'! Parameters  (Переменные):   lng_hWnd (Long)
-'!--------------------------------------------------------------------------------
-Private Property Get sc_lParamUser(ByVal lng_hWnd As Long) As Long
-
-    'Ensure that the thunk hasn't already released its memory
-    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then
-        'Get the lParamUser callback parameter
-        sc_lParamUser = zData(IDX_PARM_USER)
-    End If
-
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property sc_lParamUser
-'! Description (Описание)  :   [Let the subclasser lParamUser callback parameter]
-'! Parameters  (Переменные):   lng_hWnd (Long)
-'                              NewValue (Long)
-'!--------------------------------------------------------------------------------
-Private Property Let sc_lParamUser(ByVal lng_hWnd As Long, ByVal NewValue As Long)
-
-    'Ensure that the thunk hasn't already released its memory
-    If IsBadCodePtr(zMap_hWnd(lng_hWnd)) = 0 Then
-        'Set the lParamUser callback parameter
-        zData(IDX_PARM_USER) = NewValue
-    End If
-
-End Property
-
-'-The following routines are exclusively for the sc_ subclass routines----------------------------
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub zAddMsg
-'! Description (Описание)  :   [Add the message to the specified table of the window handle]
-'! Parameters  (Переменные):   uMsg (Long)
-'                              nTable (Long)
-'!--------------------------------------------------------------------------------
-Private Sub zAddMsg(ByVal uMsg As Long, ByVal nTable As Long)
-
-    Dim nCount As Long                                                        'Table entry count
-    Dim nBase  As Long                                                        'Remember z_ScMem
-    Dim i      As Long                                                        'Loop index
-
-    nBase = z_ScMem                                                           'Remember z_ScMem so that we can restore its value on exit
-    z_ScMem = zData(nTable)                                                   'Map zData() to the specified table
-
-    If uMsg = ALL_MESSAGES Then                                               'If ALL_MESSAGES are being added to the table...
-        nCount = ALL_MESSAGES                                                   'Set the table entry count to ALL_MESSAGES
-    Else
-        nCount = zData(0)                                                       'Get the current table entry count
-
-        If nCount >= MSG_ENTRIES Then                                           'Check for message table overflow
-            zError "zAddMsg", "Message table overflow. Either increase the value of Const MSG_ENTRIES or use ALL_MESSAGES instead of specific message values"
-            GoTo Bail
-        End If
-
-        For i = 1 To nCount                                                     'Loop through the table entries
-
-            If zData(i) = 0 Then                                                  'If the element is free...
-                zData(i) = uMsg                                                     'Use this element
-                GoTo Bail                                                           'Bail
-            ElseIf zData(i) = uMsg Then                                           'If the message is already in the table...
-                GoTo Bail                                                           'Bail
-            End If
-
-        Next i                                                                  'Next message table entry
-
-        nCount = i                                                              'On drop through: i = nCount + 1, the new table entry count
-        zData(nCount) = uMsg                                                    'Store the message in the appended table entry
-    End If
-
-    zData(0) = nCount                                                         'Store the new table entry count
-Bail:
-    z_ScMem = nBase                                                           'Restore the value of z_ScMem
-End Sub
-
-'Delete the message from the specified table of the window handle
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub zDelMsg
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   uMsg (Long)
-'                              nTable (Long)
-'!--------------------------------------------------------------------------------
-Private Sub zDelMsg(ByVal uMsg As Long, ByVal nTable As Long)
-
-    Dim nCount As Long                                                        'Table entry count
-    Dim nBase  As Long                                                        'Remember z_ScMem
-    Dim i      As Long                                                        'Loop index
-
-    nBase = z_ScMem                                                           'Remember z_ScMem so that we can restore its value on exit
-    z_ScMem = zData(nTable)                                                   'Map zData() to the specified table
-
-    If uMsg = ALL_MESSAGES Then                                               'If ALL_MESSAGES are being deleted from the table...
-        zData(0) = 0                                                            'Zero the table entry count
-    Else
-        nCount = zData(0)                                                       'Get the table entry count
-
-        For i = 1 To nCount                                                     'Loop through the table entries
-
-            If zData(i) = uMsg Then                                               'If the message is found...
-                zData(i) = 0                                                        'Null the msg value -- also frees the element for re-use
-                GoTo Bail                                                           'Bail
-            End If
-
-        Next i                                                                  'Next message table entry
-
-        zError "zDelMsg", "Message &H" & Hex$(uMsg) & " not found in table"
-    End If
-
-Bail:
-    z_ScMem = nBase                                                           'Restore the value of z_ScMem
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub zError
-'! Description (Описание)  :   [Error handler]
-'! Parameters  (Переменные):   sRoutine (String)
-'                              sMsg (String)
-'!--------------------------------------------------------------------------------
-Private Sub zError(ByVal sRoutine As String, ByVal sMsg As String)
-    App.LogEvent TypeName(Me) & "." & sRoutine & ": " & sMsg, vbLogEventTypeError
-    MsgBox sMsg & ".", vbExclamation + vbApplicationModal, "Error in " & TypeName(Me) & "." & sRoutine
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function zFnAddr
-'! Description (Описание)  :   [Return the address of the specified DLL/procedure]
-'! Parameters  (Переменные):   sDLL (String)
-'                              sProc (String)
-'!--------------------------------------------------------------------------------
-Private Function zFnAddr(ByVal sDLL As String, ByVal sProc As String) As Long
-    'Get the specified procedure address
-    zFnAddr = GetProcAddress(GetModuleHandleA(sDLL), sProc)
-    'In the IDE, validate that the procedure address was located
-    Debug.Assert zFnAddr
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function zMap_hWnd
-'! Description (Описание)  :   [Map zData() to the thunk address for the specified window handle]
-'! Parameters  (Переменные):   lng_hWnd (Long)
-'!--------------------------------------------------------------------------------
-Private Function zMap_hWnd(ByVal lng_hWnd As Long) As Long
-
-    If z_Funk Is Nothing Then                                                 'Ensure that subclassing has been started
-        zError "zMap_hWnd", "Subclassing hasn't been started"
-    Else
-
-        On Error GoTo Catch                                                     'Catch unsubclassed window handles
-
-        z_ScMem = z_Funk("h" & lng_hWnd)                                        'Get the thunk address
-        zMap_hWnd = z_ScMem
-    End If
-
-    Exit Function                                                             'Exit returning the thunk address
-
-Catch:
-    zError "zMap_hWnd", "Window handle isn't subclassed"
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function zAddressOf
-'! Description (Описание)  :   [Return the address of the specified ordinal method on the oCallback object,
-'!                              1 = last private method,
-'!                              2 = second last private method, etc]
-'! Parameters  (Переменные):   oCallback (Object)
-'                              nOrdinal (Long)
-'!--------------------------------------------------------------------------------
-Private Function zAddressOf(ByVal oCallback As Object, ByVal nOrdinal As Long) As Long
-
-    Dim bSub  As Byte                                                         'Value we expect to find pointed at by a vTable method entry
-    Dim bVal  As Byte
-    Dim nAddr As Long                                                         'Address of the vTable
-    Dim i     As Long                                                         'Loop index
-    Dim j     As Long                                                         'Loop limit
-
-    RtlMoveMemory VarPtr(nAddr), ObjPtr(oCallback), 4                         'Get the address of the callback object's instance
-
-    If Not zProbe(nAddr + &H1C, i, bSub) Then                                 'Probe for a Class method
-        If Not zProbe(nAddr + &H6F8, i, bSub) Then                              'Probe for a Form method
-            If Not zProbe(nAddr + &H7A4, i, bSub) Then                            'Probe for a UserControl method
-
-                Exit Function                                                       'Bail...
-
-            End If
-        End If
-    End If
-
-    i = i + 4                                                                 'Bump to the next entry
-    j = i + 1024                                                              'Set a reasonable limit, scan 256 vTable entries
-
-    Do While i < j
-        RtlMoveMemory VarPtr(nAddr), i, 4                                       'Get the address stored in this vTable entry
-
-        If IsBadCodePtr(nAddr) Then                                             'Is the entry an invalid code address?
-            RtlMoveMemory VarPtr(zAddressOf), i - (nOrdinal * 4), 4               'Return the specified vTable entry address
-
-            Exit Do                                                               'Bad method signature, quit loop
-
-        End If
-
-        RtlMoveMemory VarPtr(bVal), nAddr, 1                                    'Get the byte pointed to by the vTable entry
-
-        If bVal <> bSub Then                                                    'If the byte doesn't match the expected value...
-            RtlMoveMemory VarPtr(zAddressOf), i - (nOrdinal * 4), 4               'Return the specified vTable entry address
-
-            Exit Do                                                               'Bad method signature, quit loop
-
-        End If
-
-        i = i + 4                                                             'Next vTable entry
-    Loop
-
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function zProbe
-'! Description (Описание)  :   [Probe at the specified start address for a method signature]
-'! Parameters  (Переменные):   nStart (Long)
-'                              nMethod (Long)
-'                              bSub (Byte)
-'!--------------------------------------------------------------------------------
-Private Function zProbe(ByVal nStart As Long, ByRef nMethod As Long, ByRef bSub As Byte) As Boolean
-
-    Dim bVal   As Byte
-    Dim nAddr  As Long
-    Dim nLimit As Long
-    Dim nEntry As Long
-
-    nAddr = nStart                                                            'Start address
-    nLimit = nAddr + 32                                                       'Probe eight entries
-
-    Do While nAddr < nLimit                                                   'While we've not reached our probe depth
-        RtlMoveMemory VarPtr(nEntry), nAddr, 4                                'Get the vTable entry
-
-        If nEntry <> 0 Then                                                   'If not an implemented interface
-            RtlMoveMemory VarPtr(bVal), nEntry, 1                             'Get the value pointed at by the vTable entry
-
-            If bVal = &H33 Or bVal = &HE9 Then                                    'Check for a native or pcode method signature
-                nMethod = nAddr                                                     'Store the vTable entry
-                bSub = bVal                                                         'Store the found method signature
-                zProbe = True                                                       'Indicate success
-
-                Exit Function                                                       'Return
-
-            End If
-        End If
-
-        nAddr = nAddr + 4                                                       'Next vTable entry
-    Loop
-
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property zData
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   nIndex (Long)
-'!--------------------------------------------------------------------------------
-Private Property Get zData(ByVal nIndex As Long) As Long
-    RtlMoveMemory VarPtr(zData), z_ScMem + (nIndex * 4), 4
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property zData
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   nIndex (Long)
-'                              nValue (Long)
-'!--------------------------------------------------------------------------------
-Private Property Let zData(ByVal nIndex As Long, ByVal nValue As Long)
-    RtlMoveMemory z_ScMem + (nIndex * 4), VarPtr(nValue), 4
-End Property
-
-'======================================================================================================
-'   End SubClass Sections
-'======================================================================================================
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Property Appearance
 '! Description (Описание)  :   [type_description_here]
@@ -1435,450 +805,6 @@ Public Property Let BackColor(ByVal lNewColor As OLE_COLOR)
 End Property
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Locked
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get Locked() As Boolean
-    Locked = m_Locked
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Locked
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lNewLocked (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let Locked(ByVal lNewLocked As Boolean)
-    m_Locked = lNewLocked
-    'm_PrevBackColor = lNewColor
-    '   Set the Locked
-    UserControl.txtResult.Locked = m_Locked
-    PropertyChanged "Locked"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property QualifyPaths
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get QualifyPaths() As Boolean
-    QualifyPaths = m_QualifyPaths
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property QualifyPaths
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lNewQualifyPaths (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let QualifyPaths(ByVal lNewQualifyPaths As Boolean)
-    m_QualifyPaths = lNewQualifyPaths
-    PropertyChanged "QualifyPaths"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function ButtonAppearance
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   cmdButton (CommandButton)
-'                              lButtonStyle (pbAppearanceConstants)
-'!--------------------------------------------------------------------------------
-Private Function ButtonAppearance(cmdButton As CommandButton, lButtonStyle As pbAppearanceConstants)
-
-    If lButtonStyle = [3D] Then
-        '   Here is a small function to change button to 3D (Note the Missing "BS_FLAT" flag)
-        SetWindowLongA cmdButton.hWnd, GWL_STYLE, WS_CHILD
-        '   Make the button visible (its automaticly hidden when the SetWindowLong call is executed because we reset the button's Attributes)
-        cmdButton.Visible = True
-    Else
-        '   Here is a small function to change button to flat:-
-        SetWindowLongA cmdButton.hWnd, GWL_STYLE, WS_CHILD Or BS_FLAT
-        '   Make the button visible (its automaticly hidden when the SetWindowLong call is executed because we reset the button's Attributes)
-        cmdButton.Visible = True
-    End If
-
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmbMultiSel_Click
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub cmbMultiSel_Click()
-
-    With UserControl
-        '   Display the selected results from the ComboBox List
-        .txtResult.Text = .cmbMultiSel.List(.cmbMultiSel.ListIndex)
-    End With
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmbMultiSel_KeyDown
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   KeyCode (Integer)
-'                              Shift (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub cmbMultiSel_KeyDown(KeyCode As Integer, Shift As Integer)
-
-    With UserControl
-
-        Select Case KeyCode
-
-            Case vbKeyUp
-
-                '   See if we are at the top, if so then change
-                '   the focus back to the textbox....as if it were
-                '   part of the control
-                If .cmbMultiSel.ListIndex = 0 Then
-                    .txtResult.SetFocus
-                End If
-
-        End Select
-
-    End With
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdDrop_Click
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub cmdDrop_Click()
-
-    With UserControl
-
-        If Not ComboBoxListVisible(.cmbMultiSel) Then
-            '   It is closed, so open it via code....
-            Call OpenComboBox(.cmbMultiSel, True)
-        Else
-            '   Set the focus to our TextBox
-            .txtResult.SetFocus
-        End If
-
-        '   Drop List Clicked...
-        RaiseEvent DropClick
-    End With
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdDrop_MouseDown
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Button (Integer)
-'                              Shift (Integer)
-'                              X (Single)
-'                              Y (Single)
-'!--------------------------------------------------------------------------------
-Private Sub cmdDrop_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    '   Get the Cursor Position
-    m_Pnt = GetCursorPosition
-    RaiseEvent MouseDown(Button, Shift, CSng(m_Pnt.X), CSng(m_Pnt.Y))
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdDrop_MouseMove
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Button (Integer)
-'                              Shift (Integer)
-'                              X (Single)
-'                              Y (Single)
-'!--------------------------------------------------------------------------------
-Private Sub cmdDrop_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    '   Get the Cursor Position
-    m_Pnt = GetCursorPosition
-
-    If (m_PrevLoc.X <> m_Pnt.X) Then
-        If (m_PrevLoc.Y <> m_Pnt.Y) Then
-            RaiseEvent MouseMove(Button, Shift, CSng(m_Pnt.X), CSng(m_Pnt.Y))
-            m_PrevLoc = m_Pnt
-        End If
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdDrop_MouseUp
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Button (Integer)
-'                              Shift (Integer)
-'                              X (Single)
-'                              Y (Single)
-'!--------------------------------------------------------------------------------
-Private Sub cmdDrop_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
-
-    With UserControl
-        '   Make sure the focus is on the TextBox and not the drop button
-        .txtResult.SetFocus
-    End With
-
-    '   Get the Cursor Position
-    m_Pnt = GetCursorPosition
-    RaiseEvent MouseUp(Button, Shift, CSng(m_Pnt.X), CSng(m_Pnt.Y))
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdPick_Click
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub cmdPick_Click()
-
-    Dim psFile    As SelectedFile
-    Dim i         As Long
-    Dim sExt      As String
-    Dim sFolder   As String
-    Dim AutoTheme As String
-
-    On Error Resume Next
-
-    With UserControl
-        AutoTheme = GetThemeInfo
-        '   Make sure the Combobox is hidden
-        .cmdDrop.Visible = False
-        .pbDrop.Visible = False
-
-        '   Which dialog is active?
-        Select Case m_DialogType
-
-            Case [ucFolder]
-
-                'ShowFolder_Default
-                With New CommonDialog
-                    .InitDir = PathCollect(txtResult.Text)
-
-                    If .ShowFolder = True Then
-                        sFolder = .FileName
-                    End If
-
-                End With
-
-                If LenB(sFolder) > 0 Then
-                    m_Path = QualifyPath(sFolder)
-                    PropertyChanged "Path"
-
-                    If m_UseDialogText Then
-
-                        '   Trim the display name
-                        If m_QualifyPaths Then
-                            .txtResult.Text = TrimPathByLen(m_Path, .txtResult.Width - .cmdPick.Width - 40)
-                        Else
-                            .txtResult.Text = m_Path
-                        End If
-                    End If
-                End If
-
-            Case [ucOpen], [ucSave]
-
-                '   Same basic routine, with different calls to start
-                If m_DialogType = [ucOpen] Then
-                    psFile = ShowOpen(m_Filters, PathCollect(txtResult.Text))
-                Else
-                    psFile = ShowSave(m_Filters)
-                End If
-
-                If (psFile.bCanceled = False) Then
-                    If (psFile.nFilesSelected > 0) Then
-                        If m_DialogType = [ucOpen] Then
-
-                            '   Set the Command Button visable
-                            If (m_Theme = pbClassic) Or (AutoTheme = "None") Then
-                                .cmdDrop.Visible = m_MultiSelect
-                            Else
-                                .pbDrop.Visible = m_MultiSelect
-                            End If
-
-                            '   Concatinate the filename and path
-                            If m_MultiSelect Then
-                                '   Store the qaulified path
-                                m_Path = QualifyPath(psFile.sLastDirectory)
-                                PropertyChanged "Path"
-                                '   Count the Files
-                                FileCount = UBound(psFile.sFiles) - LBound(psFile.sFiles) + 1
-
-                                If m_FileCount = 1 Then
-                                    '   Erase the array...this is over kill
-                                    '   but better to be safe than sorry ;-)
-                                    Erase m_Filename
-
-                                    '   Redim to a vector...
-                                    ReDim m_Filename(1 To 1)
-
-                                    '   Clear the ComboBox
-                                    .cmbMultiSel.Clear
-                                    '   Store the Filename
-                                    m_Filename(1) = psFile.sFiles(1)
-                                    PropertyChanged "Filename"
-                                    '   Add the Trimmed Filename and Path
-                                    .cmbMultiSel.AddItem TrimPathByLen(m_Path & psFile.sFiles(1), .txtResult.Width - 40)
-                                Else
-                                    '   Erase the array...this is over kill
-                                    '   but better to be safe than sorry ;-)
-                                    Erase m_Filename
-
-                                    '   Redim to a vector...
-                                    ReDim m_Filename(1 To m_FileCount)
-
-                                    '   Clear the ComboBox
-                                    .cmbMultiSel.Clear
-
-                                    '   Store the Filenames
-                                    For i = 1 To m_FileCount
-                                        .cmbMultiSel.AddItem TrimPathByLen(QualifyPath(m_Path) & psFile.sFiles(i), .txtResult.Width - 40)
-                                        m_Filename(i) = m_Path & psFile.sFiles(i)
-                                    Next
-
-                                End If
-
-                            Else
-
-                                ReDim m_Filename(1 To 1)
-
-                                '   Store the qaulified path
-                                m_Path = QualifyPath(ExtractPath(psFile.sFiles(1)))
-                                PropertyChanged "Path"
-                                m_Filename(1) = psFile.sFiles(1)
-                                m_FileCount = 1
-                            End If
-
-                            PropertyChanged "Filename"
-
-                            If m_UseDialogText Then
-
-                                '   Trim the display name
-                                If m_MultiSelect Then
-                                    '   Adjust the name len to account for our new button
-                                    .txtResult.Text = TrimPathByLen(m_Filename(1), .txtResult.Width - .cmdPick.Width - .cmdDrop.Width - 40)
-                                Else
-
-                                    If m_QualifyPaths Then
-                                        .txtResult.Text = TrimPathByLen(m_Filename(1), .txtResult.Width - .cmdPick.Width - 40)
-                                    Else
-                                        .txtResult.Text = m_Filename(1)
-                                    End If
-                                End If
-                            End If
-
-                            '   Focus on the final name
-                            .txtResult.SetFocus
-                        Else
-
-                            '   Concatinate the filename and path
-                            ReDim m_Filename(1 To 1)
-
-                            If Not (Right$(psFile.sFiles(1), 4) Like ".*") Then
-Retry:
-                                '   This section handles files which are returned without extnsions
-                                sExt = InputBox("The File Extension is Missing!" & vbCrLf & "Please Enter a Valid Extension Below...", "ucPickBox", , (.Parent.ScaleWidth \ 2) + .Parent.Left - 2700, (.Parent.ScaleHeight \ 2) + .Parent.Top - 800)
-
-                                If LenB(sExt) = 0 Then
-                                    If MsgBox("     The File Extension is Invalid!" & vbCrLf & vbCrLf & "File will be saved with " & Kavichki & ".txt" & Kavichki & " extension.", vbExclamation + vbOKCancel, "ucPickBox") = vbOK Then
-                                        '   Just use the default text file type
-                                        sExt = ".txt"
-                                    Else
-                                        '   Give them another try to get this right...
-                                        GoTo Retry
-                                    End If
-                                End If
-
-                                '   Fix missing "." in the extension
-                                If (InStr(sExt, ".") = 0) Or (Len(sExt) = 3) Then
-                                    psFile.sFiles(1) = psFile.sFiles(1) & "." & sExt
-                                Else
-                                    psFile.sFiles(1) = psFile.sFiles(1) & sExt
-                                End If
-                            End If
-
-                            '   Store the Filename
-                            m_Filename(1) = psFile.sFiles(1)
-                            PropertyChanged "Filename"
-                            '   Store the qualified path
-                            m_Path = QualifyPath(ExtractPath(m_Filename(1)))
-                            PropertyChanged "Path"
-
-                            If m_UseDialogText Then
-                                '   Trim the display name
-                                .txtResult.Text = TrimPathByLen(psFile.sFiles(1), .txtResult.Width - .cmdPick.Width - 40)
-                            End If
-
-                            FileCount = 1
-                        End If
-
-                        '   Focus on the final name
-                        .txtResult.SetFocus
-                    End If
-                End If
-
-                RaiseEvent PathChanged
-        End Select
-
-        RaiseEvent Click
-        m_Pnt = GetCursorPosition()
-        RaiseEvent MouseDown(vbLeftButton, 0, CSng(m_Pnt.X), CSng(m_Pnt.Y))
-    End With
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdPick_MouseDown
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Button (Integer)
-'                              Shift (Integer)
-'                              X (Single)
-'                              Y (Single)
-'!--------------------------------------------------------------------------------
-Private Sub cmdPick_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    '   Get the Cursor Position
-    m_Pnt = GetCursorPosition
-    RaiseEvent MouseDown(Button, Shift, CSng(m_Pnt.X), CSng(m_Pnt.Y))
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdPick_MouseMove
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Button (Integer)
-'                              Shift (Integer)
-'                              X (Single)
-'                              Y (Single)
-'!--------------------------------------------------------------------------------
-Private Sub cmdPick_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    '   Get the Cursor Position
-    m_Pnt = GetCursorPosition
-
-    If (m_PrevLoc.X <> m_Pnt.X) Then
-        If (m_PrevLoc.Y <> m_Pnt.Y) Then
-            RaiseEvent MouseMove(Button, Shift, CSng(m_Pnt.X), CSng(m_Pnt.Y))
-            m_PrevLoc = m_Pnt
-        End If
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdPick_MouseUp
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Button (Integer)
-'                              Shift (Integer)
-'                              X (Single)
-'                              Y (Single)
-'!--------------------------------------------------------------------------------
-Private Sub cmdPick_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    '   Get the Cursor Position
-    m_Pnt = GetCursorPosition
-    RaiseEvent MouseUp(Button, Shift, CSng(m_Pnt.X), CSng(m_Pnt.Y))
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function ComboBoxListVisible
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   cbo (ComboBox)
-'!--------------------------------------------------------------------------------
-Private Function ComboBoxListVisible(cbo As ComboBox) As Boolean
-    '   Wrapper funtion to allow us to get the drop
-    '   state of the ComboBox.....
-    ComboBoxListVisible = SendMessage(cbo.hWnd, CB_GETDROPPEDSTATE, 0, ByVal 0&)
-End Function
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Property DefaultExt
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
@@ -1894,48 +820,49 @@ End Property
 '!--------------------------------------------------------------------------------
 Public Property Let DefaultExt(ByVal NewValue As String)
 
-    If Left$(NewValue, 1) <> "." Then
-        NewValue = "." & NewValue
+    If LenB(NewValue) Then
+        If AscW(NewValue) <> vbDot Then
+            NewValue = "." & NewValue
+        End If
     End If
-
+    
     m_DefaultExt = NewValue
     PropertyChanged "DefaultExt"
 End Property
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Property DialogMsg
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Get the Dialg Textbox Message for the Type selected]
 '! Parameters  (Переменные):   lType (ucDialogConstant)
 '!--------------------------------------------------------------------------------
 Public Property Get DialogMsg(ByVal lType As ucDialogConstant) As String
-    '   Get the Dialg Textbox Message for the Type selected
+
     DialogMsg = m_DialogMsg(lType)
 End Property
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Property DialogMsg
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [ Set the Dialog Textbox Message for the Type selected]
 '! Parameters  (Переменные):   lType (ucDialogConstant)
 '                              sNewValue (String)
 '!--------------------------------------------------------------------------------
 Public Property Let DialogMsg(ByVal lType As ucDialogConstant, ByVal sNewValue As String)
 
-    '   Set the Dialog Textbox Message for the Type selected
     If lType < 0 Then lType = 0
     If lType > 2 Then lType = 2
     m_DialogMsg(lType) = sNewValue
 
-    '   Store the chnages for later
+    '   Store the changes for later
     Select Case lType
 
         Case ucFolder
-            PropertyChanged "DialogMsg1"
+            PropertyChanged "DialogMsg0"
 
         Case ucOpen
-            PropertyChanged "DialogMsg3"
+            PropertyChanged "DialogMsg1"
 
         Case ucSave
-            PropertyChanged "DialogMsg4"
+            PropertyChanged "DialogMsg2"
     End Select
 
     Call Refresh(0)
@@ -2012,42 +939,6 @@ Public Property Let Enabled(bNewValue As Boolean)
 End Property
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function ExtractFilename
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   sFileName (Variant)
-'!--------------------------------------------------------------------------------
-Public Function ExtractFilename(ByVal sFileName) As String
-
-    '   Extract the Path from the full filename...
-    Dim lStrCnt As Long
-
-    lStrCnt = InStrRev(sFileName, vbBackslash)
-
-    If lStrCnt > 0 Then
-        ExtractFilename = Mid$(sFileName, lStrCnt + 1)
-    End If
-
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function ExtractPath
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   sFileName (Variant)
-'!--------------------------------------------------------------------------------
-Public Function ExtractPath(ByVal sFileName) As String
-
-    '   Extract the Path from the full filename...
-    Dim lStrCnt As Long
-
-    lStrCnt = InStrRev(sFileName, vbBackslash)
-
-    If lStrCnt > 0 Then
-        ExtractPath = Left$(sFileName, lStrCnt - 1)
-    End If
-
-End Function
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Property FileCount
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
@@ -2066,32 +957,6 @@ Private Property Let FileCount(lNewCount As Long)
     m_FileCount = lNewCount
     PropertyChanged "FileCount"
 End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function FileExists
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   sFileName (String)
-'!--------------------------------------------------------------------------------
-Public Function FileExists(ByVal sFileName As String) As Boolean
-
-    Dim lpFindFileData As WIN32_FIND_DATA
-    Dim hFindFirst     As Long
-
-    If PathIsValidUNC(sFileName) = False Then
-        hFindFirst = FindFirstFile(StrPtr("\\?\" & sFileName & vbNullChar), lpFindFileData)
-    Else
-        '\\?\UNC\
-        hFindFirst = FindFirstFile(StrPtr("\\?\UNC\" & Right$(sFileName, Len(sFileName) - 2) & vbNullChar), lpFindFileData)
-    End If
-
-    If (hFindFirst > 0) And (lpFindFileData.dwFileAttributes <> FILE_ATTRIBUTE_DIR) Then
-        FindClose hFindFirst
-        FileExists = True
-    Else
-        FileExists = False
-    End If
-
-End Function
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Property FileFlags
@@ -2193,20 +1058,333 @@ Public Property Let ForeColor(ByVal lNewColor As OLE_COLOR)
 End Property
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property hDC
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get hDC()
+    hDC = UserControl.hDC
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property hWnd
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get hWnd()
+    hWnd = UserControl.hWnd
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Locked
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get Locked() As Boolean
+    Locked = m_Locked
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Locked
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lNewLocked (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let Locked(ByVal lNewLocked As Boolean)
+    m_Locked = lNewLocked
+    '   Set the Locked
+    UserControl.txtResult.Locked = m_Locked
+    PropertyChanged "Locked"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property MultiSelect
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get MultiSelect() As Boolean
+    '   Get the MutliSelect Status....for ShowOpen
+    MultiSelect = m_MultiSelect
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property MultiSelect
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bNewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let MultiSelect(bNewValue As Boolean)
+    '   Set the MutliSelect State of the Dialog...
+    '   NOTE: This is only used for the ShowOpen dialog type.
+    m_MultiSelect = bNewValue
+    PropertyChanged "MultiSelect"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Path
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get Path() As String
+    Path = QualifyPath(m_Path)
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Path
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   sNewPath (String)
+'!--------------------------------------------------------------------------------
+Public Property Let Path(sNewPath As String)
+
+    If m_QualifyPaths Then
+        m_Path = QualifyPath(sNewPath)
+        UserControl.txtResult.Text = m_Path
+    Else
+        m_Path = sNewPath
+        UserControl.txtResult.Text = sNewPath
+    End If
+
+    PropertyChanged "Path"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property QualifyPaths
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get QualifyPaths() As Boolean
+    QualifyPaths = m_QualifyPaths
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property QualifyPaths
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lNewQualifyPaths (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let QualifyPaths(ByVal lNewQualifyPaths As Boolean)
+    m_QualifyPaths = lNewQualifyPaths
+    PropertyChanged "QualifyPaths"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   :   Property RunMode
+'! Description :   [Ambient.UserMode tells us whether the UC's container is in design mode or user mode/run-time.
+'                               Unfortunately, this isn't supported in all containers.]
+'                               http://www.vbforums.com/showthread.php?805711-VB6-UserControl-Ambient-UserMode-workaround&s=8dd326860cbc22bed07bd13f6959ca70
+'! Parameters  :
+'!--------------------------------------------------------------------------------
+Public Property Get RunMode() As Boolean
+    RunMode = True
+    On Error Resume Next
+    RunMode = Ambient.UserMode
+    RunMode = Extender.Parent.RunMode
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Theme
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get Theme() As pbThemeEnum
+    Theme = m_Theme
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Theme
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Theme (pbThemeEnum)
+'!--------------------------------------------------------------------------------
+Public Property Let Theme(ByVal New_Theme As pbThemeEnum)
+    m_Theme = New_Theme
+    UserControl_Resize
+    PropertyChanged "Theme"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ToolTipTexts
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lType (ucDialogConstant)
+'!--------------------------------------------------------------------------------
+Public Property Get ToolTipTexts(ByVal lType As ucDialogConstant) As String
+    '   Get the Dialg ToolTipText Message for the Type selected
+    ToolTipTexts = m_ToolTipText(lType)
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ToolTipTexts
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lType (ucDialogConstant)
+'                              sNewValue (String)
+'!--------------------------------------------------------------------------------
+Public Property Let ToolTipTexts(ByVal lType As ucDialogConstant, ByVal sNewValue As String)
+    '   Set the Dialg ToolTipText Message for the Type selected
+    m_ToolTipText(lType) = sNewValue
+
+    Select Case lType
+
+        Case ucFolder
+            PropertyChanged "ToolTipText0"
+
+        Case ucOpen
+            PropertyChanged "ToolTipText1"
+
+        Case ucSave
+            PropertyChanged "ToolTipText2"
+    End Select
+
+    Call Refresh(0)
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UseAutoForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get UseAutoForeColor() As Boolean
+    '   Get if we want the forecolor to be set automatically
+    '   via XOR in the textbox backcolor
+    UseAutoForeColor = m_UseAutoForeColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UseAutoForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bNewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let UseAutoForeColor(ByVal bNewValue As Boolean)
+    '   Set if we want the forecolor to be set automatically
+    '   via XOR in the textbox backcolor
+    m_UseAutoForeColor = bNewValue
+    PropertyChanged "UseAutoForeColor"
+    Call Refresh(0)
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UseDialogColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get UseDialogColor() As Boolean
+    '   Get if we want the color as textbox backcolor
+    UseDialogColor = m_UseDialogColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UseDialogColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bNewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let UseDialogColor(ByVal bNewValue As Boolean)
+    '   Set if we want to use color as the backcolor
+    m_UseDialogColor = bNewValue
+    PropertyChanged "UseDialogColor"
+    Call Refresh(0)
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UseDialogText
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get UseDialogText() As Boolean
+    '   Dispaly the dialog text?
+    UseDialogText = m_UseDialogText
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UseDialogText
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   bNewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let UseDialogText(ByVal bNewValue As Boolean)
+    '   Set if the dialog is to be diaplayed
+    '
+    '   One might want to turn off the text if using color in the display
+    m_UseDialogText = bNewValue
+    PropertyChanged "UseDialogText"
+    Call Refresh(0)
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function ButtonAppearance
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   cmdButton (CommandButton)
+'                              lButtonStyle (pbAppearanceConstants)
+'!--------------------------------------------------------------------------------
+Private Function ButtonAppearance(cmdButton As CommandButton, lButtonStyle As pbAppearanceConstants)
+
+    If lButtonStyle = [3D] Then
+        '   Here is a small function to change button to 3D (Note the Missing "BS_FLAT" flag)
+        SetWindowLongA cmdButton.hWnd, GWL_STYLE, WS_CHILD
+        '   Make the button visible (its automaticly hidden when the SetWindowLong call is executed because we reset the button's Attributes)
+        cmdButton.Visible = True
+    Else
+        '   Here is a small function to change button to flat:-
+        SetWindowLongA cmdButton.hWnd, GWL_STYLE, WS_CHILD Or BS_FLAT
+        '   Make the button visible (its automaticly hidden when the SetWindowLong call is executed because we reset the button's Attributes)
+        cmdButton.Visible = True
+    End If
+
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function ComboBoxListVisible
+'! Description (Описание)  :   [Wrapper funtion to allow us to get the drop state of the ComboBox.....]
+'! Parameters  (Переменные):   cbo (ComboBox)
+'!--------------------------------------------------------------------------------
+Private Function ComboBoxListVisible(cbo As ComboBox) As Boolean
+    ComboBoxListVisible = SendMessage(cbo.hWnd, CB_GETDROPPEDSTATE, 0, ByVal 0&)
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function ExtractFilename
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   sFileName (Variant)
+'!--------------------------------------------------------------------------------
+Private Function ExtractFilename(ByVal sFileName) As String
+
+    '   Extract the Path from the full filename...
+    Dim lStrCnt As Long
+
+    lStrCnt = InStrRev(sFileName, "\")
+
+    If lStrCnt Then
+        ExtractFilename = Mid$(sFileName, lStrCnt + 1)
+    End If
+
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function ExtractPath
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   sFileName (Variant)
+'!--------------------------------------------------------------------------------
+Private Function ExtractPath(ByVal sFileName) As String
+
+    '   Extract the Path from the full filename...
+    Dim lStrCnt As Long
+
+    lStrCnt = InStrRev(sFileName, "\")
+
+    If lStrCnt Then
+        ExtractPath = Left$(sFileName, lStrCnt - 1)
+    End If
+
+End Function
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function GetCursorPosition
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Private Function GetCursorPosition() As POINT
+Private Function GetCursorPosition() As POINTAPI
 
-    Dim PT      As POINT
+    Dim PT      As POINTAPI
     Dim lWidth  As Long
     Dim lHeight As Long
 
     '   Get Our Position
     Call GetCursorPos(PT)
     '   Convert coordinates
-    Call ScreenToClient(m_hWnd, PT)
+    Call ScreenToClient(m_Hwnd, PT)
 
     '   Correct for Offeset of the Borders
     If m_Appearance = [3D] Then
@@ -2278,24 +1456,6 @@ Private Function GetThemeInfo() As String
 End Function
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property hDC
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get hDC()
-    hDC = UserControl.hDC
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property hWnd
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get hWnd()
-    hWnd = UserControl.hWnd
-End Property
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function LongToHexColor
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):   lNewColor (Long)
@@ -2305,28 +1465,6 @@ Public Function LongToHexColor(ByVal lNewColor As Long) As String
     '   back the Hex String Equiv...
     LongToHexColor = pHexColorStr(TranslateColor(lNewColor))
 End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property MultiSelect
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get MultiSelect() As Boolean
-    '   Get the MutliSelect Status....for ShowOpen
-    MultiSelect = m_MultiSelect
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property MultiSelect
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   bNewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let MultiSelect(bNewValue As Boolean)
-    '   Set the MutliSelect State of the Dialog...
-    '   NOTE: This is only used for the ShowOpen dialog type.
-    m_MultiSelect = bNewValue
-    PropertyChanged "MultiSelect"
-End Property
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub OpenComboBox
@@ -2606,37 +1744,12 @@ Metallic:
 
         .pbPick.Refresh
         .pbDrop.Refresh
+        
+        Locked = m_Locked
         LockWindowUpdate 0&
     End With
 
 End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Path
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get Path() As String
-    Path = QualifyPath(m_Path)
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Path
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   sNewPath (String)
-'!--------------------------------------------------------------------------------
-Public Property Let Path(sNewPath As String)
-
-    If m_QualifyPaths Then
-        m_Path = QualifyPath(sNewPath)
-        DialogMsg(m_DialogType) = (TrimPathByLen(m_Path, UserControl.txtResult.Width - UserControl.cmdPick.Width - 40))
-    Else
-        m_Path = sNewPath
-        DialogMsg(m_DialogType) = (TrimPathByLen(m_Path, UserControl.txtResult.Width - UserControl.cmdPick.Width - 40))
-    End If
-
-    PropertyChanged "Path"
-End Property
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function pHexColorStr
@@ -2655,7 +1768,7 @@ End Function
 '!--------------------------------------------------------------------------------
 Private Function ProcessFilter(sFilter As String) As String
 
-    Dim i As Long
+    Dim I As Long
 
     '   This routine replaces the Pipe (|) character for filter
     '   strings and pads the size to the required legnth.
@@ -2674,10 +1787,10 @@ Private Function ProcessFilter(sFilter As String) As String
     End If
 
     '   Now Replace the Pipes in the Filter String
-    For i = 1 To Len(sFilter)
+    For I = 1 To Len(sFilter)
 
-        If (Mid$(sFilter, i, 1) = "|") Then
-            Mid$(sFilter, i, 1) = vbNullChar
+        If (Mid$(sFilter, I, 1) = "|") Then
+            Mid$(sFilter, I, 1) = vbNullChar
         End If
 
     Next
@@ -2721,10 +1834,10 @@ Private Function QualifyPath(ByVal sPath As String) As String
     If m_QualifyPaths Then
         If Not FileExists(sPath) Then
             '   Look for the PathSep
-            lStrCnt = InStrRev(sPath, vbBackslash)
+            lStrCnt = InStrRev(sPath, "\")
             lStr2Cnt = InStrRev(sPath, ":")
 
-            If ((lStrCnt <> Len(sPath)) Or Right$(sPath, 1) <> vbBackslash) And lStrCnt > 1 And lStr2Cnt > 2 Then
+            If ((lStrCnt <> Len(sPath)) Or Right$(sPath, 1) <> "\") And lStrCnt > 1 And lStr2Cnt > 2 Then
                 '   None, so add it...
                 QualifyPath = BackslashAdd2Path(sPath)
             Else
@@ -2743,6 +1856,18 @@ Private Function QualifyPath(ByVal sPath As String) As String
 End Function
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function BackslashAdd2Path
+'! Description (Описание)  :   [Добавление слэша на конце]
+'! Parameters  (Переменные):   strPath (String)
+'!--------------------------------------------------------------------------------
+Private Function BackslashAdd2Path(ByVal strPath As String) As String
+    strPath = strPath & str2vbNullChar
+    PathAddBackslash strPath
+    BackslashAdd2Path = TrimNull(strPath)
+End Function
+
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub Refresh
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):   Index (Long)
@@ -2753,17 +1878,18 @@ Public Sub Refresh(Optional ByVal Index As Long)
 
     With UserControl
         AutoTheme = GetThemeInfo
-        .txtResult.Locked = False
         Call PaintControl(AutoTheme, Index)
 
         Select Case m_DialogType
 
             Case [ucFolder]
                 '   Update the Folder PickBox Values
-                .txtResult.Locked = m_Locked
+                Locked = m_Locked
 
                 If m_UseDialogText Then
-                    .txtResult.Text = m_DialogMsg([ucFolder])
+                    If LenB(Path) = 0 Then
+                        .txtResult.Text = m_DialogMsg([ucFolder])
+                    End If
                 Else
                     .txtResult.Text = Path
                 End If
@@ -2772,14 +1898,16 @@ Public Sub Refresh(Optional ByVal Index As Long)
 
             Case [ucOpen]
 
+                Locked = m_Locked
                 '   Update the Open PickBox Values
                 If m_UseDialogText Then
                     If (LenB(m_Path) = 0) Or (Left$(m_Path, 3) <> Left$(.txtResult.Text, 3)) Then
-                        .txtResult.Text = m_DialogMsg([ucOpen])
+                        If LenB(Path) = 0 Then
+                            .txtResult.Text = m_DialogMsg([ucOpen])
+                        End If
                     End If
 
                 Else
-                    '.txtResult.Text = vbNullString
                     .txtResult.Text = Path
                 End If
 
@@ -2787,11 +1915,13 @@ Public Sub Refresh(Optional ByVal Index As Long)
 
             Case [ucSave]
 
+                Locked = m_Locked
                 '   Update the Save PickBox Values
                 If m_UseDialogText Then
-                    .txtResult.Text = m_DialogMsg([ucSave])
+                    If LenB(Path) = 0 Then
+                        .txtResult.Text = m_DialogMsg([ucSave])
+                    End If
                 Else
-                    '.txtResult.Text = vbNullString
                     .txtResult.Text = Path
                 End If
 
@@ -2815,9 +1945,9 @@ Public Sub Reset()
     Appearance = 1
     '[3D]
     BackColor = &HFFFFFF
-    m_DialogMsg([ucFolder]) = "Locate Folder..."
-    m_DialogMsg([ucOpen]) = "Locate File..."
-    m_DialogMsg([ucSave]) = "Locate File..."
+    m_DialogMsg([ucFolder]) = Def_DialogMsgFolder
+    m_DialogMsg([ucOpen]) = Def_DialogMsgFile
+    m_DialogMsg([ucSave]) = Def_DialogMsgFile
     m_Filters = "Supported files|*.*|All Files (*.*)"
     m_FileFlags = IIf(m_DialogType = ucOpen, ShowOpen_Default, ShowSave_Default)
 
@@ -2831,38 +1961,18 @@ Public Sub Reset()
 
     m_Filename(1) = vbNullString
     m_Path = vbNullString
-    m_ToolTipText([ucFolder]) = "Click Here to Locate Folder."
+    m_ToolTipText([ucFolder]) = Def_ToolTipMsgFolder
 
     If m_MultiSelect Then
-        m_ToolTipText([ucOpen]) = "Click Here to Locate Files."
+        m_ToolTipText([ucOpen]) = Def_ToolTipMsgFile
     Else
-        m_ToolTipText([ucOpen]) = "Click Here to Locate File."
+        m_ToolTipText([ucOpen]) = Def_ToolTipMsgFile
     End If
 
-    m_ToolTipText([ucSave]) = "Click Here to Locate File"
-    m_UseDialogColor = False
-    m_UseDialogText = True
-    m_Locked = False
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Show_FolderBrowse
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Sub Show_FolderBrowse()
-    DialogType = ucFolder
-    cmdPick_Click
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Show_Open
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Sub Show_Open()
-    DialogType = ucOpen
-    cmdPick_Click
+    m_ToolTipText([ucSave]) = Def_ToolTipMsgFile
+    'm_UseDialogColor = False
+    'm_UseDialogText = True
+    'm_Locked = False
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2874,10 +1984,12 @@ End Sub
 Private Function ShowOpen(sFilter As String, sInitPath As String) As SelectedFile
 
     Dim lRet                As Long
-    Dim Count               As Integer
+    Dim count               As Integer
     Dim LastCharacter       As Integer
     Dim NewCharacter        As Integer
-    Dim tempFiles(1 To 200) As String
+    Dim tempFiles()         As String
+    
+    ReDim tempFiles(1 To 200)
 
     '   Open Common Dialog Controls
     '   Note: This has been modified to allow the user to select either
@@ -2893,21 +2005,23 @@ Private Function ShowOpen(sFilter As String, sInitPath As String) As SelectedFil
         .sFile = FileDialog.sFile & String$(2048, vbNullChar)
         .nFileSize = Len(FileDialog.sFile)
 
-        If LenB(sInitPath) > 0 Then
+        If LenB(sInitPath) Then
             .sInitDir = sInitPath
         Else
-            .sInitDir = strAppPath
+            .sInitDir = GetAppPath
         End If
 
         If m_FileFlags <> 0 Then
-            .Flags = m_FileFlags
+            .flags = m_FileFlags
         Else
-            .Flags = ShowOpen_Default
+            .flags = ShowOpen_Default
         End If
 
         If m_MultiSelect Then
-            .Flags = .Flags Or AllowMultiselect
+            .flags = .flags Or AllowMultiselect
         End If
+        
+        .sDlgTitle = m_DialogMsg(ucOpen) & String$(2048, vbNullChar)
 
         '   Init the File Names
         .sFile = vbNullString & String$(2048, vbNullChar)
@@ -2948,23 +2062,23 @@ GoAgain:
             '
             '   Extract all of the files selected and pass them back in an array.
             LastCharacter = 0
-            Count = 0
+            count = 0
 
             While ShowOpen.nFilesSelected = 0
 
                 NewCharacter = InStr(LastCharacter + 1, FileDialog.sFile, vbNullChar)
 
-                If Count > 0 Then
-                    tempFiles(Count) = Mid$(FileDialog.sFile, LastCharacter + 1, NewCharacter - LastCharacter - 1)
+                If count Then
+                    tempFiles(count) = Mid$(FileDialog.sFile, LastCharacter + 1, NewCharacter - LastCharacter - 1)
                 Else
                     ShowOpen.sLastDirectory = Mid$(FileDialog.sFile, LastCharacter + 1, NewCharacter - LastCharacter - 1)
                 End If
 
-                Count = Count + 1
+                count = count + 1
 
                 If InStr(NewCharacter + 1, FileDialog.sFile, vbNullChar) = InStr(NewCharacter + 1, FileDialog.sFile, str2vbNullChar) Then
-                    tempFiles(Count) = Mid$(FileDialog.sFile, NewCharacter + 1, InStr(NewCharacter + 1, FileDialog.sFile, str2vbNullChar) - NewCharacter - 1)
-                    ShowOpen.nFilesSelected = Count
+                    tempFiles(count) = Mid$(FileDialog.sFile, NewCharacter + 1, InStr(NewCharacter + 1, FileDialog.sFile, str2vbNullChar) - NewCharacter - 1)
+                    ShowOpen.nFilesSelected = count
                 End If
 
                 LastCharacter = NewCharacter
@@ -2973,15 +2087,15 @@ GoAgain:
 
             ReDim ShowOpen.sFiles(1 To ShowOpen.nFilesSelected)
 
-            For Count = 1 To ShowOpen.nFilesSelected
+            For count = 1 To ShowOpen.nFilesSelected
 
-                If (Right$(tempFiles(Count), 4) <> m_DefaultExt) Then
+                If (Right$(tempFiles(count), 4) <> m_DefaultExt) Then
                     If (Len(m_DefaultExt) > 1) Then
-                        tempFiles(Count) = tempFiles(Count) & m_DefaultExt
+                        tempFiles(count) = tempFiles(count) & m_DefaultExt
                     End If
                 End If
 
-                ShowOpen.sFiles(Count) = tempFiles(Count)
+                ShowOpen.sFiles(count) = tempFiles(count)
             Next
 
         Else
@@ -3012,16 +2126,6 @@ GoAgain:
 End Function
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Show_Save
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Sub Show_Save()
-    DialogType = ucSave
-    cmdPick_Click
-End Sub
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function ShowSave
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):   sFilter (String)
@@ -3041,9 +2145,9 @@ Private Function ShowSave(ByVal sFilter As String) As SelectedFile
         .nFileSize = Len(FileDialog.sFile)
 
         If m_FileFlags <> 0 Then
-            .Flags = m_FileFlags
+            .flags = m_FileFlags
         Else
-            .Flags = ShowSave_Default
+            .flags = ShowSave_Default
         End If
 
         '   Process the Filter string to replace the
@@ -3090,59 +2194,31 @@ Private Function ShowSave(ByVal sFilter As String) As SelectedFile
 End Function
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Theme
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
+'! Procedure   (Функция)   :   Sub TrackMouseLeave
+'! Description (Описание)  :   [Track the mouse leaving the indicated window]
+'! Parameters  (Переменные):   lng_hWnd (Long)
 '!--------------------------------------------------------------------------------
-Public Property Get Theme() As pbThemeEnum
-    Theme = m_Theme
-End Property
+Private Sub TrackMouseLeave(ByVal lng_hWnd As Long)
 
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Theme
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Theme (pbThemeEnum)
-'!--------------------------------------------------------------------------------
-Public Property Let Theme(ByVal New_Theme As pbThemeEnum)
-    m_Theme = New_Theme
-    UserControl_Resize
-    PropertyChanged "Theme"
-End Property
+    Dim TME As TRACKMOUSEEVENT_STRUCT
 
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ToolTipTexts
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lType (ucDialogConstant)
-'!--------------------------------------------------------------------------------
-Public Property Get ToolTipTexts(ByVal lType As ucDialogConstant) As String
-    '   Get the Dialg ToolTipText Message for the Type selected
-    ToolTipTexts = m_ToolTipText(lType)
-End Property
+    If bTrack Then
 
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ToolTipTexts
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lType (ucDialogConstant)
-'                              sNewValue (String)
-'!--------------------------------------------------------------------------------
-Public Property Let ToolTipTexts(ByVal lType As ucDialogConstant, ByVal sNewValue As String)
-    '   Set the Dialg ToolTipText Message for the Type selected
-    m_ToolTipText(lType) = sNewValue
+        With TME
+            .cbSize = LenB(TME)
+            .dwFlags = TME_LEAVE
+            .hWndTrack = lng_hWnd
+            .dwHoverTime = 1
+        End With
 
-    Select Case lType
+        If bTrackUser32 Then
+            TrackMouseEvent TME
+        Else
+            TrackMouseEventComCtl TME
+        End If
+    End If
 
-        Case ucFolder
-            PropertyChanged "ToolTipText0"
-
-        Case ucOpen
-            PropertyChanged "ToolTipText1"
-
-        Case ucSave
-            PropertyChanged "ToolTipText2"
-    End Select
-
-    Call Refresh(0)
-End Property
+End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function TranslateColor
@@ -3218,27 +2294,27 @@ Public Function TrimPathByLen(ByVal sInput As String, ByVal iTextWidth As Intege
 
         'now that we know how much to trim, we need to
         'determine the path type: local, network, or URL
-        If InStr(sInput$, vbBackslash) Then
+        If InStr(sInput$, "\") Then
 
             'LOCAL
             'add trailing slash if there is none
-            If Right$(sInput$, 1) <> vbBackslash Then
+            If Right$(sInput$, 1) <> "\" Then
                 bAddedTrailSlash = True
-                sInput$ = sInput$ & vbBackslash
+                sInput$ = sInput$ & "\"
             End If
 
             'throw path into an array
-            aBuffer() = Split(sInput$, vbBackslash)
+            aBuffer() = Split(sInput$, "\")
 
             If UBound(aBuffer()) > LBound(aBuffer()) Then
                 iArrayCount% = UBound(aBuffer()) - 1
                 'the last element is blank
-                sBeginning$ = aBuffer(0) & vbBackslash & aBuffer(1) & vbBackslash
-                sEnd$ = vbBackslash & aBuffer(iArrayCount%)
+                sBeginning$ = aBuffer(0) & "\" & aBuffer(1) & "\"
+                sEnd$ = "\" & aBuffer(iArrayCount%)
 
                 If (UserControl.TextWidth(sBeginning$) + UserControl.TextWidth(sReplaceString$) + UserControl.TextWidth(sEnd$)) > iTextWidth% Then
                     'if the total outputed string is too big then stop
-                    sBeginning$ = aBuffer(0) & vbBackslash
+                    sBeginning$ = aBuffer(0) & "\"
 
                     If (UserControl.TextWidth(sBeginning$) + UserControl.TextWidth(sReplaceString$) + UserControl.TextWidth(sEnd$)) > iTextWidth% Then
                         TrimPathByLen$ = sReplaceString$ & sEnd$
@@ -3250,7 +2326,7 @@ Public Function TrimPathByLen(ByVal sInput As String, ByVal iTextWidth As Intege
 
                     For iIndex% = iArrayCount% - 1 To 1 Step -1
                         'go throug the remaing elements to get the best fit
-                        sEnd$ = vbBackslash & aBuffer(iIndex%) & sEnd$
+                        sEnd$ = "\" & aBuffer(iIndex%) & sEnd$
 
                         If (UserControl.TextWidth(sBeginning$) + UserControl.TextWidth(sReplaceString$) + UserControl.TextWidth(sEnd$)) > iTextWidth% Then
                             'if the total outputed string is too big then stop
@@ -3272,7 +2348,7 @@ Public Function TrimPathByLen(ByVal sInput As String, ByVal iTextWidth As Intege
 
             Exit Function
 
-        ElseIf InStr(sInput$, "/") Then
+        ElseIf InStr(sInput$, "\") Then
 
             If InStr(sInput$, ":") Then
 
@@ -3281,23 +2357,23 @@ Public Function TrimPathByLen(ByVal sInput As String, ByVal iTextWidth As Intege
                 If InStr(sInput$, "?") Then sInput$ = Left$(sInput$, InStr(sInput$, "?") - 1)
 
                 'add trailing slash if there is none
-                If Right$(sInput$, 1) <> "/" Then
+                If Right$(sInput$, 1) <> "\" Then
                     bAddedTrailSlash = True
-                    sInput$ = sInput$ & "/"
+                    sInput$ = sInput$ & "\"
                 End If
 
                 'throw path into an array
-                aBuffer() = Split(sInput$, "/")
+                aBuffer() = Split(sInput$, "\")
 
                 If UBound(aBuffer()) > LBound(aBuffer()) Then
                     iArrayCount% = UBound(aBuffer()) - 1
                     'the last element is blank
-                    sBeginning$ = aBuffer(0) & "/" & aBuffer(1) & "/"
-                    sEnd$ = "/" & aBuffer(iArrayCount%)
+                    sBeginning$ = aBuffer(0) & "\" & aBuffer(1) & "\"
+                    sEnd$ = "\" & aBuffer(iArrayCount%)
 
                     If (UserControl.TextWidth(sBeginning$) + UserControl.TextWidth(sReplaceString$) + UserControl.TextWidth(sEnd$)) > iTextWidth% Then
                         'if the total outputed string is too big then stop
-                        sBeginning$ = aBuffer(0) & "/"
+                        sBeginning$ = aBuffer(0) & "\"
 
                         If (UserControl.TextWidth(sBeginning$) + UserControl.TextWidth(sReplaceString$) + UserControl.TextWidth(sEnd$)) > iTextWidth% Then
                             TrimPathByLen$ = sReplaceString$ & sEnd$
@@ -3309,7 +2385,7 @@ Public Function TrimPathByLen(ByVal sInput As String, ByVal iTextWidth As Intege
 
                         For iIndex% = iArrayCount% - 1 To 1 Step -1
                             'go throug the remaing elements to get the best fit
-                            sEnd$ = "/" & aBuffer(iIndex%) & sEnd$
+                            sEnd$ = "\" & aBuffer(iIndex%) & sEnd$
 
                             If (UserControl.TextWidth(sBeginning$) + UserControl.TextWidth(sReplaceString$) + UserControl.TextWidth(sEnd$)) > iTextWidth% Then
                                 'if the total outputed string is too big then stop
@@ -3333,23 +2409,23 @@ Public Function TrimPathByLen(ByVal sInput As String, ByVal iTextWidth As Intege
 
                 ' NETWORK
                 'add trailing slash if there is none
-                If Right$(sInput$, 1) <> "/" Then
+                If Right$(sInput$, 1) <> "\" Then
                     bAddedTrailSlash = True
-                    sInput$ = sInput$ & "/"
+                    sInput$ = sInput$ & "\"
                 End If
 
                 'throw path into an array
-                aBuffer() = Split(sInput$, "/")
+                aBuffer() = Split(sInput$, "\")
 
                 If UBound(aBuffer()) > LBound(aBuffer()) Then
                     iArrayCount% = UBound(aBuffer()) - 1
                     'the last element is blank
-                    sBeginning$ = aBuffer(0) & "/" & aBuffer(1) & "/"
-                    sEnd$ = "/" & aBuffer(iArrayCount%)
+                    sBeginning$ = aBuffer(0) & "\" & aBuffer(1) & "\"
+                    sEnd$ = "\" & aBuffer(iArrayCount%)
 
                     If (UserControl.TextWidth(sBeginning$) + UserControl.TextWidth(sReplaceString$) + UserControl.TextWidth(sEnd$)) > iTextWidth% Then
                         'if the total outputed string is too big then stop
-                        sBeginning$ = aBuffer(0) & "/"
+                        sBeginning$ = aBuffer(0) & "\"
 
                         If (UserControl.TextWidth(sBeginning$) + UserControl.TextWidth(sReplaceString$) + UserControl.TextWidth(sEnd$)) > iTextWidth% Then
                             TrimPathByLen$ = sReplaceString$ & sEnd$
@@ -3361,7 +2437,7 @@ Public Function TrimPathByLen(ByVal sInput As String, ByVal iTextWidth As Intege
 
                         For iIndex% = iArrayCount% - 1 To 1 Step -1
                             'go throug the remaing elements to get the best fit
-                            sEnd$ = "/" & aBuffer(iIndex%) & sEnd$
+                            sEnd$ = "\" & aBuffer(iIndex%) & sEnd$
 
                             If (UserControl.TextWidth(sBeginning$) + UserControl.TextWidth(sReplaceString$) + UserControl.TextWidth(sEnd$)) > iTextWidth% Then
                                 'if the total outputed string is too big then stop
@@ -3393,6 +2469,380 @@ Public Function TrimPathByLen(ByVal sInput As String, ByVal iTextWidth As Intege
     UserControl.FontSize = OldFontSize
     UserControl.ScaleMode = OldScaleMode
 End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmbMultiSel_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmbMultiSel_Click()
+
+    With UserControl
+        '   Display the selected results from the ComboBox List
+        .txtResult.Text = .cmbMultiSel.List(.cmbMultiSel.ListIndex)
+    End With
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmbMultiSel_KeyDown
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   KeyCode (Integer)
+'                              Shift (Integer)
+'!--------------------------------------------------------------------------------
+Private Sub cmbMultiSel_KeyDown(KeyCode As Integer, Shift As Integer)
+
+    If KeyCode = vbKeyUp Then
+
+        '   See if we are at the top, if so then change
+        '   the focus back to the textbox....as if it were
+        '   part of the control
+        If UserControl.cmbMultiSel.ListIndex = 0 Then
+            UserControl.txtResult.SetFocus
+        End If
+    End If
+
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdDrop_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmdDrop_Click()
+
+    With UserControl
+
+        If Not ComboBoxListVisible(.cmbMultiSel) Then
+            '   It is closed, so open it via code....
+            Call OpenComboBox(.cmbMultiSel, True)
+        Else
+            '   Set the focus to our TextBox
+            .txtResult.SetFocus
+        End If
+
+        '   Drop List Clicked...
+        RaiseEvent DropClick
+    End With
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdDrop_MouseDown
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Button (Integer)
+'                              Shift (Integer)
+'                              X (Single)
+'                              Y (Single)
+'!--------------------------------------------------------------------------------
+Private Sub cmdDrop_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    '   Get the Cursor Position
+    m_Pnt = GetCursorPosition
+    RaiseEvent MouseDown(Button, Shift, CSng(m_Pnt.X), CSng(m_Pnt.Y))
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdDrop_MouseMove
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Button (Integer)
+'                              Shift (Integer)
+'                              X (Single)
+'                              Y (Single)
+'!--------------------------------------------------------------------------------
+Private Sub cmdDrop_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    '   Get the Cursor Position
+    m_Pnt = GetCursorPosition
+
+    If (m_PrevLoc.X <> m_Pnt.X) Then
+        If (m_PrevLoc.Y <> m_Pnt.Y) Then
+            RaiseEvent MouseMove(Button, Shift, CSng(m_Pnt.X), CSng(m_Pnt.Y))
+            m_PrevLoc = m_Pnt
+        End If
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdDrop_MouseUp
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Button (Integer)
+'                              Shift (Integer)
+'                              X (Single)
+'                              Y (Single)
+'!--------------------------------------------------------------------------------
+Private Sub cmdDrop_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+
+    '   Make sure the focus is on the TextBox and not the drop button
+    UserControl.txtResult.SetFocus
+
+    '   Get the Cursor Position
+    m_Pnt = GetCursorPosition
+    RaiseEvent MouseUp(Button, Shift, CSng(m_Pnt.X), CSng(m_Pnt.Y))
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdPick_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmdPick_Click()
+
+    Dim psFile    As SelectedFile
+    Dim I         As Long
+    Dim sExt      As String
+    Dim sFolder   As String
+    Dim AutoTheme As String
+
+    On Error Resume Next
+
+    With UserControl
+        AutoTheme = GetThemeInfo
+        '   Make sure the Combobox is hidden
+        .cmdDrop.Visible = False
+        .pbDrop.Visible = False
+
+        '   Which dialog is active?
+        Select Case m_DialogType
+
+            Case [ucFolder]
+
+                'ShowFolder_Default
+                With New CommonDialog
+                    .InitDir = PathCollect(txtResult.Text)
+                    .flags = CdlBIFNewDialogStyle
+                    .DialogTitle = m_DialogMsg(ucFolder)
+                                        
+                    If .ShowFolderBrowser = True Then
+                        sFolder = .FileName
+                    End If
+                    
+
+                End With
+
+                If LenB(sFolder) Then
+                    m_Path = QualifyPath(sFolder)
+                    PropertyChanged "Path"
+
+                    If m_UseDialogText Then
+
+                        '   Trim the display name
+                        If m_QualifyPaths Then
+                            .txtResult.Text = TrimPathByLen(m_Path, .txtResult.Width - .cmdPick.Width - 40)
+                        Else
+                            .txtResult.Text = m_Path
+                        End If
+                    End If
+                End If
+
+            Case [ucOpen], [ucSave]
+
+                '   Same basic routine, with different calls to start
+                If m_DialogType = [ucOpen] Then
+                    'psFile = ShowOpen(m_Filters, txtResult.Text)
+                    psFile = ShowOpen(m_Filters, PathCollect(txtResult.Text))
+                Else
+                    psFile = ShowSave(m_Filters)
+                End If
+
+                If (psFile.bCanceled = False) Then
+                    If (psFile.nFilesSelected) Then
+                        If m_DialogType = [ucOpen] Then
+
+                            '   Set the Command Button visable
+                            If (m_Theme = pbClassic) Or (AutoTheme = "None") Then
+                                .cmdDrop.Visible = m_MultiSelect
+                            Else
+                                .pbDrop.Visible = m_MultiSelect
+                            End If
+
+                            '   Concatinate the filename and path
+                            If m_MultiSelect Then
+                                '   Store the qaulified path
+                                m_Path = QualifyPath(psFile.sLastDirectory)
+                                PropertyChanged "Path"
+                                '   Count the Files
+                                FileCount = UBound(psFile.sFiles) - LBound(psFile.sFiles) + 1
+
+                                If m_FileCount = 1 Then
+                                    '   Erase the array...this is over kill
+                                    '   but better to be safe than sorry ;-)
+                                    Erase m_Filename
+
+                                    '   Redim to a vector...
+                                    ReDim m_Filename(1 To 1)
+
+                                    '   Clear the ComboBox
+                                    .cmbMultiSel.Clear
+                                    '   Store the Filename
+                                    m_Filename(1) = psFile.sFiles(1)
+                                    PropertyChanged "Filename"
+                                    '   Add the Trimmed Filename and Path
+                                    .cmbMultiSel.AddItem TrimPathByLen(m_Path & psFile.sFiles(1), .txtResult.Width - 40)
+                                Else
+                                    '   Erase the array...this is over kill
+                                    '   but better to be safe than sorry ;-)
+                                    Erase m_Filename
+
+                                    '   Redim to a vector...
+                                    ReDim m_Filename(1 To m_FileCount)
+
+                                    '   Clear the ComboBox
+                                    .cmbMultiSel.Clear
+
+                                    '   Store the Filenames
+                                    For I = 1 To m_FileCount
+                                        .cmbMultiSel.AddItem TrimPathByLen(QualifyPath(m_Path) & psFile.sFiles(I), .txtResult.Width - 40)
+                                        m_Filename(I) = m_Path & psFile.sFiles(I)
+                                    Next
+
+                                End If
+
+                            Else
+
+                                ReDim m_Filename(1 To 1)
+
+                                '   Store the qaulified path
+                                m_Path = QualifyPath(ExtractPath(psFile.sFiles(1)))
+                                PropertyChanged "Path"
+                                m_Filename(1) = psFile.sFiles(1)
+                                m_FileCount = 1
+                            End If
+
+                            PropertyChanged "Filename"
+
+                            If m_UseDialogText Then
+
+                                '   Trim the display name
+                                If m_MultiSelect Then
+                                    '   Adjust the name len to account for our new button
+                                    .txtResult.Text = TrimPathByLen(m_Filename(1), .txtResult.Width - .cmdPick.Width - .cmdDrop.Width - 40)
+                                Else
+
+                                    If m_QualifyPaths Then
+                                        .txtResult.Text = TrimPathByLen(m_Filename(1), .txtResult.Width - .cmdPick.Width - 40)
+                                    Else
+                                        .txtResult.Text = m_Filename(1)
+                                    End If
+                                End If
+                            End If
+
+                            '   Focus on the final name
+                            .txtResult.SetFocus
+                        Else
+
+                            '   Concatinate the filename and path
+                            ReDim m_Filename(1 To 1)
+
+                            If Not (Right$(psFile.sFiles(1), 4) Like ".*") Then
+Retry:
+                                '   This section handles files which are returned without extnsions
+                                sExt = InputBox("The File Extension is Missing!" & vbCrLf & "Please Enter a Valid Extension Below...", "ucPickBox", , (.Parent.ScaleWidth \ 2) + .Parent.Left - 2700, (.Parent.ScaleHeight \ 2) + .Parent.Top - 800)
+
+                                If LenB(sExt) = 0 Then
+                                    If MsgBox("     The File Extension is Invalid!" & vbCrLf & vbCrLf & "File will be saved with .txt extension.", vbExclamation + vbOKCancel, "ucPickBox") = vbOK Then
+                                        '   Just use the default text file type
+                                        sExt = ".txt"
+                                    Else
+                                        '   Give them another try to get this right...
+                                        GoTo Retry
+                                    End If
+                                End If
+
+                                '   Fix missing "." in the extension
+                                If (InStr(sExt, ".") = 0) Or (Len(sExt) = 3) Then
+                                    psFile.sFiles(1) = psFile.sFiles(1) & "." & sExt
+                                Else
+                                    psFile.sFiles(1) = psFile.sFiles(1) & sExt
+                                End If
+                            End If
+
+                            '   Store the Filename
+                            m_Filename(1) = psFile.sFiles(1)
+                            PropertyChanged "Filename"
+                            '   Store the qualified path
+                            m_Path = QualifyPath(ExtractPath(m_Filename(1)))
+                            PropertyChanged "Path"
+
+                            If m_UseDialogText Then
+                                '   Trim the display name
+                                .txtResult.Text = TrimPathByLen(psFile.sFiles(1), .txtResult.Width - .cmdPick.Width - 40)
+                            End If
+
+                            FileCount = 1
+                        End If
+
+                        '   Focus on the final name
+                        .txtResult.SetFocus
+                    End If
+                End If
+
+                RaiseEvent PathChanged
+        End Select
+
+        RaiseEvent Click
+        m_Pnt = GetCursorPosition()
+        RaiseEvent MouseDown(vbLeftButton, 0, CSng(m_Pnt.X), CSng(m_Pnt.Y))
+    End With
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdPick_MouseDown
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Button (Integer)
+'                              Shift (Integer)
+'                              X (Single)
+'                              Y (Single)
+'!--------------------------------------------------------------------------------
+Private Sub cmdPick_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    '   Get the Cursor Position
+    m_Pnt = GetCursorPosition
+    RaiseEvent MouseDown(Button, Shift, CSng(m_Pnt.X), CSng(m_Pnt.Y))
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdPick_MouseMove
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Button (Integer)
+'                              Shift (Integer)
+'                              X (Single)
+'                              Y (Single)
+'!--------------------------------------------------------------------------------
+Private Sub cmdPick_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    '   Get the Cursor Position
+    m_Pnt = GetCursorPosition
+
+    If (m_PrevLoc.X <> m_Pnt.X) Then
+        If (m_PrevLoc.Y <> m_Pnt.Y) Then
+            RaiseEvent MouseMove(Button, Shift, CSng(m_Pnt.X), CSng(m_Pnt.Y))
+            m_PrevLoc = m_Pnt
+        End If
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdPick_MouseUp
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Button (Integer)
+'                              Shift (Integer)
+'                              X (Single)
+'                              Y (Single)
+'!--------------------------------------------------------------------------------
+Private Sub cmdPick_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    '   Get the Cursor Position
+    m_Pnt = GetCursorPosition
+    RaiseEvent MouseUp(Button, Shift, CSng(m_Pnt.X), CSng(m_Pnt.Y))
+End Sub
+
+Private Sub IOleInPlaceActiveObjectVB_TranslateAccelerator(ByRef Handled As Boolean, ByRef RetVal As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal Shift As Long)
+    On Error Resume Next
+    Dim This As OLEGuids.IOleInPlaceActiveObjectVB
+    
+    Set This = UserControl.ActiveControl.Object
+    This.TranslateAccelerator Handled, RetVal, wMsg, wParam, lParam, Shift
+End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub pbDrop_Click
@@ -3497,6 +2947,36 @@ Private Sub pbPick_MouseUp(Button As Integer, Shift As Integer, X As Single, Y A
 End Sub
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Show_FolderBrowse
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Sub Show_FolderBrowse()
+    DialogType = ucFolder
+    cmdPick_Click
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Show_Open
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Sub Show_Open()
+    DialogType = ucOpen
+    cmdPick_Click
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Show_Save
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Sub Show_Save()
+    DialogType = ucSave
+    cmdPick_Click
+End Sub
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub txtResult_GotFocus
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
@@ -3531,9 +3011,9 @@ Private Sub txtResult_KeyDown(KeyCode As Integer, Shift As Integer)
                 '   This routine allow the user to arrow down to the combobox
                 '   droplist. The uparrow function is in the combobox keydown
                 '   event handler...
-                If (m_DialogType = ucOpen) Then
-                    If (m_MultiSelect) Then
-                        If (.cmbMultiSel.ListCount > 0) Then
+                If m_DialogType = ucOpen Then
+                    If m_MultiSelect Then
+                        If .cmbMultiSel.ListCount Then
                             '   Set the ListIndex to 0
                             .cmbMultiSel.ListIndex = 0
                             '   Now drop the box
@@ -3578,7 +3058,7 @@ End Sub
 Private Sub txtResult_LostFocus()
 
     Dim TmpName As String
-    Dim i       As Long
+    Dim I       As Long
 
     On Error Resume Next
 
@@ -3631,7 +3111,7 @@ Private Sub txtResult_LostFocus()
 
                     If .txtResult.Text <> m_DialogMsg(m_DialogType) Then
                         '   Pass the value to the textbox
-                        MsgBox "The Name Entered is Invalid!", vbExclamation + vbOKOnly, "ucPickBox"
+                        'MsgBox "The Name Entered is Invalid!", vbExclamation + vbOKOnly, "ucPickBox"
                     End If
                 End If
 
@@ -3691,76 +3171,6 @@ Private Sub txtResult_MouseUp(Button As Integer, Shift As Integer, X As Single, 
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UseAutoForeColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get UseAutoForeColor() As Boolean
-    '   Get if we want the forecolor to be set automatically
-    '   via XOR in the textbox backcolor
-    UseAutoForeColor = m_UseAutoForeColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UseAutoForeColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   bNewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let UseAutoForeColor(ByVal bNewValue As Boolean)
-    '   Set if we want the forecolor to be set automatically
-    '   via XOR in the textbox backcolor
-    m_UseAutoForeColor = bNewValue
-    PropertyChanged "UseAutoForeColor"
-    Call Refresh(0)
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UseDialogColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get UseDialogColor() As Boolean
-    '   Get if we want the color as textbox backcolor
-    UseDialogColor = m_UseDialogColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UseDialogColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   bNewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let UseDialogColor(ByVal bNewValue As Boolean)
-    '   Set if we want to use color as the backcolor
-    m_UseDialogColor = bNewValue
-    PropertyChanged "UseDialogColor"
-    Call Refresh(0)
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UseDialogText
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get UseDialogText() As Boolean
-    '   Dispaly the dialog text?
-    UseDialogText = m_UseDialogText
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UseDialogText
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   bNewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let UseDialogText(ByVal bNewValue As Boolean)
-    '   Set if the dialog is to be diaplayed
-    '
-    '   One might want to turn off the text if using color in the display
-    m_UseDialogText = bNewValue
-    PropertyChanged "UseDialogText"
-    Call Refresh(0)
-End Property
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UserControl_GotFocus
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
@@ -3782,9 +3192,11 @@ End Sub
 Private Sub UserControl_Initialize()
     m_bIsWinXpOrLater = IsWinXPOrLater
     '   Get Our Handle
-    m_hWnd = UserControl.hWnd
+    m_Hwnd = UserControl.hWnd
     '   Rest the Control to its defaults...
     Call Reset
+    
+    Set m_cSubclass = New cSelfSubHookCallback
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -3800,7 +3212,92 @@ Private Sub UserControl_InitProperties()
     m_Forecolor = &H0
     m_Theme = pbAuto
     m_UseAutoForeColor = False
-    m_Locked = False
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub UserControl_ReadProperties
+'! Description (Описание)  :   [Read the properties from the property bag - also, a good place to start the subclassing (if we're running)]
+'! Parameters  (Переменные):   PropBag (PropertyBag)
+'!--------------------------------------------------------------------------------
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+
+    With PropBag
+        m_Appearance = .ReadProperty("Appearance", [3D])
+        m_UseAutoForeColor = .ReadProperty("UseAutoForeColor", True)
+        m_BackColor = .ReadProperty("BackColor", &HFFFFFF)
+        m_DefaultExt = .ReadProperty("DefaultExt", ".txt")
+        m_DialogMsg([ucFolder]) = .ReadProperty("DialogMsg0", Def_DialogMsgFolder)
+        m_DialogMsg([ucOpen]) = .ReadProperty("DialogMsg1", Def_DialogMsgFile)
+        m_DialogMsg([ucSave]) = .ReadProperty("DialogMsg2", Def_DialogMsgFile)
+        m_DialogType = .ReadProperty("DialogType", [ucFolder])
+        m_Enabled = .ReadProperty("Enabled", True)
+        m_FileFlags = .ReadProperty("FileFlags", IIf(m_DialogType = ucOpen, ShowOpen_Default, ShowSave_Default))
+        m_Filters = .ReadProperty("Filters", vbNullString)
+        Set m_Font = .ReadProperty("Font", Nothing)
+        m_Forecolor = .ReadProperty("ForeColor", &H0)
+        m_MultiSelect = .ReadProperty("MultiSelect", False)
+        m_Path = .ReadProperty("Path", vbNullString)
+        m_Theme = .ReadProperty("Theme", [pbAuto])
+        m_ToolTipText([ucFolder]) = .ReadProperty("ToolTipText0", Def_ToolTipMsgFolder)
+        m_ToolTipText([ucOpen]) = .ReadProperty("ToolTipText1", Def_ToolTipMsgFile)
+        m_ToolTipText([ucSave]) = .ReadProperty("ToolTipText2", Def_ToolTipMsgFile)
+        m_UseDialogColor = .ReadProperty("UseDialogColor", False)
+        m_UseDialogText = .ReadProperty("UseDialogText", True)
+        m_Locked = .ReadProperty("Locked", False)
+    End With
+
+    UserControl_Resize
+    '   Set the focus on the caller
+    Call SetFocusAPI(UserControl.Parent.hWnd)
+    
+    'If we're not in design mode
+    On Error GoTo H
+
+    'If we're not in design mode
+    If RunMode Then
+        
+        bTrack = True
+        bTrackUser32 = APIFunctionPresent("TrackMouseEvent", "user32.dll")
+
+        If Not bTrackUser32 Then
+            If Not APIFunctionPresent("_TrackMouseEvent", "comctl32") Then
+                bTrack = False
+            End If
+        End If
+
+        If bTrack Then
+                
+            'Add the messages that we're interested in
+            With m_cSubclass
+                '   Start Subclassing using our Handle
+                If .ssc_Subclass(UserControl.hWnd, ByVal exUserControl, 1, Me) Then
+                    .ssc_AddMsg UserControl.hWnd, MSG_AFTER, WM_MOUSEMOVE, WM_MOUSELEAVE, WM_THEMECHANGED, WM_SYSCOLORCHANGE
+                End If
+                
+                '   Subclass the Ellipse (Pick) Picturebox
+                If .ssc_Subclass(UserControl.pbPick.hWnd, ByVal exUserControl, 1, Me) Then
+                    .ssc_AddMsg UserControl.pbPick.hWnd, MSG_AFTER, WM_MOUSEMOVE, WM_MOUSELEAVE
+                End If
+                
+                '   Subclass the Dropdown (Drop) Picturebox
+                If .ssc_Subclass(UserControl.pbDrop.hWnd, ByVal exUserControl, 1, Me) Then
+                    .ssc_AddMsg UserControl.pbDrop.hWnd, MSG_AFTER, WM_MOUSEMOVE, WM_MOUSELEAVE
+                End If
+                
+                '   Subclass the Dropdown (Drop) Picturebox
+                If .ssc_Subclass(UserControl.txtResult.hWnd, ByVal exUserControl, 1, Me) Then
+                    .ssc_AddMsg UserControl.txtResult.hWnd, MSG_AFTER, WM_MOUSEMOVE, WM_MOUSELEAVE
+                End If
+    
+            End With
+        End If
+
+    End If
+
+H:
+
+    On Error GoTo 0
+
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -3930,6 +3427,17 @@ Private Sub UserControl_Show()
 End Sub
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub UserControl_Terminate
+'! Description (Описание)  :   [The control is terminating - a good place to stop the subclasser]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub UserControl_Terminate()
+    'Terminate all subclassing
+    m_cSubclass.ssc_Terminate
+    Set m_cSubclass = Nothing
+End Sub
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UserControl_WriteProperties
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):   PropBag (PropertyBag)
@@ -3941,9 +3449,9 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         Call .WriteProperty("UseAutoForeColor", m_UseAutoForeColor, True)
         Call .WriteProperty("BackColor", m_BackColor, &HFFFFFF)
         Call .WriteProperty("DefaultExt", m_DefaultExt, ".txt")
-        Call .WriteProperty("DialogMsg0", m_DialogMsg([ucFolder]), "Locate Folder...")
-        Call .WriteProperty("DialogMsg1", m_DialogMsg([ucOpen]), "Locate File...")
-        Call .WriteProperty("DialogMsg2", m_DialogMsg([ucSave]), "Locate File...")
+        Call .WriteProperty("DialogMsg0", m_DialogMsg([ucFolder]), Def_DialogMsgFolder)
+        Call .WriteProperty("DialogMsg1", m_DialogMsg([ucOpen]), Def_DialogMsgFile)
+        Call .WriteProperty("DialogMsg2", m_DialogMsg([ucSave]), Def_DialogMsgFile)
         Call .WriteProperty("DialogType", m_DialogType, [ucFolder])
         Call .WriteProperty("Enabled", m_Enabled, True)
         Call .WriteProperty("FileFlags", m_FileFlags, IIf(m_DialogType = ucOpen, ShowOpen_Default, ShowSave_Default))
@@ -3953,110 +3461,15 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         Call .WriteProperty("MultiSelect", m_MultiSelect, False)
         Call .WriteProperty("Path", m_Path, vbNullString)
         Call .WriteProperty("Theme", m_Theme, [pbAuto])
-        Call .WriteProperty("ToolTipText0", m_ToolTipText([ucFolder]), "Click Here to Locate Folder.")
-        Call .WriteProperty("ToolTipText1", m_ToolTipText([ucOpen]), "Click Here to Locate File.")
-        Call .WriteProperty("ToolTipText2", m_ToolTipText([ucSave]), "Click Here to Locate File.")
+        Call .WriteProperty("ToolTipText0", m_ToolTipText([ucFolder]), Def_ToolTipMsgFolder)
+        Call .WriteProperty("ToolTipText1", m_ToolTipText([ucOpen]), Def_ToolTipMsgFile)
+        Call .WriteProperty("ToolTipText2", m_ToolTipText([ucSave]), Def_ToolTipMsgFile)
         Call .WriteProperty("UseDialogColor", m_UseDialogColor, False)
         Call .WriteProperty("UseDialogText", m_UseDialogText, True)
         Call .WriteProperty("Locked", m_Locked, False)
         Call .WriteProperty("QualifyPaths", m_QualifyPaths, False)
     End With
 
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub UserControl_ReadProperties
-'! Description (Описание)  :   [Read the properties from the property bag - also, a good place to start the subclassing (if we're running)]
-'! Parameters  (Переменные):   PropBag (PropertyBag)
-'!--------------------------------------------------------------------------------
-Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-
-    With PropBag
-        m_Appearance = .ReadProperty("Appearance", [3D])
-        m_UseAutoForeColor = .ReadProperty("UseAutoForeColor", True)
-        m_BackColor = .ReadProperty("BackColor", &HFFFFFF)
-        m_DefaultExt = .ReadProperty("DefaultExt", ".txt")
-        m_DialogMsg([ucFolder]) = .ReadProperty("DialogMsg0", "Locate Folder...")
-        m_DialogMsg([ucOpen]) = .ReadProperty("DialogMsg1", "Locate File...")
-        m_DialogMsg([ucSave]) = .ReadProperty("DialogMsg2", "Locate File...")
-        m_DialogType = .ReadProperty("DialogType", [ucFolder])
-        m_Enabled = .ReadProperty("Enabled", True)
-        m_FileFlags = .ReadProperty("FileFlags", IIf(m_DialogType = ucOpen, ShowOpen_Default, ShowSave_Default))
-        m_Filters = .ReadProperty("Filters", vbNullString)
-        Set m_Font = .ReadProperty("Font", Nothing)
-        m_Forecolor = .ReadProperty("ForeColor", &H0)
-        m_MultiSelect = .ReadProperty("MultiSelect", False)
-        m_Path = .ReadProperty("Path", vbNullString)
-        m_Theme = .ReadProperty("Theme", [pbAuto])
-        m_ToolTipText([ucFolder]) = .ReadProperty("ToolTipText0", "Click Here to Locate Folder.")
-        m_ToolTipText([ucOpen]) = .ReadProperty("ToolTipText1", "Click Here to Locate File.")
-        m_ToolTipText([ucSave]) = .ReadProperty("ToolTipText2", "Click Here to Locate File.")
-        m_UseDialogColor = .ReadProperty("UseDialogColor", False)
-        m_UseDialogText = .ReadProperty("UseDialogText", True)
-        m_Locked = .ReadProperty("Locked", False)
-    End With
-
-    'If we're not in design mode
-    If Ambient.UserMode Then
-        bTrack = True
-        bTrackUser32 = APIFunctionPresent("TrackMouseEvent", "user32.dll")
-
-        If Not bTrackUser32 Then
-            If Not APIFunctionPresent("_TrackMouseEvent", "comctl32") Then
-                bTrack = False
-            End If
-        End If
-
-        If bTrack Then
-
-            'Add the messages that we're interested in
-            With UserControl
-                '   Start Subclassing using our Handle
-                Call sc_Subclass(.hWnd)
-                '   Subclas the Move and Leave Events of the Control
-                Call sc_AddMsg(.hWnd, WM_MOUSEMOVE)
-                Call sc_AddMsg(.hWnd, WM_MOUSELEAVE)
-                Call sc_AddMsg(.hWnd, WM_SYSCOLORCHANGE)
-                Call sc_AddMsg(.hWnd, WM_THEMECHANGED)
-
-                '   Subclass the Ellipse (Pick) Picturebox
-                With .pbPick
-                    Call sc_Subclass(.hWnd)
-                    Call sc_AddMsg(.hWnd, WM_MOUSEMOVE)
-                    Call sc_AddMsg(.hWnd, WM_MOUSELEAVE)
-                End With
-
-                '   Subclass the Dropdown (Drop) Picturebox
-                With .pbDrop
-                    Call sc_Subclass(.hWnd)
-                    Call sc_AddMsg(.hWnd, WM_MOUSEMOVE)
-                    Call sc_AddMsg(.hWnd, WM_MOUSELEAVE)
-                End With
-
-                '   Subclass the Textbox (txtResult) Picturebox
-                With .txtResult
-                    Call sc_Subclass(.hWnd)
-                    Call sc_AddMsg(.hWnd, WM_MOUSEMOVE)
-                    Call sc_AddMsg(.hWnd, WM_MOUSELEAVE)
-                End With
-            End With
-
-        End If
-    End If
-
-    UserControl_Resize
-    '   Set the focus on the caller
-    Call SetFocusAPI(UserControl.Parent.hWnd)
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub UserControl_Terminate
-'! Description (Описание)  :   [The control is terminating - a good place to stop the subclasser]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub UserControl_Terminate()
-    'Terminate all subclassing
-    sc_Terminate
 End Sub
 
 '======================================================================================================
@@ -4073,7 +3486,7 @@ End Sub
 '                              lParam (Long)
 '                              lParamUser (Long)
 '!--------------------------------------------------------------------------------
-Private Sub zWndProc1(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal lng_hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef lParamUser As Long)
+Private Sub z_WndProc1(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal lng_hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef lParamUser As Long)
 
     '*************************************************************************************************
     '* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
@@ -4091,9 +3504,13 @@ Private Sub zWndProc1(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
     '* lParam     - Message related data.
     '* lParamUser - User-defined callback parameter
     '*************************************************************************************************
+    'If you really know what you're doing, it's possible to change the values of the
+    'hWnd, uMsg, wParam and lParam parameters in a 'before' callback so that different
+    'values get passed to the default handler.. and optionaly, the 'after' callback
+    
     Select Case uMsg
 
-        Case WM_MOUSEMOVE
+       Case WM_MOUSEMOVE
 
             If (lng_hWnd = pbPick.hWnd) Then
                 If m_State <> pbHover Then
@@ -4155,15 +3572,12 @@ Private Sub zWndProc1(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef
                 RaiseEvent MouseLeave
             End If
 
-        Case WM_SYSCOLORCHANGE
+        Case WM_SYSCOLORCHANGE, WM_THEMECHANGED
             m_State = pbNormal
             Call Refresh(0)
             Call Refresh(1)
 
-        Case WM_THEMECHANGED
-            m_State = pbNormal
-            Call Refresh(0)
-            Call Refresh(1)
     End Select
 
 End Sub
+

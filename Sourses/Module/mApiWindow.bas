@@ -38,6 +38,8 @@ Public Const WM_NOTIFY          As Long = &H4E
 Public Const WM_NCACTIVATE      As Long = &H86
 Public Const WM_ACTIVATE        As Long = &H6
 Public Const WM_SETTEXT         As Long = &HC
+Public Const WM_GETTEXT         As Long = &HD
+Public Const WM_GETTEXTLENGTH   As Long = &HE
 Public Const WM_KILLFOCUS       As Long = &H8
 Public Const EM_SETREADONLY     As Long = &HCF
 Public Const EM_NOSETFOCUS      As Long = (&H1500 + 7)
@@ -50,6 +52,8 @@ Public Const WS_CHILD           As Long = &H40000000
 Public Const WS_EX_TOPMOST      As Long = &H8&
 Public Const WS_EX_TOOLWINDOW   As Long = &H80
 Public Const WS_EX_LAYOUTRTL    As Long = &H400000
+Public Const WS_EX_STATICEDGE   As Long = &H20000
+Public Const WS_EX_CLIENTEDGE   As Long = &H200&
 Public Const SWP_REFRESH        As Long = (&H1 Or &H2 Or &H4 Or &H20)
 Public Const SWP_NOACTIVATE     As Long = &H10
 Public Const SWP_NOMOVE         As Long = &H2
@@ -93,18 +97,18 @@ Public Const TOOLTIPS_CLASSA     As String = "tooltips_class32"
 Public Const WM_GETMINMAXINFO    As Long = &H24
 
 Public Type MINMAXINFO
-    ptReserved                          As POINT
-    ptMaxSize                           As POINT
-    ptMaxPosition                       As POINT
-    ptMinTrackSize                      As POINT
-    ptMaxTrackSize                      As POINT
+    ptReserved                   As POINTAPI
+    ptMaxSize                    As POINTAPI
+    ptMaxPosition                As POINTAPI
+    ptMinTrackSize               As POINTAPI
+    ptMaxTrackSize               As POINTAPI
 End Type
 
 Public Type Resize
-    xMin                                As Single
-    yMin                                As Single
-    xMax                                As Single
-    yMax                                As Single
+    xMin                         As Single
+    yMin                         As Single
+    xMax                         As Single
+    yMax                         As Single
 End Type
 
 Public Declare Sub CopyMemoryToMinMaxInfo Lib "kernel32.dll" Alias "RtlMoveMemory" (hpvDest As MINMAXINFO, ByVal hpvSource As Long, ByVal cbCopy As Long)
@@ -113,7 +117,7 @@ Public Declare Function DefWindowProc Lib "user32.dll" Alias "DefWindowProcW" (B
 Public Declare Function EnableWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal fEnable As Long) As Long
 Public Declare Function GetWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
 Public Declare Function RedrawWindow Lib "user32.dll" (ByVal hWnd As Long, lprcUpdate As RECT, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
-Public Declare Function SetWindowPos Lib "user32.dll" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal CX As Long, ByVal CY As Long, ByVal wFlags As Long) As Long
+Public Declare Function SetWindowPos Lib "user32.dll" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal Cx As Long, ByVal Cy As Long, ByVal wFlags As Long) As Long
 Public Declare Function DestroyWindow Lib "user32.dll" (ByVal hWnd As Long) As Long
 Public Declare Function MoveWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 Public Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
@@ -124,21 +128,39 @@ Public Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongW" (B
 Public Declare Function SetWindowLongA Lib "user32.dll" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Public Declare Function PostMessage Lib "user32" Alias "PostMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
 Public Declare Function PostMessageLong Lib "user32.dll" Alias "PostMessageA" (ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Public Declare Function LockWindowUpdate Lib "user32.dll" (ByVal hwndLock As Long) As Long
+Public Declare Function LockWindowUpdate Lib "user32.dll" (ByVal hWndLock As Long) As Long
 Public Declare Function SetFocusAPI Lib "user32.dll" Alias "SetFocus" (ByVal hWnd As Long) As Long
 Public Declare Function GetFocus Lib "user32.dll" () As Long
 Public Declare Function UpdateWindow Lib "user32.dll" (ByVal hWnd As Long) As Long
 Public Declare Function FindWindowEx Lib "user32.dll" Alias "FindWindowExA" (ByVal hWnd1 As Long, ByVal hWnd2 As Long, ByVal lpsz1 As String, ByVal lpsz2 As String) As Long
-Public Declare Function EnumThreadWindows Lib "user32.dll" (ByVal dwThreadId As Long, ByVal lpfn As Long, ByVal lParam As Long) As Long
+Public Declare Function EnumThreadWindows Lib "user32.dll" (ByVal dwThreadID As Long, ByVal lpfn As Long, ByVal lParam As Long) As Long
 Public Declare Function GetWindowThreadProcessId Lib "user32.dll" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
-Public Declare Function SetWindowText Lib "user32.dll" Alias "SetWindowTextA" (ByVal hWnd As Long, ByVal lpString As String) As Long
-Public Declare Function GetWindowText Lib "user32.dll" Alias "GetWindowTextA" (ByVal hWnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
 Public Declare Function EnumChildWindows Lib "user32.dll" (ByVal hWndParent As Long, ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
 Public Declare Function GetClassLong Lib "user32.dll" Alias "GetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Public Declare Function SetClassLong Lib "user32.dll" Alias "SetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Public Declare Function ReleaseDC Lib "user32.dll" (ByVal hWnd As Long, ByVal hDC As Long) As Long
+
 'Public Declare Function GetActiveWindow Lib "user32" () As Long
 'Public Declare Function GetForegroundWindow Lib "user32" () As Long
 'Public Declare Function SetForegroundWindow Lib "user32" (ByVal hWnd As Long) As Long
 'Public Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
 'Public Declare Function FindWindow Lib "user32" Alias "FindWindowW" (ByVal lpClassName As Long, ByVal lpWindowName As Long) As Long
+
+Public Function IsChildOfControl(ByVal hWndControl As Long, ByVal hWndParentControl As Long) As Boolean
+
+    Dim hParent As Long
+
+    hParent = GetParent(hWndControl)
+
+    Do While hParent <> 0
+
+        If hParent = hWndParentControl Then
+            IsChildOfControl = True
+            Exit Do
+        End If
+
+        hParent = GetParent(hParent)
+    Loop
+
+End Function
+

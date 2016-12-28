@@ -1,11 +1,14 @@
 Attribute VB_Name = "mTimeFunction"
 Option Explicit
 
-Public dtStartTimeProg                   As Long
-Public dtEndTimeProg                     As Long
-Public dtAllTimeProg                     As String
+Public dtStartTimeProg As Currency
+Public mCurFreq        As Currency
 
 Public Declare Function GetTickCount Lib "kernel32.dll" () As Long
+
+Private Declare Function PerfCount Lib "kernel32" Alias "QueryPerformanceCounter" (lpPerformanceCount As Currency) As Long
+Private Declare Function PerfFreq Lib "kernel32" Alias "QueryPerformanceFrequency" (lpFrequency As Currency) As Long
+
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function CalculateTime
@@ -14,9 +17,8 @@ Public Declare Function GetTickCount Lib "kernel32.dll" () As Long
 '                              lngEndTime (Long)
 '                              mbmSec (Boolean = False)
 '!--------------------------------------------------------------------------------
-Public Function CalculateTime(ByVal lngStartTime As Long, ByVal lngEndTime As Long, Optional ByVal mbmSec As Boolean = False) As String
+Public Function CalculateTime(ByVal curWorkTime As Currency, Optional ByVal mbmSec As Boolean = False) As String
 
-    Dim lngWorkTimeTemp         As Single
     Dim lngWorkTimeSecound      As Long
     Dim lngWorkTimeMinutes      As Long
     Dim lngWorkTimeHours        As Long
@@ -26,85 +28,79 @@ Public Function CalculateTime(ByVal lngStartTime As Long, ByVal lngEndTime As Lo
     Dim strWorkTimeHours        As String
     Dim strWorkTimeMilliSecound As String
 
-    If lngEndTime > lngStartTime Then
-        lngWorkTimeTemp = (lngEndTime - lngStartTime) / 1000
+    If curWorkTime > 0 Then
+        ' Высчитываем временные значения
+        lngWorkTimeHours = (curWorkTime \ 3600)
+        lngWorkTimeMinutes = (curWorkTime \ 60) Mod 60
+        lngWorkTimeSecound = curWorkTime Mod 60
+        lngWorkTimeMilliSecound = (curWorkTime - Fix(curWorkTime)) * 1000
 
-        'время в секундах
-        'Если надо то в миллисекундах
+        ' Добавляем лидирующие нули при необходимости
+        strWorkTimeHours = Format$(lngWorkTimeHours, "00")
+        strWorkTimeMinutes = Format$(lngWorkTimeMinutes, "00")
+        strWorkTimeSecound = Format$(lngWorkTimeSecound, "00")
+        strWorkTimeMilliSecound = Format$(lngWorkTimeMilliSecound, "000")
+    
+        ' Если результат нужен с милисекундами
         If mbmSec Then
-            lngWorkTimeMilliSecound = (lngWorkTimeTemp - Fix(lngWorkTimeTemp)) * 1000
+            ' Итоговое время с миллисекундами
+            If lngWorkTimeHours = 0 Then
+                CalculateTime = strWorkTimeMinutes & strColon & strWorkTimeSecound & strDot & strWorkTimeMilliSecound & " (mm:ss.ms)"
+            Else
+                CalculateTime = strWorkTimeHours & strColon & strWorkTimeMinutes & strColon & strWorkTimeSecound & strDot & strWorkTimeMilliSecound & " (hh:mm:ss.ms)"
+            End If
         Else
-            lngWorkTimeTemp = Fix(lngWorkTimeTemp)
+            ' Итоговое время
+            If lngWorkTimeHours = 0 Then
+                CalculateTime = strWorkTimeMinutes & strColon & strWorkTimeSecound & " (mm:ss)"
+            Else
+                CalculateTime = strWorkTimeHours & strColon & strWorkTimeMinutes & strColon & strWorkTimeSecound & " (hh:mm:ss)"
+            End If
         End If
-
-        Select Case lngWorkTimeTemp
-
-            Case 0 To 3599
-                lngWorkTimeMinutes = lngWorkTimeTemp \ 60
-                lngWorkTimeSecound = lngWorkTimeTemp Mod 60
-
-            Case 3600
-                lngWorkTimeHours = 1
-
-            Case Is > 3600
-                lngWorkTimeHours = lngWorkTimeTemp \ 3600
-                lngWorkTimeTemp = lngWorkTimeTemp Mod 3600
-                lngWorkTimeMinutes = lngWorkTimeTemp \ 60
-                lngWorkTimeSecound = lngWorkTimeTemp Mod 60
-
-            Case Else
-                lngWorkTimeHours = 0
-                lngWorkTimeMinutes = 0
-                lngWorkTimeSecound = 0
-        End Select
-
-    End If
-
-    ' Добавляем лидирующие нули при необходимости
-    ' Часы
-    If Len(CStr(lngWorkTimeHours)) = 1 Then
-        strWorkTimeHours = "0" & CStr(lngWorkTimeHours)
-    ElseIf Len(CStr(lngWorkTimeHours)) = 2 Then
-        strWorkTimeHours = CStr(lngWorkTimeHours)
-    Else
-        strWorkTimeHours = "00"
-    End If
-
-    ' Минуты
-    If Len(CStr(lngWorkTimeMinutes)) = 1 Then
-        strWorkTimeMinutes = "0" & CStr(lngWorkTimeMinutes)
-    ElseIf Len(CStr(lngWorkTimeMinutes)) = 2 Then
-        strWorkTimeMinutes = CStr(lngWorkTimeMinutes)
-    Else
-        strWorkTimeMinutes = "00"
-    End If
-
-    ' Секунды
-    If Len(CStr(lngWorkTimeSecound)) = 1 Then
-        strWorkTimeSecound = "0" & CStr(lngWorkTimeSecound)
-    ElseIf Len(CStr(lngWorkTimeSecound)) = 2 Then
-        strWorkTimeSecound = CStr(lngWorkTimeSecound)
-    Else
-        strWorkTimeSecound = "00"
-    End If
-
-    ' МилиСекунды
-    If mbmSec Then
-        If Len(CStr(lngWorkTimeMilliSecound)) = 1 Then
-            strWorkTimeMilliSecound = "00" & CStr(lngWorkTimeMilliSecound)
-        ElseIf Len(CStr(lngWorkTimeMilliSecound)) = 2 Then
-            strWorkTimeMilliSecound = "0" & CStr(lngWorkTimeMilliSecound)
-        ElseIf Len(CStr(lngWorkTimeMilliSecound)) = 3 Then
-            strWorkTimeMilliSecound = CStr(lngWorkTimeMilliSecound)
-        Else
-            strWorkTimeMilliSecound = "000"
-        End If
-
-        ' Итоговое время
-        CalculateTime = strWorkTimeHours & ":" & strWorkTimeMinutes & ":" & strWorkTimeSecound & "." & strWorkTimeMilliSecound & " (hh:mm:ss.ms)"
     Else
         ' Итоговое время
-        CalculateTime = strWorkTimeHours & ":" & strWorkTimeMinutes & ":" & strWorkTimeSecound & " (hh:mm:ss)"
+        CalculateTime = "00:00.000 (mm:ss.ms)"
     End If
 
 End Function
+
+ '**************************************
+' Name: Calculate timing23-May-2012
+' Description:Basically, this is just one more way of calculating and displaying how much time a process took before finishing.
+' This will check for a hi-performance timer and if none is found then uses the API GetTickCount.
+' By: Kenaso
+' http://www.Planet-Source-Code.com/vb/scripts/ShowCode.asp?txtCodeId=74366&lngWId=1
+ 
+' ' Retrieves the frequency of the high-resolution performance counter,
+' ' if one exists. The frequency cannot change while the system is running.
+' ' If the function fails, the return value is zero.
+'Private Declare Function QueryPerformanceFrequency Lib "kernel32" (curFrequency As Currency) As Long
+' ' The QueryPerformanceCounter function retrieves the current value of the  ' high-resolution performance counter.
+'Private Declare Function QueryPerformanceCounter Lib "kernel32" (curCounter As Currency) As Boolean
+
+' ' This is a rough translation of the GetTickCount API. The
+' ' tick count of a PC is only valid for the first 49.7 days
+' ' since the last reboot. When you capture the tick count,
+' ' you are capturing the total number of milliseconds elapsed
+' ' since the last reboot. The elapsed time is stored as a
+' ' DWORD value. Therefore, the time will wrap around to zero
+' ' if the system is run continuously for 49.7 days.
+'
+Public Function GetTimeStart() As Currency
+    If mCurFreq = 0 Then PerfFreq mCurFreq
+    If (mCurFreq) Then PerfCount GetTimeStart
+End Function
+
+Public Function GetTimeStop(ByVal curStart As Currency) As Currency
+    If (mCurFreq) Then
+        Dim curStop As Currency
+        PerfCount curStop
+        ' cpu tick accurate
+        GetTimeStop = (curStop - curStart) / mCurFreq
+        curStop = 0
+    Else
+        ' No hi-performance timer
+        GetTimeStop = CDbl(GetTickCount)
+    End If
+End Function
+

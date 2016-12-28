@@ -41,15 +41,68 @@ Data2 As Integer
 Data3 As Integer
 Data4(0 To 7) As Byte
 End Type
+Private Type FILETIME
+dwLowDateTime As Long
+dwHighDateTime As Long
+End Type
+Private Type SYSTEMTIME
+wYear As Integer
+wMonth As Integer
+wDayOfWeek As Integer
+wDay As Integer
+wHour As Integer
+wMinute As Integer
+wSecond As Integer
+wMilliseconds As Integer
+End Type
+Private Const LF_FACESIZE As Long = 32
+Private Const FW_NORMAL As Long = 400
+Private Const FW_BOLD As Long = 700
+Private Const DEFAULT_QUALITY As Long = 0
+Private Type LOGFONT
+LFHeight As Long
+LFWidth As Long
+LFEscapement As Long
+LFOrientation As Long
+LFWeight As Long
+LFItalic As Byte
+LFUnderline As Byte
+LFStrikeOut As Byte
+LFCharset As Byte
+LFOutPrecision As Byte
+LFClipPrecision As Byte
+LFQuality As Byte
+LFPitchAndFamily As Byte
+LFFaceName(0 To ((LF_FACESIZE * 2) - 1)) As Byte
+End Type
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
-Private Declare Function IsBadCodePtr Lib "kernel32" (ByVal lpfn As Long) As Long
 Private Declare Function MessageBoxIndirect Lib "user32" Alias "MessageBoxIndirectW" (ByRef lpMsgBoxParams As MSGBOXPARAMS) As Long
 Private Declare Function GetActiveWindow Lib "user32" () As Long
 Private Declare Function GetForegroundWindow Lib "user32" () As Long
 Private Declare Function GetFileAttributes Lib "kernel32" Alias "GetFileAttributesW" (ByVal lpFileName As Long) As Long
+Private Declare Function SetFileAttributes Lib "kernel32" Alias "SetFileAttributesW" (ByVal lpFileName As Long, ByVal dwFileAttributes As Long) As Long
+Private Declare Function CreateFile Lib "kernel32" Alias "CreateFileW" (ByVal lpFileName As Long, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal lpSecurityAttributes As Long, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
+Private Declare Function GetFileSize Lib "kernel32" (ByVal hFile As Long, ByRef lpFileSizeHigh As Long) As Long
+Private Declare Function GetFileTime Lib "kernel32" (ByVal hFile As Long, ByVal lpCreationTime As Long, ByVal lpLastAccessTime As Long, ByVal lpLastWriteTime As Long) As Long
+Private Declare Function FileTimeToLocalFileTime Lib "kernel32" (ByVal lpFileTime As Long, ByVal lpLocalFileTime As Long) As Long
+Private Declare Function FileTimeToSystemTime Lib "kernel32" (ByVal lpFileTime As Long, ByVal lpSystemTime As Long) As Long
+Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, ByVal lpBuffer As Long, ByVal NumberOfBytesToRead As Long, ByRef NumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
+Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
+Private Declare Function GetCommandLine Lib "kernel32" Alias "GetCommandLineW" () As Long
+Private Declare Function PathGetArgs Lib "shlwapi" Alias "PathGetArgsW" (ByVal lpszPath As Long) As Long
+Private Declare Function SysReAllocString Lib "oleaut32" (ByVal pbString As Long, ByVal pszStrPtr As Long) As Long
 Private Declare Function GetModuleFileName Lib "kernel32" Alias "GetModuleFileNameW" (ByVal hModule As Long, ByVal lpFileName As Long, ByVal nSize As Long) As Long
 Private Declare Function GetKeyState Lib "user32" (ByVal nVirtKey As Long) As Integer
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal VKey As Long) As Integer
+Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpString As Long, ByVal cch As Long) As Long
+Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthW" (ByVal hWnd As Long) As Long
+Private Declare Function GetClassName Lib "user32" Alias "GetClassNameW" (ByVal hWnd As Long, ByVal lpClassName As Long, ByVal nMaxCount As Long) As Long
+Private Declare Function GetWindowsDirectory Lib "kernel32" Alias "GetWindowsDirectoryW" (ByVal lpBuffer As Long, ByVal nSize As Long) As Long
+Private Declare Function GetSystemDirectory Lib "kernel32" Alias "GetSystemDirectoryW" (ByVal lpBuffer As Long, ByVal nSize As Long) As Long
+Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
+Private Declare Function GetMenu Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
+Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByVal lprcUpdate As Long, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
 Private Declare Function GetObjectAPI Lib "gdi32" Alias "GetObjectW" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
@@ -64,9 +117,16 @@ Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As L
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function GetIconInfo Lib "user32" (ByVal hIcon As Long, ByRef pIconInfo As ICONINFO) As Long
 Private Declare Function CreateIconIndirect Lib "user32" (ByRef pIconInfo As ICONINFO) As Long
-Private Declare Function OleTranslateColor Lib "oleaut32" (ByVal Color As Long, ByVal hPal As Long, ByRef ColorRef As Long) As Long
+Private Declare Function MulDiv Lib "kernel32" (ByVal nNumber As Long, ByVal nNumerator As Long, ByVal nDenominator As Long) As Long
+Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectW" (ByRef lpLogFont As LOGFONT) As Long
+Private Declare Function GlobalAlloc Lib "kernel32" (ByVal uFlags As Long, ByVal dwBytes As Long) As Long
+Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function OleTranslateColor Lib "oleaut32" (ByVal Color As Long, ByVal hPal As Long, ByRef RGBResult As Long) As Long
+Private Declare Function OleLoadPicture Lib "oleaut32" (ByVal pStream As IUnknown, ByVal lSize As Long, ByVal fRunmode As Long, ByRef riid As Any, ByRef pIPicture As IPicture) As Long
 Private Declare Function OleLoadPicturePath Lib "oleaut32" (ByVal lpszPath As Long, ByVal pUnkCaller As Long, ByVal dwReserved As Long, ByVal ClrReserved As OLE_COLOR, ByRef riid As CLSID, ByRef pIPicture As IPicture) As Long
 Private Declare Function OleCreatePictureIndirect Lib "olepro32" (ByRef pPictDesc As PICTDESC, ByRef riid As Any, ByVal fPictureOwnsHandle As Long, ByRef pIPicture As IPicture) As Long
+Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Long, ByVal fDeleteOnRelease As Long, ByRef pStream As IUnknown) As Long
 
 ' (VB-Overwrite)
 Public Function MsgBox(ByVal Prompt As String, Optional ByVal Buttons As VbMsgBoxStyle = vbOKOnly, Optional ByVal Title As String) As VbMsgBoxResult
@@ -92,6 +152,11 @@ MsgBox = MessageBoxIndirect(MSGBOXP)
 End Function
 
 ' (VB-Overwrite)
+Public Sub SendKeys(ByRef Text As String, Optional ByRef Wait As Boolean)
+CreateObject("WScript.Shell").SendKeys Text, Wait
+End Sub
+
+' (VB-Overwrite)
 Public Function GetAttr(ByVal PathName As String) As VbFileAttribute
 Const INVALID_FILE_ATTRIBUTES As Long = (-1)
 Const FILE_ATTRIBUTE_NORMAL As Long = &H80
@@ -107,6 +172,71 @@ Else
 End If
 End Function
 
+' (VB-Overwrite)
+Public Sub SetAttr(ByVal PathName As String, ByVal Attributes As VbFileAttribute)
+Const FILE_ATTRIBUTE_NORMAL As Long = &H80
+Dim dwAttributes As Long
+If Attributes = vbNormal Then
+    dwAttributes = FILE_ATTRIBUTE_NORMAL
+Else
+    If (Attributes And (vbVolume Or vbDirectory Or vbAlias)) <> 0 Then Err.Raise 5
+    dwAttributes = Attributes
+End If
+If Left$(PathName, 2) = "\\" Then PathName = "UNC\" & Mid$(PathName, 3)
+If SetFileAttributes(StrPtr("\\?\" & PathName), dwAttributes) = 0 Then Err.Raise 53
+End Sub
+
+' (VB-Overwrite)
+Public Function FileLen(ByVal PathName As String) As Variant
+Const INVALID_HANDLE_VALUE As Long = (-1), INVALID_FILE_SIZE As Long = (-1)
+Const GENERIC_READ As Long = &H80000000, FILE_SHARE_READ As Long = &H1, OPEN_EXISTING As Long = 3, FILE_FLAG_SEQUENTIAL_SCAN As Long = &H8000000
+Dim hFile As Long
+If Left$(PathName, 2) = "\\" Then PathName = "UNC\" & Mid$(PathName, 3)
+hFile = CreateFile(StrPtr("\\?\" & PathName), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, 0)
+If hFile <> INVALID_HANDLE_VALUE Then
+    Dim LoDWord As Long, HiDWord As Long, Value As Variant
+    LoDWord = GetFileSize(hFile, HiDWord)
+    CloseHandle hFile
+    If LoDWord <> INVALID_FILE_SIZE Then
+        If (LoDWord And &H80000000) Then
+            Value = CDec(LoDWord And &H7FFFFFFF) + CDec(2147483648#)
+        Else
+            Value = CDec(LoDWord)
+        End If
+        If (HiDWord And &H80000000) Then
+            HiDWord = HiDWord And &H7FFFFFFF
+            Value = Value + (CDec(HiDWord) + CDec(2147483648#)) * CDec(4294967296#)
+        Else
+            Value = Value + CDec(HiDWord) * CDec(4294967296#)
+        End If
+        FileLen = Value
+    Else
+        FileLen = Null
+    End If
+Else
+    Err.Raise Number:=53, Description:="File not found: '" & PathName & "'"
+End If
+End Function
+
+' (VB-Overwrite)
+Public Function FileDateTime(ByVal PathName As String) As Date
+Const INVALID_HANDLE_VALUE As Long = (-1)
+Const GENERIC_READ As Long = &H80000000, FILE_SHARE_READ As Long = &H1, OPEN_EXISTING As Long = 3, FILE_FLAG_SEQUENTIAL_SCAN As Long = &H8000000
+Dim hFile As Long, Length As Double
+If Left$(PathName, 2) = "\\" Then PathName = "UNC\" & Mid$(PathName, 3)
+hFile = CreateFile(StrPtr("\\?\" & PathName), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, 0)
+If hFile <> INVALID_HANDLE_VALUE Then
+    Dim FT(0 To 1) As FILETIME, ST As SYSTEMTIME
+    GetFileTime hFile, 0, 0, VarPtr(FT(0))
+    FileTimeToLocalFileTime VarPtr(FT(0)), VarPtr(FT(1))
+    FileTimeToSystemTime VarPtr(FT(1)), VarPtr(ST)
+    FileDateTime = DateSerial(ST.wYear, ST.wMonth, ST.wDay) + TimeSerial(ST.wHour, ST.wMinute, ST.wSecond)
+    CloseHandle hFile
+Else
+    Err.Raise Number:=53, Description:="File not found: '" & PathName & "'"
+End If
+End Function
+
 Public Function FileExists(ByVal PathName As String) As Boolean
 On Error Resume Next
 Dim Attributes As VbFileAttribute, ErrVal As Long
@@ -114,6 +244,16 @@ Attributes = GetAttr(PathName)
 ErrVal = Err.Number
 On Error GoTo 0
 If (Attributes And (vbDirectory Or vbVolume)) = 0 And ErrVal = 0 Then FileExists = True
+End Function
+
+' (VB-Overwrite)
+Public Function Command$()
+If InIDE() = False Then
+    SysReAllocString VarPtr(Command$), PathGetArgs(GetCommandLine())
+    Command$ = LTrim$(Command$)
+Else
+    Command$ = VBA.Command$()
+End If
 End Function
 
 Public Function GetEXEName() As String
@@ -218,24 +358,153 @@ Select Case MousePointer
 End Select
 End Function
 
+Public Function CreateGDIFontFromOLEFont(ByVal Font As StdFont) As Long
+Dim LF As LOGFONT, FontName As String
+With LF
+FontName = Left$(Font.Name, LF_FACESIZE)
+CopyMemory .LFFaceName(0), ByVal StrPtr(FontName), LenB(FontName)
+.LFHeight = -MulDiv(CLng(Font.Size), DPI_Y(), 72)
+If Font.Bold = True Then .LFWeight = FW_BOLD Else .LFWeight = FW_NORMAL
+If Font.Italic = True Then .LFItalic = 1 Else .LFItalic = 0
+If Font.Strikethrough = True Then .LFStrikeOut = 1 Else .LFStrikeOut = 0
+If Font.Underline = True Then .LFUnderline = 1 Else .LFUnderline = 0
+.LFQuality = DEFAULT_QUALITY
+.LFCharset = CByte(Font.Charset And &HFF)
+End With
+CreateGDIFontFromOLEFont = CreateFontIndirect(LF)
+End Function
+
+Public Function CloneOLEFont(ByVal Font As IFont) As StdFont
+Font.Clone CloneOLEFont
+End Function
+
+Public Function GDIFontFromOLEFont(ByVal Font As IFont) As Long
+GDIFontFromOLEFont = Font.hFont
+End Function
+
+Public Function GetNumberGroupDigit() As String
+GetNumberGroupDigit = Mid$(FormatNumber(1000, 0, , , vbTrue), 2, 1)
+If GetNumberGroupDigit = "0" Then GetNumberGroupDigit = vbNullString
+End Function
+
+Public Function GetDecimalChar() As String
+GetDecimalChar = Mid$(CStr(1.1), 2, 1)
+End Function
+
+Public Function IsFormLoaded(ByVal FormName As String) As Boolean
+Dim i As Integer
+For i = 0 To Forms.Count - 1
+    If StrComp(Forms(i).Name, FormName, vbTextCompare) = 0 Then
+        IsFormLoaded = True
+        Exit For
+    End If
+Next i
+End Function
+
+Public Function GetWindowTitle(ByVal hWnd As Long) As String
+Dim Buffer As String
+Buffer = String(GetWindowTextLength(hWnd) + 1, vbNullChar)
+GetWindowText hWnd, StrPtr(Buffer), Len(Buffer)
+GetWindowTitle = Left$(Buffer, Len(Buffer) - 1)
+End Function
+
+Public Function GetWindowClassName(ByVal hWnd As Long) As String
+Dim Buffer As String, RetVal As Long
+Buffer = String(256, vbNullChar)
+RetVal = GetClassName(hWnd, StrPtr(Buffer), Len(Buffer))
+If RetVal <> 0 Then GetWindowClassName = Left$(Buffer, RetVal)
+End Function
+
+Public Function GetTitleBarHeight(ByVal Form As VB.Form) As Single
+Const SM_CYCAPTION As Long = 4, SM_CYMENU As Long = 15
+Const SM_CYSIZEFRAME As Long = 33, SM_CYFIXEDFRAME As Long = 8
+Dim CY As Long
+CY = GetSystemMetrics(SM_CYCAPTION)
+If GetMenu(Form.hWnd) <> 0 Then CY = CY + GetSystemMetrics(SM_CYMENU)
+Select Case Form.BorderStyle
+    Case vbSizable, vbSizableToolWindow
+        CY = CY + (GetSystemMetrics(SM_CYSIZEFRAME) * 2)
+    Case vbFixedSingle, vbFixedDialog, vbFixedToolWindow
+        CY = CY + (GetSystemMetrics(SM_CYFIXEDFRAME) * 2)
+End Select
+If CY > 0 Then GetTitleBarHeight = Form.ScaleY(CY, vbPixels, Form.ScaleMode)
+End Function
+
+Public Sub SetWindowRedraw(ByVal hWnd As Long, ByVal Enabled As Boolean)
+Const WM_SETREDRAW As Long = &HB
+SendMessage hWnd, WM_SETREDRAW, IIf(Enabled = True, 1, 0), ByVal 0&
+If Enabled = True Then
+    Const RDW_UPDATENOW As Long = &H100, RDW_INVALIDATE As Long = &H1, RDW_ERASE As Long = &H4, RDW_ALLCHILDREN As Long = &H80
+    RedrawWindow hWnd, 0, 0, RDW_UPDATENOW Or RDW_INVALIDATE Or RDW_ERASE Or RDW_ALLCHILDREN
+End If
+End Sub
+
+Public Function GetWinPath() As String
+Const MAX_PATH As Long = 260
+Dim Buffer As String
+Buffer = String(MAX_PATH, vbNullChar)
+If GetWindowsDirectory(StrPtr(Buffer), MAX_PATH) <> 0 Then
+    GetWinPath = Left$(Buffer, InStr(Buffer, vbNullChar) - 1)
+    GetWinPath = GetWinPath & IIf(Right$(GetWinPath, 1) = "\", "", "\")
+End If
+End Function
+
+Public Function GetSysPath() As String
+Const MAX_PATH As Long = 260
+Dim Buffer As String
+Buffer = String(MAX_PATH, vbNullChar)
+If GetSystemDirectory(StrPtr(Buffer), MAX_PATH) <> 0 Then
+    GetSysPath = Left$(Buffer, InStr(Buffer, vbNullChar) - 1)
+    GetSysPath = GetSysPath & IIf(Right$(GetSysPath, 1) = "\", "", "\")
+End If
+End Function
+
+Public Function GetShiftStateFromParam(ByVal wParam As Long) As ShiftConstants
+Const MK_SHIFT As Long = &H4, MK_CONTROL As Long = &H8
+If (wParam And MK_SHIFT) = MK_SHIFT Then GetShiftStateFromParam = vbShiftMask
+If (wParam And MK_CONTROL) = MK_CONTROL Then GetShiftStateFromParam = GetShiftStateFromParam Or vbCtrlMask
+If GetKeyState(vbKeyMenu) < 0 Then GetShiftStateFromParam = GetShiftStateFromParam Or vbAltMask
+End Function
+
+Public Function GetMouseStateFromParam(ByVal wParam As Long) As MouseButtonConstants
+Const MK_LBUTTON As Long = &H1, MK_RBUTTON As Long = &H2, MK_MBUTTON As Long = &H10
+If (wParam And MK_LBUTTON) = MK_LBUTTON Then GetMouseStateFromParam = vbLeftButton
+If (wParam And MK_RBUTTON) = MK_RBUTTON Then GetMouseStateFromParam = GetMouseStateFromParam Or vbRightButton
+If (wParam And MK_MBUTTON) = MK_MBUTTON Then GetMouseStateFromParam = GetMouseStateFromParam Or vbMiddleButton
+End Function
+
+Public Function GetShiftStateFromMsg() As ShiftConstants
+If GetKeyState(vbKeyShift) < 0 Then GetShiftStateFromMsg = vbShiftMask
+If GetKeyState(vbKeyControl) < 0 Then GetShiftStateFromMsg = GetShiftStateFromMsg Or vbCtrlMask
+If GetKeyState(vbKeyMenu) < 0 Then GetShiftStateFromMsg = GetShiftStateFromMsg Or vbAltMask
+End Function
+
+Public Function GetMouseStateFromMsg() As MouseButtonConstants
+If GetKeyState(vbLeftButton) < 0 Then GetMouseStateFromMsg = vbLeftButton
+If GetKeyState(vbRightButton) < 0 Then GetMouseStateFromMsg = GetMouseStateFromMsg Or vbRightButton
+If GetKeyState(vbMiddleButton) < 0 Then GetMouseStateFromMsg = GetMouseStateFromMsg Or vbMiddleButton
+End Function
+
 Public Function GetShiftState() As ShiftConstants
 GetShiftState = (-vbShiftMask * KeyPressed(vbKeyShift))
-GetShiftState = GetShiftState Or (-vbAltMask * KeyPressed(vbKeyMenu))
 GetShiftState = GetShiftState Or (-vbCtrlMask * KeyPressed(vbKeyControl))
+GetShiftState = GetShiftState Or (-vbAltMask * KeyPressed(vbKeyMenu))
 End Function
 
 Public Function GetMouseState() As MouseButtonConstants
-GetMouseState = (-vbLeftButton * KeyPressed(vbLeftButton))
+Const SM_SWAPBUTTON As Long = 23
+' GetAsyncKeyState requires a mapping of physical mouse buttons to logical mouse buttons.
+GetMouseState = (-vbLeftButton * KeyPressed(IIf(GetSystemMetrics(SM_SWAPBUTTON) = 0, vbLeftButton, vbRightButton)))
+GetMouseState = GetMouseState Or (-vbRightButton * KeyPressed(IIf(GetSystemMetrics(SM_SWAPBUTTON) = 0, vbRightButton, vbLeftButton)))
 GetMouseState = GetMouseState Or (-vbMiddleButton * KeyPressed(vbMiddleButton))
-GetMouseState = GetMouseState Or (-vbRightButton * KeyPressed(vbRightButton))
 End Function
 
-Public Function KeyToggled(ByVal VirtKeyCode As KeyCodeConstants) As Boolean
-KeyToggled = CBool(LoByte(GetKeyState(VirtKeyCode)) = 1)
+Public Function KeyToggled(ByVal KeyCode As KeyCodeConstants) As Boolean
+KeyToggled = CBool(LoByte(GetKeyState(KeyCode)) = 1)
 End Function
  
-Public Function KeyPressed(ByVal VirtKeyCode As KeyCodeConstants) As Boolean
-KeyPressed = CBool((GetAsyncKeyState(VirtKeyCode) And &H8000&) = &H8000&)
+Public Function KeyPressed(ByVal KeyCode As KeyCodeConstants) As Boolean
+KeyPressed = CBool((GetAsyncKeyState(KeyCode) And &H8000&) = &H8000&)
 End Function
 
 Public Function InIDE(Optional ByRef B As Boolean = True) As Boolean
@@ -251,58 +520,6 @@ End Function
 
 Public Function ProcPtr(ByVal Address As Long) As Long
 ProcPtr = Address
-End Function
-
-Public Function SelfAddressOf(ByVal This As Object, ByVal Ordinal As Byte) As Long
-If This Is Nothing Or Not Ordinal > 0 Then Exit Function
-Dim ByteSub As Byte, ByteValue As Byte
-Dim Address As Long, i As Long, j As Long
-CopyMemory ByVal VarPtr(Address), ByVal ObjPtr(This), 4
-If ObjProbe(Address + &H7A4, i, ByteSub) = False Then ' Probe for a UserControl
-    If ObjProbe(Address + &H1C, i, ByteSub) = False Then    ' Probe for a Class
-        If ObjProbe(Address + &H6F8, i, ByteSub) = False Then ' Probe for a Form
-            If ObjProbe(Address + &H710, i, ByteSub) = False Then ' Probe for a PropertyPage
-                Exit Function
-            End If
-        End If
-    End If
-End If
-i = i + 4
-j = i + 2048
-Do While i < j
-    CopyMemory ByVal VarPtr(Address), ByVal i, 4
-    If IsBadCodePtr(Address) <> 0 Then
-        CopyMemory ByVal VarPtr(SelfAddressOf), ByVal i - (Ordinal * 4), 4
-        Exit Do
-    End If
-    CopyMemory ByVal VarPtr(ByteValue), ByVal Address, 1
-    If ByteValue <> ByteSub Then
-        CopyMemory ByVal VarPtr(SelfAddressOf), ByVal i - (Ordinal * 4), 4
-        Exit Do
-    End If
-    i = i + 4
-Loop
-End Function
-
-Private Function ObjProbe(ByVal Start As Long, ByRef Method As Long, ByRef ByteSub As Byte) As Boolean
-Dim ByteValue As Byte
-Dim Address As Long
-Dim Limit As Long, Entry As Long
-Address = Start
-Limit = Address + 64
-Do While Address < Limit
-    CopyMemory ByVal VarPtr(Entry), ByVal Address, 4
-    If Entry <> 0 Then
-        CopyMemory ByVal VarPtr(ByteValue), ByVal Entry, 1
-        If ByteValue = &H33 Or ByteValue = &HE9 Then
-            Method = Address
-            ByteSub = ByteValue
-            ObjProbe = True
-            Exit Do
-        End If
-    End If
-    Address = Address + 4
-Loop
 End Function
 
 Public Function LoByte(ByVal Word As Integer) As Byte
@@ -348,15 +565,23 @@ If lParam And &H80000000 Then Get_Y_lParam = Get_Y_lParam Or &HFFFF8000
 End Function
 
 Public Function StrToVar(ByVal Text As String) As Variant
-Dim B() As Byte
-B() = Text
-StrToVar = B()
+If Text = vbNullString Then
+    StrToVar = Empty
+Else
+    Dim B() As Byte
+    B() = Text
+    StrToVar = B()
+End If
 End Function
 
 Public Function VarToStr(ByVal Bytes As Variant) As String
-Dim B() As Byte
-B() = Bytes
-VarToStr = B()
+If IsEmpty(Bytes) Then
+    VarToStr = vbNullString
+Else
+    Dim B() As Byte
+    B() = Bytes
+    VarToStr = B()
+End If
 End Function
 
 Public Function UnsignedAdd(ByVal Start As Long, ByVal Incr As Long) As Long
@@ -383,23 +608,23 @@ Else
 End If
 End Function
 
-Public Function CULongToLong(ByVal Value As Double) As Long
+Public Function CULngToLng(ByVal Value As Double) As Long
 Const OFFSET_4 As Double = 4294967296#
 Const MAXINT_4 As Long = 2147483647
 If Value < 0 Or Value >= OFFSET_4 Then Err.Raise 6
 If Value <= MAXINT_4 Then
-    CULongToLong = Value
+    CULngToLng = Value
 Else
-    CULongToLong = Value - OFFSET_4
+    CULngToLng = Value - OFFSET_4
 End If
 End Function
 
-Public Function CLongToULong(ByVal Value As Long) As Double
+Public Function CLngToULng(ByVal Value As Long) As Double
 Const OFFSET_4 As Double = 4294967296#
 If Value < 0 Then
-    CLongToULong = Value + OFFSET_4
+    CLngToULng = Value + OFFSET_4
 Else
-    CLongToULong = Value
+    CLngToULng = Value
 End If
 End Function
 
@@ -423,20 +648,50 @@ If hDCScreen <> 0 Then
 End If
 End Function
 
+Public Function DPICorrectionFactor() As Single
+Static Done As Boolean, Value As Single
+If Done = False Then
+    Value = Screen.TwipsPerPixelX / ((96 / DPI_X()) * 15)
+    Done = True
+End If
+' Returns exactly 1 when no corrections are required.
+DPICorrectionFactor = Value
+End Function
+
 Public Function WinColor(ByVal Color As Long, Optional ByVal hPal As Long) As Long
 If OleTranslateColor(Color, hPal, WinColor) <> 0 Then WinColor = -1
 End Function
 
-Public Function R(ByVal Color As Long) As Byte
-CopyMemory R, ByVal VarPtr(WinColor(Color)), 1
-End Function
-
-Public Function G(ByVal Color As Long) As Byte
-CopyMemory G, ByVal VarPtr(WinColor(Color)) + 1, 1
-End Function
-
-Public Function B(ByVal Color As Long) As Byte
-CopyMemory B, ByVal VarPtr(WinColor(Color)) + 2, 1
+Public Function PictureFromByteStream(ByRef ByteStream As Variant) As IPictureDisp
+Dim IID As CLSID, Stream As IUnknown, NewPicture As IPicture
+Dim B() As Byte, ByteCount As Long
+Dim hMem As Long, lpMem As Long
+With IID
+.Data1 = &H7BF80980
+.Data2 = &HBF32
+.Data3 = &H101A
+.Data4(0) = &H8B
+.Data4(1) = &HBB
+.Data4(3) = &HAA
+.Data4(5) = &H30
+.Data4(6) = &HC
+.Data4(7) = &HAB
+End With
+If VarType(ByteStream) = (vbArray + vbByte) Then
+    B() = ByteStream
+    ByteCount = (UBound(B()) - LBound(B())) + 1
+    hMem = GlobalAlloc(&H2, ByteCount)
+    If hMem <> 0 Then
+        lpMem = GlobalLock(hMem)
+        If lpMem <> 0 Then
+            CopyMemory ByVal lpMem, B(LBound(B())), ByteCount
+            GlobalUnlock hMem
+            If CreateStreamOnHGlobal(hMem, 1, Stream) = 0 Then
+                If OleLoadPicture(Stream, ByteCount, 0, IID, NewPicture) = 0 Then Set PictureFromByteStream = NewPicture
+            End If
+        End If
+    End If
+End If
 End Function
 
 Public Function PictureFromPath(ByVal PathName As String) As IPictureDisp

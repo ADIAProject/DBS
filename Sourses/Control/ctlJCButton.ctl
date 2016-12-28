@@ -25,6 +25,27 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'Note: this file has been modified for use within Drivers Installer Assistant.
+
+'This code was originally written by Juned Chhipa.
+
+'You may download the original version of this code from the following link (good as of June '12):
+' http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1
+' Many thanks to Juned for his excellent custom button, which PhotoDemon uses in a variety of ways.
+
+' Modified by tannerhelland https://github.com/tannerhelland/PhotoDemon
+' Change subsclasser to class cSelfSubHookCallback
+' Fix Ambient.Usermode
+'*********************************
+' Modified by Romeo91 (adia-project.net) Last Edit 2014-04-03
+'*********************************
+' added unicode support for Caption
+' delete tooltip event declaration (i used 3d-party control for this)
+' added rightbuttonmenu - ShowPopupRBT
+' added checkexist property (need if you put checkboxes on the button). If property=true then raiseevent RaiseEvent Click not run
+' added dropdownenable property (need if want to disable dropdownmenu, but wasn't unset from control)
+' added FocusRect on GetFocus event
+
 Option Explicit
 
 '***************************************************************************
@@ -80,53 +101,8 @@ Option Explicit
 '*   such, and must not be misrepresented as being the original software.   *
 '****************************************************************************
 '* N'joy ;)
+
 '==========================================================================================================================================================================================================================================================================================
-' Subclassing Declares
-Private Enum MsgWhen
-    'Message calls back after the original (previous) WndProc
-    MSG_AFTER = 1
-    'Message calls back before the original (previous) WndProc
-    MSG_BEFORE = 2
-    'Message calls back before and after the original (previous) WndProc
-    MSG_BEFORE_AND_AFTER = MSG_AFTER Or MSG_BEFORE
-End Enum
-
-#If False Then
-
-    Private MSG_AFTER, MSG_BEFORE, MSG_BEFORE_AND_AFTER
-#End If
-#If False Then
-
-    Private TME_HOVER, TME_LEAVE, TME_QUERY, TME_CANCEL
-#End If
-
-'for subclass
-Private Type SubClassDatatype
-    hWnd                                As Long
-    nAddrSclass                         As Long
-    nAddrOrig                           As Long
-    nMsgCountA                          As Long
-    nMsgCountB                          As Long
-    aMsgTabelA()                        As Long
-    aMsgTabelB()                        As Long
-End Type
-
-Private Const GMEM_FIXED As Long = 0    'Fixed memory GlobalAlloc flag
-Private Const PATCH_04   As Long = 88   'Table B (before) address patch offset
-Private Const PATCH_05   As Long = 93   'Table B (before) entry count patch offset
-Private Const PATCH_08   As Long = 132  'Table A (after) address patch offset
-Private Const PATCH_09   As Long = 137  'Table A (after) entry count patch offset
-
-'for subclass
-Private SubClassData()   As SubClassDatatype    'Subclass data array
-Private TrackUser32      As Boolean
-
-'Kernel32 declares used by the Subclasser
-Private Declare Function GlobalAlloc Lib "kernel32.dll" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
-Private Declare Function GlobalFree Lib "kernel32.dll" (ByVal hMem As Long) As Long
-
-'  End of Subclassing Declares
-'==========================================================================================================================================================================================================================================================================================================
 '[Enumerations]
 Public Enum enumButtonStlyes
     [eStandard]                 '1) Standard VB Button
@@ -199,30 +175,6 @@ End Enum
 #If False Then
 
     Private epLeftEdge, epLeftOfCaption, epRightEdge, epRightOfCaption, epBackGround, epTopEdge, epTopOfCaption, epBottomEdge, epBottomOfCaption
-#End If
-
-' --Tooltip Icons
-Public Enum enumIconType
-    TTNoIcon
-    TTIconInfo
-    TTIconWarning
-    TTIconError
-End Enum
-
-#If False Then
-
-    Private TTNoIcon, TTIconInfo, TTIconWarning, TTIconError
-#End If
-
-' --Tooltip [ Balloon / Standard ]
-Public Enum enumTooltipStyle
-    TooltipStandard
-    TooltipBalloon
-End Enum
-
-#If False Then
-
-    Private TooltipStandard, TooltipBalloon
 #End If
 
 ' --Caption effects
@@ -329,62 +281,55 @@ Private WithEvents mFont     As StdFont
 Attribute mFont.VB_VarHelpID = -1
 Private m_ButtonStyle        As enumButtonStlyes    'Choose your Style
 Private m_Buttonstate        As enumButtonStates    'Normal / Over / Down
-Private m_bIsDown            As Boolean    'Is button is pressed?
-Private m_bMouseInCtl        As Boolean    'Is Mouse in Control
-Private m_bHasFocus          As Boolean    'Has focus?
-Private m_bHandPointer       As Boolean    'Use Hand Pointer
+Private m_bIsDown            As Boolean             'Is button is pressed?
+Private m_bMouseInCtl        As Boolean             'Is Mouse in Control
+Private m_bHasFocus          As Boolean             'Has focus?
+Private m_bHandPointer       As Boolean             'Use Hand Pointer
 Private m_lCursor            As Long
-Private m_bDefault           As Boolean    'Is Default?
+Private m_bDefault           As Boolean             'Is Default?
 Private m_DropDownSymbol     As enumSymbol
 Private m_bDropDownSep       As Boolean
-Private m_ButtonMode         As enumButtonModes    'Command/Check/Option button
+Private m_ButtonMode         As enumButtonModes     'Command/Check/Option button
 Private m_CaptionEffects     As enumCaptionEffects
-Private m_bValue             As Boolean    'Value (Checked/Unchekhed)
-Private m_bShowFocus         As Boolean    'Bool to show focus
-Private m_bParentActive      As Boolean    'Parent form Active or not
-Private m_lParenthWnd        As Long    'Is parent active?
-Private m_WindowsNT          As Long    'OS Supports Unicode?
-Private m_bEnabled           As Boolean    'Enabled/Disabled
-Private m_Caption            As String    'String to draw caption
+Private m_bValue             As Boolean             'Value (Checked/Unchekhed)
+Private m_bShowFocus         As Boolean             'Bool to show focus
+Private m_bParentActive      As Boolean             'Parent form Active or not
+Private m_lParenthWnd        As Long                'Is parent active?
+Private m_WindowsNT          As Boolean             'OS Supports Unicode?
+Private m_bEnabled           As Boolean             'Enabled/Disabled
+Private m_Caption            As String              'String to draw caption
 Private m_CaptionAlign       As enumCaptionAlign
-Private m_bColors            As tButtonColors    'Button Colors
-Private m_bUseMaskColor      As Boolean    'Transparent areas
-Private m_lMaskColor         As Long    'Set Transparent color
-Private m_lButtonRgn         As Long    'Button Region
-Private m_bIsSpaceBarDown    As Boolean    'Space bar down boolean
-Private m_ButtonRect         As RECT    'Button Position
+Private m_bColors            As tButtonColors       'Button Colors
+Private m_bUseMaskColor      As Boolean             'Transparent areas
+Private m_lMaskColor         As Long                'Set Transparent color
+Private m_lButtonRgn         As Long                'Button Region
+Private m_bIsSpaceBarDown    As Boolean             'Space bar down boolean
+Private m_ButtonRect         As RECT                'Button Position
 Private m_lXPColor           As enumXPThemeColors
 Private m_bIsThemed          As Boolean
 Private m_bHasUxTheme        As Boolean
-Private m_lDownButton        As Integer    'For click/Dblclick events
-Private m_lDShift            As Integer    'A flag for dblClick
+Private m_lDownButton        As Integer             'For click/Dblclick events
+Private m_lDShift            As Integer             'A flag for dblClick
 Private m_lDX                As Single
 Private m_lDY                As Single
 
 ' --Popup menu variables
-Private m_bPopupEnabled      As Boolean    'Popus is enabled
-Private m_bPopupShown        As Boolean    'Popupmenu is shown
-Private m_bPopupInit         As Boolean              'Flag to prevent WM_MOUSLEAVE to redraw the button
-Private DropDownMenu         As VB.Menu    'Popupmenu to be shown
-Private MenuAlign            As enumMenuAlign    'PopupMenu Alignments
-Private MenuFlags            As Long    'PopupMenu Flags
-Private DefaultMenu          As VB.Menu    'Default menu in the popupmenu
+Private m_bPopupEnabled      As Boolean             'Popus is enabled
+Private m_bPopupShown        As Boolean             'Popupmenu is shown
+Private m_bPopupEnabledRBT   As Boolean             'Popus is enabled
+Private m_bPopupInit         As Boolean             'Flag to prevent WM_MOUSLEAVE to redraw the button
+Private mnuDropDown          As VB.Menu             'Popupmenu to be shown
+Private mnuRightButton       As VB.Menu             'Default menu in the popupmenu
+Private MenuAlign            As enumMenuAlign       'PopupMenu Alignments
+Private MenuFlags            As Long                'PopupMenu Flags
 
 ' --Tooltip variables
-Private m_sTooltipText       As String
-Private m_sTooltiptitle      As String
-Private m_lToolTipIcon       As enumIconType
-Private m_lTooltipType       As enumTooltipStyle
-Private m_lttBackColor       As Long
-Private m_lttCentered        As Boolean
-Private m_bttRTL             As Boolean    'Right to Left reading
-Private m_lttHwnd            As Long
-Private m_hMode              As Long    'Added this, as tooltips
+Private m_hMode              As Long                ' Xp Style
 
 ' --Caption variables
-Private lpSignRect           As RECT    'Drop down Symbol rect
+Private lpSignRect           As RECT                'Drop down Symbol rect
 Private m_bRTL               As Boolean
-Private m_TextRect           As RECT    'Caption drawing area
+Private m_TextRect           As RECT                'Caption drawing area
 
 ' --Picture variables
 Private m_Picture            As StdPicture
@@ -400,9 +345,9 @@ Private m_PicEffectonDown    As enumPicEffect
 Private m_bPicPushOnHover    As Boolean
 Private PicH                 As Long
 Private PicW                 As Long
-Private aLighten(255)        As Byte    'Light Picture
-Private aDarken(255)         As Byte    'Dark Picture
-Private tmppic               As New StdPicture    'Temp picture
+Private aLighten(255)        As Byte                'Light Picture
+Private aDarken(255)         As Byte                'Dark Picture
+Private tmppic               As New StdPicture      'Temp picture
 
 ' --Color Constant
 Private Const COLOR_BTNFACE  As Long = 15
@@ -410,9 +355,13 @@ Private Const COLOR_GRAYTEXT As Long = 17
 Private Const CLR_INVALID    As Long = &HFFFF
 Private Const DIB_RGB_COLORS As Long = 0
 
-Private m_PicRect            As RECT    'Picture drawing area
-Private lh                   As Long    'ScaleHeight of button
-Private lw                   As Long    'ScaleWidth of button
+Private m_PicRect            As RECT                'Picture drawing area
+Private lh                   As Long                'ScaleHeight of button
+Private lw                   As Long                'ScaleWidth of button
+
+Private m_CheckExist         As Boolean
+Private m_DropDownEnable     As Boolean
+Private dtDefTextDrawParams  As Long
 
 '*************************************************************
 '   API DECLARATION
@@ -437,7 +386,7 @@ Private Type RECT
     Bottom                              As Long
 End Type
 
-Private Type POINT
+Private Type POINTAPI
     X                                   As Long
     Y                                   As Long
 End Type
@@ -481,8 +430,6 @@ Private Const BDR_RAISEDOUTER As Long = &H1
 Private Const BDR_SUNKENOUTER As Long = &H2
 Private Const BDR_RAISEDINNER As Long = &H4
 Private Const BDR_SUNKENINNER As Long = &H8
-Private Const EDGE_RAISED = (BDR_RAISEDOUTER Or BDR_RAISEDINNER)
-Private Const EDGE_SUNKEN = (BDR_SUNKENOUTER Or BDR_SUNKENINNER)
 Private Const BF_LEFT              As Long = &H1
 Private Const BF_TOP               As Long = &H2
 Private Const BF_RIGHT             As Long = &H4
@@ -491,73 +438,19 @@ Private Const BF_RECT              As Long = (BF_LEFT Or BF_TOP Or BF_RIGHT Or B
 Private Const BDR_SUNKEN95         As Long = &HA
 Private Const BDR_RAISED95         As Long = &H5
 
-'Tooltip Window Constants
-Private Const TOOLTIPS_CLASSA      As String = "tooltips_class32"
-Private Const WM_USER              As Long = &H400
-Private Const TTS_NOPREFIX         As Long = &H2
-Private Const TTF_TRANSPARENT      As Long = &H100
-Private Const TTF_IDISHWND         As Long = &H1
-Private Const TTF_CENTERTIP        As Long = &H2
-Private Const TTM_ADDTOOLA         As Long = (WM_USER + 4)
-Private Const TTM_ADDTOOLW         As Long = (WM_USER + 50)
-Private Const TTM_ACTIVATE         As Long = WM_USER + 1
-Private Const TTM_UPDATETIPTEXTA   As Long = (WM_USER + 12)
-Private Const TTM_SETMAXTIPWIDTH   As Long = (WM_USER + 24)
-Private Const TTM_SETTIPBKCOLOR    As Long = (WM_USER + 19)
-Private Const TTM_SETTIPTEXTCOLOR  As Long = (WM_USER + 20)
-Private Const TTM_SETTITLE         As Long = (WM_USER + 32)
-Private Const TTM_SETTITLEW        As Long = (WM_USER + 33)
-Private Const TTS_BALLOON          As Long = &H40
-Private Const TTS_ALWAYSTIP        As Long = &H1
-Private Const TTF_SUBCLASS         As Long = &H10
-
-'Maximum width (in pixels) for custom-built tooltips
-Private Const PD_MAX_TOOLTIP_WIDTH As Long = 400
-
-'Tooltip Window Types
-Private Type TOOLINFO
-    lSize                               As Long
-    lFlags                              As Long
-    lhWnd                               As Long
-    lID                                 As Long
-    lpRect                              As RECT
-    hInstance                           As Long
-    lpStr                               As String
-    lParam                              As Long
-End Type
-
-'Tooltip Window Types [for UNICODE support]
-Private Type TOOLINFOW
-    lSize                               As Long
-    lFlags                              As Long
-    lhWnd                               As Long
-    lID                                 As Long
-    lpRect                              As RECT
-    hInstance                           As Long
-    lpStrW                              As Long
-    lParam                              As Long
-End Type
-
 Private Declare Sub ReleaseCapture Lib "user32.dll" ()
-Private Declare Function OleTranslateColor Lib "OlePro32.dll" (ByVal OLE_COLOR As Long, ByVal HPALETTE As Long, pccolorref As Long) As Long
+Private Declare Function OleTranslateColor Lib "olepro32.dll" (ByVal OLE_COLOR As Long, ByVal HPALETTE As Long, pccolorref As Long) As Long
 Private Declare Function CopyRect Lib "user32.dll" (lpDestRect As RECT, lpSourceRect As RECT) As Long
 Private Declare Function OffsetRect Lib "user32.dll" (lpRect As RECT, ByVal X As Long, ByVal Y As Long) As Long
 Private Declare Function CreateRoundRectRgn Lib "gdi32.dll" (ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long, ByVal X3 As Long, ByVal Y3 As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
 Private Declare Function SetWindowRgn Lib "user32.dll" (ByVal hWnd As Long, ByVal hRgn As Long, ByVal bRedraw As Boolean) As Long
 Private Declare Function SetRect Lib "user32.dll" (lpRect As RECT, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
-Private Declare Function RoundRect Lib "gdi32.dll" (ByVal hDC As Long, ByVal Left As Long, ByVal Top As Long, ByVal Right As Long, ByVal Bottom As Long, ByVal EllipseWidth As Long, ByVal EllipseHeight As Long) As Long
 Private Declare Function CreatePen Lib "gdi32.dll" (ByVal nPenStyle As Long, ByVal nWidth As Long, ByVal crColor As Long) As Long
 Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As Long, ByVal hObject As Long) As Long
-Private Declare Function MoveToEx Lib "gdi32.dll" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, lpPoint As POINT) As Long
+Private Declare Function MoveToEx Lib "gdi32.dll" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, lpPoint As POINTAPI) As Long
 Private Declare Function LineTo Lib "gdi32.dll" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long) As Long
-Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
-Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongW" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongW" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function CreatePolygonRgn Lib "gdi32.dll" (lpPoint As Any, ByVal nCount As Long, ByVal nPolyFillMode As Long) As Long
-Private Declare Function CombineRgn Lib "gdi32.dll" (ByVal hDestRgn As Long, ByVal hSrcRgn1 As Long, ByVal hSrcRgn2 As Long, ByVal nCombineMode As Long) As Long
 Private Declare Function CreateSolidBrush Lib "gdi32.dll" (ByVal crColor As Long) As Long
-Private Declare Function FillRgn Lib "gdi32.dll" (ByVal hDC As Long, ByVal hRgn As Long, ByVal hBrush As Long) As Long
 Private Declare Function SetPixel Lib "gdi32.dll" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long) As Long
 Private Declare Function GetPixel Lib "gdi32.dll" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
@@ -565,50 +458,33 @@ Private Declare Function CreateCompatibleBitmap Lib "gdi32.dll" (ByVal hDC As Lo
 Private Declare Function DrawIconEx Lib "user32.dll" (ByVal hDC As Long, ByVal XLeft As Long, ByVal YTop As Long, ByVal hIcon As Long, ByVal CXWidth As Long, ByVal CYWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
 Private Declare Function BitBlt Lib "gdi32.dll" (ByVal hDestDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal XSrc As Long, ByVal YSrc As Long, ByVal dwRop As Long) As Long
 Private Declare Function GetDIBits Lib "gdi32.dll" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFO, ByVal wUsage As Long) As Long
-Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As BITMAPINFO, ByVal wUsage As Long) As Long
+Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal Scan As Long, ByVal NumScans As Long, Bits As Any, BitsInfo As BITMAPINFO, ByVal wUsage As Long) As Long
 Private Declare Function GetNearestColor Lib "gdi32.dll" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
 Private Declare Function SetTextColor Lib "gdi32.dll" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function GetTextColor Lib "gdi32.dll" (ByVal hDC As Long) As Long
-Private Declare Function StretchDIBits Lib "gdi32.dll" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As Any, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Private Declare Function StretchDIBits Lib "gdi32.dll" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal DX As Long, ByVal DY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, lpBits As Any, lpBitsInfo As Any, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 Private Declare Function CreateRectRgn Lib "gdi32.dll" (ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
-Private Declare Function IsAppThemed Lib "uxtheme" () As Long
+Private Declare Function IsAppThemed Lib "uxtheme.dll" () As Long
 Private Declare Function GetSysColor Lib "user32.dll" (ByVal nIndex As Long) As Long
 Private Declare Function OpenThemeData Lib "uxtheme.dll" (ByVal hWnd As Long, ByVal pszClassList As Long) As Long
-Private Declare Function CloseThemeData Lib "uxtheme.dll" (ByVal hTheme As Long) As Long
-Private Declare Function DrawThemeBackground Lib "uxtheme.dll" (ByVal hTheme As Long, ByVal lhDC As Long, ByVal iPartId As Long, ByVal iStateId As Long, pRect As RECT, pClipRect As RECT) As Long
-Private Declare Function GetThemeBackgroundRegion Lib "uxtheme.dll" (ByVal hTheme As Long, ByVal hDC As Long, ByVal iPartId As Long, ByVal iStateId As Long, pRect As RECT, pRegion As Long) As Long
+Private Declare Function DrawThemeBackground Lib "uxtheme.dll" (ByVal hTheme As Long, ByVal lhDC As Long, ByVal iPartId As Long, ByVal iStateId As Long, pRECT As RECT, pClipRect As RECT) As Long
+Private Declare Function GetThemeBackgroundRegion Lib "uxtheme.dll" (ByVal hTheme As Long, ByVal hDC As Long, ByVal iPartId As Long, ByVal iStateId As Long, pRECT As RECT, pRegion As Long) As Long
 Private Declare Function WindowFromPoint Lib "user32.dll" (ByVal X As Long, ByVal Y As Long) As Long
 Private Declare Function LoadLibrary Lib "kernel32.dll" Alias "LoadLibraryW" (ByVal lpLibFileName As Long) As Long
 Private Declare Function FreeLibrary Lib "kernel32.dll" (ByVal hLibModule As Long) As Long
-Private Declare Function GetModuleHandle Lib "kernel32.dll" Alias "GetModuleHandleW" (ByVal lpModuleName As Long) As Long
-Private Declare Function GetProcAddress Lib "kernel32.dll" (ByVal hModule As Long, ByVal lpProcName As String) As Long
-Private Declare Function GetCursorPos Lib "user32.dll" (ByRef lpPoint As POINT) As Long
+Private Declare Function GetCursorPos Lib "user32.dll" (ByRef lpPoint As POINTAPI) As Long
 Private Declare Function LoadCursor Lib "user32.dll" Alias "LoadCursorW" (ByVal hInstance As Long, ByVal lpCursorName As Any) As Long
 Private Declare Function SetCursor Lib "user32.dll" (ByVal hCursor As Long) As Long
 Private Declare Function SetCapture Lib "user32.dll" (ByVal hWnd As Long) As Long
 Private Declare Function GetCapture Lib "user32.dll" () As Long
-Private Declare Function DestroyWindow Lib "user32.dll" (ByVal hWnd As Long) As Long
-Private Declare Function CreateWindowEx Lib "user32.dll" Alias "CreateWindowExW" (ByVal dwExStyle As Long, ByVal lpClassName As Long, ByVal lpWindowName As Long, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, ByRef lpParam As Any) As Long
-Private Declare Function GetClassLong Lib "user32.dll" Alias "GetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function SetClassLong Lib "user32.dll" Alias "SetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function GetClientRect Lib "user32.dll" (ByVal hWnd As Long, ByRef lpRect As RECT) As Long
 Private Declare Function DrawEdge Lib "user32.dll" (ByVal hDC As Long, ByRef qRC As RECT, ByVal Edge As Long, ByVal grfFlags As Long) As Long
 Private Declare Function DrawFocusRect Lib "user32.dll" (ByVal hDC As Long, ByRef lpRect As RECT) As Long
 Private Declare Function FillRect Lib "user32.dll" (ByVal hDC As Long, ByRef lpRect As RECT, ByVal hBrush As Long) As Long
 Private Declare Function FrameRect Lib "user32.dll" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
 Private Declare Function GetObjectAPI Lib "gdi32.dll" Alias "GetObjectW" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 
-Private Const GWL_STYLE       As Long = -16
-Private Const GWL_EXSTYLE     As Long = (-20)
-Private Const GWL_WNDPROC     As Long = (-4)
-Private Const WS_CAPTION      As Long = &HC00000
 Private Const IDC_HAND        As Long = 32649
-Private Const WS_EX_LAYOUTRTL As Long = &H400000
-Private Const CS_DROPSHADOW   As Long = &H20000
-Private Const GCL_STYLE       As Long = (-26)
-Private Const CW_USEDEFAULT = &H80000000
-Private Const ALL_MESSAGES      As Long = -1    'All messages added or deleted
 
 '*************************************************************
 '   TRACK MOUSE
@@ -618,6 +494,7 @@ Private Const WM_THEMECHANGED   As Long = &H31A
 Private Const WM_SYSCOLORCHANGE As Long = &H15
 Private Const WM_NCACTIVATE     As Long = &H86
 Private Const WM_ACTIVATE       As Long = &H6
+Private Const WM_SETCURSOR As Long = &H20
 
 Private Enum TRACKMOUSEEVENT_FLAGS
     TME_HOVER = &H1&
@@ -633,8 +510,10 @@ Private Type TRACKMOUSEEVENT_STRUCT
     dwHoverTime                         As Long
 End Type
 
+Private TrackUser32     As Boolean
+
 Private Declare Function TrackMouseEvent Lib "user32.dll" (ByRef lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
-Private Declare Function TrackMouseEventComCtl Lib "Comctl32.dll" Alias "_TrackMouseEvent" (lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
+Private Declare Function TrackMouseEventComCtl Lib "comctl32.dll" Alias "_TrackMouseEvent" (lpEventTrack As TRACKMOUSEEVENT_STRUCT) As Long
 
 '*************************************************************
 '   DRAW TEXT
@@ -654,7 +533,7 @@ Private Const DT_SINGLELINE    As Long = &H20
 Private Const DT_WORD_ELLIPSIS As Long = &H40000
 Private Const DT_MULTILINE = (&H1)
 Private Const DT_NOPREFIX = &H800
-Private Const DT_DRAWFLAG As Long = DT_CENTER Or DT_WORDBREAK Or DT_MULTILINE Or DT_NOPREFIX
+Private Const DT_DRAWFLAG As Long = DT_WORDBREAK Or DT_MULTILINE Or DT_NOPREFIX Or DT_VCENTER
 
 Private Declare Function DrawTextW Lib "user32.dll" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
 Private Declare Function DrawText Lib "user32.dll" Alias "DrawTextA" (ByVal hDC As Long, ByVal lpStr As String, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
@@ -718,9 +597,1492 @@ Public Event KeyPress(KeyAcsii As Integer)
 Attribute KeyPress.VB_Description = "Occurs when the user presses and releases an ANSI key."
 Attribute KeyPress.VB_UserMemId = -603
 
+Private Enum eParamUser
+    exParentForm = 1
+    exUserControl = 2
+End Enum
+
+Private m_cSubclass             As cSelfSubHookCallback
+Private m_bInitThem             As Boolean
+Private m_bInitThemed           As Boolean
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property BackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get BackColor() As OLE_COLOR
+Attribute BackColor.VB_Description = "Returns/sets the background color used for the button."
+Attribute BackColor.VB_ProcData.VB_Invoke_Property = ";Appearance"
+Attribute BackColor.VB_UserMemId = -501
+    BackColor = m_bColors.tBackColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property BackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   new_BackColor (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let BackColor(ByVal new_BackColor As OLE_COLOR)
+    m_bColors.tBackColor = new_BackColor
+
+    If m_ButtonStyle <> eOfficeXP Then
+        m_lXPColor = ecsCustom
+    End If
+
+    RedrawButton
+    PropertyChanged "BackColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ButtonStyle
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ButtonStyle() As enumButtonStlyes
+Attribute ButtonStyle.VB_Description = "Returns/sets a value to determine the style used to draw the button."
+Attribute ButtonStyle.VB_ProcData.VB_Invoke_Property = ";Appearance"
+Attribute ButtonStyle.VB_UserMemId = 1745027102
+    ButtonStyle = m_ButtonStyle
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ButtonStyle
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_ButtonStyle (enumButtonStlyes)
+'!--------------------------------------------------------------------------------
+Public Property Let ButtonStyle(ByVal New_ButtonStyle As enumButtonStlyes)
+    m_ButtonStyle = New_ButtonStyle
+    InitThemeColors
+    'Set colors
+    SetThemeColors
+    'Create Region Again
+    CreateRegion
+    'Obviously, force redraw!!!
+    RedrawButton
+    PropertyChanged "ButtonStyle"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property CaptionAlign
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get CaptionAlign() As enumCaptionAlign
+Attribute CaptionAlign.VB_Description = "Returns/Sets the position of the Caption."
+Attribute CaptionAlign.VB_ProcData.VB_Invoke_Property = ";Position"
+Attribute CaptionAlign.VB_UserMemId = 1745027101
+    CaptionAlign = m_CaptionAlign
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property CaptionAlign
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_CaptionAlign (enumCaptionAlign)
+'!--------------------------------------------------------------------------------
+Public Property Let CaptionAlign(ByVal New_CaptionAlign As enumCaptionAlign)
+    m_CaptionAlign = New_CaptionAlign
+    RedrawButton
+    PropertyChanged "CaptionAlign"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property CaptionEffects
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get CaptionEffects() As enumCaptionEffects
+Attribute CaptionEffects.VB_Description = "Returns/Sets the Special Effects apply to the caption."
+Attribute CaptionEffects.VB_ProcData.VB_Invoke_Property = ";Appearance"
+    CaptionEffects = m_CaptionEffects
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property CaptionEffects
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Effects (enumCaptionEffects)
+'!--------------------------------------------------------------------------------
+Public Property Let CaptionEffects(ByVal New_Effects As enumCaptionEffects)
+    m_CaptionEffects = New_Effects
+    RedrawButton
+    PropertyChanged "CaptionEffects"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Caption
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get Caption() As String
+Attribute Caption.VB_Description = "Returns/sets the text displayed in the button."
+Attribute Caption.VB_ProcData.VB_Invoke_Property = ";Text"
+Attribute Caption.VB_UserMemId = -518
+    Caption = m_Caption
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Caption
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Caption (String)
+'!--------------------------------------------------------------------------------
+Public Property Let Caption(ByVal New_Caption As String)
+    m_Caption = New_Caption
+    SetAccessKey
+    RedrawButton
+    PropertyChanged "Caption"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property CheckExist
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get CheckExist() As Boolean
+    CheckExist = m_CheckExist
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property CheckExist
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_CheckExist (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let CheckExist(ByVal New_CheckExist As Boolean)
+    m_CheckExist = New_CheckExist
+    PropertyChanged "CheckExist"
+    RedrawButton
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ColorScheme
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ColorScheme() As enumXPThemeColors
+Attribute ColorScheme.VB_Description = "Returns/Sets the ColorScheme to be used for the Background color."
+Attribute ColorScheme.VB_ProcData.VB_Invoke_Property = ";Appearance"
+    ColorScheme = m_lXPColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ColorScheme
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Color (enumXPThemeColors)
+'!--------------------------------------------------------------------------------
+Public Property Let ColorScheme(ByVal New_Color As enumXPThemeColors)
+    m_lXPColor = New_Color
+    SetThemeColors
+    RedrawButton
+    PropertyChanged "ColorScheme"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property DisabledPictureMode
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get DisabledPictureMode() As enumDisabledPicMode
+Attribute DisabledPictureMode.VB_Description = "Returns/Sets the effect to be used for picture when button is disabled."
+Attribute DisabledPictureMode.VB_ProcData.VB_Invoke_Property = ";Appearance"
+Attribute DisabledPictureMode.VB_UserMemId = 1745027098
+    DisabledPictureMode = m_PicDisabledMode
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property DisabledPictureMode
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_mode (enumDisabledPicMode)
+'!--------------------------------------------------------------------------------
+Public Property Let DisabledPictureMode(ByVal New_mode As enumDisabledPicMode)
+    m_PicDisabledMode = New_mode
+    RedrawButton
+    PropertyChanged "DisabledPictureMode"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property DropDownEnable
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get DropDownEnable() As Boolean
+    DropDownEnable = m_DropDownEnable
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property DropDownEnable
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   NewParam (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let DropDownEnable(ByVal NewParam As Boolean)
+    m_DropDownEnable = NewParam
+    PropertyChanged "DropDownEnable"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property DropDownSeparator
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get DropDownSeparator() As Boolean
+Attribute DropDownSeparator.VB_Description = "Returns/Sets the value whether to display DropDown Separator."
+Attribute DropDownSeparator.VB_ProcData.VB_Invoke_Property = ";Appearance"
+Attribute DropDownSeparator.VB_UserMemId = 1745027099
+    DropDownSeparator = m_bDropDownSep
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property DropDownSeparator
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Value (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let DropDownSeparator(ByVal New_Value As Boolean)
+    m_bDropDownSep = New_Value
+    RedrawButton
+    PropertyChanged "DropDownSeparator"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property DropDownSymbol
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get DropDownSymbol() As enumSymbol
+Attribute DropDownSymbol.VB_Description = "Returns/Sets the Symbol to be used for displaying PopupMenu."
+Attribute DropDownSymbol.VB_ProcData.VB_Invoke_Property = ";Appearance"
+Attribute DropDownSymbol.VB_UserMemId = 1745027100
+    DropDownSymbol = m_DropDownSymbol
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property DropDownSymbol
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Align (enumSymbol)
+'!--------------------------------------------------------------------------------
+Public Property Let DropDownSymbol(ByVal New_Align As enumSymbol)
+    m_DropDownSymbol = New_Align
+    RedrawButton
+    PropertyChanged "DropDownSymbol"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Enabled
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_Description = "Returns/sets a value to determine whether the button can respond to events."
+Attribute Enabled.VB_ProcData.VB_Invoke_Property = ";Behavior"
+Attribute Enabled.VB_UserMemId = -514
+    Enabled = m_bEnabled
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Enabled
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Enabled (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let Enabled(ByVal New_Enabled As Boolean)
+    m_bEnabled = New_Enabled
+    UserControl.Enabled = m_bEnabled
+    RedrawButton
+    PropertyChanged "Enabled"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Font
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get Font() As StdFont
+Attribute Font.VB_Description = "Returns/sets the Font used to display text on the button."
+Attribute Font.VB_ProcData.VB_Invoke_Property = ";Font"
+Attribute Font.VB_UserMemId = -512
+    Set Font = mFont
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Font
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Font (StdFont)
+'!--------------------------------------------------------------------------------
+Public Property Set Font(ByVal New_Font As StdFont)
+    Set mFont = New_Font
+    Refresh
+    RedrawButton
+    PropertyChanged "Font"
+    mFont_FontChanged vbNullString
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ForeColor() As OLE_COLOR
+Attribute ForeColor.VB_Description = "Returns/sets the text color of the button caption."
+Attribute ForeColor.VB_ProcData.VB_Invoke_Property = ";Appearance"
+Attribute ForeColor.VB_UserMemId = -513
+    ForeColor = m_bColors.tForeColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ForeColorHover
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ForeColorHover() As OLE_COLOR
+Attribute ForeColorHover.VB_Description = "Returns/sets the text color of the button caption when Mouse is over the control."
+Attribute ForeColorHover.VB_ProcData.VB_Invoke_Property = ";Appearance"
+Attribute ForeColorHover.VB_UserMemId = 1745027097
+    ForeColorHover = m_bColors.tForeColorOver
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ForeColorHover
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_ForeColorHover (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let ForeColorHover(ByVal New_ForeColorHover As OLE_COLOR)
+    m_bColors.tForeColorOver = New_ForeColorHover
+    UserControl.ForeColor = m_bColors.tForeColorOver
+    RedrawButton
+    PropertyChanged "ForeColorHover"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_ForeColor (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let ForeColor(ByVal New_ForeColor As OLE_COLOR)
+    m_bColors.tForeColor = New_ForeColor
+    UserControl.ForeColor = m_bColors.tForeColor
+    RedrawButton
+    PropertyChanged "ForeColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property HandPointer
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get HandPointer() As Boolean
+Attribute HandPointer.VB_Description = "Returns/sets a value to determine whether the control uses the system's hand pointer as its cursor."
+Attribute HandPointer.VB_ProcData.VB_Invoke_Property = ";Misc"
+Attribute HandPointer.VB_UserMemId = 1745027096
+    HandPointer = m_bHandPointer
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property HandPointer
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_HandPointer (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let HandPointer(ByVal New_HandPointer As Boolean)
+    m_bHandPointer = New_HandPointer
+
+    If m_bHandPointer Then
+        UserControl.MousePointer = 0
+    End If
+
+    RedrawButton
+    PropertyChanged "HandPointer"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property HasUxTheme
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Property Get HasUxTheme() As Boolean
+
+    If Not (m_bInitThem) Then
+        m_bHasUxTheme = APIFunctionPresent("IsAppThemed", "uxtheme.dll")
+        m_bInitThem = True
+    End If
+
+    HasUxTheme = m_bHasUxTheme
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property hWnd
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get hWnd() As Long
+Attribute hWnd.VB_Description = "Returns a handle that uniquely identifies the control."
+Attribute hWnd.VB_UserMemId = -515
+    ' --Handle that uniquely identifies the control
+    hWnd = UserControl.hWnd
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property IsThemed
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Property Get IsThemed() As Boolean
+
+    On Error Resume Next
+
+    If HasUxTheme Then
+        If Not (m_bInitThemed) Then
+            m_bIsThemed = IsAppThemed
+            m_bInitThemed = True
+        End If
+    End If
+
+    IsThemed = m_bIsThemed
+
+    On Error GoTo 0
+
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property MaskColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get MaskColor() As OLE_COLOR
+Attribute MaskColor.VB_Description = "Returns/sets a color in a button's picture to be transparent."
+Attribute MaskColor.VB_ProcData.VB_Invoke_Property = ";Appearance"
+    MaskColor = m_lMaskColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property MaskColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_MaskColor (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let MaskColor(ByVal New_MaskColor As OLE_COLOR)
+    m_lMaskColor = New_MaskColor
+    RedrawButton
+    PropertyChanged "MaskColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Mode
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get Mode() As enumButtonModes
+Attribute Mode.VB_Description = "Returns/sets the type of control the button will observe."
+Attribute Mode.VB_ProcData.VB_Invoke_Property = ";Behavior"
+    Mode = m_ButtonMode
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Mode
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_mode (enumButtonModes)
+'!--------------------------------------------------------------------------------
+Public Property Let Mode(ByVal New_mode As enumButtonModes)
+    m_ButtonMode = New_mode
+
+    If m_ButtonMode = ebmCommandButton Then
+        'Force Normal State for command buttons
+        m_Buttonstate = eStateNormal
+    End If
+
+    RedrawButton
+    PropertyChanged "Value"
+    PropertyChanged "Mode"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property MouseIcon
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get MouseIcon() As IPictureDisp
+Attribute MouseIcon.VB_Description = "Sets a custom mouse icon for the button."
+Attribute MouseIcon.VB_ProcData.VB_Invoke_Property = ";Misc"
+    Set MouseIcon = UserControl.MouseIcon
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property MouseIcon
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Icon (IPictureDisp)
+'!--------------------------------------------------------------------------------
+Public Property Set MouseIcon(ByVal New_Icon As IPictureDisp)
+
+    On Error Resume Next
+
+    Set UserControl.MouseIcon = New_Icon
+
+    If (New_Icon Is Nothing) Then
+        UserControl.MousePointer = 0
+        ' vbDefault
+    Else
+        m_bHandPointer = False
+        PropertyChanged "HandPointer"
+        UserControl.MousePointer = 99
+        ' vbCustom
+    End If
+
+    PropertyChanged "MouseIcon"
+
+    On Error GoTo 0
+
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property MousePointer
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get MousePointer() As MousePointerConstants
+Attribute MousePointer.VB_Description = "Returns/sets the type of mouse pointer displayed when cursor over the button."
+Attribute MousePointer.VB_ProcData.VB_Invoke_Property = ";Misc"
+    MousePointer = UserControl.MousePointer
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property MousePointer
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Cursor (MousePointerConstants)
+'!--------------------------------------------------------------------------------
+Public Property Let MousePointer(ByVal New_Cursor As MousePointerConstants)
+    UserControl.MousePointer = New_Cursor
+    PropertyChanged "MousePointer"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureAlign
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get PictureAlign() As enumPictureAlign
+Attribute PictureAlign.VB_Description = "Returns/sets a value to determine where to draw the picture in the button."
+Attribute PictureAlign.VB_ProcData.VB_Invoke_Property = ";Position"
+    PictureAlign = m_PictureAlign
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureAlign
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_PictureAlign (enumPictureAlign)
+'!--------------------------------------------------------------------------------
+Public Property Let PictureAlign(ByVal New_PictureAlign As enumPictureAlign)
+    m_PictureAlign = New_PictureAlign
+
+    If Not m_Picture Is Nothing Then
+        RedrawButton
+    End If
+
+    PropertyChanged "PictureAlign"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureDown
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get PictureDown() As StdPicture
+Attribute PictureDown.VB_Description = "Returns/sets the picture displayed when the control is pressed down or in checked state."
+Attribute PictureDown.VB_ProcData.VB_Invoke_Property = ";Appearance"
+    Set PictureDown = m_PictureDown
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureDown
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Down (StdPicture)
+'!--------------------------------------------------------------------------------
+Public Property Set PictureDown(ByVal New_Down As StdPicture)
+
+    If m_Picture Is Nothing Then
+        Set m_Picture = New_Down
+        PropertyChanged "PictureNormal"
+    Else
+        Set m_PictureDown = New_Down
+        PropertyChanged "PictureDown"
+        RedrawButton
+    End If
+
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureEffectOnDown
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get PictureEffectOnDown() As enumPicEffect
+Attribute PictureEffectOnDown.VB_Description = "Returns/Sets the Picture Effects to be applied when the Button is pressed down."
+Attribute PictureEffectOnDown.VB_ProcData.VB_Invoke_Property = ";Appearance"
+    PictureEffectOnDown = m_PicEffectonDown
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureEffectOnDown
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Effect (enumPicEffect)
+'!--------------------------------------------------------------------------------
+Public Property Let PictureEffectOnDown(ByVal New_Effect As enumPicEffect)
+    m_PicEffectonDown = New_Effect
+    RedrawButton
+    PropertyChanged "PictureEffectOnDown"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureEffectOnOver
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get PictureEffectOnOver() As enumPicEffect
+Attribute PictureEffectOnOver.VB_Description = "Returns/Sets the Picture Effects to be applied when the mouseis over the control."
+Attribute PictureEffectOnOver.VB_ProcData.VB_Invoke_Property = ";Appearance"
+    PictureEffectOnOver = m_PicEffectonOver
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureEffectOnOver
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Effect (enumPicEffect)
+'!--------------------------------------------------------------------------------
+Public Property Let PictureEffectOnOver(ByVal New_Effect As enumPicEffect)
+    m_PicEffectonOver = New_Effect
+    RedrawButton
+    PropertyChanged "PictureEffectOnOver"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureHot
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get PictureHot() As StdPicture
+Attribute PictureHot.VB_Description = "Returns/sets the picture displayed when the cursor is over the control."
+Attribute PictureHot.VB_ProcData.VB_Invoke_Property = ";Appearance"
+    Set PictureHot = m_PictureHot
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureHot
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Hot (StdPicture)
+'!--------------------------------------------------------------------------------
+Public Property Set PictureHot(ByVal New_Hot As StdPicture)
+
+    If m_Picture Is Nothing Then
+        Set m_Picture = New_Hot
+        PropertyChanged "PictureNormal"
+    Else
+        Set m_PictureHot = New_Hot
+        PropertyChanged "PictureHot"
+        RedrawButton
+    End If
+
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureNormal
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get PictureNormal() As StdPicture
+Attribute PictureNormal.VB_Description = "Returns/sets the picture displayed on a normal state button."
+Attribute PictureNormal.VB_ProcData.VB_Invoke_Property = ";Appearance"
+    Set PictureNormal = m_Picture
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureNormal
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Picture (StdPicture)
+'!--------------------------------------------------------------------------------
+Public Property Set PictureNormal(ByVal New_Picture As StdPicture)
+    Set m_Picture = New_Picture
+
+    If Not New_Picture Is Nothing Then
+        RedrawButton
+        PropertyChanged "PictureNormal"
+    Else
+        UserControl_Resize
+        Set m_PictureHot = Nothing
+        Set m_PictureDown = Nothing
+        PropertyChanged "PictureHot"
+        PropertyChanged "PictureDown"
+    End If
+
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureOpacity
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get PictureOpacity() As Byte
+Attribute PictureOpacity.VB_Description = "Returns/Sets a byte value to control the Opacity of the Picture."
+Attribute PictureOpacity.VB_ProcData.VB_Invoke_Property = ";Appearance"
+    PictureOpacity = m_PictureOpacity
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureOpacity
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Opacity (Byte)
+'!--------------------------------------------------------------------------------
+Public Property Let PictureOpacity(ByVal New_Opacity As Byte)
+    m_PictureOpacity = New_Opacity
+    RedrawButton
+    PropertyChanged "PictureOpacity"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureOpacityOnOver
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get PictureOpacityOnOver() As Byte
+Attribute PictureOpacityOnOver.VB_Description = "Returns/Sets a byte value to control the Opacity of the Picture when Mouse is over the button."
+Attribute PictureOpacityOnOver.VB_ProcData.VB_Invoke_Property = ";Appearance"
+    PictureOpacityOnOver = m_PicOpacityOnOver
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureOpacityOnOver
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Opacity (Byte)
+'!--------------------------------------------------------------------------------
+Public Property Let PictureOpacityOnOver(ByVal New_Opacity As Byte)
+    m_PicOpacityOnOver = New_Opacity
+    RedrawButton
+    PropertyChanged "PictureOpacityOnOver"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PicturePushOnHover
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get PicturePushOnHover() As Boolean
+Attribute PicturePushOnHover.VB_Description = "Returns/Sets a value to determine whether to Push picture when Mouse is over the control."
+Attribute PicturePushOnHover.VB_ProcData.VB_Invoke_Property = ";Appearance"
+    PicturePushOnHover = m_bPicPushOnHover
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PicturePushOnHover
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Value (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let PicturePushOnHover(ByVal Value As Boolean)
+    m_bPicPushOnHover = Value
+    RedrawButton
+    PropertyChanged "PicturePushOnHover"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureShadow
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get PictureShadow() As Boolean
+Attribute PictureShadow.VB_Description = "Returns/Sets a value to determine whether to display Picture Shadow"
+Attribute PictureShadow.VB_ProcData.VB_Invoke_Property = ";Appearance"
+    PictureShadow = m_PictureShadow
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PictureShadow
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Shadow (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let PictureShadow(ByVal New_Shadow As Boolean)
+    m_PictureShadow = New_Shadow
+    RedrawButton
+    PropertyChanged "PictureShadow"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property RightToLeft
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get RightToLeft() As Boolean
+Attribute RightToLeft.VB_Description = "Returns/Sets a value to determine whether to display text in RTL mode."
+Attribute RightToLeft.VB_ProcData.VB_Invoke_Property = ";Text"
+Attribute RightToLeft.VB_UserMemId = -611
+    RightToLeft = m_bRTL
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property RightToLeft
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Value (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let RightToLeft(ByVal Value As Boolean)
+    m_bRTL = Value
+    RedrawButton
+    PropertyChanged "RightToLeft"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   :   Property RunMode
+'! Description :   [Ambient.UserMode tells us whether the UC's container is in design mode or user mode/run-time.
+'                               Unfortunately, this isn't supported in all containers.]
+'                               http://www.vbforums.com/showthread.php?805711-VB6-UserControl-Ambient-UserMode-workaround&s=8dd326860cbc22bed07bd13f6959ca70
+'! Parameters  :
+'!--------------------------------------------------------------------------------
+Public Property Get RunMode() As Boolean
+    RunMode = True
+    On Error Resume Next
+    RunMode = Ambient.UserMode
+    RunMode = Extender.Parent.RunMode
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ShowFocusRect
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ShowFocusRect() As Boolean
+Attribute ShowFocusRect.VB_Description = "Returns/Sets a value to show Focusrect when the button has focus"
+Attribute ShowFocusRect.VB_ProcData.VB_Invoke_Property = ";Appearance"
+    ShowFocusRect = m_bShowFocus
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ShowFocusRect
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_ShowFocusRect (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let ShowFocusRect(ByVal New_ShowFocusRect As Boolean)
+    m_bShowFocus = New_ShowFocusRect
+    PropertyChanged "ShowFocusRect"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UseMaskColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get UseMaskColor() As Boolean
+Attribute UseMaskColor.VB_Description = "Returns/sets a value to determine whether to use MaskColor to create transparent areas of the picture."
+Attribute UseMaskColor.VB_ProcData.VB_Invoke_Property = ";Appearance"
+    UseMaskColor = m_bUseMaskColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UseMaskColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_UseMaskColor (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let UseMaskColor(ByVal New_UseMaskColor As Boolean)
+    m_bUseMaskColor = New_UseMaskColor
+
+    If Not m_Picture Is Nothing Then
+        RedrawButton
+    End If
+
+    PropertyChanged "UseMaskColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Value
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get Value() As Boolean
+Attribute Value.VB_Description = "Returns/sets the value or state of the button."
+Attribute Value.VB_ProcData.VB_Invoke_Property = ";Behavior"
+    Value = m_bValue
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Value
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   New_Value (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let Value(ByVal New_Value As Boolean)
+
+    If m_ButtonMode <> ebmCommandButton Then
+        'if option button, then clear all value on parent control
+        
+        If New_Value Then
+            If m_ButtonMode = ebmOptionButton Then
+                UncheckAllValues
+            End If
+        End If
+        m_bValue = New_Value
+
+        If Not m_bValue Then
+            m_Buttonstate = eStateNormal
+        End If
+
+        RedrawButton
+        PropertyChanged "Value"
+        If Not m_CheckExist Then
+            If New_Value = True Then
+                RaiseEvent Click
+            End If
+        End If
+    Else
+        m_Buttonstate = eStateNormal
+        RedrawButton
+    End If
+
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub About
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Sub About()
+Attribute About.VB_Description = "Displays information about the control and its author."
+Attribute About.VB_UserMemId = -552
+    MsgBox "JCButton v 1.02" & vbNewLine & "Author: Juned S. Chhipa" & vbNewLine & "Contact: juned.chhipa@yahoo.com" & vbNewLine & vbNewLine & "Copyright © 2008-2009 Juned Chhipa. All rights reserved.", vbInformation + vbOKOnly, "About"
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function BlendColors
+'! Description (Описание)  :   [Combines (mix) two colors.This is another method in which you can't specify percentage ]
+'! Parameters  (Переменные):   lBackColorFrom (Long)
+'                              lBackColorTo (Long)
+'!--------------------------------------------------------------------------------
+Private Function BlendColors(ByVal lBackColorFrom As Long, ByVal lBackColorTo As Long) As Long
+    BlendColors = RGB(((lBackColorFrom And &HFF) + (lBackColorTo And &HFF)) / 2, (((lBackColorFrom \ &H100) And &HFF) + ((lBackColorTo \ &H100) And &HFF)) / 2, (((lBackColorFrom \ &H10000) And &HFF) + ((lBackColorTo \ &H10000) And &HFF)) / 2)
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function BuildSymbolFont
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lFontSize (Long)
+'!--------------------------------------------------------------------------------
+Private Function BuildSymbolFont(ByVal lFontSize As Long) As Long
+
+    Const SYMBOL_CHARSET As Integer = 2
+
+    Dim lpFont           As StdFont
+    Dim BtnLogFont       As LOGFONT
+
+    Set lpFont = New StdFont
+
+    With lpFont
+        .Name = "Webdings"
+        .Size = lFontSize
+        .Charset = SYMBOL_CHARSET
+    End With
+
+    Call OLEFontToLogFont(lpFont, BtnLogFont)
+    BuildSymbolFont = CreateFontIndirect(BtnLogFont)
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub CalcPicRects
+'! Description (Описание)  :   [Calculate the rects for positioning pictures  ]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub CalcPicRects()
+
+    If Not m_Picture Is Nothing Then
+
+        With m_PicRect
+
+            If LenB(Trim$(m_Caption)) Then
+                If m_PictureAlign <> epBackGround Then
+
+                    Select Case m_PictureAlign
+    
+                        Case epLeftEdge
+                            .Left = 4
+                            .Top = (lh - PicH) \ 2
+    
+                            If m_CheckExist Then
+                                .Left = .Left + 16
+                                '.Right = .Right - m_PictureWidth - 13
+                            End If
+                
+                            If m_PicRect.Left < 0 Then
+                                OffsetRect m_PicRect, PicW, 0
+                                OffsetRect m_TextRect, PicW, 0
+                            End If
+    
+                        Case epLeftOfCaption
+                            .Left = m_TextRect.Left - PicW - 4
+                            .Top = (lh - PicH) \ 2
+    
+                        Case epRightEdge
+                            .Left = lw - PicW - 3
+                            .Top = (lh - PicH) \ 2
+    
+                            ' --If picture overlaps text
+                            If m_bDropDownSep Then
+                                OffsetRect m_PicRect, -16, 0
+                            ElseIf m_DropDownSymbol <> ebsNone Then
+                                OffsetRect m_PicRect, -16, 0
+                            End If
+    
+                            If .Left < m_TextRect.Right + 2 Then
+                                .Left = m_TextRect.Right + 2
+                            End If
+    
+                        Case epRightOfCaption
+                            .Left = m_TextRect.Right + 4
+                            .Top = (lh - PicH) \ 2
+    
+                            If m_bDropDownSep Then
+                                OffsetRect m_PicRect, -16, 0
+                            ElseIf m_DropDownSymbol <> ebsNone Then
+                                OffsetRect m_PicRect, -16, 0
+                            End If
+    
+                            ' --If picture overlaps text
+                            If .Left < m_TextRect.Right + 2 Then
+                                .Left = m_TextRect.Right + 2
+                            End If
+    
+                        Case epTopOfCaption
+                            .Left = (lw - PicW) \ 2
+                            .Top = m_TextRect.Top - PicH - 2
+    
+                            If m_bDropDownSep Then
+                                OffsetRect m_PicRect, -8, 0
+                            ElseIf m_DropDownSymbol <> ebsNone Then
+                                OffsetRect m_PicRect, -8, 0
+                            End If
+    
+                        Case epTopEdge
+                            .Left = (lw - PicW) \ 2
+                            .Top = 4
+    
+                            If m_bDropDownSep Then
+                                OffsetRect m_PicRect, -8, 0
+                            ElseIf m_DropDownSymbol <> ebsNone Then
+                                OffsetRect m_PicRect, -8, 0
+                            End If
+    
+                        Case epBottomOfCaption
+                            .Left = (lw - PicW) \ 2
+                            .Top = m_TextRect.Bottom + 2
+    
+                            If m_bDropDownSep Then
+                                OffsetRect m_PicRect, -8, 0
+                            ElseIf m_DropDownSymbol <> ebsNone Then
+                                OffsetRect m_PicRect, -8, 0
+                            End If
+    
+                        Case epBottomEdge
+                            .Left = (lw - PicW) \ 2
+                            .Top = lh - PicH - 4
+    
+                            If m_bDropDownSep Then
+                                OffsetRect m_PicRect, -8, 0
+                            ElseIf m_DropDownSymbol <> ebsNone Then
+                                OffsetRect m_PicRect, -8, 0
+                            End If
+    
+                    End Select
+                Else
+                    .Left = (lw - PicW) \ 2
+                    .Top = (lh - PicH) \ 2
+    
+                    If m_bDropDownSep Then
+                        OffsetRect m_PicRect, -8, 0
+                    ElseIf m_DropDownSymbol <> ebsNone Then
+                        OffsetRect m_PicRect, -8, 0
+                    End If
+                End If
+            Else
+                .Left = (lw - PicW) \ 2
+                .Top = (lh - PicH) \ 2
+
+                If m_bDropDownSep Then
+                    OffsetRect m_PicRect, -8, 0
+                ElseIf m_DropDownSymbol <> ebsNone Then
+                    OffsetRect m_PicRect, -8, 0
+                End If
+            End If
+
+            ' --Set the height and width
+            .Right = .Left + PicW
+            .Bottom = .Top + PicH
+        End With
+
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub CreateRegion
+'! Description (Описание)  :   [Create region everytime you redraw a button.
+'!                              Because some settings may have changed the button regions]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub CreateRegion()
+
+    If m_lButtonRgn Then
+        DeleteObject m_lButtonRgn
+    End If
+
+    Select Case m_ButtonStyle
+
+        Case eWindowsXP, eVistaAero, eVistaToolbar, eInstallShield
+            m_lButtonRgn = CreateRoundRectRgn(0, 0, lw + 1, lh + 1, 3, 3)
+
+        Case eGelButton, eXPToolbar
+            m_lButtonRgn = CreateRoundRectRgn(0, 0, lw + 1, lh + 1, 4, 4)
+
+        Case Else
+            m_lButtonRgn = CreateRectRgn(0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight)
+    End Select
+
+    'Set Button Region
+    SetWindowRgn UserControl.hWnd, m_lButtonRgn, True
+    'Free memory
+    DeleteObject m_lButtonRgn
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function Darken
+'! Description (Описание)  :   [By Dana Seaman]
+'! Parameters  (Переменные):   Color (Byte)
+'!--------------------------------------------------------------------------------
+Private Function Darken(ByVal Color As Byte) As Byte
+    Darken = (217& * Color) \ 255
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawCaptionEffect
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub DrawCaptionEffect()
+
+    '****************************************************************************
+    '* Draws the caption with/without unicode along with the special effects    *
+    '****************************************************************************
+    Dim bColor As Long
+
+    'BackColor
+    bColor = TranslateColor(m_bColors.tBackColor)
+
+    ' --Set new colors according to effects
+    Select Case m_CaptionEffects
+
+        Case eseEmbossed
+            DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.14), -1, -1
+
+        Case eseEngraved
+            DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.14), 1, 1
+
+        Case eseShadowed
+            DrawCaptionEx m_TextRect, TranslateColor(&HC0C0C0), 1, 1
+
+        Case eseOutline
+            DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.1), 1, 1
+            DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.1), 1, -1
+            DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.1), -1, 1
+            DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.1), -1, -1
+
+        Case eseCover
+            DrawCaptionEx m_TextRect, ShiftColor(bColor, -0.1), 1, 1
+            DrawCaptionEx m_TextRect, ShiftColor(bColor, -0.1), 1, -1
+            DrawCaptionEx m_TextRect, ShiftColor(bColor, -0.1), -1, 1
+            DrawCaptionEx m_TextRect, ShiftColor(bColor, -0.1), -1, -1
+    End Select
+
+    If m_bEnabled Then
+        DrawCaptionEx m_TextRect, TranslateColor(m_bColors.tForeColor), 0, 0
+    Else
+        DrawCaptionEx m_TextRect, GetSysColor(COLOR_GRAYTEXT), 0, 0
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawCaptionEx
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lpRect (RECT)
+'                              lColor (Long)
+'                              OffsetX (Long)
+'                              OffsetY (Long)
+'!--------------------------------------------------------------------------------
+Private Sub DrawCaptionEx(lpRect As RECT, lColor As Long, OffsetX As Long, OffsetY As Long)
+
+    Dim tRect         As RECT
+    Dim lOldForeColor As Long
+    Dim dtTextDrawParams As Long
+
+    ' --Get current forecolor
+    lOldForeColor = GetTextColor(hDC)
+    CopyRect tRect, lpRect
+    OffsetRect tRect, OffsetX, OffsetY
+    SetTextColor hDC, lColor
+
+    Select Case m_CaptionAlign
+        Case ecLeftAlign
+            dtTextDrawParams = dtDefTextDrawParams Or DT_LEFT
+        Case ecCenterAlign
+            dtTextDrawParams = dtDefTextDrawParams Or DT_CENTER
+        Case ecRightAlign
+            dtTextDrawParams = dtDefTextDrawParams Or DT_RIGHT
+    End Select
+    
+    If m_WindowsNT Then
+        DrawTextW hDC, StrPtr(m_Caption & vbNullChar), -1, tRect, dtTextDrawParams Or IIf(m_bRTL, DT_RTLREADING, 0)
+    Else
+        DrawText hDC, m_Caption, -1, tRect, dtTextDrawParams Or IIf(m_bRTL, DT_RTLREADING, 0)
+    End If
+
+    ' --Restore previous forecolor
+    SetTextColor hDC, lOldForeColor
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawCorners
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Color (Long)
+'!--------------------------------------------------------------------------------
+Private Sub DrawCorners(Color As Long)
+    '****************************************************************************
+    '* Draws four Corners of the button specified by Color                      *
+    '****************************************************************************
+    lh = ScaleHeight
+    lw = ScaleWidth
+    SetPixel hDC, 1, 1, Color
+    SetPixel hDC, 1, lh - 2, Color
+    SetPixel hDC, lw - 2, 1, Color
+    SetPixel hDC, lw - 2, lh - 2, Color
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawGradientEx
+'! Description (Описание)  :   [Draws very fast Gradient in four direction.
+'!                              Author: Carles P.V (Gradient Master)
+'!                              This routine works as a heart for this control.
+'!                              Thank you so much Carles.
+'! Parameters  (Переменные):   X (Long)
+'                              Y (Long)
+'                              lngWidth (Long)
+'                              lngHeight (Long)
+'                              Color1 (Long)
+'                              Color2 (Long)
+'                              GradientDirection (GradientDirectionCts)
+'!--------------------------------------------------------------------------------
+Private Sub DrawGradientEx(ByVal X As Long, ByVal Y As Long, ByVal lngWidth As Long, ByVal lngHeight As Long, ByVal Color1 As Long, ByVal Color2 As Long, ByVal GradientDirection As GradientDirectionCts)
+
+    Dim uBIH    As BITMAPINFOHEADER
+    Dim lBits() As Long
+    Dim lGrad() As Long
+    Dim r1      As Long
+    Dim g1      As Long
+    Dim B1      As Long
+    Dim R2      As Long
+    Dim G2      As Long
+    Dim B2      As Long
+    Dim dR      As Long
+    Dim dG      As Long
+    Dim dB      As Long
+    Dim Scan    As Long
+    Dim I       As Long
+    Dim iEnd    As Long
+    Dim iOffset As Long
+    Dim J       As Long
+    Dim jEnd    As Long
+    Dim iGrad   As Long
+
+    If Not (lngWidth < 1 Or lngHeight < 1) Then
+        '-- Decompose colors
+        Color1 = Color1 And &HFFFFFF
+        r1 = Color1 Mod &H100&
+        Color1 = Color1 \ &H100&
+        g1 = Color1 Mod &H100&
+        Color1 = Color1 \ &H100&
+        B1 = Color1 Mod &H100&
+        Color2 = Color2 And &HFFFFFF
+        R2 = Color2 Mod &H100&
+        Color2 = Color2 \ &H100&
+        G2 = Color2 Mod &H100&
+        Color2 = Color2 \ &H100&
+        B2 = Color2 Mod &H100&
+        '-- Get color distances
+        dR = R2 - r1
+        dG = G2 - g1
+        dB = B2 - B1
+
+        '-- Size gradient-colors array
+        Select Case GradientDirection
+
+            Case [gdHorizontal]
+
+                ReDim lGrad(0 To lngWidth - 1)
+
+            Case [gdVertical]
+
+                ReDim lGrad(0 To lngHeight - 1)
+
+            Case Else
+
+                ReDim lGrad(0 To lngWidth + lngHeight - 2)
+
+        End Select
+
+        '-- Calculate gradient-colors
+        iEnd = UBound(lGrad())
+
+        If iEnd = 0 Then
+            '-- Special case (1-pixel wide gradient)
+            lGrad(0) = (B1 \ 2 + B2 \ 2) + 256 * (g1 \ 2 + G2 \ 2) + 65536 * (r1 \ 2 + R2 \ 2)
+        Else
+
+            For I = 0 To iEnd
+                lGrad(I) = B1 + (dB * I) \ iEnd + 256 * (g1 + (dG * I) \ iEnd) + 65536 * (r1 + (dR * I) \ iEnd)
+            Next
+
+        End If
+
+        '-- Size DIB array
+        ReDim lBits(lngWidth * lngHeight - 1)
+
+        iEnd = lngWidth - 1
+        jEnd = lngHeight - 1
+        Scan = lngWidth
+
+        '-- Render gradient DIB
+        Select Case GradientDirection
+
+            Case [gdHorizontal]
+
+                For J = 0 To jEnd
+                    For I = iOffset To iEnd + iOffset
+                        lBits(I) = lGrad(I - iOffset)
+                    Next
+
+                    iOffset = iOffset + Scan
+                Next
+
+            Case [gdVertical]
+
+                For J = jEnd To 0 Step -1
+                    For I = iOffset To iEnd + iOffset
+                        lBits(I) = lGrad(J)
+                    Next
+
+                    iOffset = iOffset + Scan
+                Next
+
+            Case [gdDownwardDiagonal]
+                iOffset = jEnd * Scan
+
+                For J = 1 To jEnd + 1
+                    For I = iOffset To iEnd + iOffset
+                        lBits(I) = lGrad(iGrad)
+                        iGrad = iGrad + 1
+                    Next
+
+                    iOffset = iOffset - Scan
+                    iGrad = J
+                Next
+
+            Case [gdUpwardDiagonal]
+                iOffset = 0
+
+                For J = 1 To jEnd + 1
+                    For I = iOffset To iEnd + iOffset
+                        lBits(I) = lGrad(iGrad)
+                        iGrad = iGrad + 1
+                    Next
+
+                    iOffset = iOffset + Scan
+                    iGrad = J
+                Next
+
+        End Select
+
+        '-- Define DIB header
+        With uBIH
+            .biSize = 40
+            .biPlanes = 1
+            .biBitCount = 32
+            .biWidth = lngWidth
+            .biHeight = lngHeight
+        End With
+
+        '-- Paint it!
+        StretchDIBits hDC, X, Y, lngWidth, lngHeight, 0, 0, lngWidth, lngHeight, lBits(0), uBIH, DIB_RGB_COLORS, vbSrcCopy
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawInstallShieldButton
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vState (enumButtonStates)
+'!--------------------------------------------------------------------------------
+Private Sub DrawInstallShieldButton(ByVal vState As enumButtonStates)
+
+    '****************************************************************************
+    '* I saw this style while installing JetAudio in my PC.                     *
+    '* I liked it, so I implemented and gave it a name 'InstallShield'          *
+    '* hehe .....
+    '****************************************************************************
+    Dim FocusRect As RECT
+
+    lh = ScaleHeight
+    lw = ScaleWidth
+
+    If Not m_bEnabled Then
+        vState = eStateNormal
+        'Simple draw normal state for Disabled
+    End If
+
+    Select Case vState
+
+        Case eStateNormal
+            CreateRegion
+            SetRect m_ButtonRect, 0, 0, lw, lh
+            'Maybe have changed before!
+            ' --Draw upper gradient
+            DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(vbWhite), TranslateColor(m_bColors.tBackColor), gdVertical
+            ' --Draw Bottom Gradient
+            DrawGradientEx 0, lh / 2, lw, lh, TranslateColor(m_bColors.tBackColor), TranslateColor(m_bColors.tBackColor), gdVertical
+            DrawPicwithCaption
+            ' --Draw Inner White Border
+            DrawRectangle 1, 1, lw - 2, lh, TranslateColor(vbWhite)
+            ' --Draw Outer Rectangle
+            DrawRectangle 0, 0, lw, lh, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.2)
+            DrawLineApi 2, lh - 1, lw - 2, lh - 1, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.25)
+
+        Case eStateOver
+            ' --Draw upper gradient
+            DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(vbWhite), TranslateColor(m_bColors.tBackColor), gdVertical
+            ' --Draw Bottom Gradient
+            DrawGradientEx 0, lh / 2, lw, lh, TranslateColor(m_bColors.tBackColor), TranslateColor(m_bColors.tBackColor), gdVertical
+            DrawPicwithCaption
+            ' --Draw Inner White Border
+            DrawRectangle 1, 1, lw - 2, lh, TranslateColor(vbWhite)
+            ' --Draw Outer Rectangle
+            DrawRectangle 0, 0, lw, lh, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.2)
+            DrawLineApi 2, lh - 1, lw - 2, lh - 1, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.25)
+
+        Case eStateDown
+            ' --draw upper gradient
+            DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(vbWhite), ShiftColor(TranslateColor(m_bColors.tBackColor), -0.1), gdVertical
+            ' --Draw Bottom Gradient
+            DrawGradientEx 0, lh / 2, lw, lh, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.1), ShiftColor(TranslateColor(m_bColors.tBackColor), -0.05), gdVertical
+            DrawPicwithCaption
+            ' --Draw Inner White Border
+            DrawRectangle 1, 1, lw - 2, lh, TranslateColor(vbWhite)
+            ' --Draw Outer Rectangle
+            DrawRectangle 0, 0, lw, lh, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.23)
+            DrawCorners ShiftColor(TranslateColor(m_bColors.tBackColor), -0.1)
+            DrawLineApi 2, lh - 1, lw - 2, lh - 1, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.4)
+    End Select
+
+    DrawCorners ShiftColor(TranslateColor(m_bColors.tBackColor), 0.05)
+
+    If m_bParentActive And m_bShowFocus And (m_bHasFocus Or m_bDefault) Then
+        SetRect FocusRect, 3, 3, lw - 3, lh - 3
+        DrawFocusRect hDC, FocusRect
+    End If
+
+End Sub
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub DrawLineApi
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [draw lines]
 '! Parameters  (Переменные):   X1 (Long)
 '                              Y1 (Long)
 '                              X2 (Long)
@@ -729,10 +2091,7 @@ Attribute KeyPress.VB_UserMemId = -603
 '!--------------------------------------------------------------------------------
 Private Sub DrawLineApi(ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long, ByVal Color As Long)
 
-    '****************************************************************************
-    '*  draw lines
-    '****************************************************************************
-    Dim PT      As POINT
+    Dim PT      As POINTAPI
     Dim hPen    As Long
     Dim hPenOld As Long
 
@@ -745,22 +2104,360 @@ Private Sub DrawLineApi(ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, By
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function BlendColors
+'! Procedure   (Функция)   :   Sub DrawPicShadow
 '! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lBackColorFrom (Long)
-'                              lBackColorTo (Long)
+'! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Private Function BlendColors(ByVal lBackColorFrom As Long, ByVal lBackColorTo As Long) As Long
-    '***************************************************************************
-    '*  Combines (mix) two colors                                              *
-    '*  This is another method in which you can't specify percentage
-    '***************************************************************************
-    BlendColors = RGB(((lBackColorFrom And &HFF) + (lBackColorTo And &HFF)) / 2, (((lBackColorFrom \ &H100) And &HFF) + ((lBackColorTo \ &H100) And &HFF)) / 2, (((lBackColorFrom \ &H10000) And &HFF) + ((lBackColorTo \ &H10000) And &HFF)) / 2)
-End Function
+Private Sub DrawPicShadow()
+
+    '  Still not satisfied results for picture shadows
+    Dim lShadowClr As Long
+    Dim lpRect     As RECT
+
+    If m_bPicPushOnHover And m_Buttonstate = eStateOver Then
+        OffsetRect m_PicRect, -2, -2
+    End If
+
+    lShadowClr = BlendColors(TranslateColor(&H808080), TranslateColor(m_bColors.tBackColor))
+    CopyRect lpRect, m_PicRect
+    OffsetRect lpRect, 2, 2
+    DrawPicture lpRect, ShiftColor(lShadowClr, 0.05)
+    OffsetRect lpRect, -1, -1
+    DrawPicture lpRect, ShiftColor(lShadowClr, -0.1)
+    DrawPicture m_PicRect
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawPicture
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   lpRect (RECT)
+'                              lBrushColor (Long = -1)
+'!--------------------------------------------------------------------------------
+Private Sub DrawPicture(lpRect As RECT, Optional lBrushColor As Long = -1)
+
+    '****************************************************************************
+    ' draw the picture by calling the TransBlt routines                         *
+    '****************************************************************************
+    Dim tmpMaskColor As Long
+
+    ' --Draw picture
+    If tmppic Then
+        If tmppic.Type = vbPicTypeIcon Then
+            tmpMaskColor = TranslateColor(&HC0C0C0)
+        Else
+            tmpMaskColor = m_lMaskColor
+        End If
+
+        If Is32BitBMP(tmppic) Then
+            TransBlt32 hDC, lpRect.Left, lpRect.Top, PicW, PicH, tmppic, lBrushColor
+        Else
+            TransBlt hDC, lpRect.Left, lpRect.Top, PicW, PicH, tmppic, tmpMaskColor, lBrushColor
+        End If
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawPicwithCaption
+'! Description (Описание)  :   [Calculate Caption rects and draw the pictures and caption]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub DrawPicwithCaption()
+
+    Dim lpRect     As RECT
+    Dim pRECT      As RECT
+    Dim lShadowClr As Long
+    Dim dtTextDrawParams As Long
+
+    lw = ScaleWidth
+    lh = ScaleHeight
+
+    If (m_Buttonstate = eStateDown Or (m_ButtonMode <> ebmCommandButton And m_bValue = True)) Then
+
+        '-- Mouse down
+        If Not m_PictureDown Is Nothing Then
+            Set tmppic = m_PictureDown
+        Else
+
+            If Not m_PictureHot Is Nothing Then
+                Set tmppic = m_PictureHot
+            Else
+                Set tmppic = m_Picture
+            End If
+        End If
+
+    ElseIf (m_Buttonstate = eStateOver) Then
+
+        '-- Mouse in (over)
+        If Not m_PictureHot Is Nothing Then
+            Set tmppic = m_PictureHot
+        Else
+            Set tmppic = m_Picture
+        End If
+
+    Else
+        '-- Mouse out (normal)
+        Set tmppic = m_Picture
+    End If
+
+    ' --Adjust Picture Sizes
+    PicH = ScaleX(tmppic.Height, vbHimetric, vbPixels)
+    PicW = ScaleX(tmppic.Width, vbHimetric, vbPixels)
+
+    ' --Get the drawing area of caption
+    If m_DropDownSymbol <> ebsNone Or m_bDropDownSep Then
+        If m_PictureAlign = epRightEdge Or m_PictureAlign = epRightOfCaption Then
+            SetRect m_TextRect, 0, 0, lw - 20, lh
+        Else
+
+            If Not m_Picture Is Nothing Then
+                SetRect m_TextRect, PicW + 4, 0, lw - 20 - PicW, lh
+            Else
+                SetRect m_TextRect, 0, 0, lw - 20, lh
+            End If
+                    
+        End If
+    ElseIf m_PictureAlign = epLeftEdge And (m_CaptionAlign = ecLeftAlign) Then
+        SetRect m_TextRect, 0, 0, lw - PicW, lh
+    Else
+
+        If m_PictureAlign = epRightEdge Or m_PictureAlign = epRightOfCaption Then
+            SetRect m_TextRect, 0, 0, lw - PicW, lh
+        ElseIf m_PictureAlign = epLeftEdge Or m_PictureAlign = epLeftOfCaption Then
+            If m_CheckExist Then
+                SetRect m_TextRect, 0, 0, lw - PicW - 16 - 4, lh
+            Else
+                SetRect m_TextRect, 0, 0, lw - PicW - 4, lh
+            End If
+        Else
+            SetRect m_TextRect, 0, 0, lw - 8, lh
+        End If
+        
+    End If
+    
+    Select Case m_CaptionAlign
+        Case ecLeftAlign
+            dtTextDrawParams = dtDefTextDrawParams Or DT_LEFT
+        Case ecCenterAlign
+            dtTextDrawParams = dtDefTextDrawParams Or DT_CENTER
+        Case ecRightAlign
+            dtTextDrawParams = dtDefTextDrawParams Or DT_RIGHT
+    End Select
+    
+    ' --Calc rects for multiline
+    If m_WindowsNT Then
+        DrawTextW hDC, StrPtr(m_Caption & vbNullChar), -1, m_TextRect, DT_CALCRECT Or dtTextDrawParams Or IIf(m_bRTL, DT_RTLREADING, 0)
+    Else
+        DrawText hDC, m_Caption, -1, m_TextRect, DT_CALCRECT Or dtTextDrawParams Or IIf(m_bRTL, DT_RTLREADING, 0)
+    End If
+
+    ' --Copy rect into temp var
+    CopyRect lpRect, m_TextRect
+
+    ' --Move the caption area according to Caption alignments
+    Select Case m_CaptionAlign
+
+        Case ecLeftAlign
+            OffsetRect lpRect, 2, (lh - lpRect.Bottom) \ 2
+
+        Case ecCenterAlign
+            If (lh - lpRect.Bottom) < 0 Then
+                If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
+                    OffsetRect lpRect, (lw - lpRect.Right + PicW + 4 - 16) \ 2, 1
+                Else
+                    OffsetRect lpRect, (lw - lpRect.Right + PicW + 4) \ 2, 1
+                End If
+            Else
+                If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
+                    OffsetRect lpRect, (lw - lpRect.Right + PicW - 4 - 16) \ 2, (lh - lpRect.Bottom) \ 2
+                Else
+                    OffsetRect lpRect, (lw - lpRect.Right + PicW + 4) \ 2, (lh - lpRect.Bottom) \ 2
+                End If
+            
+            End If
+
+            If m_PictureAlign = epBottomEdge Or m_PictureAlign = epBottomOfCaption Or m_PictureAlign = epTopOfCaption Or m_PictureAlign = epTopEdge Then
+                OffsetRect lpRect, -(PicW \ 2), 0
+            End If
+
+        Case ecRightAlign
+            OffsetRect lpRect, (lw - lpRect.Right - 4), (lh - lpRect.Bottom) \ 2
+    End Select
+
+    With lpRect
+
+        If Not m_Picture Is Nothing Then
+            
+            Select Case m_PictureAlign
+
+                Case epLeftEdge, epLeftOfCaption
+                    .Left = PicW + 4
+                    .Right = lw - 4
+                    
+                    If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
+                        .Right = lw - 4 - 16
+                    End If
+                    
+                Case epRightEdge, epRightOfCaption
+
+                    If .Right > lw - PicW - 4 Then
+                        .Right = lw - PicW - 4
+                        .Left = .Left - PicW - 4
+                    End If
+
+                    If m_CaptionAlign = ecCenterAlign Then
+                        OffsetRect lpRect, -12, 0
+                    End If
+
+                Case epTopOfCaption, epTopEdge
+                    OffsetRect lpRect, 0, PicH \ 2
+
+                Case epBottomOfCaption, epBottomEdge
+                    OffsetRect lpRect, 0, -PicH \ 2
+
+                Case epBackGround
+
+                    If m_CaptionAlign = ecCenterAlign Then
+                        OffsetRect lpRect, -16, 0
+                    End If
+
+            End Select
+            
+            If m_CheckExist Then
+                .Left = .Left + 16
+            End If
+
+        Else
+
+            If .Left < 4 Then
+                .Left = 4
+            End If
+            
+            If .Right > lw - 4 Then
+                .Right = lw - 4
+            End If
+            
+            If m_CheckExist Then
+                .Left = 16
+                .Right = lw - 4
+            End If
+            
+            If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
+                .Right = lw - 4 - 16
+            End If
+            
+        End If
+
+        If m_CaptionAlign = ecRightAlign Then
+            If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
+                OffsetRect lpRect, -16, 0
+            End If
+        End If
+
+        ' --For themed style, we are not able to draw borders
+        ' --after drawing the caption. i mean the whole button is painted at once.
+        'Code deleted by AdiaProject
+
+        If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
+            .Right = lw - 16
+        End If
+
+    End With
+
+    ' --Save the caption rect
+    CopyRect m_TextRect, lpRect
+    ' --Calculate Pictures positions once we have caption rects
+    CalcPicRects
+
+    ' --Calculate rects with the dropdown symbol
+    If m_DropDownSymbol <> ebsNone Then
+        ' --Drawing area for dropdown symbol  (the symbol is optional;)
+        SetRect lpSignRect, lw - 15, lh / 2 - 7, lw, lh / 2 + 8
+    End If
+
+    If m_bDropDownSep Then
+        If m_PictureAlign <> epRightEdge Or m_PictureAlign <> epRightOfCaption Then
+            'If m_TextRect.Right <= ScaleWidth - 8 Then
+            DrawLineApi lw - 16, 3, lw - 16, lh - 3, ShiftColor(GetPixel(hDC, 7, 7), -0.1)
+            DrawLineApi lw - 15, 3, lw - 15, lh - 3, ShiftColor(GetPixel(hDC, 7, 7), 0.1)
+            'End If
+        ElseIf m_PictureAlign = epRightEdge Or m_PictureAlign = epRightOfCaption Then
+            DrawLineApi lw - 16, 3, lw - 16, lh - 3, ShiftColor(GetPixel(hDC, 7, 7), -0.1)
+            DrawLineApi lw - 15, 3, lw - 15, lh - 3, ShiftColor(GetPixel(hDC, 7, 7), 0.1)
+        End If
+    End If
+
+    ' --Some styles on down state donot change their text positions
+    ' --See your XP and Vista buttons ;)
+    If m_Buttonstate = eStateDown Then
+        If m_ButtonStyle = e3DHover Or m_ButtonStyle = eFlat Or m_ButtonStyle = eFlatHover Or m_ButtonStyle = eGelButton Or m_ButtonStyle = eOffice2003 Or m_ButtonStyle = eXPToolbar Or m_ButtonStyle = eVistaToolbar Or m_ButtonStyle = eStandard Then
+            OffsetRect m_TextRect, 1, 1
+            OffsetRect m_PicRect, 1, 1
+            OffsetRect lpSignRect, 1, 1
+        End If
+    End If
+
+    ' --Draw Pictures
+    If m_bPicPushOnHover Then
+        If m_Buttonstate = eStateOver Then
+            lShadowClr = TranslateColor(&HC0C0C0)
+            DrawPicture m_PicRect, lShadowClr
+            CopyRect pRECT, m_PicRect
+            OffsetRect pRECT, -2, -2
+            DrawPicture pRECT
+        Else
+            DrawPicture m_PicRect
+        End If
+    Else
+        DrawPicture m_PicRect
+    End If
+
+    If m_PictureShadow Then
+        If Not (m_bPicPushOnHover And m_Buttonstate = eStateOver) Then
+            DrawPicShadow
+        End If
+    End If
+
+    ' --Text Effects
+    If m_CaptionEffects <> eseNone Then
+        DrawCaptionEffect
+    End If
+
+    ' --At Last, draw the Captions
+    If m_bEnabled Then
+        If m_Buttonstate = eStateOver Then
+            DrawCaptionEx m_TextRect, TranslateColor(m_bColors.tForeColorOver), 0, 0
+        Else
+            DrawCaptionEx m_TextRect, TranslateColor(m_bColors.tForeColor), 0, 0
+        End If
+
+    Else
+        DrawCaptionEx m_TextRect, GetSysColor(COLOR_GRAYTEXT), 0, 0
+    End If
+
+    If m_DropDownSymbol <> ebsNone Then
+        If m_ButtonStyle = eStandard Or m_ButtonStyle = e3DHover Or m_ButtonStyle = eFlat Or m_ButtonStyle = eFlatHover Or m_ButtonStyle = eVistaToolbar Or m_ButtonStyle = eXPToolbar Then
+
+            ' --move the symbol downwards for some button style on mouse down
+            If m_Buttonstate = eStateDown Then
+                OffsetRect lpSignRect, 1, 1
+            End If
+        End If
+
+        If m_bEnabled Then
+            UserControl.ForeColor = TranslateColor(m_bColors.tForeColor)
+        Else
+            UserControl.ForeColor = GetSysColor(COLOR_GRAYTEXT)
+        End If
+
+        DrawSymbol m_DropDownSymbol
+    End If
+
+End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub DrawRectangle
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Draws a rectangle specified by coords and color of the rectangle ]
 '! Parameters  (Переменные):   X (Long)
 '                              Y (Long)
 '                              lngWidth (Long)
@@ -769,13 +2466,9 @@ End Function
 '!--------------------------------------------------------------------------------
 Private Sub DrawRectangle(ByVal X As Long, ByVal Y As Long, ByVal lngWidth As Long, ByVal lngHeight As Long, ByVal Color As Long)
 
-    '****************************************************************************
-    '*  Draws a rectangle specified by coords and color of the rectangle        *
-    '****************************************************************************
     Dim brect  As RECT
     Dim hBrush As Long
 
-    'Dim ret              As Long
     With brect
         .Left = X
         .Top = Y
@@ -783,15 +2476,614 @@ Private Sub DrawRectangle(ByVal X As Long, ByVal Y As Long, ByVal lngWidth As Lo
         .Bottom = Y + lngHeight
     End With
 
-    'BRECT
     hBrush = CreateSolidBrush(Color)
     FrameRect hDC, brect, hBrush
     DeleteObject hBrush
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub TransBlt
+'! Procedure   (Функция)   :   Sub DrawSymbol
 '! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   eArrow (enumSymbol)
+'!--------------------------------------------------------------------------------
+Private Sub DrawSymbol(ByVal eArrow As enumSymbol)
+
+    Dim hNewFont As Long
+    Dim hOldFont As Long
+    Dim sSign    As String
+
+    hNewFont = BuildSymbolFont(12)
+    hOldFont = SelectObject(hDC, hNewFont)
+    sSign = eArrow
+    DrawTextW hDC, StrPtr(sSign & vbNullChar), -1, lpSignRect, DT_WORDBREAK
+    SelectObject hDC, hOldFont
+    DeleteObject hNewFont
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function DrawTheme
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   sClass (String)
+'                              iPart (Long)
+'                              vState (Long)
+'!--------------------------------------------------------------------------------
+Private Function DrawTheme(sClass As String, ByVal iPart As Long, ByVal vState As Long) As Boolean
+
+    Dim hTheme    As Long
+    Dim lResult   As Boolean
+    Dim m_btnRect As RECT
+    Dim hRgn      As Long
+
+    hTheme = OpenThemeData(UserControl.hWnd, StrPtr(sClass))
+
+    If hTheme Then
+        ' --Necessary for rounded buttons
+        SetRect m_btnRect, m_ButtonRect.Left - 1, m_ButtonRect.Top - 1, m_ButtonRect.Right + 1, m_ButtonRect.Bottom + 2
+        GetThemeBackgroundRegion hTheme, hDC, iPart, vState, m_btnRect, hRgn
+        SetWindowRgn hWnd, hRgn, True
+        ' --clean up
+        DeleteObject hRgn
+        ' --Draw the theme
+        lResult = DrawThemeBackground(hTheme, hDC, iPart, vState, m_ButtonRect, m_ButtonRect)
+        DrawTheme = lResult
+    Else
+        DrawTheme = False
+    End If
+
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub InitThemeColors
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub InitThemeColors()
+
+    Select Case m_ButtonStyle
+
+        Case eStandard, eFlat, eVistaToolbar, eXPToolbar, eOfficeXP, eWindowsXP, eOutlook2007, eGelButton
+            m_lXPColor = ecsBlue
+
+        Case eInstallShield, eVistaAero
+            m_lXPColor = ecsSilver
+    End Select
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function Is32BitBMP
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   obj (Object)
+'!--------------------------------------------------------------------------------
+Private Function Is32BitBMP(obj As Object) As Boolean
+
+    Dim uBI As BITMAP
+
+    If obj.Type = vbPicTypeBitmap Then
+        GetObjectAPI obj.Handle, LenB(uBI), uBI
+        Is32BitBMP = uBI.BMBitsPixel = 32
+    End If
+
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function Lighten
+'! Description (Описание)  :   [By Dana Seaman]
+'! Parameters  (Переменные):   Color (Byte)
+'!--------------------------------------------------------------------------------
+Private Function Lighten(ByVal Color As Byte) As Byte
+
+    Dim lColor As Long
+
+    lColor = (293& * Color) \ 255
+
+    If lColor > 255 Then
+        Lighten = 255
+    Else
+        Lighten = lColor
+    End If
+
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub OLEFontToLogFont
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Font (StdFont)
+'                              LF (LOGFONT)
+'!--------------------------------------------------------------------------------
+Private Sub OLEFontToLogFont(ByVal Font As StdFont, ByRef LF As LOGFONT)
+
+    Dim FontName As String
+
+    With LF
+        FontName = Left$(Font.Name, LF_FACESIZE)
+        CopyMemory .LFFaceName(0), ByVal StrPtr(FontName), LenB(FontName)
+        .LFHeight = -MulDiv(CLng(Font.Size), DPI_Y(), 72)
+
+        If Font.Bold = True Then
+            .LFWeight = FW_BOLD
+        Else
+            .LFWeight = FW_NORMAL
+        End If
+
+        .LFItalic = IIf(Font.Italic = True, 1, 0)
+        .LFStrikeOut = IIf(Font.Strikethrough = True, 1, 0)
+        .LFUnderline = IIf(Font.Underline = True, 1, 0)
+        .LFQuality = DEFAULT_QUALITY
+        .LFCharset = CByte(Font.Charset And &HFF)
+    End With
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub PaintRect
+'! Description (Описание)  :   [Fills a region with specified color]
+'! Parameters  (Переменные):   lColor (Long)
+'                              lpRect (RECT)
+'!--------------------------------------------------------------------------------
+Private Sub PaintRect(ByVal lColor As Long, lpRect As RECT)
+
+    Dim hOldBrush As Long
+    Dim hBrush    As Long
+
+    hBrush = CreateSolidBrush(lColor)
+    hOldBrush = SelectObject(hDC, hBrush)
+    FillRect hDC, lpRect, hBrush
+    SelectObject hDC, hOldBrush
+    DeleteObject hBrush
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub RedrawButton
+'! Description (Описание)  :   [The main routine of this usercontrol. Everything is drawn here.  ]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub RedrawButton()
+
+    'Clears usercontrol
+    UserControl.Cls
+    
+    lh = ScaleHeight
+    lw = ScaleWidth
+    
+    'Sets the button rectangle
+    SetRect m_ButtonRect, 0, 0, lw, lh
+
+    'If Checkboxmode True
+    If m_ButtonMode <> ebmCommandButton Then
+
+        If Not (m_ButtonStyle = eStandard Or m_ButtonStyle = eXPToolbar) Then
+            If m_bValue Then
+                m_Buttonstate = eStateDown
+            End If
+        End If
+    End If
+
+    Select Case m_ButtonStyle
+
+        Case eOutlook2007
+            DrawButton_Outlook2007 m_Buttonstate
+
+        Case eWindowsXP
+            DrawButton_WinXP m_Buttonstate
+
+        Case eStandard
+            DrawButton_Standard m_Buttonstate
+
+        Case e3DHover
+            DrawButton_Standard m_Buttonstate
+
+        Case eFlat
+            DrawButton_Standard m_Buttonstate
+
+        Case eFlatHover
+            DrawButton_Standard m_Buttonstate
+
+        Case eXPToolbar
+            DrawButton_XPToolbar m_Buttonstate
+
+        Case eGelButton
+            DrawButton_Gel m_Buttonstate
+
+        Case eOfficeXP
+            DrawButton_OfficeXP m_Buttonstate
+
+        Case eInstallShield
+            DrawInstallShieldButton m_Buttonstate
+
+        Case eVistaAero
+            DrawButton_Vista m_Buttonstate
+
+        Case eVistaToolbar
+            DrawButton_VistaToolbar m_Buttonstate
+
+        Case eOffice2003
+            DrawButton_Office2003 m_Buttonstate
+
+        Case eWindowsTheme
+
+            ' --Theme can be applied
+            If IsThemed Then
+                DrawButton_WindowsTheme m_Buttonstate
+            Else
+                ' --Fallback to ownerdraw WinXP Button
+                m_ButtonStyle = eWindowsXP
+                m_lXPColor = ecsBlue
+                SetThemeColors
+                DrawButton_WinXP m_Buttonstate
+            End If
+
+    End Select
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SetAccessKey
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub SetAccessKey()
+
+    Dim I As Long
+
+    UserControl.AccessKeys = vbNullString
+
+    If Len(m_Caption) > 1 Then
+        I = InStr(m_Caption, "&")
+
+        If I < Len(m_Caption) Then
+            If I Then
+                If Mid$(m_Caption, I + 1, 1) <> "&" Then
+                    AccessKeys = LCase$(Mid$(m_Caption, I + 1, 1))
+                Else
+                    I = InStr(I + 2, m_Caption, "&", vbTextCompare)
+
+                    If Mid$(m_Caption, I + 1, 1) <> "&" Then
+                        AccessKeys = LCase$(Mid$(m_Caption, I + 1, 1))
+                    End If
+                End If
+            End If
+        End If
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SetPopupMenu
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Menu (Object)
+'                              Align (enumMenuAlign)
+'                              Flags (enumMenuAlign)
+'!--------------------------------------------------------------------------------
+Public Sub SetPopupMenu(ByVal Menu As Object, Optional Align As enumMenuAlign, Optional flags = 0)
+Attribute SetPopupMenu.VB_Description = "Sets a dropdown menu to the button."
+
+    If Not (Menu Is Nothing) Then
+        If (TypeOf Menu Is VB.Menu) Then
+            Set mnuDropDown = Menu
+            MenuAlign = Align
+            MenuFlags = flags
+            m_bPopupEnabled = True
+        End If
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SetPopupMenuRBT
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Menu (Object)
+'!--------------------------------------------------------------------------------
+Public Sub SetPopupMenuRBT(ByVal Menu As Object)
+
+    If Not (Menu Is Nothing) Then
+        If (TypeOf Menu Is VB.Menu) Then
+            Set mnuRightButton = Menu
+            m_bPopupEnabledRBT = True
+        End If
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SetThemeColors
+'! Description (Описание)  :   [Sets a style colors to default colors when button initialized or whenever you change the style of Button]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub SetThemeColors()
+
+    With m_bColors
+
+        Select Case m_ButtonStyle
+
+            Case eStandard, eFlat, eVistaToolbar, e3DHover, eFlatHover, eXPToolbar, eOfficeXP
+                .tBackColor = GetSysColor(COLOR_BTNFACE)
+
+            Case eWindowsXP
+
+                Select Case m_lXPColor
+
+                    Case ecsBlue
+                        .tBackColor = TranslateColor(&HE7EBEC)
+
+                    Case ecsOliveGreen
+                        .tBackColor = TranslateColor(&HDBEEF3)
+
+                    Case ecsSilver
+                        .tBackColor = TranslateColor(&HFCF1F0)
+                End Select
+
+            Case eOutlook2007, eGelButton
+
+                Select Case m_lXPColor
+
+                    Case ecsBlue
+                        .tBackColor = TranslateColor(&HFFD1AD)
+
+                    Case ecsOliveGreen
+                        .tBackColor = TranslateColor(&HBAD6D4)
+
+                    Case ecsSilver
+                        .tBackColor = TranslateColor(&HE3DFE0)
+                End Select
+
+                .tForeColor = TranslateColor(&H8B4215)
+
+            Case eVistaAero
+
+                Select Case m_lXPColor
+
+                    Case ecsBlue
+                        .tBackColor = TranslateColor(&HFDECE0)
+
+                    Case ecsOliveGreen
+                        .tBackColor = TranslateColor(&HDEEDE8)
+
+                    Case ecsSilver
+                        .tBackColor = ShiftColor(TranslateColor(&HD4D4D4), 0.06)
+                End Select
+
+            Case eInstallShield
+
+                Select Case m_lXPColor
+
+                    Case ecsBlue
+                        .tBackColor = TranslateColor(&HFFD1AD)
+
+                    Case ecsOliveGreen
+                        .tBackColor = TranslateColor(&HBAD6D4)
+
+                    Case ecsSilver
+                        .tBackColor = TranslateColor(&HE1D6D5)
+                End Select
+
+            Case eOffice2003
+
+                Select Case m_lXPColor
+
+                    Case ecsBlue
+                        .tBackColor = TranslateColor(&HFCE1CA)
+
+                    Case ecsOliveGreen
+                        .tBackColor = TranslateColor(&HBAD6D4)
+
+                    Case ecsSilver
+                        .tBackColor = ShiftColor(TranslateColor(&HBA9EA0), 0.15)
+                End Select
+        End Select
+
+        .tForeColor = TranslateColor(vbButtonText)
+        m_bShowFocus = m_ButtonStyle = eFlat Or m_ButtonStyle = eInstallShield Or m_ButtonStyle = eStandard
+
+        If m_ButtonStyle = eOfficeXP Then
+            m_bPicPushOnHover = True
+        End If
+
+    End With
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function ShiftColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Color (Long)
+'                              PercentInDecimal (Single)
+'!--------------------------------------------------------------------------------
+Private Function ShiftColor(ByVal Color As Long, ByVal PercentInDecimal As Single) As Long
+
+    '****************************************************************************
+    '* This routine shifts a color value specified by PercentInDecimal          *
+    '* Function inspired from DCbutton                                          *
+    '* All Credits goes to Noel Dacara                                          *
+    '* A Littlebit modified by me                                               *
+    '****************************************************************************
+    Dim r As Long
+    Dim G As Long
+    Dim b As Long
+
+    '  Add or remove a certain color quantity by how many percent.
+    r = Color And 255
+    G = (Color \ 256) And 255
+    b = (Color \ 65536) And 255
+    r = r + PercentInDecimal * 255
+    ' Percent should already
+    G = G + PercentInDecimal * 255
+    ' be translated.
+    b = b + PercentInDecimal * 255
+
+    ' Ex. 50% -> 50 / 100 = 0.5
+    '  When overflow occurs, ....
+    If PercentInDecimal > 0 Then
+
+        ' RGB values must be between 0-255 only
+        If r > 255 Then
+            r = 255
+        End If
+
+        If G > 255 Then
+            G = 255
+        End If
+
+        If b > 255 Then
+            b = 255
+        End If
+
+    Else
+
+        If r < 0 Then
+            r = 0
+        End If
+
+        If G < 0 Then
+            G = 0
+        End If
+
+        If b < 0 Then
+            b = 0
+        End If
+    End If
+
+    ShiftColor = r + 256& * G + 65536 * b
+    ' Return shifted color value
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ShowPopupMenu
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ShowPopupMenu()
+
+    '* Shows a popupmenu
+    '* Inspired from Noel Dacara's dcbutton
+    Const TPM_BOTTOMALIGN As Long = &H20&
+
+    Dim Align             As enumMenuAlign
+    Dim X                 As Long
+    Dim Y                 As Long
+    Dim lpPoint           As POINTAPI
+
+    If m_DropDownEnable Then
+        If Not (mnuDropDown Is Nothing) Then
+        Align = MenuAlign
+        lh = ScaleHeight
+        lw = ScaleWidth
+        m_bPopupInit = True
+    
+        ' --Set the drop down menu position
+        Select Case Align
+    
+            Case edaBottom
+                Y = lh
+    
+            Case edaLeft, edaBottomLeft
+                MenuFlags = MenuFlags Or vbPopupMenuRightAlign
+    
+                If MenuAlign = edaBottomLeft Then
+                    Y = lh
+                End If
+    
+            Case edaRight, edaBottomRight
+                X = lw
+    
+                If MenuAlign = edaBottomRight Then
+                    Y = lh
+                End If
+    
+            Case edaTop, edaTopRight, edaTopLeft
+                MenuFlags = TPM_BOTTOMALIGN
+    
+                If MenuAlign = edaTopRight Then
+                    X = lw
+                ElseIf (MenuAlign = edaTopLeft) Then
+                    MenuFlags = MenuFlags Or vbPopupMenuRightAlign
+                End If
+    
+            Case Else
+                m_bPopupInit = False
+        End Select
+    
+        If m_bPopupInit Then
+            ' /--Show the dropdown menu
+            UserControl.PopupMenu mnuDropDown, MenuFlags, X, Y
+            GetCursorPos lpPoint
+    
+            If (WindowFromPoint(lpPoint.X, lpPoint.Y) = UserControl.hWnd) Then
+                m_bPopupShown = True
+            Else
+                m_bIsDown = False
+                m_bMouseInCtl = False
+                m_bIsSpaceBarDown = False
+                m_Buttonstate = eStateNormal
+                m_bPopupShown = False
+                m_bPopupInit = False
+                RedrawButton
+            End If
+        End If
+        End If
+    End If
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ShowPopupMenuRBT
+'! Description (Описание)  :   [Show the dropdown menu by Right button pressed]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ShowPopupMenuRBT()
+
+    ' /--Show the dropdown menu
+    If Not (mnuRightButton Is Nothing) Then
+        UserControl.PopupMenu mnuRightButton
+    End If
+
+    Dim lpPoint As POINTAPI
+
+    GetCursorPos lpPoint
+
+    If (WindowFromPoint(lpPoint.X, lpPoint.Y) = UserControl.hWnd) Then
+        m_bPopupShown = True
+    Else
+        m_bIsDown = False
+        m_bMouseInCtl = False
+        m_bIsSpaceBarDown = False
+        m_Buttonstate = eStateNormal
+        m_bPopupShown = False
+        m_bPopupInit = False
+        RedrawButton
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub TrackMouseLeave
+'! Description (Описание)  :   [Track the mouse leaving the indicated window]
+'! Parameters  (Переменные):   lng_hWnd (Long)
+'!--------------------------------------------------------------------------------
+Private Sub TrackMouseLeave(ByVal lng_hWnd As Long)
+
+    Dim TME As TRACKMOUSEEVENT_STRUCT
+
+    If TrackUser32 Then
+
+        With TME
+            .cbSize = LenB(TME)
+            .dwFlags = TME_LEAVE
+            .hWndTrack = lng_hWnd
+            .dwHoverTime = 1
+        End With
+
+        If TrackUser32 Then
+            TrackMouseEvent TME
+        Else
+            TrackMouseEventComCtl TME
+        End If
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub TransBlt
+'! Description (Описание)  :   [To make transparent and grayscale images (Author  : Gonkuchi * Modified by Dana Seaman)]
 '! Parameters  (Переменные):   DstDC (Long)
 '                              DstX (Long)
 '                              DstY (Long)
@@ -803,19 +3095,13 @@ End Sub
 '                              MonoMask (Boolean = False)
 '                              isGreyscale (Boolean = False)
 '!--------------------------------------------------------------------------------
-Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long, ByVal DstW As Long, ByVal DstH As Long, ByVal SrcPic As StdPicture, Optional ByVal TransColor As Long = -1, Optional ByVal BrushColor As Long = -1, Optional ByVal _
+Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long, ByVal DstW As Long, ByVal DstH As Long, ByVal SrcPic As StdPicture, Optional ByVal transColor As Long = -1, Optional ByVal BrushColor As Long = -1, Optional ByVal _
                             MonoMask As Boolean = False, Optional ByVal isGreyscale As Boolean = False)
 
-    '****************************************************************************
-    '* Routine : To make transparent and grayscale images
-    '* Author  : Gonkuchi
-    '
-    '* Modified by Dana Seaman
-    '****************************************************************************
-    Dim B           As Long
+    Dim b           As Long
     Dim H           As Long
     Dim F           As Long
-    Dim i           As Long
+    Dim I           As Long
     Dim newW        As Long
     Dim TmpDC       As Long
     Dim TmpBmp      As Long
@@ -883,7 +3169,7 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
             tObj = SelectObject(SrcDC, SrcPic)
         Else
             tObj = SelectObject(SrcDC, CreateCompatibleBitmap(DstDC, DstW, DstH))
-            hBrush = CreateSolidBrush(TransColor)
+            hBrush = CreateSolidBrush(transColor)
             DrawIconEx SrcDC, 0, 0, SrcPic.Handle, DstW, DstH, 0, hBrush, DI_NORMAL
             DeleteObject hBrush
         End If
@@ -895,8 +3181,8 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
         TmpObj = SelectObject(TmpDC, TmpBmp)
         Sr2Obj = SelectObject(Sr2DC, Sr2Bmp)
 
-        ReDim DataDest(DstW * DstH * 3 - 1) As RGB
-        ReDim DataSrc(UBound(DataDest)) As RGB
+        ReDim DataDest(DstW * DstH * 3 - 1)
+        ReDim DataSrc(UBound(DataDest))
 
         With Info.bmiHeader
             .biSize = Len(Info.bmiHeader)
@@ -911,7 +3197,7 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
         GetDIBits TmpDC, TmpBmp, 0, DstH, DataDest(0), Info, 0
         GetDIBits Sr2DC, Sr2Bmp, 0, DstH, DataSrc(0), Info, 0
 
-        If BrushColor > 0 Then
+        If BrushColor Then
 
             With BrushRGB
                 .Blue = (BrushColor \ &H10000) Mod &H100
@@ -923,7 +3209,7 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
 
         ' --No Maskcolor to use
         If Not m_bUseMaskColor Then
-            TransColor = -1
+            transColor = -1
         End If
 
         newW = DstW - 1
@@ -931,8 +3217,8 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
         For H = 0 To DstH - 1
             F = H * DstW
 
-            For B = 0 To newW
-                i = F + B
+            For b = 0 To newW
+                I = F + b
 
                 If m_Buttonstate = eStateOver Then
                     a1 = OverOpacity
@@ -942,21 +3228,21 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
 
                 a2 = 255 - a1
 
-                If GetNearestColor(hDC, CLng(DataSrc(i).Red) + 256& * DataSrc(i).Green + 65536 * DataSrc(i).Blue) <> TransColor Then
+                If GetNearestColor(hDC, CLng(DataSrc(I).Red) + 256& * DataSrc(I).Green + 65536 * DataSrc(I).Blue) <> transColor Then
 
-                    With DataDest(i)
+                    With DataDest(I)
 
                         If BrushColor > -1 Then
                             If MonoMask Then
-                                If (CLng(DataSrc(i).Red) + DataSrc(i).Green + DataSrc(i).Blue) <= 384 Then
-                                    DataDest(i) = BrushRGB
+                                If (CLng(DataSrc(I).Red) + DataSrc(I).Green + DataSrc(I).Blue) <= 384 Then
+                                    DataDest(I) = BrushRGB
                                 End If
 
                             Else
 
                                 If a1 = 255 Then
-                                    DataDest(i) = BrushRGB
-                                ElseIf a1 > 0 Then
+                                    DataDest(I) = BrushRGB
+                                ElseIf a1 Then
                                     .Red = (a2 * .Red + a1 * BrushRGB.Red) \ 256
                                     .Green = (a2 * .Green + a1 * BrushRGB.Green) \ 256
                                     .Blue = (a2 * .Blue + a1 * BrushRGB.Blue) \ 256
@@ -966,13 +3252,13 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
                         Else
 
                             If isGreyscale Then
-                                gCol = CLng(DataSrc(i).Red * 0.3) + DataSrc(i).Green * 0.59 + DataSrc(i).Blue * 0.11
+                                gCol = CLng(DataSrc(I).Red * 0.3) + DataSrc(I).Green * 0.59 + DataSrc(I).Blue * 0.11
 
                                 If a1 = 255 Then
                                     .Red = gCol
                                     .Green = gCol
                                     .Blue = gCol
-                                ElseIf a1 > 0 Then
+                                ElseIf a1 Then
                                     .Red = (a2 * .Red + a1 * gCol) \ 256
                                     .Green = (a2 * .Green + a1 * gCol) \ 256
                                     .Blue = (a2 * .Blue + a1 * gCol) \ 256
@@ -982,31 +3268,31 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
 
                                 If a1 = 255 Then
                                     If PicEffect = epeLighter Then
-                                        .Red = aLighten(DataSrc(i).Red)
-                                        .Green = aLighten(DataSrc(i).Green)
-                                        .Blue = aLighten(DataSrc(i).Blue)
+                                        .Red = aLighten(DataSrc(I).Red)
+                                        .Green = aLighten(DataSrc(I).Green)
+                                        .Blue = aLighten(DataSrc(I).Blue)
                                     ElseIf PicEffect = epeDarker Then
-                                        .Red = aDarken(DataSrc(i).Red)
-                                        .Green = aDarken(DataSrc(i).Green)
-                                        .Blue = aDarken(DataSrc(i).Blue)
+                                        .Red = aDarken(DataSrc(I).Red)
+                                        .Green = aDarken(DataSrc(I).Green)
+                                        .Blue = aDarken(DataSrc(I).Blue)
                                     Else
-                                        DataDest(i) = DataSrc(i)
+                                        DataDest(I) = DataSrc(I)
                                     End If
 
-                                ElseIf a1 > 0 Then
+                                ElseIf a1 Then
 
                                     If PicEffect = epeLighter Then
-                                        .Red = (a2 * .Red + a1 * aLighten(DataSrc(i).Red)) \ 256
-                                        .Green = (a2 * .Green + a1 * aLighten(DataSrc(i).Green)) \ 256
-                                        .Blue = (a2 * .Blue + a1 * aLighten(DataSrc(i).Blue)) \ 256
+                                        .Red = (a2 * .Red + a1 * aLighten(DataSrc(I).Red)) \ 256
+                                        .Green = (a2 * .Green + a1 * aLighten(DataSrc(I).Green)) \ 256
+                                        .Blue = (a2 * .Blue + a1 * aLighten(DataSrc(I).Blue)) \ 256
                                     ElseIf PicEffect = epeDarker Then
-                                        .Red = (a2 * .Red + a1 * aDarken(DataSrc(i).Red)) \ 256
-                                        .Green = (a2 * .Green + a1 * aDarken(DataSrc(i).Green)) \ 256
-                                        .Blue = (a2 * .Blue + a1 * aDarken(DataSrc(i).Blue)) \ 256
+                                        .Red = (a2 * .Red + a1 * aDarken(DataSrc(I).Red)) \ 256
+                                        .Green = (a2 * .Green + a1 * aDarken(DataSrc(I).Green)) \ 256
+                                        .Blue = (a2 * .Blue + a1 * aDarken(DataSrc(I).Blue)) \ 256
                                     Else
-                                        .Red = (a2 * .Red + a1 * DataSrc(i).Red) \ 256
-                                        .Green = (a2 * .Green + a1 * DataSrc(i).Green) \ 256
-                                        .Blue = (a2 * .Blue + a1 * DataSrc(i).Blue) \ 256
+                                        .Red = (a2 * .Red + a1 * DataSrc(I).Red) \ 256
+                                        .Green = (a2 * .Green + a1 * DataSrc(I).Green) \ 256
+                                        .Blue = (a2 * .Blue + a1 * DataSrc(I).Blue) \ 256
                                     End If
                                 End If
                             End If
@@ -1039,7 +3325,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub TransBlt32
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Renders 32 bit Bitmap (Author: Dana Seaman) ]
 '! Parameters  (Переменные):   DstDC (Long)
 '                              DstX (Long)
 '                              DstY (Long)
@@ -1051,14 +3337,10 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub TransBlt32(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long, ByVal DstW As Long, ByVal DstH As Long, ByVal SrcPic As StdPicture, Optional ByVal BrushColor As Long = -1, Optional ByVal isGreyscale As Boolean = False)
 
-    '****************************************************************************
-    '* Routine : Renders 32 bit Bitmap                                          *
-    '* Author  : Dana Seaman                                                    *
-    '****************************************************************************
-    Dim B           As Long
+    Dim b           As Long
     Dim H           As Long
     Dim F           As Long
-    Dim i           As Long
+    Dim I           As Long
     Dim newW        As Long
     Dim TmpDC       As Long
     Dim TmpBmp      As Long
@@ -1071,13 +3353,9 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Lo
     Dim Info        As BITMAPINFO
     Dim BrushRGB    As RGBQUAD
     Dim gCol        As Long
-
-    'Dim hOldOb           As Long
     Dim PicEffect   As enumPicEffect
     Dim SrcDC       As Long
     Dim tObj        As Long
-
-    'Dim ttt As Long
     Dim bDisOpacity As Byte
     Dim OverOpacity As Byte
     Dim a2          As Long
@@ -1141,9 +3419,8 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Lo
             .biSizeImage = 4 * ((DstW * .biBitCount + 31) \ 32) * DstH
         End With
 
-        'INFO.BMIHEADER
-        ReDim DataDest(Info.bmiHeader.biSizeImage - 1) As RGBQUAD
-        ReDim DataSrc(UBound(DataDest)) As RGBQUAD
+        ReDim DataDest(Info.bmiHeader.biSizeImage - 1)
+        ReDim DataSrc(UBound(DataDest))
 
         BitBlt TmpDC, 0, 0, DstW, DstH, DstDC, DstX, DstY, vbSrcCopy
         BitBlt Sr2DC, 0, 0, DstW, DstH, SrcDC, 0, 0, vbSrcCopy
@@ -1165,28 +3442,28 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Lo
         For H = 0 To DstH - 1
             F = H * DstW
 
-            For B = 0 To newW
-                i = F + B
+            For b = 0 To newW
+                I = F + b
 
                 If m_bEnabled Then
                     If m_Buttonstate = eStateOver Then
-                        a1 = (CLng(DataSrc(i).Alpha) * OverOpacity) \ 255
+                        a1 = (CLng(DataSrc(I).Alpha) * OverOpacity) \ 255
                     Else
-                        a1 = (CLng(DataSrc(i).Alpha) * m_PictureOpacity) \ 255
+                        a1 = (CLng(DataSrc(I).Alpha) * m_PictureOpacity) \ 255
                     End If
 
                 Else
-                    a1 = (CLng(DataSrc(i).Alpha) * bDisOpacity) \ 255
+                    a1 = (CLng(DataSrc(I).Alpha) * bDisOpacity) \ 255
                 End If
 
                 a2 = 255 - a1
 
-                With DataDest(i)
+                With DataDest(I)
 
                     If BrushColor <> -1 Then
                         If a1 = 255 Then
-                            DataDest(i) = BrushRGB
-                        ElseIf a1 > 0 Then
+                            DataDest(I) = BrushRGB
+                        ElseIf a1 Then
                             .Red = (a2 * .Red + a1 * BrushRGB.Red) \ 256
                             .Green = (a2 * .Green + a1 * BrushRGB.Green) \ 256
                             .Blue = (a2 * .Blue + a1 * BrushRGB.Blue) \ 256
@@ -1195,13 +3472,13 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Lo
                     Else
 
                         If isGreyscale Then
-                            gCol = CLng(DataSrc(i).Red * 0.3) + DataSrc(i).Green * 0.59 + DataSrc(i).Blue * 0.11
+                            gCol = CLng(DataSrc(I).Red * 0.3) + DataSrc(I).Green * 0.59 + DataSrc(I).Blue * 0.11
 
                             If a1 = 255 Then
                                 .Red = gCol
                                 .Green = gCol
                                 .Blue = gCol
-                            ElseIf a1 > 0 Then
+                            ElseIf a1 Then
                                 .Red = (a2 * .Red + a1 * gCol) \ 256
                                 .Green = (a2 * .Green + a1 * gCol) \ 256
                                 .Blue = (a2 * .Blue + a1 * gCol) \ 256
@@ -1211,31 +3488,31 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Lo
 
                             If a1 = 255 Then
                                 If PicEffect = epeLighter Then
-                                    .Red = aLighten(DataSrc(i).Red)
-                                    .Green = aLighten(DataSrc(i).Green)
-                                    .Blue = aLighten(DataSrc(i).Blue)
+                                    .Red = aLighten(DataSrc(I).Red)
+                                    .Green = aLighten(DataSrc(I).Green)
+                                    .Blue = aLighten(DataSrc(I).Blue)
                                 ElseIf PicEffect = epeDarker Then
-                                    .Red = aDarken(DataSrc(i).Red)
-                                    .Green = aDarken(DataSrc(i).Green)
-                                    .Blue = aDarken(DataSrc(i).Blue)
+                                    .Red = aDarken(DataSrc(I).Red)
+                                    .Green = aDarken(DataSrc(I).Green)
+                                    .Blue = aDarken(DataSrc(I).Blue)
                                 Else
-                                    DataDest(i) = DataSrc(i)
+                                    DataDest(I) = DataSrc(I)
                                 End If
 
-                            ElseIf a1 > 0 Then
+                            ElseIf a1 Then
 
                                 If PicEffect = epeLighter Then
-                                    .Red = (a2 * .Red + a1 * aLighten(DataSrc(i).Red)) \ 256
-                                    .Green = (a2 * .Green + a1 * aLighten(DataSrc(i).Green)) \ 256
-                                    .Blue = (a2 * .Blue + a1 * aLighten(DataSrc(i).Blue)) \ 256
+                                    .Red = (a2 * .Red + a1 * aLighten(DataSrc(I).Red)) \ 256
+                                    .Green = (a2 * .Green + a1 * aLighten(DataSrc(I).Green)) \ 256
+                                    .Blue = (a2 * .Blue + a1 * aLighten(DataSrc(I).Blue)) \ 256
                                 ElseIf PicEffect = epeDarker Then
-                                    .Red = (a2 * .Red + a1 * aDarken(DataSrc(i).Red)) \ 256
-                                    .Green = (a2 * .Green + a1 * aDarken(DataSrc(i).Green)) \ 256
-                                    .Blue = (a2 * .Blue + a1 * aDarken(DataSrc(i).Blue)) \ 256
+                                    .Red = (a2 * .Red + a1 * aDarken(DataSrc(I).Red)) \ 256
+                                    .Green = (a2 * .Green + a1 * aDarken(DataSrc(I).Green)) \ 256
+                                    .Blue = (a2 * .Blue + a1 * aDarken(DataSrc(I).Blue)) \ 256
                                 Else
-                                    .Red = (a2 * .Red + a1 * DataSrc(i).Red) \ 256
-                                    .Green = (a2 * .Green + a1 * DataSrc(i).Green) \ 256
-                                    .Blue = (a2 * .Blue + a1 * DataSrc(i).Blue) \ 256
+                                    .Red = (a2 * .Red + a1 * DataSrc(I).Red) \ 256
+                                    .Green = (a2 * .Green + a1 * DataSrc(I).Green) \ 256
+                                    .Blue = (a2 * .Blue + a1 * DataSrc(I).Blue) \ 256
                                 End If
                             End If
                         End If
@@ -1243,7 +3520,6 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Lo
 
                 End With
 
-                'DATADEST(I)
             Next
         Next
 
@@ -1265,212 +3541,14 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Lo
 
 End Sub
 
-' --By Dana Seaman
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function Lighten
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Color (Byte)
-'!--------------------------------------------------------------------------------
-Private Function Lighten(ByVal Color As Byte) As Byte
-
-    Dim lColor As Long
-
-    lColor = (293& * Color) \ 255
-
-    If lColor > 255 Then
-        Lighten = 255
-    Else
-        Lighten = lColor
-    End If
-
-End Function
-
-' --By Dana Seaman
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function Darken
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Color (Byte)
-'!--------------------------------------------------------------------------------
-Private Function Darken(ByVal Color As Byte) As Byte
-    Darken = (217& * Color) \ 255
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawGradientEx
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   X (Long)
-'                              Y (Long)
-'                              lngWidth (Long)
-'                              lngHeight (Long)
-'                              Color1 (Long)
-'                              Color2 (Long)
-'                              GradientDirection (GradientDirectionCts)
-'!--------------------------------------------------------------------------------
-Private Sub DrawGradientEx(ByVal X As Long, ByVal Y As Long, ByVal lngWidth As Long, ByVal lngHeight As Long, ByVal Color1 As Long, ByVal Color2 As Long, ByVal GradientDirection As GradientDirectionCts)
-
-    '****************************************************************************
-    '* Draws very fast Gradient in four direction.                              *
-    '* Author: Carles P.V (Gradient Master)                                     *
-    '* This routine works as a heart for this control.                          *
-    '* Thank you so much Carles.                                                *
-    '****************************************************************************
-    Dim uBIH    As BITMAPINFOHEADER
-    Dim lBits() As Long
-    Dim lGrad() As Long
-    Dim r1      As Long
-    Dim g1      As Long
-    Dim B1      As Long
-    Dim R2      As Long
-    Dim G2      As Long
-    Dim B2      As Long
-    Dim dR      As Long
-    Dim dG      As Long
-    Dim dB      As Long
-    Dim Scan    As Long
-    Dim i       As Long
-    Dim iEnd    As Long
-    Dim iOffset As Long
-    Dim j       As Long
-    Dim jEnd    As Long
-    Dim iGrad   As Long
-
-    '-- A minor check
-    'If (Width < 1 Or Height < 1) Then Exit Sub
-    If Not (lngWidth < 1 Or lngHeight < 1) Then
-        '-- Decompose colors
-        Color1 = Color1 And &HFFFFFF
-        r1 = Color1 Mod &H100&
-        Color1 = Color1 \ &H100&
-        g1 = Color1 Mod &H100&
-        Color1 = Color1 \ &H100&
-        B1 = Color1 Mod &H100&
-        Color2 = Color2 And &HFFFFFF
-        R2 = Color2 Mod &H100&
-        Color2 = Color2 \ &H100&
-        G2 = Color2 Mod &H100&
-        Color2 = Color2 \ &H100&
-        B2 = Color2 Mod &H100&
-        '-- Get color distances
-        dR = R2 - r1
-        dG = G2 - g1
-        dB = B2 - B1
-
-        '-- Size gradient-colors array
-        Select Case GradientDirection
-
-            Case [gdHorizontal]
-
-                ReDim lGrad(0 To lngWidth - 1) As Long
-
-            Case [gdVertical]
-
-                ReDim lGrad(0 To lngHeight - 1) As Long
-
-            Case Else
-
-                ReDim lGrad(0 To lngWidth + lngHeight - 2) As Long
-
-        End Select
-
-        '-- Calculate gradient-colors
-        iEnd = UBound(lGrad())
-
-        If iEnd = 0 Then
-            '-- Special case (1-pixel wide gradient)
-            lGrad(0) = (B1 \ 2 + B2 \ 2) + 256 * (g1 \ 2 + G2 \ 2) + 65536 * (r1 \ 2 + R2 \ 2)
-        Else
-
-            For i = 0 To iEnd
-                lGrad(i) = B1 + (dB * i) \ iEnd + 256 * (g1 + (dG * i) \ iEnd) + 65536 * (r1 + (dR * i) \ iEnd)
-            Next
-
-        End If
-
-        '-- Size DIB array
-        ReDim lBits(lngWidth * lngHeight - 1) As Long
-
-        iEnd = lngWidth - 1
-        jEnd = lngHeight - 1
-        Scan = lngWidth
-
-        '-- Render gradient DIB
-        Select Case GradientDirection
-
-            Case [gdHorizontal]
-
-                For j = 0 To jEnd
-                    For i = iOffset To iEnd + iOffset
-                        lBits(i) = lGrad(i - iOffset)
-                    Next
-
-                    iOffset = iOffset + Scan
-                Next
-
-            Case [gdVertical]
-
-                For j = jEnd To 0 Step -1
-                    For i = iOffset To iEnd + iOffset
-                        lBits(i) = lGrad(j)
-                    Next
-
-                    iOffset = iOffset + Scan
-                Next
-
-            Case [gdDownwardDiagonal]
-                iOffset = jEnd * Scan
-
-                For j = 1 To jEnd + 1
-                    For i = iOffset To iEnd + iOffset
-                        lBits(i) = lGrad(iGrad)
-                        iGrad = iGrad + 1
-                    Next
-
-                    iOffset = iOffset - Scan
-                    iGrad = j
-                Next
-
-            Case [gdUpwardDiagonal]
-                iOffset = 0
-
-                For j = 1 To jEnd + 1
-                    For i = iOffset To iEnd + iOffset
-                        lBits(i) = lGrad(iGrad)
-                        iGrad = iGrad + 1
-                    Next
-
-                    iOffset = iOffset + Scan
-                    iGrad = j
-                Next
-
-        End Select
-
-        '-- Define DIB header
-        With uBIH
-            .biSize = 40
-            .biPlanes = 1
-            .biBitCount = 32
-            .biWidth = lngWidth
-            .biHeight = lngHeight
-        End With
-
-        'UBIH
-        '-- Paint it!
-        StretchDIBits hDC, X, Y, lngWidth, lngHeight, 0, 0, lngWidth, lngHeight, lBits(0), uBIH, DIB_RGB_COLORS, vbSrcCopy
-    End If
-
-End Sub
-
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function TranslateColor
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [System color code to long rgb    ]
 '! Parameters  (Переменные):   clrColor (OLE_COLOR)
 '                              HPALETTE (Long = 0)
 '!--------------------------------------------------------------------------------
 Private Function TranslateColor(ByVal clrColor As OLE_COLOR, Optional ByRef HPALETTE As Long = 0) As Long
 
-    '****************************************************************************
-    '*  System color code to long rgb                                           *
-    '****************************************************************************
     If OleTranslateColor(clrColor, HPALETTE, TranslateColor) Then
         TranslateColor = CLR_INVALID
     End If
@@ -1478,738 +3556,11 @@ Private Function TranslateColor(ByVal clrColor As OLE_COLOR, Optional ByRef HPAL
 End Function
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub RedrawButton
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub RedrawButton()
-    '****************************************************************************
-    '*  The main routine of this usercontrol. Everything is drawn here.         *
-    '****************************************************************************
-    UserControl.Cls
-    'Clears usercontrol
-    lh = ScaleHeight
-    lw = ScaleWidth
-    SetRect m_ButtonRect, 0, 0, lw, lh
-
-    'Sets the button rectangle
-    If m_ButtonMode <> ebmCommandButton Then
-
-        'If Checkboxmode True
-        If Not (m_ButtonStyle = eStandard Or m_ButtonStyle = eXPToolbar) Then
-            If m_bValue Then
-                m_Buttonstate = eStateDown
-            End If
-        End If
-    End If
-
-    Select Case m_ButtonStyle
-
-        Case eOutlook2007
-            DrawButton_Outlook2007 m_Buttonstate
-
-        Case eWindowsXP
-            DrawButton_WinXP m_Buttonstate
-
-        Case eStandard
-            DrawButton_Standard m_Buttonstate
-
-        Case e3DHover
-            DrawButton_Standard m_Buttonstate
-
-        Case eFlat
-            DrawButton_Standard m_Buttonstate
-
-        Case eFlatHover
-            DrawButton_Standard m_Buttonstate
-
-        Case eXPToolbar
-            DrawButton_XPToolbar m_Buttonstate
-
-        Case eGelButton
-            DrawButton_Gel m_Buttonstate
-
-        Case eOfficeXP
-            DrawButton_OfficeXP m_Buttonstate
-
-        Case eInstallShield
-            DrawInstallShieldButton m_Buttonstate
-
-        Case eVistaAero
-            DrawButton_Vista m_Buttonstate
-
-        Case eVistaToolbar
-            DrawButton_VistaToolbar m_Buttonstate
-
-        Case eOffice2003
-            DrawButton_Office2003 m_Buttonstate
-
-        Case eWindowsTheme
-
-            If IsThemed Then
-                ' --Theme can be applied
-                DrawButton_WindowsTheme m_Buttonstate
-            Else
-                ' --Fallback to ownerdraw WinXP Button
-                m_ButtonStyle = eWindowsXP
-                m_lXPColor = ecsBlue
-                SetThemeColors
-                DrawButton_WinXP m_Buttonstate
-            End If
-
-    End Select
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub CreateRegion
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub CreateRegion()
-
-    '***************************************************************************
-    '*  Create region everytime you redraw a button.                           *
-    '*  Because some settings may have changed the button regions              *
-    '***************************************************************************
-    If m_lButtonRgn Then
-        DeleteObject m_lButtonRgn
-    End If
-
-    Select Case m_ButtonStyle
-
-        Case eWindowsXP, eVistaAero, eVistaToolbar, eInstallShield
-            m_lButtonRgn = CreateRoundRectRgn(0, 0, lw + 1, lh + 1, 3, 3)
-
-        Case eGelButton, eXPToolbar
-            m_lButtonRgn = CreateRoundRectRgn(0, 0, lw + 1, lh + 1, 4, 4)
-
-        Case Else
-            m_lButtonRgn = CreateRectRgn(0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight)
-    End Select
-
-    'Set Button Region
-    SetWindowRgn UserControl.hWnd, m_lButtonRgn, True
-    'Free memory
-    DeleteObject m_lButtonRgn
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawSymbol
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   eArrow (enumSymbol)
-'!--------------------------------------------------------------------------------
-Private Sub DrawSymbol(ByVal eArrow As enumSymbol)
-
-    Dim hNewFont As Long
-    Dim hOldFont As Long
-    Dim sSign    As String
-
-    hNewFont = BuildSymbolFont(12)
-    hOldFont = SelectObject(hDC, hNewFont)
-    sSign = eArrow
-    'DrawText hDC, sSign, 1, lpSignRect, DT_WORDBREAK
-    DrawTextW hDC, StrPtr(sSign & vbNullChar), -1, lpSignRect, DT_WORDBREAK
-    SelectObject hDC, hOldFont
-    DeleteObject hNewFont
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function BuildSymbolFont
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lFontSize (Long)
-'!--------------------------------------------------------------------------------
-Private Function BuildSymbolFont(ByVal lFontSize As Long) As Long
-
-    Const SYMBOL_CHARSET As Integer = 2
-
-    Dim lpFont           As StdFont
-    Dim BtnLogFont       As LOGFONT
-
-    Set lpFont = New StdFont
-
-    With lpFont
-        '.Name = "Marlett"
-        .Name = "Webdings"
-        .Size = lFontSize
-        .Charset = SYMBOL_CHARSET
-    End With
-
-    Call OLEFontToLogFont(lpFont, BtnLogFont)
-    'it is installed in every machine!
-    'Still Im not sure about Marlet :)
-    BuildSymbolFont = CreateFontIndirect(BtnLogFont)
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub OLEFontToLogFont
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Font (StdFont)
-'                              LF (LOGFONT)
-'!--------------------------------------------------------------------------------
-Private Sub OLEFontToLogFont(ByVal Font As StdFont, ByRef LF As LOGFONT)
-
-    Dim FontName As String
-
-    With LF
-        FontName = Left$(Font.Name, LF_FACESIZE)
-        CopyMemory .LFFaceName(0), ByVal StrPtr(FontName), LenB(FontName)
-        .LFHeight = -MulDiv(CLng(Font.Size), DPI_Y(), 72)
-
-        If Font.Bold = True Then
-            .LFWeight = FW_BOLD
-        Else
-            .LFWeight = FW_NORMAL
-        End If
-
-        .LFItalic = IIf(Font.Italic = True, 1, 0)
-        .LFStrikeOut = IIf(Font.Strikethrough = True, 1, 0)
-        .LFUnderline = IIf(Font.Underline = True, 1, 0)
-        .LFQuality = DEFAULT_QUALITY
-        .LFCharset = CByte(Font.Charset And &HFF)
-    End With
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawPicwithCaption
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub DrawPicwithCaption()
-
-    '****************************************************************************
-    ' Calculate Caption rects and draw the pictures and caption                 *
-    '****************************************************************************
-    Dim lpRect     As RECT
-    Dim pRect      As RECT
-    Dim lShadowClr As Long
-
-    'Dim lPixelClr        As Long
-    'RECT to draw caption
-    lw = ScaleWidth
-    'ScaleHeight of Button
-    lh = ScaleHeight
-
-    'ScaleWidth of Button
-    If (m_Buttonstate = eStateDown Or (m_ButtonMode <> ebmCommandButton And m_bValue = True)) Then
-
-        '-- Mouse down
-        If Not m_PictureDown Is Nothing Then
-            Set tmppic = m_PictureDown
-        Else
-
-            If Not m_PictureHot Is Nothing Then
-                Set tmppic = m_PictureHot
-            Else
-                Set tmppic = m_Picture
-            End If
-        End If
-
-    ElseIf (m_Buttonstate = eStateOver) Then
-
-        '-- Mouse in (over)
-        If Not m_PictureHot Is Nothing Then
-            Set tmppic = m_PictureHot
-        Else
-            Set tmppic = m_Picture
-        End If
-
-    Else
-        '-- Mouse out (normal)
-        Set tmppic = m_Picture
-    End If
-
-    ' --Adjust Picture Sizes
-    PicH = ScaleX(tmppic.Height, vbHimetric, vbPixels)
-    PicW = ScaleX(tmppic.Width, vbHimetric, vbPixels)
-
-    ' --Get the drawing area of caption
-    If m_DropDownSymbol <> ebsNone Or m_bDropDownSep Then
-        If m_PictureAlign = epRightEdge Or m_PictureAlign = epRightOfCaption Then
-            SetRect m_TextRect, 0, 0, lw - 20, lh
-        Else
-
-            'SetRect m_TextRect, 0, 0, lw - 16, lh
-            If Not m_Picture Is Nothing Then
-                SetRect m_TextRect, PicW + 4, 0, lw - 20, lh
-            Else
-                SetRect m_TextRect, 0, 0, lw - 20, lh
-            End If
-        End If
-
-    ElseIf m_PictureAlign = epLeftEdge And (m_CaptionAlign = ecLeftAlign) Then
-        SetRect m_TextRect, 0, 0, lw - PicW, lh
-    Else
-
-        If m_PictureAlign = epRightEdge Or m_PictureAlign = epRightOfCaption Then
-            SetRect m_TextRect, 0, 0, lw - PicW, lh
-        ElseIf m_PictureAlign = epLeftEdge Or m_PictureAlign = epLeftOfCaption Then
-            SetRect m_TextRect, 0, 0, lw - PicW, lh
-        Else
-            SetRect m_TextRect, 0, 0, lw - 8, lh
-        End If
-    End If
-
-    ' --Calc rects for multiline
-    If m_WindowsNT Then
-        DrawTextW hDC, StrPtr(m_Caption & vbNullChar), -1, m_TextRect, DT_CALCRECT Or DT_DRAWFLAG Or IIf(m_bRTL, DT_RTLREADING, 0)
-    Else
-        DrawText hDC, m_Caption, -1, m_TextRect, DT_CALCRECT Or DT_DRAWFLAG Or IIf(m_bRTL, DT_RTLREADING, 0)
-    End If
-
-    ' --Copy rect into temp var
-    CopyRect lpRect, m_TextRect
-
-    ' --Move the caption area according to Caption alignments
-    Select Case m_CaptionAlign
-
-        Case ecLeftAlign
-            OffsetRect lpRect, 2, (lh - lpRect.Bottom) \ 2
-
-            If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                'OffsetRect lpRect, -10, 0
-            End If
-
-        Case ecCenterAlign
-            OffsetRect lpRect, (lw - lpRect.Right + PicW + 4) \ 2, (lh - lpRect.Bottom) \ 2
-
-            If m_PictureAlign = epBottomEdge Or m_PictureAlign = epBottomOfCaption Or m_PictureAlign = epTopOfCaption Or m_PictureAlign = epTopEdge Then
-                OffsetRect lpRect, -(PicW \ 2), 0
-            End If
-
-        Case ecRightAlign
-            OffsetRect lpRect, (lw - lpRect.Right - 4), (lh - lpRect.Bottom) \ 2
-    End Select
-
-    With lpRect
-
-        If Not m_Picture Is Nothing Then
-
-            Select Case m_PictureAlign
-
-                Case epLeftEdge, epLeftOfCaption
-                    '                    If m_CaptionAlign = ecCenterAlign Then
-                    'If .Left < PicW + 6 Then
-                    '.Left = PicW + 6
-                    '.Right = .Right - PicW
-                    'Else
-                    'If .Left < PicW + 6 Then
-                    .Left = PicW + 4
-
-                    '.Right = .Right - PicW - 4
-                    'End If
-                    'End If
-                    'ElseIf m_CaptionAlign = ecRightAlign Then
-                    'End If
-                Case epRightEdge, epRightOfCaption
-
-                    If .Right > lw - PicW - 4 Then
-                        .Right = lw - PicW - 4
-                        .Left = .Left - PicW - 4
-                    End If
-
-                    If m_CaptionAlign = ecCenterAlign Then
-                        OffsetRect lpRect, -12, 0
-                    End If
-
-                Case epTopOfCaption, epTopEdge
-                    OffsetRect lpRect, 0, PicH \ 2
-
-                Case epBottomOfCaption, epBottomEdge
-                    OffsetRect lpRect, 0, -PicH \ 2
-
-                Case epBackGround
-
-                    If m_CaptionAlign = ecCenterAlign Then
-                        OffsetRect lpRect, -16, 0
-                    End If
-
-            End Select
-
-        Else
-
-            If .Left < 4 Then
-                .Left = 4
-            End If
-
-            If .Right > ScaleWidth - 4 Then
-                .Right = ScaleWidth - 4
-            End If
-        End If
-
-        If m_CaptionAlign = ecRightAlign Then
-            If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                OffsetRect lpRect, -16, 0
-            End If
-        End If
-
-        ' --For themed style, we are not able to draw borders
-        ' --after drawing the caption. i mean the whole button is painted at once.
-        If m_ButtonStyle = eWindowsTheme Then
-            If .Left < 4 Then
-                .Left = 4
-            End If
-
-            If .Right > ScaleWidth - 4 Then
-                .Right = ScaleWidth - 4
-            End If
-
-            If m_bDropDownSep Then
-                '.Right = .Right - 8
-            End If
-
-            If .Top < 4 Then
-                .Top = 4
-            End If
-
-            If .Bottom > ScaleHeight - 4 Then
-                .Bottom = ScaleHeight - 4
-            End If
-
-        Else
-
-            If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                .Right = .Right - 16
-            End If
-        End If
-
-    End With
-
-    ' --Save the caption rect
-    CopyRect m_TextRect, lpRect
-    ' --Calculate Pictures positions once we have caption rects
-    CalcPicRects
-
-    ' --Calculate rects with the dropdown symbol
-    If m_DropDownSymbol <> ebsNone Then
-        ' --Drawing area for dropdown symbol  (the symbol is optional;)
-        SetRect lpSignRect, lw - 15, lh / 2 - 7, lw, lh / 2 + 8
-    End If
-
-    If m_bDropDownSep Then
-        If m_PictureAlign <> epRightEdge Or m_PictureAlign <> epRightOfCaption Then
-            'If m_TextRect.Right <= ScaleWidth - 8 Then
-            DrawLineApi lw - 16, 3, lw - 16, lh - 3, ShiftColor(GetPixel(hDC, 7, 7), -0.1)
-            DrawLineApi lw - 15, 3, lw - 15, lh - 3, ShiftColor(GetPixel(hDC, 7, 7), 0.1)
-            'End If
-        ElseIf m_PictureAlign = epRightEdge Or m_PictureAlign = epRightOfCaption Then
-            DrawLineApi lw - 16, 3, lw - 16, lh - 3, ShiftColor(GetPixel(hDC, 7, 7), -0.1)
-            DrawLineApi lw - 15, 3, lw - 15, lh - 3, ShiftColor(GetPixel(hDC, 7, 7), 0.1)
-        End If
-    End If
-
-    ' --Some styles on down state donot change their text positions
-    ' --See your XP and Vista buttons ;)
-    If m_Buttonstate = eStateDown Then
-        If m_ButtonStyle = e3DHover Or m_ButtonStyle = eFlat Or m_ButtonStyle = eFlatHover Or m_ButtonStyle = eGelButton Or m_ButtonStyle = eOffice2003 Or m_ButtonStyle = eXPToolbar Or m_ButtonStyle = eVistaToolbar Or m_ButtonStyle = eStandard Then
-            OffsetRect m_TextRect, 1, 1
-            OffsetRect m_PicRect, 1, 1
-            OffsetRect lpSignRect, 1, 1
-        End If
-    End If
-
-    ' --Draw Pictures
-    If m_bPicPushOnHover And m_Buttonstate = eStateOver Then
-        lShadowClr = TranslateColor(&HC0C0C0)
-        DrawPicture m_PicRect, lShadowClr
-        CopyRect pRect, m_PicRect
-        OffsetRect pRect, -2, -2
-        DrawPicture pRect
-    Else
-        DrawPicture m_PicRect
-    End If
-
-    If m_PictureShadow Then
-        If Not (m_bPicPushOnHover And m_Buttonstate = eStateOver) Then
-            DrawPicShadow
-        End If
-    End If
-
-    ' --Text Effects
-    If m_CaptionEffects <> eseNone Then
-        DrawCaptionEffect
-    End If
-
-    ' --At Last, draw the Captions
-    If m_bEnabled Then
-        If m_Buttonstate = eStateOver Then
-            DrawCaptionEx m_TextRect, TranslateColor(m_bColors.tForeColorOver), 0, 0
-        Else
-            DrawCaptionEx m_TextRect, TranslateColor(m_bColors.tForeColor), 0, 0
-        End If
-
-    Else
-        DrawCaptionEx m_TextRect, GetSysColor(COLOR_GRAYTEXT), 0, 0
-    End If
-
-    If m_DropDownSymbol <> ebsNone Then
-        If m_ButtonStyle = eStandard Or m_ButtonStyle = e3DHover Or m_ButtonStyle = eFlat Or m_ButtonStyle = eFlatHover Or m_ButtonStyle = eVistaToolbar Or m_ButtonStyle = eXPToolbar Then
-
-            ' --move the symbol downwards for some button style on mouse down
-            If m_Buttonstate = eStateDown Then
-                OffsetRect lpSignRect, 1, 1
-            End If
-        End If
-
-        If m_bEnabled Then
-            UserControl.ForeColor = TranslateColor(m_bColors.tForeColor)
-        Else
-            UserControl.ForeColor = GetSysColor(COLOR_GRAYTEXT)
-        End If
-
-        DrawSymbol m_DropDownSymbol
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub CalcPicRects
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub CalcPicRects()
-
-    '****************************************************************************
-    ' Calculate the rects for positioning pictures                              *
-    '****************************************************************************
-    If Not m_Picture Is Nothing Then
-
-        With m_PicRect
-
-            If LenB(Trim$(m_Caption)) > 0 And m_PictureAlign <> epBackGround Then
-
-                Select Case m_PictureAlign
-
-                    Case epLeftEdge
-                        .Left = 4
-                        .Top = (lh - PicH) \ 2
-
-                        If m_PicRect.Left < 0 Then
-                            OffsetRect m_PicRect, PicW, 0
-                            OffsetRect m_TextRect, PicW, 0
-                        End If
-
-                    Case epLeftOfCaption
-                        .Left = m_TextRect.Left - PicW - 4
-                        .Top = (lh - PicH) \ 2
-
-                    Case epRightEdge
-                        .Left = lw - PicW - 3
-                        .Top = (lh - PicH) \ 2
-
-                        ' --If picture overlaps text
-                        If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                            OffsetRect m_PicRect, -16, 0
-                        End If
-
-                        If .Left < m_TextRect.Right + 2 Then
-                            .Left = m_TextRect.Right + 2
-                        End If
-
-                    Case epRightOfCaption
-                        .Left = m_TextRect.Right + 4
-                        .Top = (lh - PicH) \ 2
-
-                        If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                            OffsetRect m_PicRect, -16, 0
-                        End If
-
-                        ' --If picture overlaps text
-                        If .Left < m_TextRect.Right + 2 Then
-                            .Left = m_TextRect.Right + 2
-                        End If
-
-                    Case epTopOfCaption
-                        .Left = (lw - PicW) \ 2
-                        .Top = m_TextRect.Top - PicH - 2
-
-                        If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                            OffsetRect m_PicRect, -8, 0
-                        End If
-
-                    Case epTopEdge
-                        .Left = (lw - PicW) \ 2
-                        .Top = 4
-
-                        If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                            OffsetRect m_PicRect, -8, 0
-                        End If
-
-                    Case epBottomOfCaption
-                        .Left = (lw - PicW) \ 2
-                        .Top = m_TextRect.Bottom + 2
-
-                        If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                            OffsetRect m_PicRect, -8, 0
-                        End If
-
-                    Case epBottomEdge
-                        .Left = (lw - PicW) \ 2
-                        .Top = lh - PicH - 4
-
-                        If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                            OffsetRect m_PicRect, -8, 0
-                        End If
-
-                End Select
-
-            Else
-                .Left = (lw - PicW) \ 2
-                .Top = (lh - PicH) \ 2
-
-                If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                    OffsetRect m_PicRect, -8, 0
-                End If
-            End If
-
-            ' --Set the height and width
-            .Right = .Left + PicW
-            .Bottom = .Top + PicH
-        End With
-
-        'M_PICRECT
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawPicture
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lpRect (RECT)
-'                              lBrushColor (Long = -1)
-'!--------------------------------------------------------------------------------
-Private Sub DrawPicture(lpRect As RECT, Optional lBrushColor As Long = -1)
-
-    '****************************************************************************
-    ' draw the picture by calling the TransBlt routines                         *
-    '****************************************************************************
-    Dim tmpMaskColor As Long
-
-    ' --Draw picture
-    If tmppic Then
-        If tmppic.Type = vbPicTypeIcon Then
-            tmpMaskColor = TranslateColor(&HC0C0C0)
-        Else
-            tmpMaskColor = m_lMaskColor
-        End If
-
-        If Is32BitBMP(tmppic) Then
-            TransBlt32 hDC, lpRect.Left, lpRect.Top, PicW, PicH, tmppic, lBrushColor
-        Else
-            TransBlt hDC, lpRect.Left, lpRect.Top, PicW, PicH, tmppic, tmpMaskColor, lBrushColor
-        End If
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawPicShadow
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub DrawPicShadow()
-
-    '  Still not satisfied results for picture shadows
-    Dim lShadowClr As Long
-    Dim lpRect     As RECT
-
-    If m_bPicPushOnHover And m_Buttonstate = eStateOver Then
-        OffsetRect m_PicRect, -2, -2
-    End If
-
-    lShadowClr = BlendColors(TranslateColor(&H808080), TranslateColor(m_bColors.tBackColor))
-    CopyRect lpRect, m_PicRect
-    OffsetRect lpRect, 2, 2
-    DrawPicture lpRect, ShiftColor(lShadowClr, 0.05)
-    OffsetRect lpRect, -1, -1
-    DrawPicture lpRect, ShiftColor(lShadowClr, -0.1)
-    DrawPicture m_PicRect
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawCaptionEffect
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub DrawCaptionEffect()
-
-    '****************************************************************************
-    '* Draws the caption with/without unicode along with the special effects    *
-    '****************************************************************************
-    Dim bColor As Long
-
-    'BackColor
-    bColor = TranslateColor(m_bColors.tBackColor)
-
-    ' --Set new colors according to effects
-    Select Case m_CaptionEffects
-
-        Case eseEmbossed
-            DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.14), -1, -1
-
-        Case eseEngraved
-            DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.14), 1, 1
-
-        Case eseShadowed
-            DrawCaptionEx m_TextRect, TranslateColor(&HC0C0C0), 1, 1
-
-        Case eseOutline
-            DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.1), 1, 1
-            DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.1), 1, -1
-            DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.1), -1, 1
-            DrawCaptionEx m_TextRect, ShiftColor(bColor, 0.1), -1, -1
-
-        Case eseCover
-            DrawCaptionEx m_TextRect, ShiftColor(bColor, -0.1), 1, 1
-            DrawCaptionEx m_TextRect, ShiftColor(bColor, -0.1), 1, -1
-            DrawCaptionEx m_TextRect, ShiftColor(bColor, -0.1), -1, 1
-            DrawCaptionEx m_TextRect, ShiftColor(bColor, -0.1), -1, -1
-    End Select
-
-    If m_bEnabled Then
-        DrawCaptionEx m_TextRect, TranslateColor(m_bColors.tForeColor), 0, 0
-    Else
-        DrawCaptionEx m_TextRect, GetSysColor(COLOR_GRAYTEXT), 0, 0
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawCaptionEx
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lpRect (RECT)
-'                              lColor (Long)
-'                              OffsetX (Long)
-'                              OffsetY (Long)
-'!--------------------------------------------------------------------------------
-Private Sub DrawCaptionEx(lpRect As RECT, lColor As Long, OffsetX As Long, OffsetY As Long)
-
-    Dim tRect         As RECT
-    Dim lOldForeColor As Long
-
-    ' --Get current forecolor
-    lOldForeColor = GetTextColor(hDC)
-    CopyRect tRect, lpRect
-    OffsetRect tRect, OffsetX, OffsetY
-    SetTextColor hDC, lColor
-
-    If m_WindowsNT Then
-        DrawTextW hDC, StrPtr(m_Caption & vbNullChar), -1, tRect, DT_DRAWFLAG Or IIf(m_bRTL, DT_RTLREADING, 0)
-    Else
-        DrawText hDC, m_Caption, -1, tRect, DT_DRAWFLAG Or IIf(m_bRTL, DT_RTLREADING, 0)
-    End If
-
-    ' --Restore previous forecolor
-    SetTextColor hDC, lOldForeColor
-End Sub
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UncheckAllValues
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Private Sub UncheckAllValues()
+Public Sub UncheckAllValues()
 
     ' --Many Thanks to Morgan Haueisen
     Dim objButton As Object
@@ -2223,14 +3574,13 @@ Private Sub UncheckAllValues()
             ' Is the button in the same container?
             With objButton
 
+                ' is the button type Option?
                 If .Mode = [ebmOptionButton] Then
                     If .Container.hWnd = UserControl.ContainerHwnd Then
-
-                        ' is the button type Option?
-                        If .Mode = [ebmOptionButton] Then
-
-                            ' is it not this button
-                            If Not .hWnd = UserControl.hWnd Then
+                        
+                        ' is it not this button
+                        If Not .hWnd = UserControl.hWnd Then
+                            If .Value Then
                                 .Value = False
                             End If
                         End If
@@ -2246,51 +3596,280 @@ Private Sub UncheckAllValues()
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub SetAccessKey
+'! Procedure   (Функция)   :   Sub UnsetPopupMenuRBT
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Private Sub SetAccessKey()
+Public Sub UnsetPopupMenu()
+Attribute UnsetPopupMenu.VB_Description = "Unsets a popupmenu that was previously set for that button."
 
-    Dim i As Long
+    ' --Free the popup menu DropDown
+    If Not mnuDropDown Is Nothing Then Set mnuDropDown = Nothing
+    m_bPopupEnabled = False
+    m_bPopupShown = False
+    
+End Sub
 
-    UserControl.AccessKeys = vbNullString
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub UnsetPopupMenu
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Sub UnsetPopupMenuRBT()
 
-    If Len(m_Caption) > 1 Then
-        i = InStr(m_Caption, "&")
+    ' --Free the popup menu RBT
+    If Not mnuRightButton Is Nothing Then Set mnuRightButton = Nothing
+    m_bPopupEnabledRBT = False
+    m_bPopupShown = False
+    
+End Sub
 
-        If i < Len(m_Caption) Then
-            If i > 0 Then
-                If Mid$(m_Caption, i + 1, 1) <> "&" Then
-                    AccessKeys = LCase$(Mid$(m_Caption, i + 1, 1))
-                Else
-                    i = InStr(i + 2, m_Caption, "&", vbTextCompare)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawButton_Gel
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vState (enumButtonStates)
+'!--------------------------------------------------------------------------------
+Private Sub DrawButton_Gel(ByVal vState As enumButtonStates)
 
-                    If Mid$(m_Caption, i + 1, 1) <> "&" Then
-                        AccessKeys = LCase$(Mid$(m_Caption, i + 1, 1))
-                    End If
-                End If
-            End If
+    '****************************************************************************
+    ' Draws a Gelbutton                                                         *
+    '****************************************************************************
+    Dim lpRect As RECT
+    Dim bColor As Long
+
+    'RECT to fill regions
+    'Original backcolor
+    lh = ScaleHeight
+    lw = ScaleWidth
+    bColor = TranslateColor(m_bColors.tBackColor)
+
+    If Not m_bEnabled Then
+        ' --Fill the button region with background color
+        SetRect lpRect, 0, 0, lw, lh
+        PaintRect bColor, lpRect
+        ' --Make a shining Upper Light
+        DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.05), bColor, gdVertical
+        DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.02), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.08)), gdVertical
+        DrawPicwithCaption
+        DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.2)
+        DrawCorners ShiftColor(bColor, -0.23)
+
+        Exit Sub
+
+    End If
+
+    Select Case vState
+
+        Case eStateNormal
+            'Normal State
+            CreateRegion
+            ' --Fill the button region with background color
+            SetRect lpRect, 0, 0, lw, lh
+            PaintRect ShiftColor(bColor, -0.03), lpRect
+            ' --Make a shining Upper Light
+            DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.1), bColor, gdVertical
+            DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.05), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.1)), gdVertical
+            DrawPicwithCaption
+            DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.33)
+
+        Case eStateOver
+            ' --Fill the button region with background color
+            SetRect lpRect, 0, 0, lw, lh
+            PaintRect ShiftColor(bColor, -0.03), lpRect
+            ' --Make a shining Upper Light
+            DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.15), bColor, gdVertical
+            DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.05), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.2)), gdVertical
+            DrawPicwithCaption
+            DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.28)
+
+        Case eStateDown
+            ' --fill the button region with background color
+            SetRect lpRect, 0, 0, lw, lh
+            PaintRect ShiftColor(bColor, -0.03), lpRect
+            ' --Make a shining Upper Light
+            DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.1), bColor, gdVertical
+            DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.08), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.05)), gdVertical
+            DrawPicwithCaption
+            DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.36)
+    End Select
+
+    DrawCorners ShiftColor(bColor, -0.36)
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawButton_Office2003
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vState (enumButtonStates)
+'!--------------------------------------------------------------------------------
+Private Sub DrawButton_Office2003(ByVal vState As enumButtonStates)
+
+    Dim bColor As Long
+
+    lh = UserControl.ScaleHeight
+    lw = UserControl.ScaleWidth
+    bColor = TranslateColor(m_bColors.tBackColor)
+    SetRect m_ButtonRect, 0, 0, lw, lh
+
+    If m_ButtonMode <> ebmCommandButton And m_bValue Then
+        If m_bMouseInCtl Then
+            DrawGradientEx 0, 0, lw, lh, TranslateColor(&H4E91FE), TranslateColor(&H8ED3FF), gdVertical
+        Else
+            DrawGradientEx 0, 0, lw, lh, TranslateColor(&H8CD5FF), TranslateColor(&H55ADFF), gdVertical
         End If
+
+        DrawPicwithCaption
+        DrawRectangle 0, 0, lw, lh, TranslateColor(&H800000)
+
+        Exit Sub
+
+    End If
+
+    Select Case vState
+
+        Case eStateNormal
+            CreateRegion
+            DrawGradientEx 0, 0, lw, lh / 2, BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.08)), bColor, gdVertical
+            DrawGradientEx 0, lh / 2, lw, lh / 2 + 1, bColor, ShiftColor(bColor, -0.15), gdVertical
+
+        Case eStateOver
+            DrawGradientEx 0, 0, lw, lh, TranslateColor(&HCCF4FF), TranslateColor(&H91D0FF), gdVertical
+
+        Case eStateDown
+            DrawGradientEx 0, 0, lw, lh, TranslateColor(&H4E91FE), TranslateColor(&H8ED3FF), gdVertical
+    End Select
+
+    DrawPicwithCaption
+
+    If m_Buttonstate <> eStateNormal Then
+        DrawRectangle 0, 0, lw, lh, TranslateColor(&H800000)
     End If
 
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawCorners
+'! Procedure   (Функция)   :   Sub DrawButton_OfficeXP
 '! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Color (Long)
+'! Parameters  (Переменные):   vState (enumButtonStates)
 '!--------------------------------------------------------------------------------
-Private Sub DrawCorners(Color As Long)
-    '****************************************************************************
-    '* Draws four Corners of the button specified by Color                      *
-    '****************************************************************************
+Private Sub DrawButton_OfficeXP(ByVal vState As enumButtonStates)
+
+    Dim lpRect      As RECT
+    Dim bColor      As Long
+    Dim oColor      As Long
+    Dim BorderColor As Long
+
+    lh = UserControl.ScaleHeight
+    lw = UserControl.ScaleWidth
+    bColor = TranslateColor(m_bColors.tBackColor)
+    SetRect lpRect, 0, 0, lw, lh
+
+    Select Case m_lXPColor
+
+        Case ecsBlue
+            oColor = TranslateColor(&HEED2C1)
+            BorderColor = TranslateColor(&HC56A31)
+
+        Case ecsSilver
+            oColor = TranslateColor(&HE3DFE0)
+            BorderColor = TranslateColor(&HBFB4B2)
+
+        Case ecsOliveGreen
+            oColor = TranslateColor(&HBAD6D4)
+            BorderColor = TranslateColor(&H70A093)
+
+        Case ecsCustom
+            oColor = bColor
+            BorderColor = ShiftColor(bColor, -0.12)
+    End Select
+
+    If m_ButtonMode <> ebmCommandButton And m_bValue Then
+        PaintRect ShiftColor(oColor, -0.05), m_ButtonRect
+        DrawRectangle 0, 0, lw, lh, BorderColor
+
+        If m_bMouseInCtl Then
+            PaintRect ShiftColor(oColor, -0.01), m_ButtonRect
+            DrawRectangle 0, 0, lw, lh, BorderColor
+        End If
+
+        DrawPicwithCaption
+
+        Exit Sub
+
+    End If
+
+    Select Case vState
+
+        Case eStateNormal
+            PaintRect bColor, lpRect
+
+        Case eStateOver
+            PaintRect ShiftColor(oColor, 0.03), lpRect
+
+        Case eStateDown
+            PaintRect ShiftColor(oColor, -0.08), lpRect
+    End Select
+
+    DrawPicwithCaption
+
+    If m_Buttonstate <> eStateNormal Then
+        DrawRectangle 0, 0, lw, lh, BorderColor
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawButton_Outlook2007
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vState (enumButtonStates)
+'!--------------------------------------------------------------------------------
+Private Sub DrawButton_Outlook2007(ByVal vState As enumButtonStates)
+
+    Dim bColor As Long
+
     lh = ScaleHeight
     lw = ScaleWidth
-    SetPixel hDC, 1, 1, Color
-    SetPixel hDC, 1, lh - 2, Color
-    SetPixel hDC, lw - 2, 1, Color
-    SetPixel hDC, lw - 2, lh - 2, Color
+    bColor = TranslateColor(m_bColors.tBackColor)
+
+    If m_ButtonMode <> ebmCommandButton Then
+        If m_bValue Then
+            DrawGradientEx 0, 0, lw, lh / 2.7, TranslateColor(&HA9D9FF), TranslateColor(&H6FC0FF), gdVertical
+            DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), TranslateColor(&H3FABFF), TranslateColor(&H75E1FF), gdVertical
+            DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
+    
+            If m_bMouseInCtl Then
+                DrawGradientEx 0, 0, lw, lh / 2.7, TranslateColor(&H58C1FF), TranslateColor(&H51AFFF), gdVertical
+                DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), TranslateColor(&H468FFF), TranslateColor(&H5FD3FF), gdVertical
+                DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
+            End If
+    
+            DrawPicwithCaption
+    
+            Exit Sub
+        End If
+    End If
+
+    Select Case vState
+
+        Case eStateNormal
+            PaintRect bColor, m_ButtonRect
+            DrawGradientEx 0, 0, lw, lh / 2.7, BlendColors(ShiftColor(bColor, 0.09), TranslateColor(vbWhite)), BlendColors(ShiftColor(bColor, 0.07), bColor), gdVertical
+            DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), bColor, ShiftColor(bColor, 0.03), gdVertical
+            DrawPicwithCaption
+            DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
+
+        Case eStateOver
+            DrawGradientEx 0, 0, lw, lh / 2.7, TranslateColor(&HE1FFFF), TranslateColor(&HACEAFF), gdVertical
+            DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), TranslateColor(&H67D7FF), TranslateColor(&H99E4FF), gdVertical
+            DrawPicwithCaption
+            DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
+
+        Case eStateDown
+            DrawGradientEx 0, 0, lw, lh / 2.7, TranslateColor(&H58C1FF), TranslateColor(&H51AFFF), gdVertical
+            DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), TranslateColor(&H468FFF), TranslateColor(&H5FD3FF), gdVertical
+            DrawPicwithCaption
+            DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
+    End Select
+
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2398,7 +3977,7 @@ Private Sub DrawButton_Standard(ByVal vState As enumButtonStates)
 
         On Error Resume Next
 
-        If m_bShowFocus And Ambient.UserMode Then
+        If m_bShowFocus And RunMode Then
             If m_ButtonStyle = e3DHover Or m_ButtonStyle = eStandard Then
                 SetRect FocusRect, 4, 4, lw - 4, lh - 4
             Else
@@ -2425,51 +4004,40 @@ Private Sub DrawButton_Standard(ByVal vState As enumButtonStates)
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawButton_XPToolbar
+'! Procedure   (Функция)   :   Sub DrawButton_Vista
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):   vState (enumButtonStates)
 '!--------------------------------------------------------------------------------
-Private Sub DrawButton_XPToolbar(ByVal vState As enumButtonStates)
+Private Sub DrawButton_Vista(ByVal vState As enumButtonStates)
 
+    '*************************************************************************
+    '* Draws a cool Vista Aero Style Button                                  *
+    '* Use a light background color for best result                          *
+    '*************************************************************************
     Dim lpRect As RECT
+    Dim Color1 As Long
     Dim bColor As Long
 
+    'Used to set rect for drawing rectangles
+    'Shifted / Blended color
+    'Original back Color
     lh = ScaleHeight
     lw = ScaleWidth
+    Color1 = ShiftColor(TranslateColor(m_bColors.tBackColor), 0.05)
     bColor = TranslateColor(m_bColors.tBackColor)
 
-    If vState = eStateDown Then
-        m_bColors.tForeColor = TranslateColor(vbWhite)
-    Else
-        m_bColors.tForeColor = TranslateColor(vbButtonText)
-    End If
-
-    If m_ButtonMode <> ebmCommandButton And m_bValue Then
-        If m_bIsDown Then
-            vState = eStateDown
-        End If
-    End If
-
-    If m_ButtonMode <> ebmCommandButton And m_bValue And vState <> eStateDown Then
+    If Not m_bEnabled Then
+        ' --Draw the Disabled Button
+        CreateRegion
+        ' --Fill the button with disabled color
         SetRect lpRect, 0, 0, lw, lh
-        PaintRect TranslateColor(&HFEFEFE), lpRect
-        m_bColors.tForeColor = TranslateColor(vbButtonText)
+        PaintRect ShiftColor(bColor, 0.03), lpRect
         DrawPicwithCaption
-        DrawRectangle 0, 0, lw, lh, TranslateColor(&HAF987A)
-        DrawCorners ShiftColor(TranslateColor(&HC1B3A0), -0.2)
+        ' --Draws outside disabled color rectangle
+        DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.25)
+        DrawRectangle 1, 1, lw - 2, lh - 2, ShiftColor(bColor, 0.25)
+        DrawCorners ShiftColor(bColor, -0.03)
 
-        If vState = eStateOver Then
-            'Right Line
-            DrawLineApi lw - 2, 2, lw - 2, lh - 2, TranslateColor(&HEDF0F2)
-            'Bottom
-            DrawLineApi 2, lh - 2, lw - 2, lh - 2, TranslateColor(&HD8DEE4)
-            'Bottom
-            DrawLineApi 1, lh - 3, lw - 1, lh - 3, TranslateColor(&HE8ECEF)
-            'Bottom
-            DrawLineApi 1, lh - 4, lw - 1, lh - 4, TranslateColor(&HF8F9FA)
-        End If
-
-        ' --Necessary to redraw text & pictures 'coz we are painting usercontrol agaon
         Exit Sub
 
     End If
@@ -2478,40 +4046,183 @@ Private Sub DrawButton_XPToolbar(ByVal vState As enumButtonStates)
 
         Case eStateNormal
             CreateRegion
-            PaintRect bColor, m_ButtonRect
+            ' --Draws a gradient in the full region
+            DrawGradientEx 1, 1, lw - 1, lh, Color1, bColor, gdVertical
+            ' --Draws a gradient in half region to give a glassy look
+            DrawGradientEx 1, lh / 2, lw - 2, lh - 2, ShiftColor(bColor, -0.02), ShiftColor(bColor, -0.15), gdVertical
             DrawPicwithCaption
+            ' --Draws border rectangle
+            DrawRectangle 0, 0, lw, lh, TranslateColor(&H707070)
+            'outer
+            DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite)
 
+            'inner
         Case eStateOver
-            DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(&HFDFEFE), TranslateColor(&HEEF4F4), gdVertical
-            DrawGradientEx 0, lh / 2, lw, lh / 2, TranslateColor(&HEEF4F4), TranslateColor(&HEAF1F1), gdVertical
+            ' --Make gradient in the upper half region
+            DrawGradientEx 1, 1, lw - 2, lh / 2, TranslateColor(&HFFF7E4), TranslateColor(&HFFF3DA), gdVertical
+            ' --Draw gradient in half button downside to give a glass look
+            DrawGradientEx 1, lh / 2, lw - 2, lh - 2, TranslateColor(&HFFE9C1), TranslateColor(&HFDE1AE), gdVertical
+            ' --Draws left side gradient effects horizontal
+            DrawGradientEx 1, 3, 5, lh / 2 - 2, TranslateColor(&HFFEECD), TranslateColor(&HFFF7E4), gdHorizontal
+            'Left
+            DrawGradientEx 1, lh / 2, 5, lh - (lh / 2) - 1, TranslateColor(&HFAD68F), ShiftColor(TranslateColor(&HFDE1AC), 0.01), gdHorizontal
+            'Left
+            ' --Draws right side gradient effects horizontal
+            DrawGradientEx lw - 6, 3, 5, lh / 2 - 2, TranslateColor(&HFFF7E4), TranslateColor(&HFFEECD), gdHorizontal
+            'Right
+            DrawGradientEx lw - 6, lh / 2, 5, lh - (lh / 2) - 1, ShiftColor(TranslateColor(&HFDE1AC), 0.01), TranslateColor(&HFAD68F), gdHorizontal
+            'Right
             DrawPicwithCaption
-            DrawLineApi lw - 2, 2, lw - 2, lh - 2, TranslateColor(&HE0E7EA)
-            'right line
-            DrawLineApi lw - 3, 2, lw - 3, lh - 2, TranslateColor(&HEAF0F0)
-            DrawLineApi 0, lh - 4, lw, lh - 4, TranslateColor(&HE5EDEE)
-            'Bottom
-            DrawLineApi 0, lh - 3, lw, lh - 3, TranslateColor(&HD6E1E4)
-            'Bottom
-            DrawLineApi 0, lh - 2, lw, lh - 2, TranslateColor(&HC6D2D7)
-            'Bottom
-            DrawRectangle 0, 0, lw, lh, TranslateColor(&HC3CECE)
-            DrawCorners ShiftColor(TranslateColor(&HC9D4D4), -0.05)
+            ' --Draws border rectangle
+            DrawRectangle 0, 0, lw, lh, TranslateColor(&HA77532)
+            'outer
+            DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite)
 
+            'inner
         Case eStateDown
-            PaintRect TranslateColor(&HDDE4E5), m_ButtonRect
-            'Paint with Darker color
+            ' --Draw a gradent in full region
+            DrawGradientEx 1, 1, lw - 1, lh, TranslateColor(&HF6E4C2), TranslateColor(&HF6E4C2), gdVertical
+            ' --Draw gradient in half button downside to give a glass look
+            DrawGradientEx 1, lh / 2, lw - 2, lh - 2, TranslateColor(&HF0D29A), TranslateColor(&HF0D29A), gdVertical
+            ' --Draws down rectangle
+            DrawRectangle 0, 0, lw, lh, TranslateColor(&H5C411D)    '
+            DrawLineApi 1, 1, lw - 1, 1, TranslateColor(&HB39C71)
+            '\Top Lines
+            DrawLineApi 1, 2, lw - 1, 2, TranslateColor(&HD6C6A9)
+            '/
+            DrawLineApi 1, 3, lw - 1, 3, TranslateColor(&HECD9B9)   '
+            DrawLineApi 1, 1, 1, lh / 2 - 1, TranslateColor(&HCFB073)
+            'Left upper
+            DrawLineApi 1, lh / 2, 1, lh - (lh / 2) - 1, TranslateColor(&HC5912B)
+            'Left Bottom
+            ' --Draws left side gradient effects horizontal
+            DrawGradientEx 1, 3, 5, lh / 2 - 2, ShiftColor(TranslateColor(&HE6C891), 0.02), ShiftColor(TranslateColor(&HF6E4C2), -0.01), gdHorizontal
+            'Left
+            DrawGradientEx 1, lh / 2, 5, lh - (lh / 2) - 1, ShiftColor(TranslateColor(&HDCAB4E), 0.02), ShiftColor(TranslateColor(&HF0D29A), -0.01), gdHorizontal
+            'Left
+            ' --Draws right side gradient effects horizontal
+            DrawGradientEx lw - 6, 3, 5, lh / 2 - 2, ShiftColor(TranslateColor(&HF6E4C2), -0.01), ShiftColor(TranslateColor(&HE6C891), 0.02), gdHorizontal
+            'Right
+            DrawGradientEx lw - 6, lh / 2, 5, lh - (lh / 2) - 1, ShiftColor(TranslateColor(&HF0D29A), -0.01), ShiftColor(TranslateColor(&HDCAB4E), 0.02), gdHorizontal
+            'Right
             DrawPicwithCaption
-            DrawLineApi 1, 1, lw - 2, 1, ShiftColor(TranslateColor(&HD1DADC), -0.02)
-            'Topmost Line
-            DrawLineApi 1, 2, lw - 2, 2, ShiftColor(TranslateColor(&HDAE1E3), -0.02)
-            'A lighter top line
-            DrawLineApi 1, lh - 3, lw - 2, lh - 3, ShiftColor(TranslateColor(&HDEE5E6), 0.02)
-            'Bottom Line
-            DrawLineApi 1, lh - 2, lw - 2, lh - 2, ShiftColor(TranslateColor(&HE5EAEB), 0.02)
-            DrawRectangle 0, 0, lw, lh, TranslateColor(&H929D9D)
-            DrawCorners ShiftColor(TranslateColor(&HABB4B5), -0.2)
     End Select
 
+    ' --Draw a focus rectangle if button has focus
+    If m_bParentActive Then
+        If (m_bHasFocus Or m_bDefault) And vState = eStateNormal Then
+            ' --Draw darker outer rectangle
+            DrawRectangle 0, 0, lw, lh, TranslateColor(&HA77532)
+            ' --Draw light inner rectangle
+            DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(&HFBD848)
+        End If
+
+        If (m_bShowFocus And m_bHasFocus) Then
+            SetRect lpRect, 1.5, 1.5, lw - 2, lh - 2
+            DrawFocusRect hDC, lpRect
+        End If
+    End If
+
+    ' --Create four corners which will be common to all states
+    DrawCorners TranslateColor(&HBE965F)
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawButton_VistaToolbar
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vState (enumButtonStates)
+'!--------------------------------------------------------------------------------
+Private Sub DrawButton_VistaToolbar(ByVal vState As enumButtonStates)
+
+    Dim lpRect As RECT
+
+    'Dim FocusRect        As RECT
+    lh = ScaleHeight
+    lw = ScaleWidth
+
+    If Not m_bEnabled Then
+        ' --Draw Disabled button
+        PaintRect TranslateColor(m_bColors.tBackColor), m_ButtonRect
+        DrawPicwithCaption
+        DrawCorners TranslateColor(m_bColors.tBackColor)
+
+        Exit Sub
+
+    End If
+
+    If vState = eStateNormal Then
+        CreateRegion
+        ' --Set the rect to fill back color
+        SetRect lpRect, 0, 0, lw, lh
+        ' --Simply fill the button with one color (No gradient effect here!!)
+        PaintRect TranslateColor(m_bColors.tBackColor), lpRect
+        DrawPicwithCaption
+    ElseIf vState = eStateOver Then
+        ' --Draws a gradient effect with the folowing colors
+        DrawGradientEx 1, 1, lw - 2, lh - 2, TranslateColor(&HFDF9F1), TranslateColor(&HF8ECD0), gdVertical
+        ' --Draws a gradient in half region to give a Light Effect
+        DrawGradientEx 1, lh / 1.7, lw - 2, lh - 2, TranslateColor(&HF8ECD0), TranslateColor(&HF8ECD0), gdVertical
+        DrawPicwithCaption
+        ' --Draw outside borders
+        DrawRectangle 0, 0, lw, lh, TranslateColor(&HCA9E61)
+        DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite)
+    ElseIf vState = eStateDown Then
+        DrawGradientEx 1, 1, lw - 2, lh - 2, TranslateColor(&HF1DEB0), TranslateColor(&HF9F1DB), gdVertical
+        DrawPicwithCaption
+        ' --Draws outside borders
+        DrawRectangle 0, 0, lw, lh, TranslateColor(&HCA9E61)
+        DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite)
+    End If
+
+    If vState = eStateDown Or vState = eStateOver Then
+        DrawCorners ShiftColor(TranslateColor(&HCA9E61), 0.3)
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawButton_WindowsTheme
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vState (enumButtonStates)
+'!--------------------------------------------------------------------------------
+Private Sub DrawButton_WindowsTheme(ByVal vState As enumButtonStates)
+
+    Dim tmpState As Long
+
+    UserControl.BackColor = GetSysColor(COLOR_BTNFACE)
+
+    If Not m_bEnabled Then
+        tmpState = 4
+        DrawTheme "Button", 1, tmpState
+        DrawPicwithCaption
+
+        Exit Sub
+
+    End If
+
+    Select Case vState
+
+        Case eStateNormal
+            tmpState = 1
+
+        Case eStateOver
+            tmpState = 2
+
+        Case eStateDown
+            tmpState = 3
+    End Select
+
+    If m_Buttonstate = eStateNormal Then
+
+        '        If (m_bHasFocus Or m_bDefault) And m_bParentActive Then
+        'Change by Tanner - do not show a focus rect unless m_bShowFocus is explicitly set!
+        If (m_bHasFocus Or m_bDefault) And m_bParentActive And m_bShowFocus Then
+            tmpState = 5
+        End If
+    End If
+
+    DrawTheme "Button", 1, tmpState
+    DrawPicwithCaption
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2733,312 +4444,51 @@ Private Sub DrawButton_WinXP(ByVal vState As enumButtonStates)
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawButton_OfficeXP
+'! Procedure   (Функция)   :   Sub DrawButton_XPToolbar
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):   vState (enumButtonStates)
 '!--------------------------------------------------------------------------------
-Private Sub DrawButton_OfficeXP(ByVal vState As enumButtonStates)
+Private Sub DrawButton_XPToolbar(ByVal vState As enumButtonStates)
 
-    Dim lpRect      As RECT
+    Dim lpRect As RECT
+    Dim bColor As Long
 
-    'Dim pRect            As RECT
-    Dim bColor      As Long
-    Dim oColor      As Long
-    Dim BorderColor As Long
-
-    lh = UserControl.ScaleHeight
-    lw = UserControl.ScaleWidth
+    lh = ScaleHeight
+    lw = ScaleWidth
     bColor = TranslateColor(m_bColors.tBackColor)
-    SetRect lpRect, 0, 0, lw, lh
 
-    Select Case m_lXPColor
-
-        Case ecsBlue
-            oColor = TranslateColor(&HEED2C1)
-            BorderColor = TranslateColor(&HC56A31)
-
-        Case ecsSilver
-            oColor = TranslateColor(&HE3DFE0)
-            BorderColor = TranslateColor(&HBFB4B2)
-
-        Case ecsOliveGreen
-            oColor = TranslateColor(&HBAD6D4)
-            BorderColor = TranslateColor(&H70A093)
-
-        Case ecsCustom
-            oColor = bColor
-            BorderColor = ShiftColor(bColor, -0.12)
-    End Select
+    If vState = eStateDown Then
+        m_bColors.tForeColor = TranslateColor(vbWhite)
+    Else
+        m_bColors.tForeColor = TranslateColor(vbButtonText)
+    End If
 
     If m_ButtonMode <> ebmCommandButton And m_bValue Then
-        PaintRect ShiftColor(oColor, -0.05), m_ButtonRect
-        DrawRectangle 0, 0, lw, lh, BorderColor
+        If m_bIsDown Then
+            vState = eStateDown
+        End If
+    End If
 
-        If m_bMouseInCtl Then
-            PaintRect ShiftColor(oColor, -0.01), m_ButtonRect
-            DrawRectangle 0, 0, lw, lh, BorderColor
+    If m_ButtonMode <> ebmCommandButton And m_bValue And vState <> eStateDown Then
+        SetRect lpRect, 0, 0, lw, lh
+        PaintRect TranslateColor(&HFEFEFE), lpRect
+        m_bColors.tForeColor = TranslateColor(vbButtonText)
+        DrawPicwithCaption
+        DrawRectangle 0, 0, lw, lh, TranslateColor(&HAF987A)
+        DrawCorners ShiftColor(TranslateColor(&HC1B3A0), -0.2)
+
+        If vState = eStateOver Then
+            'Right Line
+            DrawLineApi lw - 2, 2, lw - 2, lh - 2, TranslateColor(&HEDF0F2)
+            'Bottom
+            DrawLineApi 2, lh - 2, lw - 2, lh - 2, TranslateColor(&HD8DEE4)
+            'Bottom
+            DrawLineApi 1, lh - 3, lw - 1, lh - 3, TranslateColor(&HE8ECEF)
+            'Bottom
+            DrawLineApi 1, lh - 4, lw - 1, lh - 4, TranslateColor(&HF8F9FA)
         End If
 
-        DrawPicwithCaption
-
-        Exit Sub
-
-    End If
-
-    Select Case vState
-
-        Case eStateNormal
-            PaintRect bColor, lpRect
-
-        Case eStateOver
-            PaintRect ShiftColor(oColor, 0.03), lpRect
-
-        Case eStateDown
-            PaintRect ShiftColor(oColor, -0.08), lpRect
-    End Select
-
-    DrawPicwithCaption
-
-    If m_Buttonstate <> eStateNormal Then
-        DrawRectangle 0, 0, lw, lh, BorderColor
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawInstallShieldButton
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vState (enumButtonStates)
-'!--------------------------------------------------------------------------------
-Private Sub DrawInstallShieldButton(ByVal vState As enumButtonStates)
-
-    '****************************************************************************
-    '* I saw this style while installing JetAudio in my PC.                     *
-    '* I liked it, so I implemented and gave it a name 'InstallShield'          *
-    '* hehe .....
-    '****************************************************************************
-    Dim FocusRect As RECT
-
-    lh = ScaleHeight
-    lw = ScaleWidth
-
-    If Not m_bEnabled Then
-        vState = eStateNormal
-        'Simple draw normal state for Disabled
-    End If
-
-    Select Case vState
-
-        Case eStateNormal
-            CreateRegion
-            SetRect m_ButtonRect, 0, 0, lw, lh
-            'Maybe have changed before!
-            ' --Draw upper gradient
-            DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(vbWhite), TranslateColor(m_bColors.tBackColor), gdVertical
-            ' --Draw Bottom Gradient
-            DrawGradientEx 0, lh / 2, lw, lh, TranslateColor(m_bColors.tBackColor), TranslateColor(m_bColors.tBackColor), gdVertical
-            DrawPicwithCaption
-            ' --Draw Inner White Border
-            DrawRectangle 1, 1, lw - 2, lh, TranslateColor(vbWhite)
-            ' --Draw Outer Rectangle
-            DrawRectangle 0, 0, lw, lh, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.2)
-            DrawLineApi 2, lh - 1, lw - 2, lh - 1, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.25)
-
-        Case eStateOver
-            ' --Draw upper gradient
-            DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(vbWhite), TranslateColor(m_bColors.tBackColor), gdVertical
-            ' --Draw Bottom Gradient
-            DrawGradientEx 0, lh / 2, lw, lh, TranslateColor(m_bColors.tBackColor), TranslateColor(m_bColors.tBackColor), gdVertical
-            DrawPicwithCaption
-            ' --Draw Inner White Border
-            DrawRectangle 1, 1, lw - 2, lh, TranslateColor(vbWhite)
-            ' --Draw Outer Rectangle
-            DrawRectangle 0, 0, lw, lh, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.2)
-            DrawLineApi 2, lh - 1, lw - 2, lh - 1, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.25)
-
-        Case eStateDown
-            ' --draw upper gradient
-            DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(vbWhite), ShiftColor(TranslateColor(m_bColors.tBackColor), -0.1), gdVertical
-            ' --Draw Bottom Gradient
-            DrawGradientEx 0, lh / 2, lw, lh, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.1), ShiftColor(TranslateColor(m_bColors.tBackColor), -0.05), gdVertical
-            DrawPicwithCaption
-            ' --Draw Inner White Border
-            DrawRectangle 1, 1, lw - 2, lh, TranslateColor(vbWhite)
-            ' --Draw Outer Rectangle
-            DrawRectangle 0, 0, lw, lh, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.23)
-            DrawCorners ShiftColor(TranslateColor(m_bColors.tBackColor), -0.1)
-            DrawLineApi 2, lh - 1, lw - 2, lh - 1, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.4)
-    End Select
-
-    DrawCorners ShiftColor(TranslateColor(m_bColors.tBackColor), 0.05)
-
-    If m_bParentActive And m_bShowFocus And (m_bHasFocus Or m_bDefault) Then
-        SetRect FocusRect, 3, 3, lw - 3, lh - 3
-        DrawFocusRect hDC, FocusRect
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawButton_Gel
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vState (enumButtonStates)
-'!--------------------------------------------------------------------------------
-Private Sub DrawButton_Gel(ByVal vState As enumButtonStates)
-
-    '****************************************************************************
-    ' Draws a Gelbutton                                                         *
-    '****************************************************************************
-    Dim lpRect As RECT
-    Dim bColor As Long
-
-    'RECT to fill regions
-    'Original backcolor
-    lh = ScaleHeight
-    lw = ScaleWidth
-    bColor = TranslateColor(m_bColors.tBackColor)
-
-    If Not m_bEnabled Then
-        ' --Fill the button region with background color
-        SetRect lpRect, 0, 0, lw, lh
-        PaintRect bColor, lpRect
-        ' --Make a shining Upper Light
-        DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.05), bColor, gdVertical
-        DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.02), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.08)), gdVertical
-        DrawPicwithCaption
-        DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.2)
-        DrawCorners ShiftColor(bColor, -0.23)
-
-        Exit Sub
-
-    End If
-
-    Select Case vState
-
-        Case eStateNormal
-            'Normal State
-            CreateRegion
-            ' --Fill the button region with background color
-            SetRect lpRect, 0, 0, lw, lh
-            PaintRect ShiftColor(bColor, -0.03), lpRect
-            ' --Make a shining Upper Light
-            DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.1), bColor, gdVertical
-            DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.05), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.1)), gdVertical
-            DrawPicwithCaption
-            DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.33)
-
-        Case eStateOver
-            ' --Fill the button region with background color
-            SetRect lpRect, 0, 0, lw, lh
-            PaintRect ShiftColor(bColor, -0.03), lpRect
-            ' --Make a shining Upper Light
-            DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.15), bColor, gdVertical
-            DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.05), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.2)), gdVertical
-            DrawPicwithCaption
-            DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.28)
-
-        Case eStateDown
-            ' --fill the button region with background color
-            SetRect lpRect, 0, 0, lw, lh
-            PaintRect ShiftColor(bColor, -0.03), lpRect
-            ' --Make a shining Upper Light
-            DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.1), bColor, gdVertical
-            DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.08), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.05)), gdVertical
-            DrawPicwithCaption
-            DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.36)
-    End Select
-
-    DrawCorners ShiftColor(bColor, -0.36)
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawButton_VistaToolbar
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vState (enumButtonStates)
-'!--------------------------------------------------------------------------------
-Private Sub DrawButton_VistaToolbar(ByVal vState As enumButtonStates)
-
-    Dim lpRect As RECT
-
-    'Dim FocusRect        As RECT
-    lh = ScaleHeight
-    lw = ScaleWidth
-
-    If Not m_bEnabled Then
-        ' --Draw Disabled button
-        PaintRect TranslateColor(m_bColors.tBackColor), m_ButtonRect
-        DrawPicwithCaption
-        DrawCorners TranslateColor(m_bColors.tBackColor)
-
-        Exit Sub
-
-    End If
-
-    If vState = eStateNormal Then
-        CreateRegion
-        ' --Set the rect to fill back color
-        SetRect lpRect, 0, 0, lw, lh
-        ' --Simply fill the button with one color (No gradient effect here!!)
-        PaintRect TranslateColor(m_bColors.tBackColor), lpRect
-        DrawPicwithCaption
-    ElseIf vState = eStateOver Then
-        ' --Draws a gradient effect with the folowing colors
-        DrawGradientEx 1, 1, lw - 2, lh - 2, TranslateColor(&HFDF9F1), TranslateColor(&HF8ECD0), gdVertical
-        ' --Draws a gradient in half region to give a Light Effect
-        DrawGradientEx 1, lh / 1.7, lw - 2, lh - 2, TranslateColor(&HF8ECD0), TranslateColor(&HF8ECD0), gdVertical
-        DrawPicwithCaption
-        ' --Draw outside borders
-        DrawRectangle 0, 0, lw, lh, TranslateColor(&HCA9E61)
-        DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite)
-    ElseIf vState = eStateDown Then
-        DrawGradientEx 1, 1, lw - 2, lh - 2, TranslateColor(&HF1DEB0), TranslateColor(&HF9F1DB), gdVertical
-        DrawPicwithCaption
-        ' --Draws outside borders
-        DrawRectangle 0, 0, lw, lh, TranslateColor(&HCA9E61)
-        DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite)
-    End If
-
-    If vState = eStateDown Or vState = eStateOver Then
-        DrawCorners ShiftColor(TranslateColor(&HCA9E61), 0.3)
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawButton_Vista
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vState (enumButtonStates)
-'!--------------------------------------------------------------------------------
-Private Sub DrawButton_Vista(ByVal vState As enumButtonStates)
-
-    '*************************************************************************
-    '* Draws a cool Vista Aero Style Button                                  *
-    '* Use a light background color for best result                          *
-    '*************************************************************************
-    Dim lpRect As RECT
-    Dim Color1 As Long
-    Dim bColor As Long
-
-    'Used to set rect for drawing rectangles
-    'Shifted / Blended color
-    'Original back Color
-    lh = ScaleHeight
-    lw = ScaleWidth
-    Color1 = ShiftColor(TranslateColor(m_bColors.tBackColor), 0.05)
-    bColor = TranslateColor(m_bColors.tBackColor)
-
-    If Not m_bEnabled Then
-        ' --Draw the Disabled Button
-        CreateRegion
-        ' --Fill the button with disabled color
-        SetRect lpRect, 0, 0, lw, lh
-        PaintRect ShiftColor(bColor, 0.03), lpRect
-        DrawPicwithCaption
-        ' --Draws outside disabled color rectangle
-        DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.25)
-        DrawRectangle 1, 1, lw - 2, lh - 2, ShiftColor(bColor, 0.25)
-        DrawCorners ShiftColor(bColor, -0.03)
-
+        ' --Necessary to redraw text & pictures 'coz we are painting usercontrol agaon
         Exit Sub
 
     End If
@@ -3047,465 +4497,53 @@ Private Sub DrawButton_Vista(ByVal vState As enumButtonStates)
 
         Case eStateNormal
             CreateRegion
-            ' --Draws a gradient in the full region
-            DrawGradientEx 1, 1, lw - 1, lh, Color1, bColor, gdVertical
-            ' --Draws a gradient in half region to give a glassy look
-            DrawGradientEx 1, lh / 2, lw - 2, lh - 2, ShiftColor(bColor, -0.02), ShiftColor(bColor, -0.15), gdVertical
-            DrawPicwithCaption
-            ' --Draws border rectangle
-            DrawRectangle 0, 0, lw, lh, TranslateColor(&H707070)
-            'outer
-            DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite)
-
-            'inner
-        Case eStateOver
-            ' --Make gradient in the upper half region
-            DrawGradientEx 1, 1, lw - 2, lh / 2, TranslateColor(&HFFF7E4), TranslateColor(&HFFF3DA), gdVertical
-            ' --Draw gradient in half button downside to give a glass look
-            DrawGradientEx 1, lh / 2, lw - 2, lh - 2, TranslateColor(&HFFE9C1), TranslateColor(&HFDE1AE), gdVertical
-            ' --Draws left side gradient effects horizontal
-            DrawGradientEx 1, 3, 5, lh / 2 - 2, TranslateColor(&HFFEECD), TranslateColor(&HFFF7E4), gdHorizontal
-            'Left
-            DrawGradientEx 1, lh / 2, 5, lh - (lh / 2) - 1, TranslateColor(&HFAD68F), ShiftColor(TranslateColor(&HFDE1AC), 0.01), gdHorizontal
-            'Left
-            ' --Draws right side gradient effects horizontal
-            DrawGradientEx lw - 6, 3, 5, lh / 2 - 2, TranslateColor(&HFFF7E4), TranslateColor(&HFFEECD), gdHorizontal
-            'Right
-            DrawGradientEx lw - 6, lh / 2, 5, lh - (lh / 2) - 1, ShiftColor(TranslateColor(&HFDE1AC), 0.01), TranslateColor(&HFAD68F), gdHorizontal
-            'Right
-            DrawPicwithCaption
-            ' --Draws border rectangle
-            DrawRectangle 0, 0, lw, lh, TranslateColor(&HA77532)
-            'outer
-            DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite)
-
-            'inner
-        Case eStateDown
-            ' --Draw a gradent in full region
-            DrawGradientEx 1, 1, lw - 1, lh, TranslateColor(&HF6E4C2), TranslateColor(&HF6E4C2), gdVertical
-            ' --Draw gradient in half button downside to give a glass look
-            DrawGradientEx 1, lh / 2, lw - 2, lh - 2, TranslateColor(&HF0D29A), TranslateColor(&HF0D29A), gdVertical
-            ' --Draws down rectangle
-            DrawRectangle 0, 0, lw, lh, TranslateColor(&H5C411D)    '
-            DrawLineApi 1, 1, lw - 1, 1, TranslateColor(&HB39C71)
-            '\Top Lines
-            DrawLineApi 1, 2, lw - 1, 2, TranslateColor(&HD6C6A9)
-            '/
-            DrawLineApi 1, 3, lw - 1, 3, TranslateColor(&HECD9B9)   '
-            DrawLineApi 1, 1, 1, lh / 2 - 1, TranslateColor(&HCFB073)
-            'Left upper
-            DrawLineApi 1, lh / 2, 1, lh - (lh / 2) - 1, TranslateColor(&HC5912B)
-            'Left Bottom
-            ' --Draws left side gradient effects horizontal
-            DrawGradientEx 1, 3, 5, lh / 2 - 2, ShiftColor(TranslateColor(&HE6C891), 0.02), ShiftColor(TranslateColor(&HF6E4C2), -0.01), gdHorizontal
-            'Left
-            DrawGradientEx 1, lh / 2, 5, lh - (lh / 2) - 1, ShiftColor(TranslateColor(&HDCAB4E), 0.02), ShiftColor(TranslateColor(&HF0D29A), -0.01), gdHorizontal
-            'Left
-            ' --Draws right side gradient effects horizontal
-            DrawGradientEx lw - 6, 3, 5, lh / 2 - 2, ShiftColor(TranslateColor(&HF6E4C2), -0.01), ShiftColor(TranslateColor(&HE6C891), 0.02), gdHorizontal
-            'Right
-            DrawGradientEx lw - 6, lh / 2, 5, lh - (lh / 2) - 1, ShiftColor(TranslateColor(&HF0D29A), -0.01), ShiftColor(TranslateColor(&HDCAB4E), 0.02), gdHorizontal
-            'Right
-            DrawPicwithCaption
-    End Select
-
-    ' --Draw a focus rectangle if button has focus
-    If m_bParentActive Then
-        If (m_bHasFocus Or m_bDefault) And vState = eStateNormal Then
-            ' --Draw darker outer rectangle
-            DrawRectangle 0, 0, lw, lh, TranslateColor(&HA77532)
-            ' --Draw light inner rectangle
-            DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(&HFBD848)
-        End If
-
-        If (m_bShowFocus And m_bHasFocus) Then
-            SetRect lpRect, 1.5, 1.5, lw - 2, lh - 2
-            DrawFocusRect hDC, lpRect
-        End If
-    End If
-
-    ' --Create four corners which will be common to all states
-    DrawCorners TranslateColor(&HBE965F)
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawButton_Outlook2007
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vState (enumButtonStates)
-'!--------------------------------------------------------------------------------
-Private Sub DrawButton_Outlook2007(ByVal vState As enumButtonStates)
-
-    Dim bColor As Long
-
-    lh = ScaleHeight
-    lw = ScaleWidth
-    bColor = TranslateColor(m_bColors.tBackColor)
-
-    If m_ButtonMode <> ebmCommandButton And m_bValue Then
-        DrawGradientEx 0, 0, lw, lh / 2.7, TranslateColor(&HA9D9FF), TranslateColor(&H6FC0FF), gdVertical
-        DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), TranslateColor(&H3FABFF), TranslateColor(&H75E1FF), gdVertical
-        DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
-
-        If m_bMouseInCtl Then
-            DrawGradientEx 0, 0, lw, lh / 2.7, TranslateColor(&H58C1FF), TranslateColor(&H51AFFF), gdVertical
-            DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), TranslateColor(&H468FFF), TranslateColor(&H5FD3FF), gdVertical
-            DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
-        End If
-
-        DrawPicwithCaption
-
-        Exit Sub
-
-    End If
-
-    Select Case vState
-
-        Case eStateNormal
             PaintRect bColor, m_ButtonRect
-            DrawGradientEx 0, 0, lw, lh / 2.7, BlendColors(ShiftColor(bColor, 0.09), TranslateColor(vbWhite)), BlendColors(ShiftColor(bColor, 0.07), bColor), gdVertical
-            DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), bColor, ShiftColor(bColor, 0.03), gdVertical
             DrawPicwithCaption
-            DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
 
         Case eStateOver
-            DrawGradientEx 0, 0, lw, lh / 2.7, TranslateColor(&HE1FFFF), TranslateColor(&HACEAFF), gdVertical
-            DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), TranslateColor(&H67D7FF), TranslateColor(&H99E4FF), gdVertical
+            DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(&HFDFEFE), TranslateColor(&HEEF4F4), gdVertical
+            DrawGradientEx 0, lh / 2, lw, lh / 2, TranslateColor(&HEEF4F4), TranslateColor(&HEAF1F1), gdVertical
             DrawPicwithCaption
-            DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
+            DrawLineApi lw - 2, 2, lw - 2, lh - 2, TranslateColor(&HE0E7EA)
+            'right line
+            DrawLineApi lw - 3, 2, lw - 3, lh - 2, TranslateColor(&HEAF0F0)
+            DrawLineApi 0, lh - 4, lw, lh - 4, TranslateColor(&HE5EDEE)
+            'Bottom
+            DrawLineApi 0, lh - 3, lw, lh - 3, TranslateColor(&HD6E1E4)
+            'Bottom
+            DrawLineApi 0, lh - 2, lw, lh - 2, TranslateColor(&HC6D2D7)
+            'Bottom
+            DrawRectangle 0, 0, lw, lh, TranslateColor(&HC3CECE)
+            DrawCorners ShiftColor(TranslateColor(&HC9D4D4), -0.05)
 
         Case eStateDown
-            DrawGradientEx 0, 0, lw, lh / 2.7, TranslateColor(&H58C1FF), TranslateColor(&H51AFFF), gdVertical
-            DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), TranslateColor(&H468FFF), TranslateColor(&H5FD3FF), gdVertical
+            PaintRect TranslateColor(&HDDE4E5), m_ButtonRect
+            'Paint with Darker color
             DrawPicwithCaption
-            DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
+            DrawLineApi 1, 1, lw - 2, 1, ShiftColor(TranslateColor(&HD1DADC), -0.02)
+            'Topmost Line
+            DrawLineApi 1, 2, lw - 2, 2, ShiftColor(TranslateColor(&HDAE1E3), -0.02)
+            'A lighter top line
+            DrawLineApi 1, lh - 3, lw - 2, lh - 3, ShiftColor(TranslateColor(&HDEE5E6), 0.02)
+            'Bottom Line
+            DrawLineApi 1, lh - 2, lw - 2, lh - 2, ShiftColor(TranslateColor(&HE5EAEB), 0.02)
+            DrawRectangle 0, 0, lw, lh, TranslateColor(&H929D9D)
+            DrawCorners ShiftColor(TranslateColor(&HABB4B5), -0.2)
     End Select
 
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawButton_Office2003
+'! Procedure   (Функция)   :   Sub mFont_FontChanged
 '! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vState (enumButtonStates)
+'! Parameters  (Переменные):   PropertyName (String)
 '!--------------------------------------------------------------------------------
-Private Sub DrawButton_Office2003(ByVal vState As enumButtonStates)
-
-    'Dim lpRect           As RECT
-    Dim bColor As Long
-
-    lh = UserControl.ScaleHeight
-    lw = UserControl.ScaleWidth
-    bColor = TranslateColor(m_bColors.tBackColor)
-    SetRect m_ButtonRect, 0, 0, lw, lh
-
-    If m_ButtonMode <> ebmCommandButton And m_bValue Then
-        If m_bMouseInCtl Then
-            DrawGradientEx 0, 0, lw, lh, TranslateColor(&H4E91FE), TranslateColor(&H8ED3FF), gdVertical
-        Else
-            DrawGradientEx 0, 0, lw, lh, TranslateColor(&H8CD5FF), TranslateColor(&H55ADFF), gdVertical
-        End If
-
-        DrawPicwithCaption
-        DrawRectangle 0, 0, lw, lh, TranslateColor(&H800000)
-
-        Exit Sub
-
-    End If
-
-    Select Case vState
-
-        Case eStateNormal
-            CreateRegion
-            DrawGradientEx 0, 0, lw, lh / 2, BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.08)), bColor, gdVertical
-            DrawGradientEx 0, lh / 2, lw, lh / 2 + 1, bColor, ShiftColor(bColor, -0.15), gdVertical
-
-        Case eStateOver
-            DrawGradientEx 0, 0, lw, lh, TranslateColor(&HCCF4FF), TranslateColor(&H91D0FF), gdVertical
-
-        Case eStateDown
-            DrawGradientEx 0, 0, lw, lh, TranslateColor(&H4E91FE), TranslateColor(&H8ED3FF), gdVertical
-    End Select
-
-    DrawPicwithCaption
-
-    If m_Buttonstate <> eStateNormal Then
-        DrawRectangle 0, 0, lw, lh, TranslateColor(&H800000)
-    End If
-
+Private Sub mFont_FontChanged(ByVal PropertyName As String)
+    Set UserControl.Font = mFont
+    Refresh
+    RedrawButton
+    PropertyChanged "Font"
 End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawButton_WindowsTheme
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vState (enumButtonStates)
-'!--------------------------------------------------------------------------------
-Private Sub DrawButton_WindowsTheme(ByVal vState As enumButtonStates)
-
-    Dim tmpState As Long
-
-    UserControl.BackColor = GetSysColor(COLOR_BTNFACE)
-
-    If Not m_bEnabled Then
-        tmpState = 4
-        DrawTheme "Button", 1, tmpState
-        DrawPicwithCaption
-
-        Exit Sub
-
-    End If
-
-    Select Case vState
-
-        Case eStateNormal
-            tmpState = 1
-
-        Case eStateOver
-            tmpState = 2
-
-        Case eStateDown
-            tmpState = 3
-    End Select
-
-    If m_Buttonstate = eStateNormal Then
-
-        '        If (m_bHasFocus Or m_bDefault) And m_bParentActive Then
-        'Change by Tanner - do not show a focus rect unless m_bShowFocus is explicitly set!
-        If (m_bHasFocus Or m_bDefault) And m_bParentActive And m_bShowFocus Then
-            tmpState = 5
-        End If
-    End If
-
-    DrawTheme "Button", 1, tmpState
-    DrawPicwithCaption
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function DrawTheme
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   sClass (String)
-'                              iPart (Long)
-'                              vState (Long)
-'!--------------------------------------------------------------------------------
-Private Function DrawTheme(sClass As String, ByVal iPart As Long, ByVal vState As Long) As Boolean
-
-    Dim hTheme    As Long
-    Dim lResult   As Boolean
-    Dim m_btnRect As RECT
-    Dim hRgn      As Long
-
-    hTheme = OpenThemeData(UserControl.hWnd, StrPtr(sClass))
-
-    If hTheme Then
-        ' --Necessary for rounded buttons
-        SetRect m_btnRect, m_ButtonRect.Left - 1, m_ButtonRect.Top - 1, m_ButtonRect.Right + 1, m_ButtonRect.Bottom + 2
-        GetThemeBackgroundRegion hTheme, hDC, iPart, vState, m_btnRect, hRgn
-        SetWindowRgn hWnd, hRgn, True
-        ' --clean up
-        DeleteObject hRgn
-        ' --Draw the theme
-        lResult = DrawThemeBackground(hTheme, hDC, iPart, vState, m_ButtonRect, m_ButtonRect)
-        DrawTheme = lResult
-    Else
-        DrawTheme = False
-    End If
-
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub PaintRect
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lColor (Long)
-'                              lpRect (RECT)
-'!--------------------------------------------------------------------------------
-Private Sub PaintRect(ByVal lColor As Long, lpRect As RECT)
-
-    'Fills a region with specified color
-    Dim hOldBrush As Long
-    Dim hBrush    As Long
-
-    hBrush = CreateSolidBrush(lColor)
-    hOldBrush = SelectObject(hDC, hBrush)
-    FillRect hDC, lpRect, hBrush
-    SelectObject hDC, hOldBrush
-    DeleteObject hBrush
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub ShowPopupMenu
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub ShowPopupMenu()
-
-    '* Shows a popupmenu
-    '* Inspired from Noel Dacara's dcbutton
-    Const TPM_BOTTOMALIGN As Long = &H20&
-
-    Dim Menu              As VB.Menu
-    Dim Align             As enumMenuAlign
-    Dim X                 As Long
-    Dim Y                 As Long
-    Dim lpPoint           As POINT
-
-    Set Menu = DropDownMenu
-    Align = MenuAlign
-    lh = ScaleHeight
-    lw = ScaleWidth
-    m_bPopupInit = True
-
-    ' --Set the drop down menu position
-    Select Case Align
-
-        Case edaBottom
-            Y = lh
-
-        Case edaLeft, edaBottomLeft
-            MenuFlags = MenuFlags Or vbPopupMenuRightAlign
-
-            If MenuAlign = edaBottomLeft Then
-                Y = lh
-            End If
-
-        Case edaRight, edaBottomRight
-            X = lw
-
-            If MenuAlign = edaBottomRight Then
-                Y = lh
-            End If
-
-        Case edaTop, edaTopRight, edaTopLeft
-            MenuFlags = TPM_BOTTOMALIGN
-
-            If MenuAlign = edaTopRight Then
-                X = lw
-            ElseIf (MenuAlign = edaTopLeft) Then
-                MenuFlags = MenuFlags Or vbPopupMenuRightAlign
-            End If
-
-        Case Else
-            m_bPopupInit = False
-    End Select
-
-    If m_bPopupInit Then
-        ' /--Show the dropdown menu
-        UserControl.PopupMenu DropDownMenu, MenuFlags, X, Y
-        GetCursorPos lpPoint
-
-        If (WindowFromPoint(lpPoint.X, lpPoint.Y) = UserControl.hWnd) Then
-            m_bPopupShown = True
-        Else
-            m_bIsDown = False
-            m_bMouseInCtl = False
-            m_bIsSpaceBarDown = False
-            m_Buttonstate = eStateNormal
-            m_bPopupShown = False
-            m_bPopupInit = False
-            RedrawButton
-        End If
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub ShowPopupMenuRBT
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub ShowPopupMenuRBT()
-
-    '* Shows a popupmenu
-    '* Inspired from Noel Dacara's dcbutton
-    Const TPM_BOTTOMALIGN As Long = &H20&
-
-    Dim DefaultMenuRBT    As VB.Menu
-
-    Set DefaultMenuRBT = DefaultMenu
-
-    ' /--Show the dropdown menu
-    If Not (DefaultMenuRBT Is Nothing) Then
-        UserControl.PopupMenu DefaultMenuRBT
-    End If
-
-    Dim lpPoint As POINT
-
-    GetCursorPos lpPoint
-
-    If (WindowFromPoint(lpPoint.X, lpPoint.Y) = UserControl.hWnd) Then
-        m_bPopupShown = True
-    Else
-        m_bIsDown = False
-        m_bMouseInCtl = False
-        m_bIsSpaceBarDown = False
-        m_Buttonstate = eStateNormal
-        m_bPopupShown = False
-        m_bPopupInit = False
-        RedrawButton
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function ShiftColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Color (Long)
-'                              PercentInDecimal (Single)
-'!--------------------------------------------------------------------------------
-Private Function ShiftColor(ByVal Color As Long, ByVal PercentInDecimal As Single) As Long
-
-    '****************************************************************************
-    '* This routine shifts a color value specified by PercentInDecimal          *
-    '* Function inspired from DCbutton                                          *
-    '* All Credits goes to Noel Dacara                                          *
-    '* A Littlebit modified by me                                               *
-    '****************************************************************************
-    Dim R As Long
-    Dim G As Long
-    Dim B As Long
-
-    '  Add or remove a certain color quantity by how many percent.
-    R = Color And 255
-    G = (Color \ 256) And 255
-    B = (Color \ 65536) And 255
-    R = R + PercentInDecimal * 255
-    ' Percent should already
-    G = G + PercentInDecimal * 255
-    ' be translated.
-    B = B + PercentInDecimal * 255
-
-    ' Ex. 50% -> 50 / 100 = 0.5
-    '  When overflow occurs, ....
-    If PercentInDecimal > 0 Then
-
-        ' RGB values must be between 0-255 only
-        If R > 255 Then
-            R = 255
-        End If
-
-        If G > 255 Then
-            G = 255
-        End If
-
-        If B > 255 Then
-            B = 255
-        End If
-
-    Else
-
-        If R < 0 Then
-            R = 0
-        End If
-
-        If G < 0 Then
-            G = 0
-        End If
-
-        If B < 0 Then
-            B = 0
-        End If
-    End If
-
-    ShiftColor = R + 256& * G + 65536 * B
-    ' Return shifted color value
-End Function
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UserControl_AccessKeyPress
@@ -3555,11 +4593,13 @@ Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
             m_bValue = True
             RedrawButton
         End If
-
-        DoEvents
+        
         'To remove focus from other button and Do events before click event
-        RaiseEvent Click
+        DoEvents
+        
         'Now Raiseevent
+        RaiseEvent Click
+
     End If
 
 End Sub
@@ -3624,15 +4664,12 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_GotFocus()
     m_bHasFocus = True
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub UserControl_Hide
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub UserControl_Hide()
-    UserControl.Extender.ToolTipText = m_sTooltipText
+    
+    If (m_bHasFocus Or m_bDefault) And (m_Buttonstate <> eStateDown And m_Buttonstate <> eStateOver) Then
+        SetRect m_ButtonRect, 2, 2, ScaleWidth - 2, ScaleHeight - 2
+        'I don't like this ugly focusrect!!
+        DrawFocusRect hDC, m_ButtonRect
+    End If
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -3642,17 +4679,20 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Initialize()
 
-    Dim i As Long
+    Dim I As Long
 
     'Prebuid Lighten/Darken arrays
-    For i = 0 To 255
-        aLighten(i) = Lighten(i)
-        aDarken(i) = Darken(i)
+    For I = 0 To 255
+        aLighten(I) = Lighten(I)
+        aDarken(I) = Darken(I)
     Next
 
     ' --Get the operating system version for text drawing purposes.
     m_hMode = LoadLibrary(StrPtr("shell32.dll"))
     m_WindowsNT = IsWinXPOrLater
+    dtDefTextDrawParams = DT_WORDBREAK Or DT_VCENTER Or DT_CENTER
+
+    Set m_cSubclass = New cSelfSubHookCallback
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -3831,7 +4871,9 @@ Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
             End If
 
             If Not m_bIsDown And m_bIsSpaceBarDown Then
-                RaiseEvent Click
+                If Not m_CheckExist Then
+                    RaiseEvent Click
+                End If
             End If
         End If
 
@@ -3898,7 +4940,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
         SetCursor m_lCursor
     End If
 
-    If Button = vbLeftButton Or m_bPopupShown Then
+    If Button = vbLeftButton Then
         m_bHasFocus = True
         m_bIsDown = True
 
@@ -3909,7 +4951,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
             End If
         End If
 
-        If Not m_bPopupEnabled Then
+        If Not m_bPopupEnabled And Not m_DropDownEnable Then
             RaiseEvent MouseDown(Button, Shift, X, Y)
         Else
 
@@ -3918,259 +4960,19 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
             End If
         End If
 
-    ElseIf Button = vbRightButton Or m_bPopupShown Then
+    ElseIf Button = vbRightButton Then
         m_bHasFocus = True
 
-        If Not m_bPopupEnabled Then
+        If Not m_bPopupEnabledRBT Then
             RaiseEvent MouseDown(Button, Shift, X, Y)
         Else
-
+            RaiseEvent MouseDown(Button, Shift, X, Y)
             If Not m_bPopupShown Then
                 ShowPopupMenuRBT
             End If
         End If
     End If
 
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub CreateToolTip
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub CreateToolTip()
-
-    '****************************************************************************
-    '* A very nice and flexible sub to create balloon tool tips
-    '* Author :- Fred.CPP
-    '* Added as requested by many users
-    '* Modified by me to support unicode
-    '* Thanks Alfredo ;)
-    '****************************************************************************
-    Dim lpRect    As RECT
-    Dim lWinStyle As Long
-    Dim lPtr      As Long
-    Dim ttip      As TOOLINFO
-    Dim ttipW     As TOOLINFOW
-
-    ' --Dont show tooltips if disabled
-    If Not (Not m_bEnabled) Or m_bPopupShown Or m_Buttonstate = eStateDown Then
-
-        ' --Destroy any previous tooltip
-        If m_lttHwnd <> 0 Then
-            DestroyWindow m_lttHwnd
-        End If
-
-        lWinStyle = TTS_ALWAYSTIP Or TTS_NOPREFIX
-
-        ''create baloon style if desired
-        If m_lTooltipType = TooltipBalloon Then
-            lWinStyle = lWinStyle Or TTS_BALLOON
-        End If
-
-        If m_bttRTL Then
-            m_lttHwnd = CreateWindowEx(WS_EX_LAYOUTRTL, StrPtr(TOOLTIPS_CLASSA), StrPtr(vbNullString), lWinStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, UserControl.hWnd, 0&, App.hInstance, ByVal 0&)
-        Else
-            m_lttHwnd = CreateWindowEx(0&, StrPtr(TOOLTIPS_CLASSA), StrPtr(vbNullString), lWinStyle, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, UserControl.hWnd, 0&, App.hInstance, ByVal 0&)
-        End If
-
-        SetClassLong m_lttHwnd, GCL_STYLE, GetClassLong(m_lttHwnd, GCL_STYLE) Or CS_DROPSHADOW
-        'make our tooltip window a topmost window
-        ' This is creating some problems as noted by K-Zero
-        'SetWindowPos m_lttHwnd, HWND_TOPMOST, 0&, 0&, 0&, 0&, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE
-        ''get the rect of the parent control
-        GetClientRect UserControl.hWnd, lpRect
-
-        If m_WindowsNT Then
-
-            ' --set our tooltip info structure  for UNICODE SUPPORT >> WinNT
-            With ttipW
-
-                ' --if we want it centered, then set that flag
-                If m_lttCentered Then
-                    .lFlags = TTF_SUBCLASS Or TTF_CENTERTIP Or TTF_IDISHWND
-                Else
-                    .lFlags = TTF_SUBCLASS Or TTF_IDISHWND
-                End If
-
-                ' --set the hwnd prop to our parent control's hwnd
-                .lhWnd = UserControl.hWnd
-                .lID = hWnd
-                .lSize = Len(ttipW)
-                .hInstance = App.hInstance
-                .lpStrW = StrPtr(m_sTooltipText)
-                .lpRect = lpRect
-            End With
-
-            ' --add the tooltip structure
-            SendMessage m_lttHwnd, TTM_ADDTOOLW, 0&, ttipW
-        Else
-
-            ' --set our tooltip info structure for << WinNT
-            With ttip
-
-                ''if we want it centered, then set that flag
-                If m_lttCentered Then
-                    .lFlags = TTF_SUBCLASS Or TTF_CENTERTIP
-                Else
-                    .lFlags = TTF_SUBCLASS
-                End If
-
-                ' --set the hwnd prop to our parent control's hwnd
-                .lhWnd = UserControl.hWnd
-                .lID = hWnd
-                .lSize = Len(ttip)
-                .hInstance = App.hInstance
-                .lpStr = m_sTooltipText
-                .lpRect = lpRect
-            End With
-
-            'TTIP
-            ' --add the tooltip structure
-            SendMessage m_lttHwnd, TTM_ADDTOOLA, 0&, ttip
-        End If
-
-        'if we want a title or we want an icon
-        If LenB(m_sTooltiptitle) > 0 Or m_lToolTipIcon <> TTNoIcon Then
-            If m_WindowsNT Then
-                lPtr = StrPtr(m_sTooltiptitle)
-
-                If lPtr Then
-                    SendMessage m_lttHwnd, TTM_SETTITLEW, m_lToolTipIcon, ByVal lPtr
-                End If
-
-            Else
-                SendMessage m_lttHwnd, TTM_SETTITLE, CLng(m_lToolTipIcon), ByVal m_sTooltiptitle
-            End If
-        End If
-
-        'for Multiline capability
-        SendMessage m_lttHwnd, TTM_SETMAXTIPWIDTH, 0, ByVal PD_MAX_TOOLTIP_WIDTH
-
-        If m_lttBackColor <> Empty Then
-            SendMessage m_lttHwnd, TTM_SETTIPBKCOLOR, TranslateColor(m_lttBackColor), 0&
-        End If
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub InitThemeColors
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub InitThemeColors()
-
-    Select Case m_ButtonStyle
-
-        Case eStandard, eFlat, eVistaToolbar, eXPToolbar, eOfficeXP, eWindowsXP, eOutlook2007, eGelButton
-            m_lXPColor = ecsBlue
-
-        Case eInstallShield, eVistaAero
-            m_lXPColor = ecsSilver
-    End Select
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub SetThemeColors
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub SetThemeColors()
-
-    'Sets a style colors to default colors when button initialized
-    'or whenever you change the style of Button
-    With m_bColors
-
-        Select Case m_ButtonStyle
-
-            Case eStandard, eFlat, eVistaToolbar, e3DHover, eFlatHover, eXPToolbar, eOfficeXP
-                .tBackColor = GetSysColor(COLOR_BTNFACE)
-
-            Case eWindowsXP
-
-                Select Case m_lXPColor
-
-                    Case ecsBlue
-                        .tBackColor = TranslateColor(&HE7EBEC)
-
-                    Case ecsOliveGreen
-                        .tBackColor = TranslateColor(&HDBEEF3)
-
-                    Case ecsSilver
-                        .tBackColor = TranslateColor(&HFCF1F0)
-                End Select
-
-            Case eOutlook2007, eGelButton
-
-                Select Case m_lXPColor
-
-                    Case ecsBlue
-                        .tBackColor = TranslateColor(&HFFD1AD)
-
-                    Case ecsOliveGreen
-                        .tBackColor = TranslateColor(&HBAD6D4)
-
-                    Case ecsSilver
-                        .tBackColor = TranslateColor(&HE3DFE0)
-                End Select
-
-                .tForeColor = TranslateColor(&H8B4215)
-
-            Case eVistaAero
-
-                Select Case m_lXPColor
-
-                    Case ecsBlue
-                        .tBackColor = TranslateColor(&HFDECE0)
-
-                    Case ecsOliveGreen
-                        .tBackColor = TranslateColor(&HDEEDE8)
-
-                    Case ecsSilver
-                        .tBackColor = ShiftColor(TranslateColor(&HD4D4D4), 0.06)
-                End Select
-
-            Case eInstallShield
-
-                Select Case m_lXPColor
-
-                    Case ecsBlue
-                        .tBackColor = TranslateColor(&HFFD1AD)
-
-                    Case ecsOliveGreen
-                        .tBackColor = TranslateColor(&HBAD6D4)
-
-                    Case ecsSilver
-                        .tBackColor = TranslateColor(&HE1D6D5)
-                End Select
-
-            Case eOffice2003
-
-                Select Case m_lXPColor
-
-                    Case ecsBlue
-                        .tBackColor = TranslateColor(&HFCE1CA)
-
-                    Case ecsOliveGreen
-                        .tBackColor = TranslateColor(&HBAD6D4)
-
-                    Case ecsSilver
-                        .tBackColor = ShiftColor(TranslateColor(&HBA9EA0), 0.15)
-                End Select
-        End Select
-
-        .tForeColor = TranslateColor(vbButtonText)
-        m_bShowFocus = m_ButtonStyle = eFlat Or m_ButtonStyle = eInstallShield Or m_ButtonStyle = eStandard
-
-        If m_ButtonStyle = eOfficeXP Then
-            m_bPicPushOnHover = True
-        End If
-
-    End With
-
-    'M_BCOLORS
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -4183,7 +4985,7 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
-    Dim lp As POINT
+    Dim lp As POINTAPI
 
     GetCursorPos lp
 
@@ -4227,11 +5029,6 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
             If m_Buttonstate <> eStateOver Then
                 m_Buttonstate = eStateOver
                 RedrawButton
-
-                ' --Create Tooltip Here
-                If m_Buttonstate <> eStateDown Then
-                    CreateToolTip
-                End If
             End If
         End If
 
@@ -4243,7 +5040,6 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
         End If
     End If
 
-    'RaiseEvent MouseMove(Button, Shift, x, Y)
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -4262,13 +5058,14 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
 
     ' --Popupmenu enabled
     If m_bPopupEnabled Then
-        m_bIsDown = False
-        m_bPopupShown = False
-        m_Buttonstate = eStateNormal
-        RedrawButton
-
-        Exit Sub
-
+        If m_DropDownEnable Then
+            m_bIsDown = False
+            m_bPopupShown = False
+            m_Buttonstate = eStateNormal
+            RedrawButton
+    
+            Exit Sub
+        End If
     End If
 
     ' --React only to Left mouse button
@@ -4300,28 +5097,6 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub UserControl_Resize
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub UserControl_Resize()
-
-    ' --At least, a checkbox will also need this much of size!!!!
-    If Height < 220 Then
-        Height = 220
-    End If
-
-    If Width < 220 Then
-        Width = 220
-    End If
-
-    ' --On resize, create button region again
-    CreateRegion
-    RedrawButton
-    'then redraw
-End Sub
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UserControl_Paint
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
@@ -4332,10 +5107,9 @@ Private Sub UserControl_Paint()
     RedrawButton
 End Sub
 
-'Load property values from storage
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UserControl_ReadProperties
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Load property values from storage]
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -4343,6 +5117,8 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         Set mFont = .ReadProperty("Font", Ambient.Font)
         Set UserControl.Font = mFont
+        m_CheckExist = .ReadProperty("CheckExist", False)
+        m_DropDownEnable = .ReadProperty("DropDownEnable", False)
         m_ButtonStyle = .ReadProperty("ButtonStyle", eFlat)
         m_bShowFocus = .ReadProperty("ShowFocusRect", False)
         m_bColors.tBackColor = .ReadProperty("BackColor", GetSysColor(COLOR_BTNFACE))
@@ -4372,13 +5148,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         m_bColors.tForeColorOver = .ReadProperty("ForeColorHover", TranslateColor(vbButtonText))
         UserControl.ForeColor = m_bColors.tForeColor
         m_bDropDownSep = .ReadProperty("DropDownSeparator", False)
-        m_sTooltiptitle = .ReadProperty("TooltipTitle", vbNullString)
-        m_sTooltipText = .ReadProperty("ToolTip", vbNullString)
-        m_lToolTipIcon = .ReadProperty("TooltipIcon", TTNoIcon)
-        m_lTooltipType = .ReadProperty("TooltipType", TooltipStandard)
-        m_lttBackColor = .ReadProperty("TooltipBackColor", TranslateColor(vbInfoBackground))
         m_bRTL = .ReadProperty("RightToLeft", False)
-        m_bttRTL = .ReadProperty("RightToLeft", False)
         m_DropDownSymbol = .ReadProperty("DropDownSymbol", ebsNone)
         m_lXPColor = .ReadProperty("ColorScheme", ecsBlue)
         UserControl.Enabled = m_bEnabled
@@ -4398,37 +5168,38 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     On Error GoTo H
 
-    If Ambient.UserMode Then
+    If RunMode Then
+    
         'If we're not in design mode
         TrackUser32 = APIFunctionPresent("TrackMouseEvent", "user32.dll")
 
         If Not TrackUser32 Then
             APIFunctionPresent "_TrackMouseEvent", "comctl32.dll"
         End If
-
-        'OS supports mouse leave so subclass for it
-        With UserControl
-            'Start subclassing the UserControl
-            Subclass_Initialize .hWnd
-            Subclass_Initialize m_lParenthWnd
-            Subclass_AddMsg .hWnd, WM_MOUSELEAVE, MSG_AFTER
-            Subclass_AddMsg .hWnd, WM_THEMECHANGED, MSG_AFTER
-
-            If IsThemed Then
-                Subclass_AddMsg .hWnd, WM_SYSCOLORCHANGE, MSG_AFTER
+        
+        With m_cSubclass
+            If .ssc_Subclass(UserControl.hWnd, ByVal exUserControl, 1, Me) Then
+                .ssc_AddMsg UserControl.hWnd, MSG_AFTER, WM_MOUSELEAVE, WM_THEMECHANGED, WM_SETCURSOR
+                If IsThemed Then
+                    .ssc_AddMsg UserControl.hWnd, MSG_AFTER, WM_SYSCOLORCHANGE
+                End If
             End If
 
             On Error Resume Next
+                If App.LogMode Then
+                    If UserControl.Parent.MDIChild Then
+                        If .ssc_Subclass(m_lParenthWnd, ByVal exParentForm, 1, Me) Then
+                            .ssc_AddMsg m_lParenthWnd, MSG_AFTER, WM_NCACTIVATE
+                        End If
+                    Else
+                        If .ssc_Subclass(m_lParenthWnd, ByVal exParentForm, 1, Me) Then
+                            .ssc_AddMsg m_lParenthWnd, MSG_AFTER, WM_ACTIVATE
+                        End If
+                    End If
+                End If
+            End With
 
-            If .Parent.MDIChild Then
-                Subclass_AddMsg m_lParenthWnd, WM_NCACTIVATE, MSG_AFTER
-            Else
-                Subclass_AddMsg m_lParenthWnd, WM_ACTIVATE, MSG_AFTER
-            End If
-
-        End With
-
-    End If
+        End If
 
 H:
 
@@ -4437,18 +5208,30 @@ H:
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub UserControl_Show
+'! Procedure   (Функция)   :   Sub UserControl_Resize
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Private Sub UserControl_Show()
-    UserControl.Extender.ToolTipText = vbNullString
+Private Sub UserControl_Resize()
+
+    ' --At least, a checkbox will also need this much of size!!!!
+    If Height < 220 Then
+        Height = 220
+    End If
+
+    If Width < 220 Then
+        Width = 220
+    End If
+
+    ' --On resize, create button region again
+    CreateRegion
+    'then redraw
+    RedrawButton
 End Sub
 
-'A nice place to stop subclasser
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UserControl_Terminate
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [A nice place to stop subclasser]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Terminate()
@@ -4467,19 +5250,17 @@ Private Sub UserControl_Terminate()
     End If
 
     UnsetPopupMenu
+    UnsetPopupMenuRBT
 
-    If Ambient.UserMode Then
-        Subclass_Terminate
-        Subclass_Terminate
-    End If
+    m_cSubclass.ssc_Terminate
+    Set m_cSubclass = Nothing
 
 Crash:
 End Sub
 
-'Write property values to storage
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UserControl_WriteProperties
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Write property values to storage]
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -4487,10 +5268,13 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Font", mFont, Ambient.Font
         .WriteProperty "ButtonStyle", m_ButtonStyle, eFlat
+        .WriteProperty "CheckExist", m_CheckExist, False
         .WriteProperty "ShowFocusRect", m_bShowFocus, False
         .WriteProperty "Enabled", m_bEnabled, True
         .WriteProperty "BackColor", m_bColors.tBackColor, GetSysColor(COLOR_BTNFACE)
         .WriteProperty "Caption", m_Caption, "ctlJCbutton1"
+        .WriteProperty "CaptionEffects", m_CaptionEffects, vbNullString
+        .WriteProperty "CaptionAlign", m_CaptionAlign, ecCenterAlign
         .WriteProperty "ForeColor", m_bColors.tForeColor, TranslateColor(vbButtonText)
         .WriteProperty "ForeColorHover", m_bColors.tForeColorOver, TranslateColor(vbButtonText)
         .WriteProperty "Mode", m_ButtonMode, ebmCommandButton
@@ -4509,1494 +5293,110 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "PictureOpacity", m_PictureOpacity, 255
         .WriteProperty "PictureOpacityOnOver", m_PicOpacityOnOver, 255
         .WriteProperty "DisabledPictureMode", m_PicDisabledMode, edpBlended
-        .WriteProperty "CaptionEffects", m_CaptionEffects, vbNullString
         .WriteProperty "UseMaskColor", m_bUseMaskColor, True
         .WriteProperty "MaskColor", m_lMaskColor, &HE0E0E0
-        .WriteProperty "CaptionAlign", m_CaptionAlign, ecCenterAlign
-        .WriteProperty "ToolTip", m_sTooltipText, vbNullString
-        .WriteProperty "TooltipType", m_lTooltipType, TooltipStandard
-        .WriteProperty "TooltipIcon", m_lToolTipIcon, TTNoIcon
-        .WriteProperty "TooltipTitle", m_sTooltiptitle, vbNullString
-        .WriteProperty "TooltipBackColor", m_lttBackColor, TranslateColor(vbInfoBackground)
         .WriteProperty "RightToLeft", m_bRTL, False
         .WriteProperty "DropDownSymbol", m_DropDownSymbol, ebsNone
         .WriteProperty "DropDownSeparator", m_bDropDownSep, False
+        .WriteProperty "DropDownEnable", m_DropDownEnable, False
         .WriteProperty "ColorScheme", m_lXPColor, ecsBlue
     End With
 
 End Sub
 
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function Is32BitBMP
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   obj (Object)
-'!--------------------------------------------------------------------------------
-Private Function Is32BitBMP(obj As Object) As Boolean
 
-    Dim uBI As BITMAP
-
-    If obj.Type = vbPicTypeBitmap Then
-        GetObjectAPI obj.Handle, LenB(uBI), uBI
-        Is32BitBMP = uBI.BMBitsPixel = 32
-    End If
-
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property IsThemed
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Property Get IsThemed() As Boolean
-
-    Static m_bInit As Boolean
-
-    On Error Resume Next
-
-    If HasUxTheme Then
-        If Not (m_bInit) Then
-            m_bIsThemed = IsAppThemed
-            m_bInit = True
-        End If
-    End If
-
-    IsThemed = m_bIsThemed
-
-    On Error GoTo 0
-
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property HasUxTheme
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Property Get HasUxTheme() As Boolean
-
-    Static m_bInit As Boolean
-
-    If Not (m_bInit) Then
-        m_bHasUxTheme = APIFunctionPresent("IsAppThemed", "uxtheme.dll")
-        m_bInit = True
-    End If
-
-    HasUxTheme = m_bHasUxTheme
-End Property
-
-'Track the mouse leaving the indicated window
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub TrackMouseLeave
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lng_hWnd (Long)
-'!--------------------------------------------------------------------------------
-Private Sub TrackMouseLeave(ByVal lng_hWnd As Long)
-
-    Dim TME As TRACKMOUSEEVENT_STRUCT
-
-    If TrackUser32 Then
-
-        With TME
-            .cbSize = LenB(TME)
-            .dwFlags = TME_LEAVE
-            .hWndTrack = lng_hWnd
-            .dwHoverTime = 1
-        End With
-
-        If TrackUser32 Then
-            TrackMouseEvent TME
-        Else
-            TrackMouseEventComCtl TME
-        End If
-    End If
-
-End Sub
-
-'=========================================================================
-'PUBLIC ROUTINES including subclassing & public button properties
-' CREDITS: Paul Caton
 '======================================================================================================
-'Subclass handler - MUST be the first Public routine in this file. That includes public properties also
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Subclass_WndProc
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   bBefore (Boolean)
-'                              bHandled (Boolean)
-'                              lReturn (Long)
-'                              lhWnd (Long)
-'                              uMsg (Long)
-'                              wParam (Long)
-'                              lParam (Long)
-'!--------------------------------------------------------------------------------
-Public Sub Subclass_WndProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByRef lhWnd As Long, ByRef uMsg As Long, ByRef wParam As Long, ByRef lParam As Long)
+'Subclass code - The programmer may call any of the following Subclass_??? routines
+'- callback, usually ordinal #1, the last method in this source file----------------------
+Private Sub z_myWndProc(ByVal bBefore As Boolean, _
+                      ByRef bHandled As Boolean, _
+                      ByRef lReturn As Long, _
+                      ByVal lng_hWnd As Long, _
+                      ByVal uMsg As Long, _
+                      ByVal wParam As Long, _
+                      ByVal lParam As Long, _
+                      ByRef lParamUser As Long)
 
-    'Parameters:
-    'bBefore  - Indicates whether the the message is being processed before or after the default handler - only really needed if a message is set to callback both before & after.
-    'bHandled - Set this variable to True in a 'before' callback to prevent the message being subsequently processed by the default handler... and if set, an 'after' callback
-    'lReturn  - Set this variable as per your intentions and requirements, see the MSDN documentation for each individual message value.
-    'hWnd     - The window handle
-    'uMsg     - The message number
-    'wParam   - Message related data
-    'lParam   - Message related data
-    'Notes:
-    'If you really know what you're doing, it's possible to change the values of the
-    'hWnd, uMsg, wParam and lParam parameters in a 'before' callback so that different
-    'values get passed to the default handler.. and optionaly, the 'after' callback
-    'Static bMoving As Boolean
-    Select Case uMsg
+'Parameters:
+'bBefore  - Indicates whether the the message is being processed before or after the default handler - only really needed if a message is set to callback both before & after.
+'bHandled - Set this variable to True in a 'before' callback to prevent the message being subsequently processed by the default handler... and if set, an 'after' callback
+'lReturn  - Set this variable as per your intentions and requirements, see the MSDN documentation for each individual message value.
+'hWnd     - The window handle
+'uMsg     - The message number
+'wParam   - Message related data
+'lParam   - Message related data
+'Notes:
+'If you really know what you're doing, it's possible to change the values of the
+'hWnd, uMsg, wParam and lParam parameters in a 'before' callback so that different
+'values get passed to the default handler.. and optionaly, the 'after' callback
+
+    Select Case lParamUser
+
+    Case exUserControl
+
+        Select Case uMsg
 
         Case WM_MOUSELEAVE
-            m_bMouseInCtl = False
 
+            m_bMouseInCtl = False
             If m_bPopupEnabled Then
                 If m_bPopupInit Then
                     m_bPopupInit = False
                     m_bPopupShown = True
-
                     Exit Sub
-
                 Else
                     m_bPopupShown = False
                 End If
             End If
 
             If m_bIsSpaceBarDown Then
-
                 Exit Sub
-
             End If
-
             If m_Buttonstate <> eStateNormal Then
                 m_Buttonstate = eStateNormal
                 RedrawButton
             End If
-
             RaiseEvent MouseLeave
-
-        Case WM_NCACTIVATE, WM_ACTIVATE
-
-            If wParam Then
-                m_bParentActive = True
-
-                If m_Buttonstate <> eStateNormal Then
-                    m_Buttonstate = eStateNormal
-                End If
-
-                If m_bDefault Then
-                    RedrawButton
-                End If
-
-                RedrawButton
-            Else
-                m_bIsDown = False
-                m_bIsSpaceBarDown = False
-                m_bHasFocus = False
-                m_bParentActive = False
-
-                If m_Buttonstate <> eStateNormal Then
-                    m_Buttonstate = eStateNormal
-                End If
-
-                RedrawButton
-            End If
 
         Case WM_THEMECHANGED
             RedrawButton
 
         Case WM_SYSCOLORCHANGE
             RedrawButton
+            
+        Case WM_SETCURSOR
+            If m_bHandPointer Then
+               'Tanner edit: manage the hand cursor myself, rather than having each button do it separately
+               SetCursor LoadCursor(0, IDC_HAND)
+               bHandled = True
+            End If
+            
+        End Select
+        
+
+    Case exParentForm
+
+        Select Case uMsg
+
+        Case WM_NCACTIVATE, WM_ACTIVATE
+            If wParam Then
+                m_bParentActive = True
+                If m_Buttonstate <> eStateNormal Then m_Buttonstate = eStateNormal
+                If m_bDefault Then
+                    RedrawButton
+                End If
+                RedrawButton
+            Else
+                m_bIsDown = False
+                m_bIsSpaceBarDown = False
+                m_bHasFocus = False
+                m_bParentActive = False
+                If m_Buttonstate <> eStateNormal Then m_Buttonstate = eStateNormal
+                RedrawButton
+            End If
+        End Select
+
     End Select
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub SetPopupMenu
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Menu (Object)
-'                              Align (enumMenuAlign)
-'                              Flags (enumMenuAlign)
-'                              MenuRBT (enumMenuAlign)
-'!--------------------------------------------------------------------------------
-Public Sub SetPopupMenu(ByVal Menu As Object, Optional Align As enumMenuAlign, Optional Flags = 0, Optional MenuRBT = Nothing)
-Attribute SetPopupMenu.VB_Description = "Sets a dropdown menu to the button."
-
-    If Not (Menu Is Nothing) Then
-        If (TypeOf Menu Is VB.Menu) Then
-            Set DropDownMenu = Menu
-            MenuAlign = Align
-            MenuFlags = Flags
-            SetPopupMenuRBT MenuRBT
-            m_bPopupEnabled = True
-        End If
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub SetPopupMenuRBT
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Menu (Object)
-'!--------------------------------------------------------------------------------
-Public Sub SetPopupMenuRBT(ByVal Menu As Object)
-Attribute SetPopupMenuRBT.VB_UserMemId = 1610809444
-
-    If Not (Menu Is Nothing) Then
-        If (TypeOf Menu Is VB.Menu) Then
-            Set DefaultMenu = Menu
-        End If
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub UnsetPopupMenu
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Sub UnsetPopupMenu()
-Attribute UnsetPopupMenu.VB_Description = "Unsets a popupmenu that was previously set for that button."
-Attribute UnsetPopupMenu.VB_UserMemId = 1610809445
-
-    ' --Free the popup menu
-    If Not DropDownMenu Is Nothing Then Set DropDownMenu = Nothing
-    If Not DefaultMenu Is Nothing Then Set DefaultMenu = Nothing
-    m_bPopupEnabled = False
-    m_bPopupShown = False
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub About
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Sub About()
-Attribute About.VB_Description = "Displays information about the control and its author."
-Attribute About.VB_UserMemId = -552
-    MsgBox "JCButton v 1.02" & vbNewLine & "Author: Juned S. Chhipa" & vbNewLine & "Contact: juned.chhipa@yahoo.com" & vbNewLine & vbNewLine & "Copyright © 2008-2009 Juned Chhipa. All rights reserved.", vbInformation + vbOKOnly, "About"
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property BackColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get BackColor() As OLE_COLOR
-    BackColor = m_bColors.tBackColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property BackColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   new_BackColor (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let BackColor(ByVal new_BackColor As OLE_COLOR)
-Attribute BackColor.VB_Description = "Returns/sets the background color used for the button."
-Attribute BackColor.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-Attribute BackColor.VB_UserMemId = -501
-    m_bColors.tBackColor = new_BackColor
-
-    If m_ButtonStyle <> eOfficeXP Then
-        m_lXPColor = ecsCustom
-    End If
-
-    RedrawButton
-    PropertyChanged "BackColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ButtonStyle
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ButtonStyle() As enumButtonStlyes
-    ButtonStyle = m_ButtonStyle
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ButtonStyle
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_ButtonStyle (enumButtonStlyes)
-'!--------------------------------------------------------------------------------
-Public Property Let ButtonStyle(ByVal New_ButtonStyle As enumButtonStlyes)
-Attribute ButtonStyle.VB_Description = "Returns/sets a value to determine the style used to draw the button."
-Attribute ButtonStyle.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-Attribute ButtonStyle.VB_UserMemId = 1745027102
-    m_ButtonStyle = New_ButtonStyle
-    InitThemeColors
-    'Set colors
-    SetThemeColors
-    'Create Region Again
-    CreateRegion
-    'Obviously, force redraw!!!
-    RedrawButton
-    PropertyChanged "ButtonStyle"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Caption
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get Caption() As String
-    Caption = m_Caption
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Caption
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Caption (String)
-'!--------------------------------------------------------------------------------
-Public Property Let Caption(ByVal New_Caption As String)
-Attribute Caption.VB_Description = "Returns/sets the text displayed in the button."
-Attribute Caption.VB_ProcData.VB_Invoke_PropertyPut = ";Text"
-Attribute Caption.VB_UserMemId = -518
-    m_Caption = New_Caption
-    SetAccessKey
-    RedrawButton
-    PropertyChanged "Caption"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property CaptionAlign
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get CaptionAlign() As enumCaptionAlign
-    CaptionAlign = m_CaptionAlign
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property CaptionAlign
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_CaptionAlign (enumCaptionAlign)
-'!--------------------------------------------------------------------------------
-Public Property Let CaptionAlign(ByVal New_CaptionAlign As enumCaptionAlign)
-Attribute CaptionAlign.VB_Description = "Returns/Sets the position of the Caption."
-Attribute CaptionAlign.VB_ProcData.VB_Invoke_PropertyPut = ";Position"
-Attribute CaptionAlign.VB_UserMemId = 1745027101
-    m_CaptionAlign = New_CaptionAlign
-    RedrawButton
-    PropertyChanged "CaptionAlign"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property DropDownSymbol
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get DropDownSymbol() As enumSymbol
-    DropDownSymbol = m_DropDownSymbol
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property DropDownSymbol
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Align (enumSymbol)
-'!--------------------------------------------------------------------------------
-Public Property Let DropDownSymbol(ByVal New_Align As enumSymbol)
-Attribute DropDownSymbol.VB_Description = "Returns/Sets the Symbol to be used for displaying PopupMenu."
-Attribute DropDownSymbol.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-Attribute DropDownSymbol.VB_UserMemId = 1745027100
-    m_DropDownSymbol = New_Align
-    RedrawButton
-    PropertyChanged "DropDownSymbol"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property DropDownSeparator
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get DropDownSeparator() As Boolean
-Attribute DropDownSeparator.VB_Description = "Returns/Sets the value whether to display DropDown Separator."
-Attribute DropDownSeparator.VB_ProcData.VB_Invoke_Property = ";Appearance"
-Attribute DropDownSeparator.VB_UserMemId = 1745027099
-    DropDownSeparator = m_bDropDownSep
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property DropDownSeparator
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Value (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let DropDownSeparator(ByVal New_Value As Boolean)
-    m_bDropDownSep = New_Value
-    RedrawButton
-    PropertyChanged "DropDownSeparator"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property DisabledPictureMode
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get DisabledPictureMode() As enumDisabledPicMode
-Attribute DisabledPictureMode.VB_Description = "Returns/Sets the effect to be used for picture when button is disabled."
-Attribute DisabledPictureMode.VB_ProcData.VB_Invoke_Property = ";Appearance"
-Attribute DisabledPictureMode.VB_UserMemId = 1745027098
-    DisabledPictureMode = m_PicDisabledMode
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property DisabledPictureMode
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_mode (enumDisabledPicMode)
-'!--------------------------------------------------------------------------------
-Public Property Let DisabledPictureMode(ByVal New_mode As enumDisabledPicMode)
-    m_PicDisabledMode = New_mode
-    RedrawButton
-    PropertyChanged "DisabledPictureMode"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Enabled
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get Enabled() As Boolean
-    Enabled = m_bEnabled
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Enabled
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Enabled (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let Enabled(ByVal New_Enabled As Boolean)
-Attribute Enabled.VB_Description = "Returns/sets a value to determine whether the button can respond to events."
-Attribute Enabled.VB_ProcData.VB_Invoke_PropertyPut = ";Behavior"
-Attribute Enabled.VB_UserMemId = -514
-    m_bEnabled = New_Enabled
-    UserControl.Enabled = m_bEnabled
-    RedrawButton
-    PropertyChanged "Enabled"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Font
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get Font() As StdFont
-    Set Font = mFont
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Font
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Font (StdFont)
-'!--------------------------------------------------------------------------------
-Public Property Set Font(ByVal New_Font As StdFont)
-Attribute Font.VB_Description = "Returns/sets the Font used to display text on the button."
-Attribute Font.VB_ProcData.VB_Invoke_PropertyPutRef = ";Font"
-Attribute Font.VB_UserMemId = -512
-    Set mFont = New_Font
-    Refresh
-    RedrawButton
-    PropertyChanged "Font"
-    mFont_FontChanged vbNullString
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub mFont_FontChanged
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   PropertyName (String)
-'!--------------------------------------------------------------------------------
-Private Sub mFont_FontChanged(ByVal PropertyName As String)
-    Set UserControl.Font = mFont
-    Refresh
-    RedrawButton
-    PropertyChanged "Font"
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ForeColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ForeColor() As OLE_COLOR
-    ForeColor = m_bColors.tForeColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ForeColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_ForeColor (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let ForeColor(ByVal New_ForeColor As OLE_COLOR)
-Attribute ForeColor.VB_Description = "Returns/sets the text color of the button caption."
-Attribute ForeColor.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-Attribute ForeColor.VB_UserMemId = -513
-    m_bColors.tForeColor = New_ForeColor
-    UserControl.ForeColor = m_bColors.tForeColor
-    RedrawButton
-    PropertyChanged "ForeColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ForeColorHover
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ForeColorHover() As OLE_COLOR
-    ForeColorHover = m_bColors.tForeColorOver
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ForeColorHover
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_ForeColorHover (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let ForeColorHover(ByVal New_ForeColorHover As OLE_COLOR)
-Attribute ForeColorHover.VB_Description = "Returns/sets the text color of the button caption when Mouse is over the control."
-Attribute ForeColorHover.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-Attribute ForeColorHover.VB_UserMemId = 1745027097
-    m_bColors.tForeColorOver = New_ForeColorHover
-    UserControl.ForeColor = m_bColors.tForeColorOver
-    RedrawButton
-    PropertyChanged "ForeColorHover"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property HandPointer
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get HandPointer() As Boolean
-    HandPointer = m_bHandPointer
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property HandPointer
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_HandPointer (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let HandPointer(ByVal New_HandPointer As Boolean)
-Attribute HandPointer.VB_Description = "Returns/sets a value to determine whether the control uses the system's hand pointer as its cursor."
-Attribute HandPointer.VB_ProcData.VB_Invoke_PropertyPut = ";Misc"
-Attribute HandPointer.VB_UserMemId = 1745027096
-    m_bHandPointer = New_HandPointer
-
-    If m_bHandPointer Then
-        UserControl.MousePointer = 0
-    End If
-
-    RedrawButton
-    PropertyChanged "HandPointer"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property hWnd
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get hWnd() As Long
-Attribute hWnd.VB_Description = "Returns a handle that uniquely identifies the control."
-Attribute hWnd.VB_UserMemId = -515
-    ' --Handle that uniquely identifies the control
-    hWnd = UserControl.hWnd
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property MaskColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get MaskColor() As OLE_COLOR
-    MaskColor = m_lMaskColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property MaskColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_MaskColor (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let MaskColor(ByVal New_MaskColor As OLE_COLOR)
-Attribute MaskColor.VB_Description = "Returns/sets a color in a button's picture to be transparent."
-Attribute MaskColor.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-    m_lMaskColor = New_MaskColor
-    RedrawButton
-    PropertyChanged "MaskColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Mode
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get Mode() As enumButtonModes
-    Mode = m_ButtonMode
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Mode
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_mode (enumButtonModes)
-'!--------------------------------------------------------------------------------
-Public Property Let Mode(ByVal New_mode As enumButtonModes)
-Attribute Mode.VB_Description = "Returns/sets the type of control the button will observe."
-Attribute Mode.VB_ProcData.VB_Invoke_PropertyPut = ";Behavior"
-    m_ButtonMode = New_mode
-
-    If m_ButtonMode = ebmCommandButton Then
-        m_Buttonstate = eStateNormal
-        'Force Normal State for command buttons
-    End If
-
-    RedrawButton
-    PropertyChanged "Value"
-    PropertyChanged "Mode"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property MouseIcon
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get MouseIcon() As IPictureDisp
-    Set MouseIcon = UserControl.MouseIcon
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property MouseIcon
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Icon (IPictureDisp)
-'!--------------------------------------------------------------------------------
-Public Property Set MouseIcon(ByVal New_Icon As IPictureDisp)
-Attribute MouseIcon.VB_Description = "Sets a custom mouse icon for the button."
-Attribute MouseIcon.VB_ProcData.VB_Invoke_PropertyPutRef = ";Misc"
-
-    On Error Resume Next
-
-    Set UserControl.MouseIcon = New_Icon
-
-    If (New_Icon Is Nothing) Then
-        UserControl.MousePointer = 0
-        ' vbDefault
-    Else
-        m_bHandPointer = False
-        PropertyChanged "HandPointer"
-        UserControl.MousePointer = 99
-        ' vbCustom
-    End If
-
-    PropertyChanged "MouseIcon"
-
-    On Error GoTo 0
-
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property MousePointer
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get MousePointer() As MousePointerConstants
-    MousePointer = UserControl.MousePointer
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property MousePointer
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Cursor (MousePointerConstants)
-'!--------------------------------------------------------------------------------
-Public Property Let MousePointer(ByVal New_Cursor As MousePointerConstants)
-Attribute MousePointer.VB_Description = "Returns/sets the type of mouse pointer displayed when cursor over the button."
-Attribute MousePointer.VB_ProcData.VB_Invoke_PropertyPut = ";Misc"
-    UserControl.MousePointer = New_Cursor
-    PropertyChanged "MousePointer"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureNormal
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get PictureNormal() As StdPicture
-    Set PictureNormal = m_Picture
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureNormal
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Picture (StdPicture)
-'!--------------------------------------------------------------------------------
-Public Property Set PictureNormal(ByVal New_Picture As StdPicture)
-Attribute PictureNormal.VB_Description = "Returns/sets the picture displayed on a normal state button."
-Attribute PictureNormal.VB_ProcData.VB_Invoke_PropertyPutRef = ";Appearance"
-    Set m_Picture = New_Picture
-
-    If Not New_Picture Is Nothing Then
-        RedrawButton
-        PropertyChanged "PictureNormal"
-    Else
-        UserControl_Resize
-        Set m_PictureHot = Nothing
-        Set m_PictureDown = Nothing
-        PropertyChanged "PictureHot"
-        PropertyChanged "PictureDown"
-    End If
-
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureHot
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get PictureHot() As StdPicture
-    Set PictureHot = m_PictureHot
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureHot
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Hot (StdPicture)
-'!--------------------------------------------------------------------------------
-Public Property Set PictureHot(ByVal New_Hot As StdPicture)
-Attribute PictureHot.VB_Description = "Returns/sets the picture displayed when the cursor is over the control."
-Attribute PictureHot.VB_ProcData.VB_Invoke_PropertyPutRef = ";Appearance"
-
-    If m_Picture Is Nothing Then
-        Set m_Picture = New_Hot
-        PropertyChanged "PictureNormal"
-    Else
-        Set m_PictureHot = New_Hot
-        PropertyChanged "PictureHot"
-        RedrawButton
-    End If
-
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureDown
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get PictureDown() As StdPicture
-    Set PictureDown = m_PictureDown
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureDown
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Down (StdPicture)
-'!--------------------------------------------------------------------------------
-Public Property Set PictureDown(ByVal New_Down As StdPicture)
-Attribute PictureDown.VB_Description = "Returns/sets the picture displayed when the control is pressed down or in checked state."
-Attribute PictureDown.VB_ProcData.VB_Invoke_PropertyPutRef = ";Appearance"
-
-    If m_Picture Is Nothing Then
-        Set m_Picture = New_Down
-        PropertyChanged "PictureNormal"
-    Else
-        Set m_PictureDown = New_Down
-        PropertyChanged "PictureDown"
-        RedrawButton
-    End If
-
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureAlign
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get PictureAlign() As enumPictureAlign
-    PictureAlign = m_PictureAlign
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureAlign
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_PictureAlign (enumPictureAlign)
-'!--------------------------------------------------------------------------------
-Public Property Let PictureAlign(ByVal New_PictureAlign As enumPictureAlign)
-Attribute PictureAlign.VB_Description = "Returns/sets a value to determine where to draw the picture in the button."
-Attribute PictureAlign.VB_ProcData.VB_Invoke_PropertyPut = ";Position"
-    m_PictureAlign = New_PictureAlign
-
-    If Not m_Picture Is Nothing Then
-        RedrawButton
-    End If
-
-    PropertyChanged "PictureAlign"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureShadow
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get PictureShadow() As Boolean
-    PictureShadow = m_PictureShadow
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureShadow
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Shadow (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let PictureShadow(ByVal New_Shadow As Boolean)
-Attribute PictureShadow.VB_Description = "Returns/Sets a value to determine whether to display Picture Shadow"
-Attribute PictureShadow.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-    m_PictureShadow = New_Shadow
-    RedrawButton
-    PropertyChanged "PictureShadow"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureEffectOnOver
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get PictureEffectOnOver() As enumPicEffect
-Attribute PictureEffectOnOver.VB_Description = "Returns/Sets the Picture Effects to be applied when the mouseis over the control."
-Attribute PictureEffectOnOver.VB_ProcData.VB_Invoke_Property = ";Appearance"
-    PictureEffectOnOver = m_PicEffectonOver
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureEffectOnOver
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Effect (enumPicEffect)
-'!--------------------------------------------------------------------------------
-Public Property Let PictureEffectOnOver(ByVal New_Effect As enumPicEffect)
-    m_PicEffectonOver = New_Effect
-    RedrawButton
-    PropertyChanged "PictureEffectOnOver"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureEffectOnDown
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get PictureEffectOnDown() As enumPicEffect
-Attribute PictureEffectOnDown.VB_Description = "Returns/Sets the Picture Effects to be applied when the Button is pressed down."
-Attribute PictureEffectOnDown.VB_ProcData.VB_Invoke_Property = ";Appearance"
-    PictureEffectOnDown = m_PicEffectonDown
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureEffectOnDown
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Effect (enumPicEffect)
-'!--------------------------------------------------------------------------------
-Public Property Let PictureEffectOnDown(ByVal New_Effect As enumPicEffect)
-    m_PicEffectonDown = New_Effect
-    RedrawButton
-    PropertyChanged "PictureEffectOnDown"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PicturePushOnHover
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get PicturePushOnHover() As Boolean
-Attribute PicturePushOnHover.VB_Description = "Returns/Sets a value to determine whether to Push picture when Mouse is over the control."
-Attribute PicturePushOnHover.VB_ProcData.VB_Invoke_Property = ";Appearance"
-    PicturePushOnHover = m_bPicPushOnHover
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PicturePushOnHover
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Value (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let PicturePushOnHover(ByVal Value As Boolean)
-    m_bPicPushOnHover = Value
-    RedrawButton
-    PropertyChanged "PicturePushOnHover"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureOpacity
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get PictureOpacity() As Byte
-    PictureOpacity = m_PictureOpacity
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureOpacity
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Opacity (Byte)
-'!--------------------------------------------------------------------------------
-Public Property Let PictureOpacity(ByVal New_Opacity As Byte)
-Attribute PictureOpacity.VB_Description = "Returns/Sets a byte value to control the Opacity of the Picture."
-Attribute PictureOpacity.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-    m_PictureOpacity = New_Opacity
-    RedrawButton
-    PropertyChanged "PictureOpacity"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureOpacityOnOver
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get PictureOpacityOnOver() As Byte
-Attribute PictureOpacityOnOver.VB_Description = "Returns/Sets a byte value to control the Opacity of the Picture when Mouse is over the button."
-Attribute PictureOpacityOnOver.VB_ProcData.VB_Invoke_Property = ";Appearance"
-    PictureOpacityOnOver = m_PicOpacityOnOver
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PictureOpacityOnOver
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Opacity (Byte)
-'!--------------------------------------------------------------------------------
-Public Property Let PictureOpacityOnOver(ByVal New_Opacity As Byte)
-    m_PicOpacityOnOver = New_Opacity
-    RedrawButton
-    PropertyChanged "PictureOpacityOnOver"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property RightToLeft
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get RightToLeft() As Boolean
-    RightToLeft = m_bRTL
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property RightToLeft
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Value (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let RightToLeft(ByVal Value As Boolean)
-Attribute RightToLeft.VB_Description = "Returns/Sets a value to determine whether to display text in RTL mode."
-Attribute RightToLeft.VB_ProcData.VB_Invoke_PropertyPut = ";Text"
-Attribute RightToLeft.VB_UserMemId = -611
-    m_bttRTL = Value
-    m_bRTL = Value
-    RedrawButton
-    PropertyChanged "RightToLeft"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property CaptionEffects
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get CaptionEffects() As enumCaptionEffects
-    CaptionEffects = m_CaptionEffects
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property CaptionEffects
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Effects (enumCaptionEffects)
-'!--------------------------------------------------------------------------------
-Public Property Let CaptionEffects(ByVal New_Effects As enumCaptionEffects)
-Attribute CaptionEffects.VB_Description = "Returns/Sets the Special Effects apply to the caption."
-Attribute CaptionEffects.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-    m_CaptionEffects = New_Effects
-    RedrawButton
-    PropertyChanged "CaptionEffects"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ShowFocusRect
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ShowFocusRect() As Boolean
-    ShowFocusRect = m_bShowFocus
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ShowFocusRect
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_ShowFocusRect (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let ShowFocusRect(ByVal New_ShowFocusRect As Boolean)
-Attribute ShowFocusRect.VB_Description = "Returns/Sets a value to show Focusrect when the button has focus"
-Attribute ShowFocusRect.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-    m_bShowFocus = New_ShowFocusRect
-    PropertyChanged "ShowFocusRect"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UseMaskColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get UseMaskColor() As Boolean
-    UseMaskColor = m_bUseMaskColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UseMaskColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_UseMaskColor (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let UseMaskColor(ByVal New_UseMaskColor As Boolean)
-Attribute UseMaskColor.VB_Description = "Returns/sets a value to determine whether to use MaskColor to create transparent areas of the picture."
-Attribute UseMaskColor.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-    m_bUseMaskColor = New_UseMaskColor
-
-    If Not m_Picture Is Nothing Then
-        RedrawButton
-    End If
-
-    PropertyChanged "UseMaskColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Value
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get Value() As Boolean
-    Value = m_bValue
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Value
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Value (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let Value(ByVal New_Value As Boolean)
-Attribute Value.VB_Description = "Returns/sets the value or state of the button."
-Attribute Value.VB_ProcData.VB_Invoke_PropertyPut = ";Behavior"
-
-    If m_ButtonMode <> ebmCommandButton Then
-        m_bValue = New_Value
-
-        If Not m_bValue Then
-            m_Buttonstate = eStateNormal
-        End If
-
-        RedrawButton
-        PropertyChanged "Value"
-    Else
-        m_Buttonstate = eStateNormal
-        RedrawButton
-    End If
-
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property TooltipTitle
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get TooltipTitle() As String
-    TooltipTitle = m_sTooltiptitle
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property TooltipTitle
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_title (String)
-'!--------------------------------------------------------------------------------
-Public Property Let TooltipTitle(ByVal New_title As String)
-Attribute TooltipTitle.VB_Description = "Returns/Sets the text displayed in the title of the tooltip."
-    m_sTooltiptitle = New_title
-    RedrawButton
-    PropertyChanged "TooltipTitle"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ToolTip
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ToolTip() As String
-    ToolTip = m_sTooltipText
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ToolTip
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Tooltip (String)
-'!--------------------------------------------------------------------------------
-Public Property Let ToolTip(ByVal New_Tooltip As String)
-Attribute ToolTip.VB_Description = "Returns/Sets the text displayed when mouse is paused over the control."
-Attribute ToolTip.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-    m_sTooltipText = New_Tooltip
-    RedrawButton
-    PropertyChanged "ToolTip"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property TooltipBackColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get TooltipBackColor() As OLE_COLOR
-    TooltipBackColor = m_lttBackColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property TooltipBackColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Color (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let TooltipBackColor(ByVal New_Color As OLE_COLOR)
-Attribute TooltipBackColor.VB_Description = "Returns/Sets color to be displayed in the tooltip."
-Attribute TooltipBackColor.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-    m_lttBackColor = New_Color
-    RedrawButton
-    PropertyChanged "TooltipBackcolor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ToolTipIcon
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ToolTipIcon() As enumIconType
-    ToolTipIcon = m_lToolTipIcon
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ToolTipIcon
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lTooltipIcon (enumIconType)
-'!--------------------------------------------------------------------------------
-Public Property Let ToolTipIcon(lTooltipIcon As enumIconType)
-Attribute ToolTipIcon.VB_Description = "Returns/Sets an icon value to be displayed in the tooltip."
-    m_lToolTipIcon = lTooltipIcon
-    RedrawButton
-    PropertyChanged "TooltipIcon"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ToolTipType
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ToolTipType() As enumTooltipStyle
-    ToolTipType = m_lTooltipType
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ToolTipType
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lNewTTType (enumTooltipStyle)
-'!--------------------------------------------------------------------------------
-Public Property Let ToolTipType(ByVal lNewTTType As enumTooltipStyle)
-Attribute ToolTipType.VB_Description = "Returns/Sets the Style of the tooltip."
-Attribute ToolTipType.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-    m_lTooltipType = lNewTTType
-    RedrawButton
-    PropertyChanged "ToolTipType"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ColorScheme
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ColorScheme() As enumXPThemeColors
-    ColorScheme = m_lXPColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ColorScheme
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   New_Color (enumXPThemeColors)
-'!--------------------------------------------------------------------------------
-Public Property Let ColorScheme(ByVal New_Color As enumXPThemeColors)
-Attribute ColorScheme.VB_Description = "Returns/Sets the ColorScheme to be used for the Background color."
-Attribute ColorScheme.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
-    m_lXPColor = New_Color
-    SetThemeColors
-    RedrawButton
-    PropertyChanged "ColorScheme"
-End Property
-
-'======================================================================================================
-'Subclass code - The programmer may call any of the following Subclass_??? routines
-'Stop subclassing the passed window handle
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function Subclass_AddrFunc
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   sDLL (String)
-'                              sProc (String)
-'!--------------------------------------------------------------------------------
-Private Function Subclass_AddrFunc(ByVal sDLL As String, ByVal sProc As String) As Long
-    Subclass_AddrFunc = GetProcAddress(GetModuleHandle(StrPtr(sDLL)), sProc)
-    Debug.Assert Subclass_AddrFunc
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function Subclass_Index
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lhWnd (Long)
-'                              bAdd (Boolean)
-'!--------------------------------------------------------------------------------
-Private Function Subclass_Index(ByVal lhWnd As Long, Optional ByVal bAdd As Boolean) As Long
-
-    For Subclass_Index = UBound(SubClassData) To 0 Step -1
-
-        If SubClassData(Subclass_Index).hWnd = lhWnd Then
-            If Not bAdd Then
-
-                Exit Function
-
-            End If
-
-        ElseIf SubClassData(Subclass_Index).hWnd = 0 Then
-
-            If bAdd Then
-
-                Exit Function
-
-            End If
-        End If
-
-    Next
-
-    'Subclass_Index
-    If Not bAdd Then
-        Debug.Assert False
-    End If
-
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function Subclass_InIDE
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Function Subclass_InIDE() As Boolean
-    Debug.Assert Subclass_SetTrue(Subclass_InIDE)
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function Subclass_Initialize
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lhWnd (Long)
-'!--------------------------------------------------------------------------------
-Private Function Subclass_Initialize(ByVal lhWnd As Long) As Long
-
-    Const CODE_LEN                  As Long = 200
-    Const PATCH_01                  As Long = 18
-    Const PATCH_02                  As Long = 68
-    Const PATCH_03                  As Long = 78
-    Const PATCH_06                  As Long = 116
-    Const PATCH_07                  As Long = 121
-    Const PATCH_0A                  As Long = 186
-    Const FUNC_CWP                  As String = "CallWindowProcA"
-    Const FUNC_EBM                  As String = "EbMode"
-    Const FUNC_SWL                  As String = "SetWindowLongW"
-    Const MOD_USER                  As String = "user32.dll"
-    Const MOD_VBA5                  As String = "vba5"
-    Const MOD_VBA6                  As String = "vba6"
-
-    Static bytBuffer(1 To CODE_LEN) As Byte
-    Static lngCWP                   As Long
-    Static lngEbMode                As Long
-    Static lngSWL                   As Long
-
-    Dim lngCount                    As Long
-    Dim lngIndex                    As Long
-    Dim strHex                      As String
-
-    If bytBuffer(1) Then
-        lngIndex = Subclass_Index(lhWnd, True)
-
-        If lngIndex = -1 Then
-            lngIndex = UBound(SubClassData()) + 1
-
-            ReDim Preserve SubClassData(lngIndex) As SubClassDatatype
-
-        End If
-
-        Subclass_Initialize = lngIndex
-    Else
-        strHex = _
-                                    "5589E583C4F85731C08945FC8945F8EB0EE80000000083F802742185C07424E830000000837DF800750AE838000000E84D0000005F8B45FCC9C21000E826000000EBF168000000006AFCFF7508E800000000EBE031D24ABF00000000B900000000E82D000000C3FF7514FF7510FF750CFF75086800000000E8000000008945FCC331D2BF00000000B900000000E801000000C3E33209C978078B450CF2AF75278D4514508D4510508D450C508D4508508D45FC508D45F85052B800000000508B00FF90A4070000C3"
-
-        For lngCount = 1 To CODE_LEN
-            bytBuffer(lngCount) = Val("&H" & Left$(strHex, 2))
-            strHex = Mid$(strHex, 3)
-        Next
-
-        If Subclass_InIDE Then
-            bytBuffer(16) = &H90
-            bytBuffer(17) = &H90
-            lngEbMode = Subclass_AddrFunc(MOD_VBA6, FUNC_EBM)
-
-            If lngEbMode = 0 Then
-                lngEbMode = Subclass_AddrFunc(MOD_VBA5, FUNC_EBM)
-            End If
-        End If
-
-        lngCWP = Subclass_AddrFunc(MOD_USER, FUNC_CWP)
-        lngSWL = Subclass_AddrFunc(MOD_USER, FUNC_SWL)
-
-        ReDim SubClassData(0) As SubClassDatatype
-
-    End If
-
-    With SubClassData(lngIndex)
-        .hWnd = lhWnd
-        .nAddrSclass = GlobalAlloc(GMEM_FIXED, CODE_LEN)
-        .nAddrOrig = SetWindowLong(.hWnd, GWL_WNDPROC, .nAddrSclass)
-        CopyMemory ByVal .nAddrSclass, bytBuffer(1), CODE_LEN
-        Subclass_PatchRel .nAddrSclass, PATCH_01, lngEbMode
-        Subclass_PatchVal .nAddrSclass, PATCH_02, .nAddrOrig
-        Subclass_PatchRel .nAddrSclass, PATCH_03, lngSWL
-        Subclass_PatchVal .nAddrSclass, PATCH_06, .nAddrOrig
-        Subclass_PatchRel .nAddrSclass, PATCH_07, lngCWP
-        Subclass_PatchVal .nAddrSclass, PATCH_0A, ObjPtr(Me)
-    End With
-
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function Subclass_SetTrue
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   bValue (Boolean)
-'!--------------------------------------------------------------------------------
-Private Function Subclass_SetTrue(ByRef bValue As Boolean) As Boolean
-    Subclass_SetTrue = True
-    bValue = True
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Subclass_AddMsg
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lhWnd (Long)
-'                              uMsg (Long)
-'                              When (MsgWhen = MSG_AFTER)
-'!--------------------------------------------------------------------------------
-Private Sub Subclass_AddMsg(ByVal lhWnd As Long, ByVal uMsg As Long, Optional ByVal When As MsgWhen = MSG_AFTER)
-
-    With SubClassData(Subclass_Index(lhWnd))
-
-        If When And MSG_BEFORE Then
-            Subclass_DoAddMsg uMsg, .aMsgTabelB, .nMsgCountB, MSG_BEFORE, .nAddrSclass
-        End If
-
-        If When And MSG_AFTER Then
-            Subclass_DoAddMsg uMsg, .aMsgTabelA, .nMsgCountA, MSG_AFTER, .nAddrSclass
-        End If
-
-    End With
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Subclass_DoAddMsg
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   uMsg (Long)
-'                              aMsgTabel() (Long)
-'                              nMsgCount (Long)
-'                              When (MsgWhen)
-'                              nAddr (Long)
-'!--------------------------------------------------------------------------------
-Private Sub Subclass_DoAddMsg(ByVal uMsg As Long, ByRef aMsgTabel() As Long, ByRef nMsgCount As Long, ByVal When As MsgWhen, ByVal nAddr As Long)
-
-    Dim lngEntry As Long
-
-    ReDim lngOffset(1) As Long
-
-    If uMsg = ALL_MESSAGES Then
-        nMsgCount = ALL_MESSAGES
-    Else
-
-        For lngEntry = 1 To nMsgCount - 1
-
-            If aMsgTabel(lngEntry) = 0 Then
-                aMsgTabel(lngEntry) = uMsg
-                GoTo ExitSub
-            ElseIf aMsgTabel(lngEntry) = uMsg Then
-                GoTo ExitSub
-            End If
-
-        Next
-
-        nMsgCount = nMsgCount + 1
-
-        ReDim Preserve aMsgTabel(1 To nMsgCount) As Long
-
-        aMsgTabel(nMsgCount) = uMsg
-    End If
-
-    If When = MSG_BEFORE Then
-        lngOffset(0) = PATCH_04
-        lngOffset(1) = PATCH_05
-    Else
-        lngOffset(0) = PATCH_08
-        lngOffset(1) = PATCH_09
-    End If
-
-    If uMsg <> ALL_MESSAGES Then
-        Subclass_PatchVal nAddr, lngOffset(0), VarPtr(aMsgTabel(1))
-    End If
-
-    Subclass_PatchVal nAddr, lngOffset(1), nMsgCount
-ExitSub:
-    Erase lngOffset
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Subclass_PatchRel
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   nAddr (Long)
-'                              nOffset (Long)
-'                              nTargetAddr (Long)
-'!--------------------------------------------------------------------------------
-Private Sub Subclass_PatchRel(ByVal nAddr As Long, ByVal nOffset As Long, ByVal nTargetAddr As Long)
-    CopyMemory ByVal nAddr + nOffset, nTargetAddr - nAddr - nOffset - 4, 4
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Subclass_PatchVal
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   nAddr (Long)
-'                              nOffset (Long)
-'                              nValue (Long)
-'!--------------------------------------------------------------------------------
-Private Sub Subclass_PatchVal(ByVal nAddr As Long, ByVal nOffset As Long, ByVal nValue As Long)
-    CopyMemory ByVal nAddr + nOffset, nValue, 4
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Subclass_Stop
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   lhWnd (Long)
-'!--------------------------------------------------------------------------------
-Private Sub Subclass_Stop(ByVal lhWnd As Long)
-
-    With SubClassData(Subclass_Index(lhWnd))
-        SetWindowLong .hWnd, GWL_WNDPROC, .nAddrOrig
-        Subclass_PatchVal .nAddrSclass, PATCH_05, 0
-        Subclass_PatchVal .nAddrSclass, PATCH_09, 0
-        GlobalFree .nAddrSclass
-        .hWnd = 0
-        .nMsgCountA = 0
-        .nMsgCountB = 0
-        Erase .aMsgTabelA, .aMsgTabelB
-    End With
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Subclass_Terminate
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub Subclass_Terminate()
-
-    Dim lngCount As Long
-
-    For lngCount = UBound(SubClassData) To 0 Step -1
-
-        If SubClassData(lngCount).hWnd Then
-            Subclass_Stop SubClassData(lngCount).hWnd
-        End If
-
-    Next
 
 End Sub
 
@@ -6007,3 +5407,4 @@ End Sub
 ' Comments are greatly appreciated...
 ' Enjoy!
 '---------------x---------------x--------------x--------------x-----------x---
+

@@ -31,7 +31,7 @@ Begin VB.UserControl ctlFontCombo
       ScaleHeight     =   57
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   147
-      TabIndex        =   1
+      TabIndex        =   2
       TabStop         =   0   'False
       Top             =   810
       Visible         =   0   'False
@@ -56,7 +56,7 @@ Begin VB.UserControl ctlFontCombo
          CausesValidation=   0   'False
          Height          =   2595
          Left            =   2760
-         TabIndex        =   2
+         TabIndex        =   1
          TabStop         =   0   'False
          Top             =   120
          Width           =   240
@@ -97,6 +97,10 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'Note: this file has been modified for use within Drivers Installer Assistant.
+'This code was originally
+'You may download the original version of this code from the following link (good as of June '12):
+
 Option Explicit
 
 Dim mEnabled              As Boolean
@@ -140,43 +144,88 @@ Private mComboSelectColor As Long
 Private mUseMouseWheel    As Boolean
 Private mAutoText         As String
 Private CloseMe           As Boolean
-
-Dim doNothing             As Boolean
-Dim fList()               As tpRecents
-Dim fPos                  As Integer
-
+Private doNothing         As Boolean
+Private fList()           As tpRecents
+Private fPos              As Integer
 Private bCancel           As Boolean
+Private Resultat          As Long
+Private Ident             As Long
+Private Donnee            As String
+Private TailleBuffer      As Long
+Private mXPStyle          As Boolean
 
-Dim Resultat              As Long
-Dim Ident                 As Long
-Dim Donnee                As String
-Dim TailleBuffer          As Long
-Dim Btn                   As RECT
-Dim uRct                  As RECT
+Private Type POINTAPI
+    X                     As Long
+    Y                     As Long
+End Type
 
-Private MouseCoords       As POINT
+Private Type RECT
+    Left                  As Long
+    Top                   As Long
+    Right                 As Long
+    Bottom                As Long
+End Type
 
-Dim mXPStyle              As Boolean
+Private Btn               As RECT
+Private uRct              As RECT
+Private MouseCoords       As POINTAPI
 
 Private Declare Function PtInRect Lib "user32.dll" (ByRef lpRect As RECT, ByVal X As Long, ByVal Y As Long) As Long
-Private Declare Function GetMessage Lib "user32.dll" Alias "GetMessageA" (lpMsg As tMSG, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long) As Long
-Private Declare Function TranslateMessage Lib "user32.dll" (lpMsg As tMSG) As Long
-Private Declare Function DispatchMessage Lib "user32.dll" Alias "DispatchMessageA" (lpMsg As tMSG) As Long
+Private Declare Function GetMessage Lib "user32.dll" Alias "GetMessageA" (lpMsg As TMSG, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long) As Long
+Private Declare Function TranslateMessage Lib "user32.dll" (lpMsg As TMSG) As Long
+Private Declare Function DispatchMessage Lib "user32.dll" Alias "DispatchMessageA" (lpMsg As TMSG) As Long
 Private Declare Function RegCreateKey Lib "advapi32.dll" Alias "RegCreateKeyA" (ByVal hkey As Long, ByVal lpSubKey As String, phkResult As Long) As Long
 Private Declare Function RegQueryValueEx Lib "advapi32.dll" Alias "RegQueryValueExA" (ByVal hkey As Long, ByVal lpValueName As String, ByVal lpReserved As Long, lpType As Long, lpData As Any, lpcbData As Long) As Long
 Private Declare Function RegSetValueEx Lib "advapi32.dll" Alias "RegSetValueExA" (ByVal hkey As Long, ByVal lpValueName As String, ByVal Reserved As Long, ByVal dwType As Long, lpData As Any, ByVal cbData As Long) As Long
 Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongW" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function FillRect Lib "user32.dll" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+Private Declare Function SetRect Lib "user32.dll" (lpRect As RECT, ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
+Private Declare Function FrameRect Lib "user32.dll" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
+Private Declare Function DrawEdge Lib "user32.dll" (ByVal hDC As Long, qRC As RECT, ByVal Edge As Long, ByVal grfFlags As Long) As Long
+Private Declare Function CreateSolidBrush Lib "gdi32.dll" (ByVal crColor As Long) As Long
+Private Declare Function OpenThemeData Lib "uxtheme.dll" (ByVal hWnd As Long, ByVal pszClassList As Long) As Long
+Private Declare Function CloseThemeData Lib "uxtheme.dll" (ByVal hTheme As Long) As Long
+Private Declare Function DrawThemeBackground Lib "uxtheme.dll" (ByVal hTheme As Long, ByVal lhDC As Long, ByVal iPartId As Long, ByVal iStateId As Long, pRECT As RECT, pClipRect As RECT) As Long
+Private Declare Function SetPixel Lib "gdi32.dll" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long) As Long
+Private Declare Function OleTranslateColor Lib "olepro32.dll" (ByVal OLE_COLOR As Long, ByVal HPALETTE As Long, pccolorref As Long) As Long
+Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
+Private Declare Function DrawTextW Lib "user32.dll" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+Private Declare Function SetWindowPos Lib "user32.dll" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal Cx As Long, ByVal Cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function GetWindowRect Lib "user32.dll" (ByVal hWnd As Long, lpRect As RECT) As Long
+Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
+Private Declare Function GetCursorPos Lib "user32.dll" (lpPoint As POINTAPI) As Long
+Private Declare Function WindowFromPoint Lib "user32.dll" (ByVal xPoint As Long, ByVal yPoint As Long) As Long
+Private Declare Function SetParent Lib "user32.dll" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
+Private Declare Function GetFocus Lib "user32.dll" () As Long
 
-'Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Const HWND_TOP    As Long = 0
-Private Const HWND_BOTTOM As Long = 1
-Private Const HWND_NOTOPMOST = -2
-Private Const DT_EXPANDTABS = &H40
-Private Const DT_EXTERNALLEADING = &H200
-Private Const DT_NOPREFIX = &H800
-Private Const DT_TABSTOP = &H80
-Private Const WM_MOUSEWHEEL = 522
-Private Const PM_REMOVE = &H1
+Private Const HWND_TOP           As Long = 0
+Private Const WM_MOUSEWHEEL      As Long = &H20A
+Private Const GWL_EXSTYLE        As Long = (-20)
+Private Const WS_EX_TOOLWINDOW   As Long = &H80
+
+' --Formatting Text Consts
+Private Const DT_LEFT           As Long = &H0
+Private Const DT_CENTER         As Long = &H1
+Private Const DT_RIGHT          As Long = &H2
+Private Const DT_NOCLIP         As Long = &H100
+Private Const DT_WORDBREAK      As Long = &H10
+Private Const DT_CALCRECT       As Long = &H400
+Private Const DT_RTLREADING     As Long = &H20000
+Private Const DT_DRAWFLAG       As Long = DT_CENTER Or DT_WORDBREAK
+Private Const DT_TOP            As Long = &H0
+Private Const DT_BOTTOM         As Long = &H8
+Private Const DT_VCENTER        As Long = &H4
+Private Const DT_SINGLELINE     As Long = &H20
+Private Const DT_WORD_ELLIPSIS  As Long = &H40000
+
+Private Const SWP_REFRESH        As Long = (&H1 Or &H2 Or &H4 Or &H20)
+Private Const SWP_NOACTIVATE     As Long = &H10
+Private Const SWP_NOMOVE         As Long = &H2
+Private Const SWP_NOSIZE         As Long = &H1
+Private Const SWP_SHOWWINDOW     As Long = &H40
+Private Const SWP_NOOWNERZORDER  As Long = &H200
+Private Const SWP_NOZORDER       As Long = &H4
+Private Const SWP_FRAMECHANGED   As Long = &H20
 
 Public Enum CfBdrStyle
     sNone = 0
@@ -231,21 +280,21 @@ Private Enum HkeyLoc
 End Enum
 
 Private Type tpRecents
-    fName                                   As String
+    fName                               As String
     fIndex                              As String
     fRecent                             As Boolean
 End Type
 
-Private Type tMSG
-    hWnd                                    As Long
+Private Type TMSG
+    hWnd                                As Long
     nMsg                                As Long
     wParam                              As Long
     lParam                              As Long
-    time                                As Long
-    PT                                  As POINT
+    Time                                As Long
+    PT                                  As POINTAPI
 End Type
 
-Private Msg As tMSG
+Private Msg As TMSG
 
 Public Event SelectedFontChanged(NewFontName As String)
 Public Event Click()
@@ -258,22 +307,755 @@ Public Event MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Sing
 Public Event MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
 Public Event FontNotFound(FontName As String)
 
+Private OldDr   As eBtnState
+Private OldFont As String
+
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function FontExist
+'! Procedure   (Функция)   :   Property BackColor
 '! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Font2Find (String)
-'                              StartPos (Integer = 0)
+'! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Public Function FontExist(Font2Find As String, Optional StartPos As Integer = 0) As Integer
+Public Property Get BackColor() As OLE_COLOR
+    BackColor = mBackColor
+End Property
 
-    Dim i As Integer
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property BackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let BackColor(ByVal vNewValue As OLE_COLOR)
+    mBackColor = vNewValue
+    UserControl.BackColor = mBackColor
+    DrawControl , True
+    PropertyChanged "BackColor"
+End Property
 
-    FontExist = -1
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property BorderStyle
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get BorderStyle() As CfBdrStyle
+    BorderStyle = mBorderStyle
+End Property
 
-    For i = StartPos To mListCount
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property BorderStyle
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (CfBdrStyle)
+'!--------------------------------------------------------------------------------
+Public Property Let BorderStyle(ByVal vNewValue As CfBdrStyle)
+    mBorderStyle = vNewValue
+    UserControl_Resize
+    PropertyChanged "BorderStyle"
+End Property
 
-        If LCase$(mListFont(i)) Like LCase$(Font2Find) Then
-            FontExist = i
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ButtonBackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ButtonBackColor() As OLE_COLOR
+    ButtonBackColor = mButtonBackColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ButtonBackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let ButtonBackColor(ByVal vNewValue As OLE_COLOR)
+    mButtonBackColor = vNewValue
+    DrawControl , True
+    PropertyChanged "ButtonBackColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ButtonBorderStyle
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ButtonBorderStyle() As CfBdrStyle
+    ButtonBorderStyle = mButtonBorderStyle
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ButtonBorderStyle
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (CfBdrStyle)
+'!--------------------------------------------------------------------------------
+Public Property Let ButtonBorderStyle(ByVal vNewValue As CfBdrStyle)
+    mButtonBorderStyle = vNewValue
+    DrawControl , True
+    PropertyChanged "ButtonBorderStyle"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ButtonForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ButtonForeColor() As OLE_COLOR
+    ButtonForeColor = mButtonForeColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ButtonForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let ButtonForeColor(ByVal vNewValue As OLE_COLOR)
+    mButtonForeColor = vNewValue
+    DrawControl , True
+    PropertyChanged "ButtonForeColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ButtonOverColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ButtonOverColor() As OLE_COLOR
+    ButtonOverColor = mButtonOverColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ButtonOverColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let ButtonOverColor(ByVal vNewValue As OLE_COLOR)
+    mButtonOverColor = vNewValue
+    PropertyChanged "ButtonOverColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboBackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ComboBackColor() As OLE_COLOR
+    ComboBackColor = mComboBackColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboBackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let ComboBackColor(ByVal vNewValue As OLE_COLOR)
+    mComboBackColor = vNewValue
+    PropertyChanged "ComboBackColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboFontBold
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ComboFontBold() As Boolean
+Attribute ComboFontBold.VB_MemberFlags = "400"
+    ComboFontBold = mComboFontBold
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboFontBold
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let ComboFontBold(ByVal vNewValue As Boolean)
+    mComboFontBold = vNewValue
+    PropertyChanged "ComboFontBold"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboFontCount
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ComboFontCount() As Integer
+    ComboFontCount = mComboFontCount
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboFontCount
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Integer)
+'!--------------------------------------------------------------------------------
+Public Property Let ComboFontCount(ByVal vNewValue As Integer)
+
+    If vNewValue > 50 Or vNewValue < 5 Then vNewValue = 20
+    mComboFontCount = vNewValue
+    PropertyChanged "ComboFontCount"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboFontItalic
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ComboFontItalic() As Boolean
+Attribute ComboFontItalic.VB_MemberFlags = "400"
+    ComboFontItalic = mComboFontItalic
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboFontItalic
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let ComboFontItalic(ByVal vNewValue As Boolean)
+    mComboFontItalic = vNewValue
+    PropertyChanged "ComboFontItalic"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboFontSize
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ComboFontSize() As Integer
+    ComboFontSize = mComboFontSize
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboFontSize
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Integer)
+'!--------------------------------------------------------------------------------
+Public Property Let ComboFontSize(ByVal vNewValue As Integer)
+
+    If vNewValue > 50 Or vNewValue < 6 Then vNewValue = 8
+    mComboFontSize = vNewValue
+    PropertyChanged "ComboFontSize"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ComboForeColor() As OLE_COLOR
+    ComboForeColor = mComboForeColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let ComboForeColor(ByVal vNewValue As OLE_COLOR)
+    mComboForeColor = vNewValue
+    PropertyChanged "ComboForeColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboSelectColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ComboSelectColor() As OLE_COLOR
+    ComboSelectColor = mComboSelectColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboSelectColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let ComboSelectColor(ByVal vNewValue As OLE_COLOR)
+    mComboSelectColor = vNewValue
+    PropertyChanged "ComboSelectColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboWidth
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ComboWidth() As Single
+    ComboWidth = mComboWidth
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ComboWidth
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Single)
+'!--------------------------------------------------------------------------------
+Public Property Let ComboWidth(ByVal vNewValue As Single)
+    mComboWidth = vNewValue
+    PropertyChanged "ComboWidth"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Enabled
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get Enabled() As Boolean
+    Enabled = mEnabled
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Enabled
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let Enabled(ByVal vNewValue As Boolean)
+    mEnabled = vNewValue
+    DrawControl , True
+    PropertyChanged "Enabled"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Font
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get Font() As StdFont
+    Set Font = UserControl.Font
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Font
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (StdFont)
+'!--------------------------------------------------------------------------------
+Public Property Set Font(ByVal vNewValue As StdFont)
+    Set UserControl.Font = vNewValue
+    UserControl_Resize
+    PropertyChanged "Font"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ForeColor() As OLE_COLOR
+    ForeColor = mForeColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let ForeColor(ByVal vNewValue As OLE_COLOR)
+    mForeColor = vNewValue
+    UserControl.ForeColor = mForeColor
+    DrawControl , True
+    PropertyChanged "ForeColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property hWnd
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get hWnd() As Long
+    hWnd = UserControl.hWnd
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ListCount
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ListCount() As Integer
+Attribute ListCount.VB_MemberFlags = "400"
+    ListCount = mListCount
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ListFont
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Index (Integer)
+'!--------------------------------------------------------------------------------
+Public Property Get ListFont(Index As Integer) As String
+    ListFont = mListFont(Index)
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ListIndex
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ListIndex() As Integer
+Attribute ListIndex.VB_MemberFlags = "400"
+    ListIndex = mListPos
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ListIndex
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Integer)
+'!--------------------------------------------------------------------------------
+Public Property Let ListIndex(ByVal vNewValue As Integer)
+    mListPos = vNewValue
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PreviewSize
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get PreviewSize() As Integer
+    PreviewSize = mPreviewSize
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PreviewSize
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Integer)
+'!--------------------------------------------------------------------------------
+Public Property Let PreviewSize(ByVal vNewValue As Integer)
+
+    If vNewValue > 10 Then
+        If vNewValue < 200 Then
+            mPreviewSize = vNewValue
+            PropertyChanged "PreviewSize"
+        End If
+    End If
+
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PreviewText
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get PreviewText() As String
+    PreviewText = mPreviewText
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property PreviewText
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (String)
+'!--------------------------------------------------------------------------------
+Public Property Let PreviewText(ByVal vNewValue As String)
+    mPreviewText = vNewValue
+    PropertyChanged "PreviewText"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property RecentBackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get RecentBackColor() As OLE_COLOR
+    RecentBackColor = mRecentBackColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property RecentBackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let RecentBackColor(ByVal vNewValue As OLE_COLOR)
+    mRecentBackColor = vNewValue
+    PropertyChanged "RecentBackColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property RecentForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get RecentForeColor() As OLE_COLOR
+    RecentForeColor = mRecentForeColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property RecentForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let RecentForeColor(ByVal vNewValue As OLE_COLOR)
+    mRecentForeColor = vNewValue
+    PropertyChanged "RecentForeColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property RecentMax
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get RecentMax() As Integer
+Attribute RecentMax.VB_Description = "If you don't want to use Recents feature enter 0"
+    RecentMax = mRecentMax
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property RecentMax
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Integer)
+'!--------------------------------------------------------------------------------
+Public Property Let RecentMax(ByVal vNewValue As Integer)
+    mRecentMax = vNewValue
+    PropertyChanged "RecentMax"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property RunMode
+'! Description (Описание)  :   [Ambient.UserMode tells us whether the UC's container is in design mode or user mode/run-time.
+'                               Unfortunately, this isn't supported in all containers.]
+'                               http://www.vbforums.com/showthread.php?805711-VB6-UserControl-Ambient-UserMode-workaround&s=8dd326860cbc22bed07bd13f6959ca70
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get RunMode() As Boolean
+    RunMode = True
+    On Error Resume Next
+    RunMode = Ambient.UserMode
+    RunMode = Extender.Parent.RunMode
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property SelectedFont
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get SelectedFont() As String
+Attribute SelectedFont.VB_MemberFlags = "400"
+    SelectedFont = mListFont(mListPos)
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property SelectedFont
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (String)
+'!--------------------------------------------------------------------------------
+Public Property Let SelectedFont(ByVal vNewValue As String)
+
+    Dim I As Integer
+
+    I = FontExist(vNewValue)
+
+    If I > -1 Then
+        mListPos = I
+        RaiseEvent SelectedFontChanged(mListFont(mListPos))
+        DrawControl , True
+    Else
+        RaiseEvent FontNotFound(vNewValue)
+    End If
+
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ShowFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ShowFocus() As Boolean
+    ShowFocus = mShowFocus
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ShowFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let ShowFocus(ByVal vNewValue As Boolean)
+    mShowFocus = vNewValue
+    PropertyChanged "ShowFocus"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ShowFontInCombo
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ShowFontInCombo() As Boolean
+    ShowFontInCombo = mShowFontInCombo
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ShowFontInCombo
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let ShowFontInCombo(ByVal vNewValue As Boolean)
+    mShowFontInCombo = vNewValue
+    PropertyChanged "ShowFontInCombo"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ShowFontName
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ShowFontName() As Boolean
+    ShowFontName = mShowFontName
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ShowFontName
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let ShowFontName(ByVal vNewValue As Boolean)
+    mShowFontName = vNewValue
+    PropertyChanged "ShowFontName"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ShowPreview
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get ShowPreview() As Boolean
+    ShowPreview = mShowPreview
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property ShowPreview
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let ShowPreview(ByVal vNewValue As Boolean)
+    mShowPreview = vNewValue
+    PropertyChanged "ShowPreview"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Sorted
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get Sorted() As Boolean
+    Sorted = mSorted
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Sorted
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let Sorted(ByVal vNewValue As Boolean)
+
+    Dim I  As Integer
+    Dim fI As Integer
+
+    mSorted = vNewValue
+
+    If RunMode Then
+        FillList
+
+        If mSorted = True Then SortList
+
+        For I = 0 To mRecentCount - 1
+            fI = FontExist(mRecent(I).fName)
+            mRecent(I).fIndex = fI
+        Next
+
+    End If
+
+    DrawControl , True
+    PropertyChanged "Sorted"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UsedBackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get UsedBackColor() As OLE_COLOR
+    UsedBackColor = mUsedBackColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UsedBackColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let UsedBackColor(ByVal vNewValue As OLE_COLOR)
+    mUsedBackColor = vNewValue
+    PropertyChanged "UsedBackColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UsedCount
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get UsedCount() As Integer
+    UsedCount = mUsedCount
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UsedForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get UsedForeColor() As OLE_COLOR
+    UsedForeColor = mUsedForeColor
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UsedForeColor
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
+'!--------------------------------------------------------------------------------
+Public Property Let UsedForeColor(ByVal vNewValue As OLE_COLOR)
+    mUsedForeColor = vNewValue
+    PropertyChanged "UsedForeColor"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UseMouseWheel
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get UseMouseWheel() As Boolean
+    UseMouseWheel = mUseMouseWheel
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property UseMouseWheel
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let UseMouseWheel(ByVal vNewValue As Boolean)
+    mUseMouseWheel = vNewValue
+    PropertyChanged "UseMouseWheel"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property XpStyle
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get XpStyle() As Boolean
+    XpStyle = mXPStyle
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property XpStyle
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   vNewValue (Boolean)
+'!--------------------------------------------------------------------------------
+Public Property Let XpStyle(ByVal vNewValue As Boolean)
+    mXPStyle = vNewValue
+    UserControl_Resize
+    PropertyChanged "XPStyle"
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function AddToUsedList
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   FontName (String)
+'!--------------------------------------------------------------------------------
+Public Function AddToUsedList(FontName As String) As Integer
+
+    Dim I As Integer
+    Dim F As Boolean
+
+    For I = 0 To mUsedCount - 1
+
+        If LCase$(mUsedList(I)) = LCase$(FontName) Then
+            F = True
 
             Exit For
 
@@ -281,7 +1063,290 @@ Public Function FontExist(Font2Find As String, Optional StartPos As Integer = 0)
 
     Next
 
+    If F = False Then
+        mUsedCount = mUsedCount + 1
+
+        ReDim Preserve mUsedList(mUsedCount)
+
+        mUsedList(mUsedCount - 1) = FontName
+        AddToUsedList = mUsedCount - 1
+    Else
+        AddToUsedList = -1
+    End If
+
 End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ClearRecent
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Sub ClearRecent()
+    mRecentCount = 0
+
+    ReDim mRecent(0)
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ClearUsedList
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Sub ClearUsedList()
+    mUsedCount = 0
+
+    ReDim mUsedList(0)
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawArw
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   ArrowColor (Long = -1)
+'!--------------------------------------------------------------------------------
+Private Sub DrawArw(Optional ArrowColor As Long = -1)
+
+    Dim ColUp As Long
+    Dim tCol  As Long
+
+    If ArrowColor = -1 Then
+        tCol = mButtonForeColor
+    Else
+        tCol = ArrowColor
+    End If
+
+    If mEnabled = False Then
+        OleTranslateColor vbGrayText, 0, ColUp
+    Else
+        OleTranslateColor tCol, 0, ColUp
+    End If
+
+    SetPixel UserControl.hDC, Btn.Left - 1 + (Btn.Right - Btn.Left) \ 2, Btn.Top - 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left + 1 + (Btn.Right - Btn.Left) \ 2, Btn.Top - 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left - 2 + (Btn.Right - Btn.Left) \ 2, Btn.Top - 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left + 2 + (Btn.Right - Btn.Left) \ 2, Btn.Top - 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left - 3 + (Btn.Right - Btn.Left) \ 2, Btn.Top - 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left + 3 + (Btn.Right - Btn.Left) \ 2, Btn.Top - 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left + (Btn.Right - Btn.Left) \ 2, Btn.Top - 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left - 1 + (Btn.Right - Btn.Left) \ 2, Btn.Top + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left + 1 + (Btn.Right - Btn.Left) \ 2, Btn.Top + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left - 2 + (Btn.Right - Btn.Left) \ 2, Btn.Top + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left + 2 + (Btn.Right - Btn.Left) \ 2, Btn.Top + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left + (Btn.Right - Btn.Left) \ 2, Btn.Top + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left - 1 + (Btn.Right - Btn.Left) \ 2, Btn.Top + 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left + 1 + (Btn.Right - Btn.Left) \ 2, Btn.Top + 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left + (Btn.Right - Btn.Left) \ 2, Btn.Top + 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    SetPixel UserControl.hDC, Btn.Left + (Btn.Right - Btn.Left) \ 2, Btn.Top + 2 + (Btn.Bottom - Btn.Top) \ 2, ColUp
+    Refresh
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawControl
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   eDraw (eBtnState = bUp)
+'                              DrawAll (Boolean = False)
+'!--------------------------------------------------------------------------------
+Private Sub DrawControl(Optional eDraw As eBtnState = bUp, Optional DrawAll As Boolean = False)
+
+    Dim Br       As Long
+    Dim tC       As Long
+    Dim tCol     As Long
+
+    UserControl.Enabled = mEnabled
+    mXPStyle = mXPStyle And DrawTheme("Button", 1, 1, Btn)
+
+    If mXPStyle = False Then
+        OleTranslateColor mButtonBackColor, 0, tC
+        Br = CreateSolidBrush(tC)
+
+        If mEnabled = False Then
+            Cls
+            FillRect UserControl.hDC, Btn, Br
+            DrawEdge UserControl.hDC, uRct, mBorderStyle, edgeAll
+            DrawEdge UserControl.hDC, Btn, mButtonBorderStyle, edgeAll
+            tCol = UserControl.ForeColor
+            UserControl.ForeColor = &H80000011
+            UserControl.CurrentY = ((ScaleHeight - TextHeight("X")) / 2) - 1
+            UserControl.CurrentX = 4
+
+            If RunMode = True And mListCount Then
+                UserControl.Print mListFont(mListPos)
+            Else
+                UserControl.Print Ambient.DisplayName
+            End If
+
+            UserControl.ForeColor = tCol
+            DrawArw
+            DeleteObject Br
+
+            Exit Sub
+
+        End If
+
+        If OldDr = eDraw Then
+            If DrawAll = False Then
+
+                Exit Sub
+
+            End If
+        End If
+
+        UserControl.Cls
+        UserControl.CurrentY = ((ScaleHeight - TextHeight("X")) / 2) - 1
+        UserControl.CurrentX = 4
+
+        If RunMode = True And mListCount Then
+            UserControl.Print mListFont(mListPos)
+        Else
+            UserControl.Print Ambient.DisplayName
+        End If
+
+        Select Case eDraw
+
+            Case bUp
+                DrawEdge UserControl.hDC, uRct, mBorderStyle, edgeAll
+                FillRect UserControl.hDC, Btn, Br
+                DrawEdge UserControl.hDC, Btn, ButtonBorderStyle, edgeAll
+
+            Case bOver
+                DrawEdge UserControl.hDC, uRct, mBorderStyle, edgeAll
+                FillRect UserControl.hDC, Btn, Br
+                DrawEdge UserControl.hDC, Btn, ButtonBorderStyle, edgeAll
+
+            Case bDown
+                DrawEdge UserControl.hDC, uRct, mBorderStyle, edgeAll
+                FillRect UserControl.hDC, Btn, Br
+                DrawEdge UserControl.hDC, Btn, InvBdr(ButtonBorderStyle), edgeAll
+        End Select
+
+        DeleteObject Br
+
+        If eDraw = bOver Then
+            DrawArw mButtonOverColor
+        Else
+            DrawArw
+        End If
+
+    Else
+        UserControl.Cls
+
+        If mEnabled = True Then
+
+            Select Case eDraw
+
+                Case bUp
+                    DrawTheme "ComboBox", 2, 1, uRct
+                    DrawTheme "ComboBox", 1, 1, Btn
+
+                Case bOver
+                    DrawTheme "ComboBox", 2, 2, uRct
+                    DrawTheme "ComboBox", 1, 2, Btn
+
+                Case bDown
+                    DrawTheme "ComboBox", 2, 3, uRct
+                    DrawTheme "ComboBox", 1, 3, Btn
+            End Select
+
+        Else
+            DrawTheme "ComboBox", 2, 4, uRct
+            DrawTheme "ComboBox", 1, 4, Btn
+            tCol = UserControl.ForeColor
+            UserControl.ForeColor = &H80000011
+            UserControl.CurrentY = ((ScaleHeight - TextHeight("X")) / 2) - 1
+            UserControl.CurrentX = 4
+            UserControl.Print mListFont(mListPos)
+            UserControl.ForeColor = tCol
+
+            Exit Sub
+
+        End If
+
+        UserControl.CurrentY = ((ScaleHeight - TextHeight("X")) / 2) - 1
+        UserControl.CurrentX = 4
+
+        If RunMode = True And mListCount Then
+            UserControl.Print mListFont(mListPos)
+        Else
+            UserControl.Print Ambient.DisplayName
+        End If
+    End If
+
+    OldDr = eDraw
+    Refresh
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DrawList
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub DrawList()
+    On Local Error Resume Next
+
+    Dim I   As Integer
+    Dim Br  As Long
+    Dim tC  As Long
+    Dim rct As RECT
+
+    OleTranslateColor mRecentBackColor, 0, tC
+    Br = CreateSolidBrush(tC)
+    PicList.Cls
+    doNothing = True
+    VScroll1.Max = mListCount - mComboFontCount + mRecentCount
+    VScroll1.LargeChange = ((mListCount + mRecentCount) \ mComboFontCount) + 1
+    SetList
+    SetRect rct, 0, 0, PicList.ScaleWidth, mRecentCount * (mComboFontSize * 2)
+    FillRect PicList.hDC, rct, Br
+    DeleteObject Br
+    OleTranslateColor mUsedBackColor, 0, tC
+    Br = CreateSolidBrush(tC)
+    PicList.Line (0, mRecentCount * (mComboFontSize * 2))-(PicList.ScaleWidth, mRecentCount * (mComboFontSize * 2))
+
+    For I = 0 To mRecentCount - 1
+        PicList.CurrentX = 2
+        PicList.CurrentY = (I * (mComboFontSize * 2)) + 2
+
+        If mShowFontInCombo = True Then PicList.FontName = mRecent(I).fName
+        PicList.FontSize = mComboFontSize
+        PicList.FontItalic = mComboFontItalic
+        PicList.FontBold = mComboFontBold
+
+        If IsUsed(mRecent(I).fName) = False Then
+            PicList.ForeColor = mRecentForeColor
+        Else
+            SetRect rct, 0, I * (mComboFontSize * 2), PicList.ScaleWidth, (I + 1) * (mComboFontSize * 2)
+            FillRect PicList.hDC, rct, Br
+            PicList.ForeColor = mUsedForeColor
+        End If
+
+        PicList.Print mRecent(I).fName
+    Next
+
+    For I = 0 To mComboFontCount - 1
+
+        If IsUsed(fList(I).fName) = False Then
+            PicList.ForeColor = mComboForeColor
+        Else
+            SetRect rct, 0, (I * (mComboFontSize * 2)) + ((mComboFontSize * 2) * mRecentCount) + 2, PicList.ScaleWidth, ((I + 1) * (mComboFontSize * 2)) + ((mComboFontSize * 2) * mRecentCount)
+            FillRect PicList.hDC, rct, Br
+            PicList.ForeColor = mUsedForeColor
+        End If
+
+        PicList.CurrentX = 2
+        PicList.CurrentY = (I * (mComboFontSize * 2)) + 2 + ((mComboFontSize * 2) * mRecentCount)
+
+        If mShowFontInCombo = True Then PicList.FontName = fList(I).fName
+        PicList.FontSize = mComboFontSize
+        PicList.FontItalic = mComboFontItalic
+        PicList.FontBold = mComboFontBold
+        PicList.Print fList(I).fName
+    Next
+
+    DeleteObject Br
+    SelBox.Move 0, (fPos - VScroll1.Value + mRecentCount) * (mComboFontSize * 2), PicList.ScaleWidth + 2, (mComboFontSize * 2) + 2
+    doNothing = False
+End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function DrawTheme
@@ -316,42 +1381,619 @@ NoXP:
 End Function
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ButtonForeColor
+'! Procedure   (Функция)   :   Sub DrawTxt
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   ObjhDC (Long)
+'                              oText (String)
+'                              TxtRect (RECT)
+'                              mPosition (sTxtPosition)
+'                              MultiLine (Boolean = False)
+'                              WordWrap (Boolean = False)
+'                              WordEllipsis (Boolean = False)
+'!--------------------------------------------------------------------------------
+Private Sub DrawTxt(ObjhDC As Long, oText As String, TxtRect As RECT, mPosition As sTxtPosition, Optional MultiLine As Boolean = False, Optional WordWrap As Boolean = False, Optional WordEllipsis As Boolean = False)
+
+    Dim tFormat As Long
+
+    Select Case mPosition
+
+        Case TopLeft
+            tFormat = DT_TOP + DT_LEFT
+
+        Case TopCenter
+            tFormat = DT_TOP + DT_CENTER
+
+        Case TopRight
+            tFormat = DT_TOP + DT_RIGHT
+
+        Case MiddleLeft
+            tFormat = DT_VCENTER + DT_LEFT
+
+        Case MiddleCenter
+            tFormat = DT_VCENTER + DT_CENTER
+
+        Case MiddleRight
+            tFormat = DT_VCENTER + DT_RIGHT
+
+        Case BottomLeft
+            tFormat = DT_BOTTOM + DT_LEFT
+
+        Case BottomCenter
+            tFormat = DT_BOTTOM + DT_CENTER
+
+        Case BottomRight
+            tFormat = DT_BOTTOM + DT_RIGHT
+    End Select
+
+    If MultiLine = False Then
+        tFormat = tFormat + DT_SINGLELINE
+    End If
+
+    If WordWrap = True And MultiLine = True Then
+        tFormat = tFormat + DT_WORDBREAK
+    End If
+
+    If WordEllipsis = True Then
+        tFormat = tFormat + DT_WORD_ELLIPSIS
+    End If
+
+    tFormat = tFormat + DT_NOCLIP
+    DrawTextW ObjhDC, StrPtr(oText & vbNullChar), -1, TxtRect, tFormat
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub FillList
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Public Property Get ButtonForeColor() As OLE_COLOR
-    ButtonForeColor = mButtonForeColor
-End Property
+Private Sub FillList()
+
+    Dim I As Integer
+
+    mListCount = Screen.FontCount - 1
+
+    ReDim mListFont(mListCount)
+
+    For I = 0 To Screen.FontCount - 1
+        mListFont(I) = Screen.Fonts(I)
+    Next
+
+End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ListIndex
+'! Procedure   (Функция)   :   Function FontExist
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Font2Find (String)
+'                              StartPos (Integer = 0)
+'!--------------------------------------------------------------------------------
+Public Function FontExist(Font2Find As String, Optional StartPos As Integer = 0) As Integer
+
+    Dim I As Integer
+
+    FontExist = -1
+
+    For I = StartPos To mListCount
+
+        If LCase$(mListFont(I)) Like LCase$(Font2Find) Then
+            FontExist = I
+
+            Exit For
+
+        End If
+
+    Next
+
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function InvBdr
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Bdr (CfBdrStyle)
+'!--------------------------------------------------------------------------------
+Private Function InvBdr(Bdr As CfBdrStyle) As CfBdrStyle
+
+    Select Case Bdr
+
+        Case sNone
+            InvBdr = sNone
+
+        Case sRaised
+            InvBdr = sSunken
+
+        Case sSunken
+            InvBdr = sRaised
+
+        Case sBump
+            InvBdr = sEtched
+
+        Case sEtched
+            InvBdr = sBump
+
+        Case sSmoothRaised
+            InvBdr = sSmoothSunken
+
+        Case sSmoothSunken
+            InvBdr = sSmoothRaised
+    End Select
+
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function IsUsed
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   FontName (String)
+'!--------------------------------------------------------------------------------
+Private Function IsUsed(FontName As String) As Boolean
+
+    Dim I As Integer
+    Dim F As Boolean
+
+    For I = 0 To mUsedCount - 1
+
+        If LCase$(mUsedList(I)) = LCase$(FontName) Then
+            F = True
+
+            Exit For
+
+        End If
+
+    Next
+
+    IsUsed = F
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadRecentFonts
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   MyHkey (HkeyLoc2)
+'                              MyGroup (String)
+'                              MySection (String)
+'                              myKey (String)
+'!--------------------------------------------------------------------------------
+Public Sub LoadRecentFonts(MyHkey As HkeyLoc2, MyGroup As String, MySection As String, myKey As String)
+
+    Dim I  As Integer
+    Dim fN As String
+    Dim fI As Integer
+
+    ReDim mRecent(mRecentMax)
+
+    For I = 0 To mRecentMax - 1
+        fN = ReadValue(MyHkey, MyGroup & "\" & MySection & "\" & myKey, "RecentFontName" & I + 1, "")
+        fI = FontExist(fN)
+
+        If fI > -1 Then
+            mRecent(I).fName = fN
+            mRecent(I).fIndex = fI
+        End If
+
+    Next
+
+    SetRecents
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub mgSort
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   pStart (Long)
+'                              pEnd (Long)
+'!--------------------------------------------------------------------------------
+Private Sub mgSort(ByVal pStart As Long, ByVal pEnd As Long)
+
+    Dim m     As Long
+    Dim n     As Long
+    Dim tStr1 As String
+
+    m = pStart
+    n = pEnd
+    tStr1 = LCase$(mListFont((pStart + pEnd) \ 2))
+
+    Do
+        Do While LCase$(mListFont(m)) < tStr1
+            m = m + 1
+        Loop
+
+        Do While LCase$(mListFont(n)) > tStr1
+            n = n - 1
+        Loop
+
+        If m <= n Then
+            SwapStrings mListFont(m), mListFont(n)
+            m = m + 1
+            n = n - 1
+        End If
+
+    Loop Until m > n
+
+    If pStart < n Then Call mgSort(pStart, n)
+    If m < pEnd Then Call mgSort(m, pEnd)
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function ReadValue
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   MyHkey (HkeyLoc)
+'                              myKey (String)
+'                              MyValue (String)
+'                              MyDefaultData (String = vbnullstring)
+'!--------------------------------------------------------------------------------
+Private Function ReadValue(MyHkey As HkeyLoc, myKey As String, MyValue As String, Optional ByVal MyDefaultData As String = vbNullString) As String
+
+    On Error GoTo ReadValue_Error
+
+    Resultat = 0
+    Ident = 0
+    TailleBuffer = 0
+    Resultat = RegCreateKey(MyHkey, myKey, Ident)
+
+    If Resultat <> 0 Then
+
+        Exit Function
+
+    End If
+
+    Resultat = RegQueryValueEx(Ident, MyValue, 0&, 1, 0&, TailleBuffer)
+
+    If TailleBuffer < 2 Then
+        ReadValue = MyDefaultData
+
+        Exit Function
+
+    End If
+
+    Donnee = Space$(TailleBuffer + 1)
+    Resultat = RegQueryValueEx(Ident, MyValue, 0&, 1, ByVal Donnee, TailleBuffer)
+    Donnee = Left$(Donnee, TailleBuffer - 1)
+    ReadValue = Donnee
+
+    On Error GoTo 0
+
+ReadValue_Error:
+
+    Exit Function
+
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub RemoveFromUsedList
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   FontName (String)
+'!--------------------------------------------------------------------------------
+Public Sub RemoveFromUsedList(FontName As String)
+
+    Dim I     As Integer
+    Dim tUL() As String
+    Dim fQ    As Integer
+
+    ReDim tUL(mUsedCount)
+
+    fQ = 1
+
+    For I = 0 To mUsedCount - 1
+
+        If LCase$(mUsedList(I)) <> LCase$(FontName) Then
+            tUL(fQ - 1) = mUsedList(I)
+            fQ = fQ + 1
+        End If
+
+    Next
+
+    mUsedList = tUL
+    mUsedCount = fQ
+
+    ReDim Preserve mUsedList(mUsedCount)
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SaveRecentFonts
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   MyHkey (HkeyLoc2)
+'                              MyGroup (String)
+'                              MySection (String)
+'                              myKey (String)
+'!--------------------------------------------------------------------------------
+Public Sub SaveRecentFonts(MyHkey As HkeyLoc2, MyGroup As String, MySection As String, myKey As String)
+
+    Dim I As Integer
+
+    For I = 0 To mRecentCount - 1
+        SetValue MyHkey, MyGroup & "\" & MySection & "\" & myKey, "RecentFontName" & I + 1, mRecent(I).fName
+    Next
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SetList
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Public Property Get ListIndex() As Integer
-    ListIndex = mListPos
-End Property
+Private Sub SetList()
+
+    Dim I     As Integer
+    Dim RecQ  As Integer
+    Dim Start As Integer
+
+    ReDim fList(mComboFontCount)
+
+    Start = fPos
+
+    If Start + mComboFontCount > mListCount Then
+        Start = mListCount - mComboFontCount
+    End If
+
+    VScroll1.Value = Start
+
+    For I = Start To Start + mComboFontCount - RecQ
+        fList(RecQ).fName = mListFont(I)
+        fList(RecQ).fIndex = I
+        fList(RecQ).fRecent = False
+        RecQ = RecQ + 1
+    Next
+
+End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ListIndex
+'! Procedure   (Функция)   :   Sub SetRecents
 '! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Integer)
+'! Parameters  (Переменные):   CurRecent (String)
+'                              CurIndex (Integer)
 '!--------------------------------------------------------------------------------
-Public Property Let ListIndex(ByVal vNewValue As Integer)
-Attribute ListIndex.VB_MemberFlags = "400"
-    mListPos = vNewValue
-End Property
+Private Sub SetRecents(Optional CurRecent As String, Optional CurIndex As Integer)
+
+    Dim m         As Integer
+    Dim n         As Integer
+    Dim TmpLast() As tpRecents
+    Dim a%, b%
+    Dim myLast    As tpRecents
+
+    For n = 0 To mRecentMax - 1
+
+        If mRecent(0).fName = CurRecent Then
+            If n <> 0 Then
+                myLast = mRecent(0)
+                mRecent(0) = mRecent(n)
+                mRecent(n) = myLast
+            End If
+
+            Exit For
+
+        End If
+
+    Next
+
+    ReDim TmpLast(mRecentMax)
+
+    If CurRecent = vbNullString Then
+        TmpLast = mRecent
+    Else
+
+        For n = 1 To mRecentMax
+            myLast = mRecent(n - 1)
+
+            If LenB(Trim$(myLast.fName)) Then
+                TmpLast(n) = myLast
+            End If
+
+        Next
+
+        TmpLast(0).fName = CurRecent
+        TmpLast(0).fIndex = CurIndex
+    End If
+
+    For a% = 0 To mRecentMax
+        For b% = 0 To mRecentMax
+
+            If b% <> a% Then
+                If LenB(TmpLast(a%).fName) Then
+                    If TmpLast(a%).fName = TmpLast(b%).fName Then
+                        TmpLast(b%).fName = vbNullString
+                        b% = b% - 1
+                    End If
+                End If
+            End If
+
+        Next
+    Next
+
+    m = 0
+
+    ReDim mRecent(mRecentMax)
+
+    For n = 0 To mRecentMax - 1
+
+        If LenB(Trim$(TmpLast(n).fName)) Then
+            mRecent(m).fName = TmpLast(n).fName
+            mRecent(m).fIndex = TmpLast(n).fIndex
+            mRecent(m).fRecent = True
+            m = m + 1
+        End If
+
+    Next
+
+    mRecentCount = m
+End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ListCount
+'! Procedure   (Функция)   :   Function SetValue
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   MyHkey (HkeyLoc)
+'                              myKey (String)
+'                              MyValue (String)
+'                              MyData (String)
+'!--------------------------------------------------------------------------------
+Private Function SetValue(MyHkey As HkeyLoc, myKey As String, MyValue As String, ByVal MyData As String)
+
+    On Error GoTo SetValue_Error
+
+    Resultat = 0
+    Ident = 0
+    TailleBuffer = 0
+    Resultat = RegCreateKey(MyHkey, myKey, Ident)
+
+    If Resultat = 0 Then
+        Resultat = RegSetValueEx(Ident, MyValue, 0&, 1, ByVal MyData, Len(MyData) + 1)
+    End If
+
+    On Error GoTo 0
+
+    Exit Function
+
+SetValue_Error:
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ShowFont
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   fName (String)
+'!--------------------------------------------------------------------------------
+Private Sub ShowFont(fName As String)
+
+    Dim TRC        As RECT
+    Dim tStr       As String
+    Dim Br         As Long
+    Dim tC         As Long
+
+    If fName = vbNullString Or mShowPreview = False Then
+
+        Exit Sub
+
+    End If
+
+    If Trim$(mPreviewText) = vbNullString Then
+        tStr = fName
+    Else
+        tStr = mPreviewText
+    End If
+
+    If fName <> OldFont Then
+        OldFont = fName
+    Else
+
+        Exit Sub
+
+    End If
+
+    PicPreview.FontName = fName
+    PicPreview.FontSize = mPreviewSize
+    PicPreview.FontBold = False
+    PicPreview.FontItalic = False
+    PicPreview.Cls
+    PicPreview.Height = (PicPreview.TextHeight(tStr) * Screen.TwipsPerPixelY) + 200
+    PicPreview.Width = (PicPreview.TextWidth(tStr) * Screen.TwipsPerPixelX) + 200
+
+    If PicPreview.Width > Screen.Width / 2 Then PicPreview.Width = Screen.Width / 2
+    If Screen.Width - (PicList.Left + PicList.Width) < PicPreview.Width Then
+        PicPreview.Left = PicList.Left - PicPreview.Width
+    Else
+        PicPreview.Left = PicList.Left + PicList.Width
+    End If
+
+    SetRect TRC, 0, 0, PicPreview.ScaleWidth, PicPreview.ScaleHeight
+    DrawTxt PicPreview.hDC, tStr, TRC, MiddleCenter, False, True, True
+
+    If mShowFontName = True Then
+        OleTranslateColor mComboForeColor, 0, tC
+        Br = CreateSolidBrush(vbBlack)
+        PicPreview.FontName = "Tahoma"
+        PicPreview.FontSize = 8
+        PicPreview.FontBold = False
+        PicPreview.FontItalic = False
+        PicPreview.Height = PicPreview.Height + (PicPreview.TextHeight("X") * Screen.TwipsPerPixelY)
+        SetRect TRC, -1, PicPreview.ScaleHeight - PicPreview.TextHeight("X") - 2, PicPreview.ScaleWidth + 1, PicPreview.ScaleHeight + 1
+        DrawTxt PicPreview.hDC, fName, TRC, MiddleCenter
+        FrameRect PicPreview.hDC, TRC, Br
+        DeleteObject Br
+    End If
+
+    If PicPreview.Visible = False Then PicPreview.Visible = True
+    PicPreview.Refresh
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ShowList
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Public Property Get ListCount() As Integer
-Attribute ListCount.VB_MemberFlags = "400"
-    ListCount = mListCount
-End Property
+Private Sub ShowList()
+
+    Dim cb As RECT
+
+    CloseMe = False
+    GetWindowRect UserControl.hWnd, cb
+    tPos = mListPos
+    PicList.Width = ScaleX(mComboWidth, vbPixels, vbTwips)
+    PicList.Height = ScaleY(((mComboFontSize * 2) * (mComboFontCount + mRecentCount) + 2), vbPixels, vbTwips)
+    VScroll1.Move PicList.ScaleWidth - 18, (mComboFontSize * 2) * mRecentCount, 18, PicList.ScaleHeight - ((mComboFontSize * 2) * mRecentCount)
+
+    If cb.Bottom + (PicList.Height / Screen.TwipsPerPixelY) < Screen.Height / Screen.TwipsPerPixelY Then
+        SetWindowPos PicList.hWnd, HWND_TOP, cb.Left, cb.Bottom, PicList.Width / Screen.TwipsPerPixelX, PicList.Height / Screen.TwipsPerPixelY, SWP_NOACTIVATE Or SWP_SHOWWINDOW
+    Else
+        SetWindowPos PicList.hWnd, HWND_TOP, cb.Left, cb.Top - (PicList.Height / Screen.TwipsPerPixelY), PicList.Width / Screen.TwipsPerPixelX, PicList.Height / Screen.TwipsPerPixelY, SWP_NOACTIVATE Or SWP_SHOWWINDOW
+    End If
+
+    SetWindowPos PicPreview.hWnd, HWND_TOP, (PicList.Left + PicList.Width) / Screen.TwipsPerPixelX, (PicList.Top / Screen.TwipsPerPixelY), PicPreview.Width / Screen.TwipsPerPixelX, PicPreview.Height / Screen.TwipsPerPixelY, SWP_NOACTIVATE
+    fPos = mListPos
+    DrawList
+    UserControl.SetFocus
+    TmrFocus.Enabled = True
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SortList
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub SortList()
+
+    Dim n      As Long
+    Dim tStart As Long
+    Dim tEnd   As Long
+    Dim bStr1  As String
+    Dim bStr2  As String
+    Dim qRec   As Long
+
+    mgSort 0, mListCount
+    tStart = 0
+
+    Do
+        bStr1 = mListFont(tStart)
+        qRec = 0
+
+        For n = tStart To mListCount
+            bStr2 = mListFont(n)
+
+            If LCase$(bStr1) = LCase$(bStr2) Then
+                qRec = qRec + 1
+            Else
+
+                Exit For
+
+            End If
+
+        Next
+
+        tEnd = tStart + qRec
+        mgSort tStart, tEnd - 1
+        tStart = tEnd
+    Loop While tEnd < mListCount
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SwapStrings
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   String1 (String)
+'                              String2 (String)
+'!--------------------------------------------------------------------------------
+Private Sub SwapStrings(String1 As String, String2 As String)
+
+    Dim tHold As Long
+
+    CopyMemory tHold, ByVal VarPtr(String1), 4
+    CopyMemory ByVal VarPtr(String1), ByVal VarPtr(String2), 4
+    CopyMemory ByVal VarPtr(String2), tHold, 4
+End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub PicList_KeyDown
@@ -392,68 +2034,6 @@ Private Sub PicList_LostFocus()
     PicPreview.Visible = False
     TmrFocus.Enabled = False
     CloseMe = True
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub PicPreview_KeyDown
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   KeyCode (Integer)
-'                              Shift (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub PicPreview_KeyDown(KeyCode As Integer, Shift As Integer)
-    UserControl_KeyDown KeyCode, Shift
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub PicPreview_KeyPress
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   KeyAscii (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub PicPreview_KeyPress(KeyAscii As Integer)
-    UserControl_KeyPress KeyAscii
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub PicPreview_KeyUp
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   KeyCode (Integer)
-'                              Shift (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub PicPreview_KeyUp(KeyCode As Integer, Shift As Integer)
-    UserControl_KeyUp KeyCode, Shift
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub TmrAutoText_Timer
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub TmrAutoText_Timer()
-    mAutoText = ""
-    TmrAutoText.Enabled = False
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub TmrFocus_Timer
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub TmrFocus_Timer()
-
-    Dim Focus As Long
-
-    Focus = GetFocus
-
-    'If (Focus <> PicList.hWnd And Focus <> UserControl.hWnd And _
-    'Focus <> PicPreview.hWnd And Focus <> VScroll1.hWnd) Or CloseMe = True Then
-    If (Focus <> UserControl.hWnd) Or CloseMe = True Then
-        bCancel = True
-        PicPreview.Visible = False
-        PicList.Visible = False
-        TmrFocus.Enabled = False
-        CloseMe = True
-    End If
-
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -593,13 +2173,73 @@ Private Sub PicList_MouseUp(Button As Integer, Shift As Integer, X As Single, Y 
 End Sub
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub PicPreview_KeyDown
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   KeyCode (Integer)
+'                              Shift (Integer)
+'!--------------------------------------------------------------------------------
+Private Sub PicPreview_KeyDown(KeyCode As Integer, Shift As Integer)
+    UserControl_KeyDown KeyCode, Shift
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub PicPreview_KeyPress
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   KeyAscii (Integer)
+'!--------------------------------------------------------------------------------
+Private Sub PicPreview_KeyPress(KeyAscii As Integer)
+    UserControl_KeyPress KeyAscii
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub PicPreview_KeyUp
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   KeyCode (Integer)
+'                              Shift (Integer)
+'!--------------------------------------------------------------------------------
+Private Sub PicPreview_KeyUp(KeyCode As Integer, Shift As Integer)
+    UserControl_KeyUp KeyCode, Shift
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub TmrAutoText_Timer
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub TmrAutoText_Timer()
+    mAutoText = vbNullString
+    TmrAutoText.Enabled = False
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub TmrFocus_Timer
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub TmrFocus_Timer()
+
+    Dim Focus As Long
+
+    Focus = GetFocus
+
+    If (Focus <> UserControl.hWnd) Or CloseMe = True Then
+        bCancel = True
+        PicPreview.Visible = False
+        PicList.Visible = False
+        TmrFocus.Enabled = False
+        CloseMe = True
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub TmrOver_Timer
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub TmrOver_Timer()
 
-    Dim Pos As POINT
+    Dim Pos As POINTAPI
     Dim WFP As Long
 
     GetCursorPos Pos
@@ -714,7 +2354,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
 
             Case vbKeyUp
 
-                If VScroll1.Value > 0 Then
+                If VScroll1.Value Then
                     VScroll1.Value = VScroll1.Value - 1
                 End If
 
@@ -726,7 +2366,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
 
             Case vbKeyPageUp
 
-                If VScroll1.Value - VScroll1.LargeChange > 0 Then
+                If VScroll1.Value - VScroll1.LargeChange Then
                     VScroll1.Value = VScroll1.Value - VScroll1.LargeChange
                 Else
                     VScroll1.Value = VScroll1.Min
@@ -949,7 +2589,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     ReDim mRecent(mRecentMax)
 
-    If Ambient.UserMode = True Then
+    If RunMode = True Then
         FillList
 
         If mSorted = True Then SortList
@@ -966,12 +2606,12 @@ End Sub
 Private Sub UserControl_Resize()
 
     Dim tBdr As Single
-    Dim V    As Integer
+    Dim v    As Integer
 
     On Error Resume Next
 
     If mXPStyle = False Then
-        V = 0
+        v = 0
 
         Select Case mBorderStyle
 
@@ -986,771 +2626,18 @@ Private Sub UserControl_Resize()
         End Select
 
     Else
-        V = 2
+        v = 2
         tBdr = 1
     End If
 
-    UserControl.Height = ScaleY(TextHeight("X") + (tBdr * 2) + 4 + V, vbPixels, vbTwips)
+    UserControl.Height = ScaleY(TextHeight("X") + (tBdr * 2) + 4 + v, vbPixels, vbTwips)
 
     If UserControl.Width < 600 Then UserControl.Width = 600
-    FocusBox.Move tBdr + 1, tBdr + 1, UserControl.ScaleWidth - tBdr - 20 + V, UserControl.ScaleHeight - (tBdr * 2) - 1
+    FocusBox.Move tBdr + 1, tBdr + 1, UserControl.ScaleWidth - tBdr - 20 + v, UserControl.ScaleHeight - (tBdr * 2) - 1
     SetRect uRct, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight
     SetRect Btn, UserControl.ScaleWidth - tBdr - 17, tBdr, UserControl.ScaleWidth - tBdr, UserControl.ScaleHeight - tBdr
     DrawControl bUp, True
 End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Enabled
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get Enabled() As Boolean
-    Enabled = mEnabled
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Enabled
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let Enabled(ByVal vNewValue As Boolean)
-    mEnabled = vNewValue
-    DrawControl , True
-    PropertyChanged "Enabled"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawControl
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   eDraw (eBtnState = bUp)
-'                              DrawAll (Boolean = False)
-'!--------------------------------------------------------------------------------
-Private Sub DrawControl(Optional eDraw As eBtnState = bUp, Optional DrawAll As Boolean = False)
-
-    Dim Br       As Long
-    Dim tC       As Long
-
-    Static OldDr As eBtnState
-
-    Dim tCol     As Long
-
-    UserControl.Enabled = mEnabled
-    mXPStyle = mXPStyle And DrawTheme("Button", 1, 1, Btn)
-
-    If mXPStyle = False Then
-        OleTranslateColor mButtonBackColor, 0, tC
-        Br = CreateSolidBrush(tC)
-
-        If mEnabled = False Then
-            Cls
-            FillRect UserControl.hDC, Btn, Br
-            DrawEdge UserControl.hDC, uRct, mBorderStyle, edgeAll
-            DrawEdge UserControl.hDC, Btn, mButtonBorderStyle, edgeAll
-            tCol = UserControl.ForeColor
-            UserControl.ForeColor = &H80000011
-            UserControl.CurrentY = ((ScaleHeight - TextHeight("X")) / 2) - 1
-            UserControl.CurrentX = 4
-
-            If Ambient.UserMode = True And mListCount > 0 Then
-                UserControl.Print mListFont(mListPos)
-            Else
-                UserControl.Print Ambient.DisplayName
-            End If
-
-            UserControl.ForeColor = tCol
-            DrawArw
-            DeleteObject Br
-
-            Exit Sub
-
-        End If
-
-        If OldDr = eDraw Then
-            If DrawAll = False Then
-
-                Exit Sub
-
-            End If
-        End If
-
-        UserControl.Cls
-        UserControl.CurrentY = ((ScaleHeight - TextHeight("X")) / 2) - 1
-        UserControl.CurrentX = 4
-
-        If Ambient.UserMode = True And mListCount > 0 Then
-            UserControl.Print mListFont(mListPos)
-        Else
-            UserControl.Print Ambient.DisplayName
-        End If
-
-        Select Case eDraw
-
-            Case bUp
-                DrawEdge UserControl.hDC, uRct, mBorderStyle, edgeAll
-                FillRect UserControl.hDC, Btn, Br
-                DrawEdge UserControl.hDC, Btn, ButtonBorderStyle, edgeAll
-
-            Case bOver
-                DrawEdge UserControl.hDC, uRct, mBorderStyle, edgeAll
-                FillRect UserControl.hDC, Btn, Br
-                DrawEdge UserControl.hDC, Btn, ButtonBorderStyle, edgeAll
-
-            Case bDown
-                DrawEdge UserControl.hDC, uRct, mBorderStyle, edgeAll
-                FillRect UserControl.hDC, Btn, Br
-                DrawEdge UserControl.hDC, Btn, InvBdr(ButtonBorderStyle), edgeAll
-        End Select
-
-        DeleteObject Br
-
-        If eDraw = bOver Then
-            DrawArw mButtonOverColor
-        Else
-            DrawArw
-        End If
-
-    Else
-        UserControl.Cls
-
-        If mEnabled = True Then
-
-            Select Case eDraw
-
-                Case bUp
-                    DrawTheme "ComboBox", 2, 1, uRct
-                    DrawTheme "ComboBox", 1, 1, Btn
-
-                Case bOver
-                    DrawTheme "ComboBox", 2, 2, uRct
-                    DrawTheme "ComboBox", 1, 2, Btn
-
-                Case bDown
-                    DrawTheme "ComboBox", 2, 3, uRct
-                    DrawTheme "ComboBox", 1, 3, Btn
-            End Select
-
-        Else
-            DrawTheme "ComboBox", 2, 4, uRct
-            DrawTheme "ComboBox", 1, 4, Btn
-            tCol = UserControl.ForeColor
-            UserControl.ForeColor = &H80000011
-            UserControl.CurrentY = ((ScaleHeight - TextHeight("X")) / 2) - 1
-            UserControl.CurrentX = 4
-            UserControl.Print mListFont(mListPos)
-            UserControl.ForeColor = tCol
-
-            Exit Sub
-
-        End If
-
-        UserControl.CurrentY = ((ScaleHeight - TextHeight("X")) / 2) - 1
-        UserControl.CurrentX = 4
-
-        If Ambient.UserMode = True And mListCount > 0 Then
-            UserControl.Print mListFont(mListPos)
-        Else
-            UserControl.Print Ambient.DisplayName
-        End If
-    End If
-
-    OldDr = eDraw
-    Refresh
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawArw
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   ArrowColor (Long = -1)
-'!--------------------------------------------------------------------------------
-Private Sub DrawArw(Optional ArrowColor As Long = -1)
-
-    Dim ColUp As Long
-    Dim tCol  As Long
-
-    If ArrowColor = -1 Then
-        tCol = mButtonForeColor
-    Else
-        tCol = ArrowColor
-    End If
-
-    If mEnabled = False Then
-        OleTranslateColor vbGrayText, 0, ColUp
-    Else
-        OleTranslateColor tCol, 0, ColUp
-    End If
-
-    SetPixel UserControl.hDC, Btn.Left - 1 + (Btn.Right - Btn.Left) \ 2, Btn.Top - 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left + 1 + (Btn.Right - Btn.Left) \ 2, Btn.Top - 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left - 2 + (Btn.Right - Btn.Left) \ 2, Btn.Top - 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left + 2 + (Btn.Right - Btn.Left) \ 2, Btn.Top - 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left - 3 + (Btn.Right - Btn.Left) \ 2, Btn.Top - 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left + 3 + (Btn.Right - Btn.Left) \ 2, Btn.Top - 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left + (Btn.Right - Btn.Left) \ 2, Btn.Top - 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left - 1 + (Btn.Right - Btn.Left) \ 2, Btn.Top + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left + 1 + (Btn.Right - Btn.Left) \ 2, Btn.Top + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left - 2 + (Btn.Right - Btn.Left) \ 2, Btn.Top + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left + 2 + (Btn.Right - Btn.Left) \ 2, Btn.Top + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left + (Btn.Right - Btn.Left) \ 2, Btn.Top + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left - 1 + (Btn.Right - Btn.Left) \ 2, Btn.Top + 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left + 1 + (Btn.Right - Btn.Left) \ 2, Btn.Top + 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left + (Btn.Right - Btn.Left) \ 2, Btn.Top + 1 + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    SetPixel UserControl.hDC, Btn.Left + (Btn.Right - Btn.Left) \ 2, Btn.Top + 2 + (Btn.Bottom - Btn.Top) \ 2, ColUp
-    Refresh
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub ShowList
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub ShowList()
-
-    Dim cb As RECT
-
-    CloseMe = False
-    GetWindowRect UserControl.hWnd, cb
-    tPos = mListPos
-    PicList.Width = ScaleX(mComboWidth, vbPixels, vbTwips)
-    PicList.Height = ScaleY(((mComboFontSize * 2) * (mComboFontCount + mRecentCount) + 2), vbPixels, vbTwips)
-    VScroll1.Move PicList.ScaleWidth - 18, (mComboFontSize * 2) * mRecentCount, 18, PicList.ScaleHeight - ((mComboFontSize * 2) * mRecentCount)
-
-    If cb.Bottom + (PicList.Height / Screen.TwipsPerPixelY) < Screen.Height / Screen.TwipsPerPixelY Then
-        SetWindowPos PicList.hWnd, HWND_TOP, cb.Left, cb.Bottom, PicList.Width / Screen.TwipsPerPixelX, PicList.Height / Screen.TwipsPerPixelY, SWP_NOACTIVATE Or SWP_SHOWWINDOW
-    Else
-        SetWindowPos PicList.hWnd, HWND_TOP, cb.Left, cb.Top - (PicList.Height / Screen.TwipsPerPixelY), PicList.Width / Screen.TwipsPerPixelX, PicList.Height / Screen.TwipsPerPixelY, SWP_NOACTIVATE Or SWP_SHOWWINDOW
-    End If
-
-    SetWindowPos PicPreview.hWnd, HWND_TOP, (PicList.Left + PicList.Width) / Screen.TwipsPerPixelX, (PicList.Top / Screen.TwipsPerPixelY), PicPreview.Width / Screen.TwipsPerPixelX, PicPreview.Height / Screen.TwipsPerPixelY, SWP_NOACTIVATE
-    fPos = mListPos
-    DrawList
-    UserControl.SetFocus
-    TmrFocus.Enabled = True
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub ShowFont
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   fName (String)
-'!--------------------------------------------------------------------------------
-Private Sub ShowFont(fName As String)
-
-    Dim tRc        As RECT
-    Dim tStr       As String
-
-    Static OldFont As String
-
-    Dim Br         As Long
-    Dim tC         As Long
-
-    If fName = "" Or mShowPreview = False Then
-
-        Exit Sub
-
-    End If
-
-    If Trim$(mPreviewText) = "" Then
-        tStr = fName
-    Else
-        tStr = mPreviewText
-    End If
-
-    If fName <> OldFont Then
-        OldFont = fName
-    Else
-
-        Exit Sub
-
-    End If
-
-    PicPreview.FontName = fName
-    PicPreview.FontSize = mPreviewSize
-    PicPreview.FontBold = False
-    PicPreview.FontItalic = False
-    PicPreview.Cls
-    PicPreview.Height = (PicPreview.TextHeight(tStr) * Screen.TwipsPerPixelY) + 200
-    PicPreview.Width = (PicPreview.TextWidth(tStr) * Screen.TwipsPerPixelX) + 200
-
-    If PicPreview.Width > Screen.Width / 2 Then PicPreview.Width = Screen.Width / 2
-    If Screen.Width - (PicList.Left + PicList.Width) < PicPreview.Width Then
-        PicPreview.Left = PicList.Left - PicPreview.Width
-    Else
-        PicPreview.Left = PicList.Left + PicList.Width
-    End If
-
-    SetRect tRc, 0, 0, PicPreview.ScaleWidth, PicPreview.ScaleHeight
-    DrawTxt PicPreview.hDC, tStr, tRc, MiddleCenter, False, True, True
-
-    If mShowFontName = True Then
-        OleTranslateColor mComboForeColor, 0, tC
-        Br = CreateSolidBrush(vbBlack)
-        PicPreview.FontName = "Tahoma"
-        PicPreview.FontSize = 8
-        PicPreview.FontBold = False
-        PicPreview.FontItalic = False
-        PicPreview.Height = PicPreview.Height + (PicPreview.TextHeight("X") * Screen.TwipsPerPixelY)
-        SetRect tRc, -1, PicPreview.ScaleHeight - PicPreview.TextHeight("X") - 2, PicPreview.ScaleWidth + 1, PicPreview.ScaleHeight + 1
-        DrawTxt PicPreview.hDC, fName, tRc, MiddleCenter
-        FrameRect PicPreview.hDC, tRc, Br
-        DeleteObject Br
-    End If
-
-    If PicPreview.Visible = False Then PicPreview.Visible = True
-    PicPreview.Refresh
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawTxt
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   ObjhDC (Long)
-'                              oText (String)
-'                              TxtRect (RECT)
-'                              mPosition (sTxtPosition)
-'                              MultiLine (Boolean = False)
-'                              WordWrap (Boolean = False)
-'                              WordEllipsis (Boolean = False)
-'!--------------------------------------------------------------------------------
-Private Sub DrawTxt(ObjhDC As Long, oText As String, TxtRect As RECT, mPosition As sTxtPosition, Optional MultiLine As Boolean = False, Optional WordWrap As Boolean = False, Optional WordEllipsis As Boolean = False)
-
-    Dim tFormat As Long
-
-    Select Case mPosition
-
-        Case TopLeft
-            tFormat = DT_TOP + DT_LEFT
-
-        Case TopCenter
-            tFormat = DT_TOP + DT_CENTER
-
-        Case TopRight
-            tFormat = DT_TOP + DT_RIGHT
-
-        Case MiddleLeft
-            tFormat = DT_VCENTER + DT_LEFT
-
-        Case MiddleCenter
-            tFormat = DT_VCENTER + DT_CENTER
-
-        Case MiddleRight
-            tFormat = DT_VCENTER + DT_RIGHT
-
-        Case BottomLeft
-            tFormat = DT_BOTTOM + DT_LEFT
-
-        Case BottomCenter
-            tFormat = DT_BOTTOM + DT_CENTER
-
-        Case BottomRight
-            tFormat = DT_BOTTOM + DT_RIGHT
-    End Select
-
-    If MultiLine = False Then
-        tFormat = tFormat + DT_SINGLELINE
-    End If
-
-    If WordWrap = True And MultiLine = True Then
-        tFormat = tFormat + DT_WORDBREAK
-    End If
-
-    If WordEllipsis = True Then
-        tFormat = tFormat + DT_WORD_ELLIPSIS
-    End If
-
-    tFormat = tFormat + DT_NOCLIP
-    'DrawText ObjhDC, oText, Len(oText), TxtRect, tFormat
-    DrawTextW ObjhDC, StrPtr(oText & vbNullChar), -1, TxtRect, tFormat
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub mgSort
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   pStart (Long)
-'                              pEnd (Long)
-'!--------------------------------------------------------------------------------
-Private Sub mgSort(ByVal pStart As Long, ByVal pEnd As Long)
-
-    Dim m     As Long
-    Dim n     As Long
-    Dim tStr1 As String
-
-    m = pStart
-    n = pEnd
-    tStr1 = LCase$(mListFont((pStart + pEnd) \ 2))
-
-    Do
-        Do While LCase$(mListFont(m)) < tStr1
-            m = m + 1
-        Loop
-
-        Do While LCase$(mListFont(n)) > tStr1
-            n = n - 1
-        Loop
-
-        If m <= n Then
-            SwapStrings mListFont(m), mListFont(n)
-            m = m + 1
-            n = n - 1
-        End If
-
-    Loop Until m > n
-
-    If pStart < n Then Call mgSort(pStart, n)
-    If m < pEnd Then Call mgSort(m, pEnd)
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function ReadValue
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   MyHkey (HkeyLoc)
-'                              myKey (String)
-'                              MyValue (String)
-'                              MyDefaultData (String = "")
-'!--------------------------------------------------------------------------------
-Private Function ReadValue(MyHkey As HkeyLoc, myKey As String, MyValue As String, Optional ByVal MyDefaultData As String = "") As String
-
-    On Error GoTo ReadValue_Error
-
-    Resultat = 0
-    Ident = 0
-    TailleBuffer = 0
-    Resultat = RegCreateKey(MyHkey, myKey, Ident)
-
-    If Resultat <> 0 Then
-
-        Exit Function
-
-    End If
-
-    Resultat = RegQueryValueEx(Ident, MyValue, 0&, 1, 0&, TailleBuffer)
-
-    If TailleBuffer < 2 Then
-        ReadValue = MyDefaultData
-
-        Exit Function
-
-    End If
-
-    Donnee = String$(TailleBuffer + 1, " ")
-    Resultat = RegQueryValueEx(Ident, MyValue, 0&, 1, ByVal Donnee, TailleBuffer)
-    Donnee = Left$(Donnee, TailleBuffer - 1)
-    ReadValue = Donnee
-
-    On Error GoTo 0
-
-ReadValue_Error:
-
-    Exit Function
-
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub SetRecents
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   CurRecent (String)
-'                              CurIndex (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub SetRecents(Optional CurRecent As String, Optional CurIndex As Integer)
-
-    Dim m         As Integer
-    Dim n         As Integer
-    Dim TmpLast() As tpRecents
-    Dim a%, B%
-    Dim myLast    As tpRecents
-
-    For n = 0 To mRecentMax - 1
-
-        If mRecent(0).fName = CurRecent Then
-            If n <> 0 Then
-                myLast = mRecent(0)
-                mRecent(0) = mRecent(n)
-                mRecent(n) = myLast
-            End If
-
-            Exit For
-
-        End If
-
-    Next
-
-    ReDim TmpLast(mRecentMax)
-
-    If CurRecent = "" Then
-        TmpLast = mRecent
-    Else
-
-        For n = 1 To mRecentMax
-            myLast = mRecent(n - 1)
-
-            If LenB(Trim$(myLast.fName)) > 0 Then
-                TmpLast(n) = myLast
-            End If
-
-        Next
-
-        TmpLast(0).fName = CurRecent
-        TmpLast(0).fIndex = CurIndex
-    End If
-
-    For a% = 0 To mRecentMax
-        For B% = 0 To mRecentMax
-
-            If B% <> a% Then
-                If LenB(TmpLast(a%).fName) > 0 Then
-                    If TmpLast(a%).fName = TmpLast(B%).fName Then
-                        TmpLast(B%).fName = ""
-                        B% = B% - 1
-                    End If
-                End If
-            End If
-
-        Next
-    Next
-
-    m = 0
-
-    ReDim mRecent(mRecentMax)
-
-    For n = 0 To mRecentMax - 1
-
-        If LenB(Trim$(TmpLast(n).fName)) > 0 Then
-            mRecent(m).fName = TmpLast(n).fName
-            mRecent(m).fIndex = TmpLast(n).fIndex
-            mRecent(m).fRecent = True
-            m = m + 1
-        End If
-
-    Next
-
-    mRecentCount = m
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function SetValue
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   MyHkey (HkeyLoc)
-'                              myKey (String)
-'                              MyValue (String)
-'                              MyData (String)
-'!--------------------------------------------------------------------------------
-Private Function SetValue(MyHkey As HkeyLoc, myKey As String, MyValue As String, ByVal MyData As String)
-
-    On Error GoTo SetValue_Error
-
-    Resultat = 0
-    Ident = 0
-    TailleBuffer = 0
-    Resultat = RegCreateKey(MyHkey, myKey, Ident)
-
-    If Resultat = 0 Then
-        Resultat = RegSetValueEx(Ident, MyValue, 0&, 1, ByVal MyData, Len(MyData) + 1)
-    End If
-
-    On Error GoTo 0
-
-    Exit Function
-
-SetValue_Error:
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub SortList
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub SortList()
-
-    Dim n      As Long
-    Dim tStart As Long
-    Dim tEnd   As Long
-    Dim bStr1  As String
-    Dim bStr2  As String
-    Dim qRec   As Long
-
-    mgSort 0, mListCount
-    tStart = 0
-
-    Do
-        bStr1 = mListFont(tStart)
-        qRec = 0
-
-        For n = tStart To mListCount
-            bStr2 = mListFont(n)
-
-            If LCase$(bStr1) = LCase$(bStr2) Then
-                qRec = qRec + 1
-            Else
-
-                Exit For
-
-            End If
-
-        Next
-
-        tEnd = tStart + qRec
-        mgSort tStart, tEnd - 1
-        tStart = tEnd
-    Loop While tEnd < mListCount
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub SwapStrings
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   String1 (String)
-'                              String2 (String)
-'!--------------------------------------------------------------------------------
-Private Sub SwapStrings(String1 As String, String2 As String)
-
-    Dim tHold As Long
-
-    CopyMemory tHold, ByVal VarPtr(String1), 4
-    CopyMemory ByVal VarPtr(String1), ByVal VarPtr(String2), 4
-    CopyMemory ByVal VarPtr(String2), tHold, 4
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub DrawList
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub DrawList()
-    On Local Error Resume Next
-
-    Dim i   As Integer
-    Dim Br  As Long
-    Dim tC  As Long
-    Dim rct As RECT
-
-    OleTranslateColor mRecentBackColor, 0, tC
-    Br = CreateSolidBrush(tC)
-    PicList.Cls
-    doNothing = True
-    VScroll1.Max = mListCount - mComboFontCount + mRecentCount
-    VScroll1.LargeChange = ((mListCount + mRecentCount) \ mComboFontCount) + 1
-    SetList
-    SetRect rct, 0, 0, PicList.ScaleWidth, mRecentCount * (mComboFontSize * 2)
-    FillRect PicList.hDC, rct, Br
-    DeleteObject Br
-    OleTranslateColor mUsedBackColor, 0, tC
-    Br = CreateSolidBrush(tC)
-    PicList.Line (0, mRecentCount * (mComboFontSize * 2))-(PicList.ScaleWidth, mRecentCount * (mComboFontSize * 2))
-
-    For i = 0 To mRecentCount - 1
-        PicList.CurrentX = 2
-        PicList.CurrentY = (i * (mComboFontSize * 2)) + 2
-
-        If mShowFontInCombo = True Then PicList.FontName = mRecent(i).fName
-        PicList.FontSize = mComboFontSize
-        PicList.FontItalic = mComboFontItalic
-        PicList.FontBold = mComboFontBold
-
-        If IsUsed(mRecent(i).fName) = False Then
-            PicList.ForeColor = mRecentForeColor
-        Else
-            SetRect rct, 0, i * (mComboFontSize * 2), PicList.ScaleWidth, (i + 1) * (mComboFontSize * 2)
-            FillRect PicList.hDC, rct, Br
-            PicList.ForeColor = mUsedForeColor
-        End If
-
-        PicList.Print mRecent(i).fName
-    Next
-
-    For i = 0 To mComboFontCount - 1
-
-        If IsUsed(fList(i).fName) = False Then
-            PicList.ForeColor = mComboForeColor
-        Else
-            SetRect rct, 0, (i * (mComboFontSize * 2)) + ((mComboFontSize * 2) * mRecentCount) + 2, PicList.ScaleWidth, ((i + 1) * (mComboFontSize * 2)) + ((mComboFontSize * 2) * mRecentCount)
-            FillRect PicList.hDC, rct, Br
-            PicList.ForeColor = mUsedForeColor
-        End If
-
-        PicList.CurrentX = 2
-        PicList.CurrentY = (i * (mComboFontSize * 2)) + 2 + ((mComboFontSize * 2) * mRecentCount)
-
-        If mShowFontInCombo = True Then PicList.FontName = fList(i).fName
-        PicList.FontSize = mComboFontSize
-        PicList.FontItalic = mComboFontItalic
-        PicList.FontBold = mComboFontBold
-        PicList.Print fList(i).fName
-    Next
-
-    DeleteObject Br
-    SelBox.Move 0, (fPos - VScroll1.Value + mRecentCount) * (mComboFontSize * 2), PicList.ScaleWidth + 2, (mComboFontSize * 2) + 2
-    doNothing = False
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function IsUsed
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   FontName (String)
-'!--------------------------------------------------------------------------------
-Private Function IsUsed(FontName As String) As Boolean
-
-    Dim i As Integer
-    Dim F As Boolean
-
-    For i = 0 To mUsedCount - 1
-
-        If LCase$(mUsedList(i)) = LCase$(FontName) Then
-            F = True
-
-            Exit For
-
-        End If
-
-    Next
-
-    IsUsed = F
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub SetList
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub SetList()
-
-    Dim i     As Integer
-    Dim RecQ  As Integer
-    Dim Start As Integer
-
-    ReDim fList(mComboFontCount)
-
-    Start = fPos
-
-    If Start + mComboFontCount > mListCount Then
-        Start = mListCount - mComboFontCount
-    End If
-
-    VScroll1.Value = Start
-
-    For i = Start To Start + mComboFontCount - RecQ
-        fList(RecQ).fName = mListFont(i)
-        fList(RecQ).fIndex = i
-        fList(RecQ).fRecent = False
-        RecQ = RecQ + 1
-    Next
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PreviewText
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get PreviewText() As String
-    PreviewText = mPreviewText
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PreviewText
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (String)
-'!--------------------------------------------------------------------------------
-Public Property Let PreviewText(ByVal vNewValue As String)
-    mPreviewText = vNewValue
-    PropertyChanged "PreviewText"
-End Property
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UserControl_WriteProperties
@@ -1794,836 +2681,6 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     End With
 
 End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property BorderStyle
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get BorderStyle() As CfBdrStyle
-    BorderStyle = mBorderStyle
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property BorderStyle
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (CfBdrStyle)
-'!--------------------------------------------------------------------------------
-Public Property Let BorderStyle(ByVal vNewValue As CfBdrStyle)
-    mBorderStyle = vNewValue
-    UserControl_Resize
-    PropertyChanged "BorderStyle"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function InvBdr
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Bdr (CfBdrStyle)
-'!--------------------------------------------------------------------------------
-Private Function InvBdr(Bdr As CfBdrStyle) As CfBdrStyle
-
-    Select Case Bdr
-
-        Case sNone
-            InvBdr = sNone
-
-        Case sRaised
-            InvBdr = sSunken
-
-        Case sSunken
-            InvBdr = sRaised
-
-        Case sBump
-            InvBdr = sEtched
-
-        Case sEtched
-            InvBdr = sBump
-
-        Case sSmoothRaised
-            InvBdr = sSmoothSunken
-
-        Case sSmoothSunken
-            InvBdr = sSmoothRaised
-    End Select
-
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ShowPreview
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ShowPreview() As Boolean
-    ShowPreview = mShowPreview
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ShowPreview
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let ShowPreview(ByVal vNewValue As Boolean)
-    mShowPreview = vNewValue
-    PropertyChanged "ShowPreview"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PreviewSize
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get PreviewSize() As Integer
-    PreviewSize = mPreviewSize
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property PreviewSize
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Integer)
-'!--------------------------------------------------------------------------------
-Public Property Let PreviewSize(ByVal vNewValue As Integer)
-
-    If vNewValue > 10 Then
-        If vNewValue < 200 Then
-            mPreviewSize = vNewValue
-            PropertyChanged "PreviewSize"
-        End If
-    End If
-
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Sorted
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get Sorted() As Boolean
-    Sorted = mSorted
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Sorted
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let Sorted(ByVal vNewValue As Boolean)
-
-    Dim i  As Integer
-    Dim fI As Integer
-
-    mSorted = vNewValue
-
-    If Ambient.UserMode = True Then
-        FillList
-
-        If mSorted = True Then SortList
-
-        For i = 0 To mRecentCount - 1
-            fI = FontExist(mRecent(i).fName)
-            mRecent(i).fIndex = fI
-        Next
-
-    End If
-
-    DrawControl , True
-    PropertyChanged "Sorted"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ListFont
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Index (Integer)
-'!--------------------------------------------------------------------------------
-Public Property Get ListFont(Index As Integer) As String
-    ListFont = mListFont(Index)
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property SelectedFont
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get SelectedFont() As String
-    SelectedFont = mListFont(mListPos)
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property SelectedFont
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (String)
-'!--------------------------------------------------------------------------------
-Public Property Let SelectedFont(ByVal vNewValue As String)
-Attribute SelectedFont.VB_MemberFlags = "400"
-
-    Dim i As Integer
-
-    i = FontExist(vNewValue)
-
-    If i > -1 Then
-        mListPos = i
-        RaiseEvent SelectedFontChanged(mListFont(mListPos))
-        DrawControl , True
-    Else
-        RaiseEvent FontNotFound(vNewValue)
-    End If
-
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ShowFontInCombo
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ShowFontInCombo() As Boolean
-    ShowFontInCombo = mShowFontInCombo
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ShowFontInCombo
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let ShowFontInCombo(ByVal vNewValue As Boolean)
-    mShowFontInCombo = vNewValue
-    PropertyChanged "ShowFontInCombo"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboFontCount
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ComboFontCount() As Integer
-    ComboFontCount = mComboFontCount
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboFontCount
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Integer)
-'!--------------------------------------------------------------------------------
-Public Property Let ComboFontCount(ByVal vNewValue As Integer)
-
-    If vNewValue > 50 Or vNewValue < 5 Then vNewValue = 20
-    mComboFontCount = vNewValue
-    PropertyChanged "ComboFontCount"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboFontSize
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ComboFontSize() As Integer
-    ComboFontSize = mComboFontSize
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboFontSize
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Integer)
-'!--------------------------------------------------------------------------------
-Public Property Let ComboFontSize(ByVal vNewValue As Integer)
-
-    If vNewValue > 50 Or vNewValue < 6 Then vNewValue = 8
-    mComboFontSize = vNewValue
-    PropertyChanged "ComboFontSize"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboWidth
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ComboWidth() As Single
-    ComboWidth = mComboWidth
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboWidth
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Single)
-'!--------------------------------------------------------------------------------
-Public Property Let ComboWidth(ByVal vNewValue As Single)
-    mComboWidth = vNewValue
-    PropertyChanged "ComboWidth"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property RecentMax
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get RecentMax() As Integer
-    RecentMax = mRecentMax
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property RecentMax
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Integer)
-'!--------------------------------------------------------------------------------
-Public Property Let RecentMax(ByVal vNewValue As Integer)
-Attribute RecentMax.VB_Description = "If you don't want to use Recents feature enter 0"
-    mRecentMax = vNewValue
-    PropertyChanged "RecentMax"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property RecentBackColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get RecentBackColor() As OLE_COLOR
-    RecentBackColor = mRecentBackColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property RecentBackColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let RecentBackColor(ByVal vNewValue As OLE_COLOR)
-    mRecentBackColor = vNewValue
-    PropertyChanged "RecentBackColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property RecentForeColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get RecentForeColor() As OLE_COLOR
-    RecentForeColor = mRecentForeColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property RecentForeColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let RecentForeColor(ByVal vNewValue As OLE_COLOR)
-    mRecentForeColor = vNewValue
-    PropertyChanged "RecentForeColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ForeColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ForeColor() As OLE_COLOR
-    ForeColor = mForeColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ForeColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let ForeColor(ByVal vNewValue As OLE_COLOR)
-    mForeColor = vNewValue
-    UserControl.ForeColor = mForeColor
-    DrawControl , True
-    PropertyChanged "ForeColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property BackColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get BackColor() As OLE_COLOR
-    BackColor = mBackColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property BackColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let BackColor(ByVal vNewValue As OLE_COLOR)
-    mBackColor = vNewValue
-    UserControl.BackColor = mBackColor
-    DrawControl , True
-    PropertyChanged "BackColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboForeColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ComboForeColor() As OLE_COLOR
-    ComboForeColor = mComboForeColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboForeColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let ComboForeColor(ByVal vNewValue As OLE_COLOR)
-    mComboForeColor = vNewValue
-    PropertyChanged "ComboForeColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboBackColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ComboBackColor() As OLE_COLOR
-    ComboBackColor = mComboBackColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboBackColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let ComboBackColor(ByVal vNewValue As OLE_COLOR)
-    mComboBackColor = vNewValue
-    PropertyChanged "ComboBackColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboSelectColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ComboSelectColor() As OLE_COLOR
-    ComboSelectColor = mComboSelectColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboSelectColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let ComboSelectColor(ByVal vNewValue As OLE_COLOR)
-    mComboSelectColor = vNewValue
-    PropertyChanged "ComboSelectColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub LoadRecentFonts
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   MyHkey (HkeyLoc2)
-'                              MyGroup (String)
-'                              MySection (String)
-'                              myKey (String)
-'!--------------------------------------------------------------------------------
-Public Sub LoadRecentFonts(MyHkey As HkeyLoc2, MyGroup As String, MySection As String, myKey As String)
-
-    Dim i  As Integer
-    Dim fN As String
-    Dim fI As Integer
-
-    ReDim mRecent(mRecentMax)
-
-    For i = 0 To mRecentMax - 1
-        fN = ReadValue(MyHkey, MyGroup & vbBackslash & MySection & vbBackslash & myKey, "RecentFontName" & i + 1, "")
-        fI = FontExist(fN)
-
-        If fI > -1 Then
-            mRecent(i).fName = fN
-            mRecent(i).fIndex = fI
-        End If
-
-    Next
-
-    SetRecents
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub SaveRecentFonts
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   MyHkey (HkeyLoc2)
-'                              MyGroup (String)
-'                              MySection (String)
-'                              myKey (String)
-'!--------------------------------------------------------------------------------
-Public Sub SaveRecentFonts(MyHkey As HkeyLoc2, MyGroup As String, MySection As String, myKey As String)
-
-    Dim i As Integer
-
-    For i = 0 To mRecentCount - 1
-        SetValue MyHkey, MyGroup & vbBackslash & MySection & vbBackslash & myKey, "RecentFontName" & i + 1, mRecent(i).fName
-    Next
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UseMouseWheel
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get UseMouseWheel() As Boolean
-    UseMouseWheel = mUseMouseWheel
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UseMouseWheel
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let UseMouseWheel(ByVal vNewValue As Boolean)
-    mUseMouseWheel = vNewValue
-    PropertyChanged "UseMouseWheel"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub ClearRecent
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Sub ClearRecent()
-    mRecentCount = 0
-
-    ReDim mRecent(0)
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Font
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get Font() As StdFont
-    Set Font = UserControl.Font
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property Font
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (StdFont)
-'!--------------------------------------------------------------------------------
-Public Property Set Font(ByVal vNewValue As StdFont)
-    Set UserControl.Font = vNewValue
-    UserControl_Resize
-    PropertyChanged "Font"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property hWnd
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get hWnd() As Long
-    hWnd = UserControl.hWnd
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ShowFontName
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ShowFontName() As Boolean
-    ShowFontName = mShowFontName
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ShowFontName
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let ShowFontName(ByVal vNewValue As Boolean)
-    mShowFontName = vNewValue
-    PropertyChanged "ShowFontName"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub FillList
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub FillList()
-
-    Dim i As Integer
-
-    mListCount = Screen.FontCount - 1
-
-    ReDim mListFont(mListCount)
-
-    For i = 0 To Screen.FontCount - 1
-        mListFont(i) = Screen.Fonts(i)
-    Next
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboFontBold
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ComboFontBold() As Boolean
-    ComboFontBold = mComboFontBold
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboFontBold
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let ComboFontBold(ByVal vNewValue As Boolean)
-Attribute ComboFontBold.VB_MemberFlags = "400"
-    mComboFontBold = vNewValue
-    PropertyChanged "ComboFontBold"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboFontItalic
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ComboFontItalic() As Boolean
-    ComboFontItalic = mComboFontItalic
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ComboFontItalic
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let ComboFontItalic(ByVal vNewValue As Boolean)
-Attribute ComboFontItalic.VB_MemberFlags = "400"
-    mComboFontItalic = vNewValue
-    PropertyChanged "ComboFontItalic"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ButtonBackColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ButtonBackColor() As OLE_COLOR
-    ButtonBackColor = mButtonBackColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ButtonBackColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let ButtonBackColor(ByVal vNewValue As OLE_COLOR)
-    mButtonBackColor = vNewValue
-    DrawControl , True
-    PropertyChanged "ButtonBackColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ButtonOverColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ButtonOverColor() As OLE_COLOR
-    ButtonOverColor = mButtonOverColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ButtonOverColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let ButtonOverColor(ByVal vNewValue As OLE_COLOR)
-    mButtonOverColor = vNewValue
-    PropertyChanged "ButtonOverColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ButtonForeColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let ButtonForeColor(ByVal vNewValue As OLE_COLOR)
-    mButtonForeColor = vNewValue
-    DrawControl , True
-    PropertyChanged "ButtonForeColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ButtonBorderStyle
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ButtonBorderStyle() As CfBdrStyle
-    ButtonBorderStyle = mButtonBorderStyle
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ButtonBorderStyle
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (CfBdrStyle)
-'!--------------------------------------------------------------------------------
-Public Property Let ButtonBorderStyle(ByVal vNewValue As CfBdrStyle)
-    mButtonBorderStyle = vNewValue
-    DrawControl , True
-    PropertyChanged "ButtonBorderStyle"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function AddToUsedList
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   FontName (String)
-'!--------------------------------------------------------------------------------
-Public Function AddToUsedList(FontName As String) As Integer
-
-    Dim i As Integer
-    Dim F As Boolean
-
-    For i = 0 To mUsedCount - 1
-
-        If LCase$(mUsedList(i)) = LCase$(FontName) Then
-            F = True
-
-            Exit For
-
-        End If
-
-    Next
-
-    If F = False Then
-        mUsedCount = mUsedCount + 1
-
-        ReDim Preserve mUsedList(mUsedCount)
-
-        mUsedList(mUsedCount - 1) = FontName
-        AddToUsedList = mUsedCount - 1
-    Else
-        AddToUsedList = -1
-    End If
-
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub RemoveFromUsedList
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   FontName (String)
-'!--------------------------------------------------------------------------------
-Public Sub RemoveFromUsedList(FontName As String)
-
-    Dim i     As Integer
-    Dim tUL() As String
-    Dim fQ    As Integer
-
-    ReDim tUL(mUsedCount)
-
-    fQ = 1
-
-    For i = 0 To mUsedCount - 1
-
-        If LCase$(mUsedList(i)) <> LCase$(FontName) Then
-            tUL(fQ - 1) = mUsedList(i)
-            fQ = fQ + 1
-        End If
-
-    Next
-
-    mUsedList = tUL
-    mUsedCount = fQ
-
-    ReDim Preserve mUsedList(mUsedCount)
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UsedCount
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get UsedCount() As Integer
-    UsedCount = mUsedCount
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub ClearUsedList
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Sub ClearUsedList()
-    mUsedCount = 0
-
-    ReDim mUsedList(0)
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UsedBackColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get UsedBackColor() As OLE_COLOR
-    UsedBackColor = mUsedBackColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UsedBackColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let UsedBackColor(ByVal vNewValue As OLE_COLOR)
-    mUsedBackColor = vNewValue
-    PropertyChanged "UsedBackColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UsedForeColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get UsedForeColor() As OLE_COLOR
-    UsedForeColor = mUsedForeColor
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property UsedForeColor
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (OLE_COLOR)
-'!--------------------------------------------------------------------------------
-Public Property Let UsedForeColor(ByVal vNewValue As OLE_COLOR)
-    mUsedForeColor = vNewValue
-    PropertyChanged "UsedForeColor"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property XpStyle
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get XpStyle() As Boolean
-    XpStyle = mXPStyle
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property XpStyle
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let XpStyle(ByVal vNewValue As Boolean)
-    mXPStyle = vNewValue
-    UserControl_Resize
-    PropertyChanged "XPStyle"
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ShowFocus
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Property Get ShowFocus() As Boolean
-    ShowFocus = mShowFocus
-End Property
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Property ShowFocus
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   vNewValue (Boolean)
-'!--------------------------------------------------------------------------------
-Public Property Let ShowFocus(ByVal vNewValue As Boolean)
-    mShowFocus = vNewValue
-    PropertyChanged "ShowFocus"
-End Property
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub VScroll1_Change

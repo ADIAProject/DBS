@@ -22,8 +22,25 @@ Begin VB.Form frmOSEdit
    MinButton       =   0   'False
    ScaleHeight     =   2220
    ScaleWidth      =   8400
-   ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
+   Begin prjDIADBS.TextBoxW txtOSVer 
+      Height          =   375
+      Left            =   2880
+      TabIndex        =   0
+      Top             =   240
+      Width           =   5415
+      _ExtentX        =   0
+      _ExtentY        =   0
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   204
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+   End
    Begin prjDIADBS.CheckBoxW chk64bit 
       Height          =   210
       Left            =   120
@@ -44,25 +61,18 @@ Begin VB.Form frmOSEdit
       Caption         =   "frmOSEdit.frx":000C
       Transparent     =   -1  'True
    End
-   Begin prjDIADBS.TextBoxW txtOSVer 
-      Height          =   375
+   Begin prjDIADBS.ctlUcPickBox ucPathDRP 
+      Height          =   315
       Left            =   2880
-      TabIndex        =   0
-      Top             =   240
+      TabIndex        =   4
+      Top             =   720
       Width           =   5415
-      _ExtentX        =   0
-      _ExtentY        =   0
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Text            =   "frmOSEdit.frx":005E
-      CueBanner       =   "frmOSEdit.frx":007E
+      _ExtentX        =   10398
+      _ExtentY        =   556
+      DefaultExt      =   ""
+      DialogType      =   1
+      Enabled         =   0   'False
+      Filters         =   "Supported files|*.*|All Files (*.*)"
    End
    Begin prjDIADBS.ctlJCbutton cmdOK 
       Height          =   750
@@ -84,11 +94,10 @@ Begin VB.Form frmOSEdit
       ButtonStyle     =   10
       BackColor       =   16765357
       Caption         =   "Сохранить изменения и выйти"
+      CaptionEffects  =   0
       PictureAlign    =   0
       PicturePushOnHover=   -1  'True
       PictureShadow   =   -1  'True
-      CaptionEffects  =   0
-      TooltipBackColor=   0
    End
    Begin prjDIADBS.ctlJCbutton cmdExit 
       Height          =   735
@@ -110,24 +119,10 @@ Begin VB.Form frmOSEdit
       ButtonStyle     =   10
       BackColor       =   16765357
       Caption         =   "Выход без сохранения"
+      CaptionEffects  =   0
       PictureAlign    =   0
       PicturePushOnHover=   -1  'True
       PictureShadow   =   -1  'True
-      CaptionEffects  =   0
-      TooltipBackColor=   0
-   End
-   Begin prjDIADBS.ctlUcPickBox ucPathDRP 
-      Height          =   315
-      Left            =   2880
-      TabIndex        =   4
-      Top             =   720
-      Width           =   5415
-      _ExtentX        =   10398
-      _ExtentY        =   556
-      DefaultExt      =   ""
-      DialogType      =   1
-      Enabled         =   0   'False
-      Filters         =   "Supported files|*.*|All Files (*.*)"
    End
    Begin prjDIADBS.LabelW lblPathDRP 
       Height          =   495
@@ -165,6 +160,7 @@ Begin VB.Form frmOSEdit
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackStyle       =   0
       Caption         =   "Версия ОС"
    End
 End
@@ -175,163 +171,241 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-'! -----------------------------------------------------------
-'!  Функция     :  cmdExit_Click
-'!  Переменные  :
-'!  Описание    :
-'! -----------------------------------------------------------
-Private Sub cmdExit_Click()
+Private strFormName As String
 
+Public Property Get CaptionW() As String
+    Dim lngLenStr As Long
+    
+    lngLenStr = DefWindowProc(Me.hWnd, WM_GETTEXTLENGTH, 0, ByVal 0)
+    CaptionW = Space$(lngLenStr)
+    DefWindowProc Me.hWnd, WM_GETTEXT, Len(CaptionW) + 1, ByVal StrPtr(CaptionW)
+End Property
+
+Public Property Let CaptionW(ByVal NewValue As String)
+    DefWindowProc Me.hWnd, WM_SETTEXT, 0, ByVal StrPtr(NewValue & vbNullChar)
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub FontCharsetChange
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub FontCharsetChange()
+
+    ' Выставляем шрифт
+    With Me.Font
+        .Name = strFontOtherForm_Name
+        .Size = lngFontOtherForm_Size
+        .Charset = lngFont_Charset
+    End With
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Localise
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   StrPathFile (String)
+'!--------------------------------------------------------------------------------
+Private Sub Localise(ByVal strPathFile As String)
+    ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
+    FontCharsetChange
+    ' Название формы
+    Me.CaptionW = LocaliseString(strPathFile, strFormName, strFormName, Me.Caption)
+    ' Лэйблы
+    lblOSVer.Caption = LocaliseString(strPathFile, strFormName, "lblOSVer", lblOSVer.Caption)
+    lblPathDRP.Caption = LocaliseString(strPathFile, strFormName, "lblPathDRP", lblPathDRP.Caption)
+    chk64bit.Caption = LocaliseString(strPathFile, strFormName, "chk64bit", chk64bit.Caption)
+    'Кнопки
+    cmdOK.Caption = LocaliseString(strPathFile, strFormName, "cmdOK", cmdOK.Caption)
+    cmdExit.Caption = LocaliseString(strPathFile, strFormName, "cmdExit", cmdExit.Caption)
+    ' Сообщения диалогов выбора файлов и каталогов
+    ucPathDRP.ToolTipTexts(ucFolder) = strMessages(152)
+    ucPathDRP.DialogMsg(ucFolder) = strMessages(152)
+     
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SaveOptions
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub SaveOptions()
+
+    Dim ii As Long
+
+    If mbAddInList Then
+        ii = lngLastIdOS + 1
+
+        With frmOptions.lvOS.ListItems.Add(, , txtOSVer)
+            .SubItems(1) = ucPathDRP.Path
+
+            If chk64bit.Value Then
+                .SubItems(2) = "1"
+            Else
+                .SubItems(2) = "1"
+            End If
+        End With
+
+    Else
+
+        With frmOptions.lvOS
+            ii = .SelectedItem.Index
+            .ListItems.item(ii).Text = txtOSVer
+            .ListItems.item(ii).SubItems(1) = ucPathDRP.Path
+
+            If chk64bit.Value Then
+                    .ListItems.item(ii).SubItems(2) = "1"
+            Else
+
+                    .ListItems.item(ii).SubItems(2) = "0"
+            End If
+        End With
+
+
+    End If
+
+    lngLastIdOS = frmOptions.lvOS.ListItems.count
+    frmOptions.lvOS.Refresh
+    mbAddInList = False
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdExit_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmdExit_Click()
     Unload Me
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  cmdOK_Click
-'!  Переменные  :
-'!  Описание    :
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdOK_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdOK_Click()
 
     SaveOptions
     Unload Me
 End Sub
 
-Private Sub FontCharsetChange()
-
-    ' Выставляем шрифт
-    Me.Font.Name = strFontOtherForm_Name
-    Me.Font.Size = lngFontOtherForm_Size
-    Me.Font.Charset = lngFont_Charset
-    SetBtnFontProperties cmdExit
-    SetBtnFontProperties cmdOK
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Activate
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub Form_Activate()
+    txtOSVer_Change
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  Form_KeyDown
-'!  Переменные  :  KeyCode As Integer, Shift As Integer
-'!  Описание    :  обработка нажатий клавиш клавиатуры
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_KeyDown
+'! Description (Описание)  :   [обработка нажатий клавиш клавиатуры]
+'! Parameters  (Переменные):   KeyCode (Integer)
+'                              Shift (Integer)
+'!--------------------------------------------------------------------------------
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
 
     If KeyCode = vbKeyEscape Then
         Unload Me
     End If
+
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  Form_Load
-'!  Переменные  :
-'!  Описание    :
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Load
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub Form_Load()
+    SetupVisualStyles Me
 
-    ' Устанавливаем картинки кнопок и убираем описание кнопок
-    'SetSmallIcon Me.hWnd
-    'LoadIconImage2Btn cmdPathDRP, "BTN_OPEN", strPathImageMainWork
-    'cmdPathDRP.Caption = vbNullString
-    
-    Call SetIcon(Me.hWnd, "FRMOSEDIT", False)
-    
-    LoadIconImage2BtnJC cmdOK, "BTN_SAVE", strPathImageMainWork
-    LoadIconImage2BtnJC cmdExit, "BTN_EXIT", strPathImageMainWork
+    With Me
+        strFormName = .Name
+        SetIcon .hWnd, strFormName, False
+        .Left = (lngRightWorkArea - lngLeftWorkArea) / 2 - .Width / 2
+        .Top = (lngBottomWorkArea - lngTopWorkArea) / 2 - .Height / 2
+    End With
 
-    ' Локализациz приложения
+    ' Устанавливаем картинки кнопок
+    LoadIconImage2Object cmdOK, "BTN_SAVE", strPathImageMainWork
+    LoadIconImage2Object cmdExit, "BTN_EXIT", strPathImageMainWork
+
+    ' Локализация приложения
     If mbMultiLanguage Then
         Localise strPCLangCurrentPath
     Else
         ' Выставляем шрифт
         FontCharsetChange
     End If
+
 End Sub
 
-'Private Sub Form_Terminate()
-'
-'    If Forms.Count = 0 Then
-'        UnloadApp
-'    End If
-'End Sub
-
-Private Sub Localise(StrPathFile As String)
-
-    Dim strFormName As String
-
-    strFormName = CStr(Me.Name)
-    ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
-    FontCharsetChange
-    ' Название формы
-    Me.Caption = LocaliseString(StrPathFile, strFormName, strFormName, Me.Caption)
-    ' Лэйблы
-    lblOSVer.Caption = LocaliseString(StrPathFile, strFormName, "lblOSVer", lblOSVer.Caption)
-    lblPathDRP.Caption = LocaliseString(StrPathFile, strFormName, "lblPathDRP", lblPathDRP.Caption)
-    chk64bit.Caption = LocaliseString(StrPathFile, strFormName, "chk64bit", chk64bit.Caption)
-    'Кнопки
-    cmdOK.Caption = LocaliseString(StrPathFile, strFormName, "cmdOK", cmdOK.Caption)
-    cmdExit.Caption = LocaliseString(StrPathFile, strFormName, "cmdExit", cmdExit.Caption)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtOSVer_Change
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub txtOSVer_Change()
+    cmdOK.Enabled = LenB(Trim$(txtOSVer)) And LenB(Trim$(ucPathDRP.Path))
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  SaveOptions
-'!  Переменные  :
-'!  Описание    :
-'! -----------------------------------------------------------
-Private Sub SaveOptions()
-
-    Dim i As Long
-
-    If mbAddInList Then
-        i = LastIdOS + 1
-
-        With frmOptions
-            .lvOS.AddItem txtOSVer, , i - 1
-            .lvOS.ItemText(2, i - 1) = ucPathDRP.Path
-
-            If chk64bit.Value Then
-                .lvOS.ItemText(1, i - 1) = "1"
-            Else
-                .lvOS.ItemText(1, i - 1) = "0"
-            End If
-        End With
-
-        'FRMOPTIONS
-    Else
-
-        With frmOptions
-            i = .lvOS.SelectedItem
-            .lvOS.ItemText(0, i) = txtOSVer
-            .lvOS.ItemText(2, i) = ucPathDRP.Path
-
-            If chk64bit.Value Then
-                .lvOS.ItemText(1, i) = "1"
-            Else
-                .lvOS.ItemText(1, i) = "0"
-            End If
-        End With
-
-        'FRMOPTIONS
-    End If
-
-    LastIdOS = frmOptions.lvOS.Count
-    frmOptions.lvOS.Refresh
-    mbAddInList = False
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtOSVer_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub txtOSVer_GotFocus()
+    HighlightActiveControl Me, txtOSVer, True
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  ucPathDRP_Click
-'!  Переменные  :
-'!  Описание    :  выбор каталога или файла
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtOSVer_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub txtOSVer_LostFocus()
+    HighlightActiveControl Me, txtOSVer, False
+End Sub
+
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucPathDRP_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucPathDRP_Click()
 
     Dim strTempPath As String
 
-    strTempPath = ucPathDRP.Path
+    If ucPathDRP.FileCount Then
+        strTempPath = ucPathDRP.FileName
 
-    If InStr(1, strTempPath, strAppPath, vbTextCompare) > 0 Then
-        strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
+        If InStr(1, strTempPath, strAppPath, vbTextCompare) Then
+            strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
+        End If
     End If
 
-
-    If LenB(strTempPath) > 0 Then
+    If LenB(strTempPath) Then
         ucPathDRP.Path = strTempPath
     End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucPathDRP_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ucPathDRP_GotFocus()
+    HighlightActiveControl Me, ucPathDRP, True
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucPathDRP_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ucPathDRP_LostFocus()
+    HighlightActiveControl Me, ucPathDRP, False
 End Sub

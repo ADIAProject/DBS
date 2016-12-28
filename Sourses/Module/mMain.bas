@@ -1,22 +1,26 @@
 Attribute VB_Name = "mMain"
 Option Explicit
 
-' Основные параметры программы
-Public Const strDateProgram         As String = "21/01/2013"
+#Const mbIDE_DBSProject = True
 
-' Основные переменные проекта (название, версия и т.д)
+'Основные параметры программы
+Public Const strDateProgram         As String = "23/12/2016"
+Public Const strVerProgram          As String = "4.12.23"
+
+'Основные переменные проекта (название, версия и т.д)
 Public strProductName               As String
 Public strProductVersion            As String
-Public Const strProjectName         As String = "DriversBackuper"
+'Основные константы проекта (название, сайты)
+Public Const strProjectName         As String = "DBS"
 Public Const strUrl_MainWWWSite     As String = "http://adia-project.net/"                   ' Домашний сайт проекта
 Public Const strUrl_MainWWWForum    As String = "http://adia-project.net/forum/index.php"    ' Домашний форум проекта
 Public Const strUrlOsZoneNetThread  As String = "http://forum.oszone.net/thread-190814.html" ' Топик программы на сайте Oszone.net
 
 'Константы путей основных каталогов и файла настроек (вынесены отдельно для универсальности кода под разные проекты)
-Public Const strToolsLang_Path      As String = "Tools\LangDBS"         ' Каталог с языковыми файлами
-Public Const strToolsDocs_Path      As String = "Tools\DocsDBS"         ' Каталог с документацией на программу
-Public Const strToolsGraphics_Path  As String = "Tools\GraphicsDBS"     ' Каталог с графическими ресурсами программы
-Public Const strSettingIniFile      As String = "DriversBackuper.ini"   ' INI-Файл настроек программы
+Public Const strToolsLang_Path      As String = "Tools\DBS\Lang"         ' Каталог с языковыми файлами
+Public Const strToolsDocs_Path      As String = "Tools\DBS\Docs"         ' Каталог с документацией на программу
+Public Const strToolsGraphics_Path  As String = "Tools\DBS\Graphics"     ' Каталог с графическими ресурсами программы
+Public Const strSettingIniFile      As String = "DBS.ini"   ' INI-Файл настроек программы
 
 ' Версии лицензионного соглашения и файла Donate
 Public Const strEULA_Version        As String = "02/02/2010"
@@ -25,123 +29,147 @@ Public Const strEULA_MD5RTF_Eng     As String = "0cbd9d50eec41b26d24c5465c4be70b
 Public Const strDONATE_MD5RTF       As String = "97f8178b2af5ba9377f76baf4ff71f78"
 Public Const strDONATE_MD5RTF_Eng   As String = "59bbfbf6decbf91023da434cbe940d33"
 
-' Массивы данных
-Public arrHwidsLocal()                      As String
+#If Not mbIDE_DBSProject Then
 
-Public mbDateFormatRus                      As Boolean ' Автообновление конфигурации при удалении драйвера
-Public strSysIni                            As String ' рабочий файл настроек
-Public mbLoadIniTmpAfterRestart             As Boolean
-Public mbEULAAgree                          As Boolean
-Public strWorkTemp                          As String
-Public strWorkTempBackSL                    As String
-Public strWinTemp                           As String
-Public strWinDir                            As String
-Public strSysDir                            As String
-Public strSysDir64                          As String
-Public strSysDir86                          As String
-Public strSysDirCatRoot                     As String
-Public strSysDirDrivers                     As String
-Public strSysDirDrivers64                   As String
-Public strSysDirDRVStore                    As String
-Public strSysDrive                          As String
-Public strWinDirHelp                        As String
-Public strInfDir                            As String
-Public mbLogNotOnCDRoom                     As Boolean
-Public mbHideOtherProcess                   As Boolean
-Public mbDelTmpAfterClose                   As Boolean
-Public mbUpdateCheck                        As Boolean
-Public mbUpdateCheckBeta                    As Boolean
-Public mbUpdateToolTip                      As Boolean
-Public mbIsDesignMode                       As Boolean
-Public mbIsDriveCDRoom                      As Boolean
-Public strArh7zExePATH                      As String
-Public strArh7zParam1                       As String
-Public strArh7zParam2                       As String
-Public strArh7zSFXPATH                      As String
-Public strArh7zSFXConfigPath                As String
-Public strArh7zSFXConfigPathEn              As String
-Public mbAddInList                       As Boolean 'режим работы с элементом listview - либо изменние либо добавление
-Public LastIdOS                          As Long 'номер последнего элемента в списке ОС
-Public mbRestartProgram                  As Boolean 'Маркер перезапуска программы
-Public mbStartMaximazed                  As Boolean
-Public strDPInstExePath                  As String
-Public strDPInstExePath64                As String
-Public strDPInstExePath86                As String
+    'Описание структуры массива информации по HWID
+    Public Type arrHwidsStruct
+        HWID                            As String           ' HWID устройства (обрезанный без "сессии" устройства)
+        HWIDOrig                        As String           ' HWID устройства полный
+        HWIDCutting                     As String           ' HWID устройства обрезанный до первой /
+        HWIDCompat                      As String           ' HWID Совместимый (другой вариант написания)
+        HWIDMatches                     As String           ' HWID Список подходящих (другие варианты написания в порядке совместимости)
+        DevName                         As String           ' Имя устройства
+        Provider                        As String           ' Производитель драйвера устройства
+        Status                          As Long             ' Статус устройства
+        VerLocal                        As String           ' Версия драйвера устройства
+        Description                     As String           ' Описание
+        PriznakSravnenia                As String           ' Результат сравнения драйверов по дате с базой индексов
+        InfSection                      As String           ' Секция inf-файла в которой найден HWID (используется для анализа совместимости)
+        InfName                         As String           ' Имя inf-файла драйвера
+        DPsList                         As String           ' Список пакетов драйверов в котором есть подходящий драйвер
+        DRVScore                        As Long             ' Балл найденного драйвера
+    End Type
+    
+    'Описание структуры массива для поддерживаемой ОС
+    Public Type arrOSStruct
+        Ver                             As String           ' Версия ОС
+        Name                            As String           ' Имя ОС
+        is64bit                         As Long             ' 64-битная ОС
+        drpFolder                       As String           ' Каталог с пакетами драйверов (относительный путь)
+        drpFolderFull                   As String           ' Каталог с пакетами драйверов (полный путь)
+        devIDFolder                     As String           ' Каталог с базой индексов (относительный путь)
+        devIDFolderFull                 As String           ' Каталог с базой индексов  (полный путь)
+        DPFolderNotExist                As Boolean          ' Каталог не сущестует
+        PathPhysX                       As String           ' Путь до файла Physx
+        PathLanguages                   As String           ' Путь до файла Languages
+        PathRuntimes                    As String           ' Путь до файла Runtimes
+        CntBtn                          As Long             ' Количество пакетов в текущей ОС
+        ExcludeFileName                 As String           ' Исключаемые имена пакетов драйверов
+    End Type
+    
+    'Массивы данных
+    Public arrHwidsLocal()              As arrHwidsStruct   ' Массив информации о драйверах устройств
+    Public arrOSList()                  As arrOSStruct      ' Массив поддерживаемых ОС
+#End If
 
-' Параметры DPinst
-Public mbDpInstLegacyMode                As Boolean
-Public mbDpInstPromptIfDriverIsNotBetter As Boolean
-Public mbDpInstForceIfDriverIsNotBetter  As Boolean
-Public mbDpInstSuppressAddRemovePrograms As Boolean
-Public mbDpInstSuppressWizard            As Boolean
-Public mbDpInstQuietInstall              As Boolean
-Public mbDpInstScanHardware              As Boolean
+#If mbIDE_DBSProject Then
+    'Описание структуры массива информации по HWID (для DBS)
+    Public Type arrHwidsStructDBS
+        i0_DriverDesc               As String           ' Описание устройтва
+        i1_DriverDate               As String           ' Дата драйвера
+        i2_DriverVersion            As String           ' Версия драйвера
+        i3_ProviderName             As String           ' Производитель драйвера устройства
+        i4_ClassName                As String           ' Класс устроства
+        i5_Class                    As String           ' Имя класса устройства
+        i6_InfPath                  As String           ' Производитель драйвера устройства
+        i7_InfSection               As String           ' Секция inf-файла в которой найден HWID
+        i8_MatchingDeviceId         As String           ' Совместимые драйвера
+        i9_ClassID                  As String           ' ID Класса устройства
+    End Type
+    
+    'Описание структуры массива для поддерживаемой ОС (для DBS)
+    Public Type arrOSStructDBS
+        Ver                             As String           ' Версия ОС
+        is64bit                         As Long             ' 64-битная ОС
+        drpFolder                       As String           ' Каталог с пакетами драйверов (относительный путь)
+        drpFolderFull                   As String           ' Каталог с пакетами драйверов (полный путь)
+        DPFolderNotExist                As Boolean          ' Каталог не сущестует
+    End Type
 
-Public strImageMainName                  As String
-Public mbSilentDLL                       As Boolean
+    'Массивы данных
+    Public arrHwidsLocal()              As arrHwidsStructDBS   ' Массив информации о драйверах устройств
+    Public arrOSList()                  As arrOSStructDBS      ' Массив поддерживаемых ОС
+#End If
 
-' Расширенное меню
-'Public mbExMenu                         As Boolean
-Public strImageMenuName                  As String
+'Пути до системных каталогов и других рабочих файлов
+Public strWorkTemp                  As String           ' Рабочий временный каталог
+Public strWorkTempBackSL            As String           ' Рабочий временный каталог   + \
+Public strWinTemp                   As String           ' Системный временный каталог + \
+Public strWinDir                    As String           ' Системный каталог Windows   + \
+Public strSysDir                    As String           ' Системный каталог System32  + \
+Public strSysDir64                  As String           ' Системный каталог Windows\System32  + \
+Public strSysDir86                  As String           ' Системный каталог Windows\Wow64  + \
+Public strSysDirCatRoot             As String           ' c:\Windows\System32\catroot\
+Public strSysDirDrivers             As String           ' Системный каталог Windows\System32\drivers  + \
+Public strSysDirDrivers64           As String           ' Системный каталог Windows\Wow64\drivers  + \
+Public strSysDirDRVStore            As String           ' Системный каталог System32\DriverStore\
+Public strSysDrive                  As String           ' Системный диск
+Public strWinDirHelp                As String           ' c:\Windows\Help\
+Public strInfDir                    As String           ' c:\Windows\inf\
 
-'Прочие параметры программы
-Public mbIsWin64                         As Boolean
-Public mbFirstStart                      As Boolean
-
-' Запуск с коммандной строкой
-Public mbRunWithParam                    As Boolean
-Private mbRunWithParamS                  As Boolean
-Private strRunWithParam                  As String
-
-Private mbIsUserAnAdmin                  As Boolean ' Пользователь администратор?
-
-' кэпшн основной формы
-Public strFrmMainCaptionTemp             As String
-Public strFrmMainCaptionTempDate         As String
-
-'-------------------- Переменные размеров Форм ------------------'
-' Значения размеров формы
-Public lngMainFormWidth                  As Long
-Public lngMainFormHeight                 As Long
-' Минимальные значения размеров формы
-Public Const lngMainFormWidthMin         As Long = 12700
-Public Const lngMainFormHeightMin        As Long = 6000
-' Дефолтные значения размеров формы
-Private Const lngMainFormWidthDef        As Long = 12700
-Private Const lngMainFormHeightDef       As Long = 8000
-
-Public mbSaveSizeOnExit                  As Boolean
-Public mbCheckAllGroup                   As Boolean
-Public mbListOnlyGroup                   As Boolean
-Public miStartMode                       As Long
-Public miArchMode                        As Long
-Public arrOSList()                       As String
-Public OSCount                           As Long
-Public mbBackFolderPredefine             As Boolean
-Public mbBlockListOnBackup               As Boolean
-
-' Параметры каталога %Temp%
-Public mbTempPath                        As Boolean
-Public strAlternativeTempPath            As String
-Public mbPatnAbs                         As Boolean
-Public lngArchNameMode                   As Long
-Public strArchNameCustom                 As String
-
-Public mbDisableDEP                      As Boolean ' Переменная для определения выключения DEP
-
-Private mbInitXPStyle                    As Boolean
+'Переменные и маркеры используемые в коде программы
+Public mbFirstStart                 As Boolean          ' Флаг указывающий окочание запуска программы
+Public mbIsDriveCDRoom              As Boolean          ' Флаг, указывающий что рабочий диск является CDRoom
+Public mbAddInList                  As Boolean 'режим работы с элементом listview - либо изменние либо добавление
+Public lngLastIdOS                     As Long 'номер последнего элемента в списке ОС
+Public mbRestartProgram             As Boolean          ' Маркер перезапуска программы
+Public mbCheckAllGroup              As Boolean
+Public mbListOnlyGroup              As Boolean
+Public miArchMode                   As Long
+Public mbBackFolderPredefine        As Boolean
+Public mbBlockListOnBackup          As Boolean
+Public strFrmMainCaptionTemp        As String           ' кэпшн основной формы
+Public strFrmMainCaptionTempDate    As String           ' кэпшн основной формы - дата релиза программы
+Public lngArchNameMode              As Long
+Public strArchNameCustom            As String
 
 ' Переменные для определения модели компа
-Public strCompName                       As String
-Public strMB_Model                       As String
-Public strMB_Manufacturer                As String
-Public strCompModel                      As String
-Public mbIsNotebok                       As Boolean ' Этот компьютер является ноутбуком
+Public strCompModel                 As String
+Public strMB_Model                  As String
+Public strMB_Manufacturer           As String
+Public strCompName                  As String
+Public mbIsNotebok                  As Boolean ' Этот компьютер является ноутбуком
 
-Public mbCheckUpdNotEnd                  As Boolean ' Маркер, показывающий что еще идет проверка обновления программы
-Public mbChangeResolution                As Boolean ' Маркер, показывающий что проводилось изменение разрешения экрана
-Public mbSilentRun                       As Boolean ' Работаем в тихом режиме
-Public strThisBuildBy                    As String  ' Добавляем к описанию в главном окне в названии программы
+
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ChangeStatusBarText
+'! Description (Описание)  :   [Изменение текста статустной строки и отладочной информации]
+'! Parameters  (Переменные):   strPanel2Text (String)
+'                              strDebugText (String)
+'                              mbEqual (Boolean = False)
+'                              mbDoEvents (Boolean = True)
+'                              strPanel1Text (String)
+'!--------------------------------------------------------------------------------
+Public Sub ChangeStatusBarText(ByVal strPanel2Text As String, Optional ByVal strPanel1Text As String = vbNullString, Optional ByVal mbDoEvents As Boolean = True)
+
+    If LenB(strPanel2Text) Then
+
+        If frmMain.ctlUcStatusBar1.PanelCount >= 2 Then
+            frmMain.ctlUcStatusBar1.PanelText(2) = strPanel2Text
+        Else
+            frmMain.ctlUcStatusBar1.PanelText(1) = strPanel2Text
+        End If
+
+        If LenB(strPanel1Text) Then
+            frmMain.ctlUcStatusBar1.PanelText(1) = strPanel1Text
+        End If
+        
+        If mbDoEvents Then
+            DoEvents
+        End If
+    End If
+End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub Main
@@ -152,31 +180,32 @@ Private Sub Main()
 
     Dim mbShowFormLicence As Boolean
     Dim strSysIniTMP      As String
-    Dim strLicenceDate    As String  ' дата лицензионного соглашения из реестра
-    Dim mbShowLicence     As Boolean ' Показать лицензионное соглашение
-    Dim mbIsUserAnAdmin   As Boolean ' Пользователь администратор?
+    Dim strLicenceDate    As String
+    ' дата лицензионного соглашения из реестра
+    Dim mbIsUserAnAdmin   As Boolean
+    ' Пользователь администратор?
 
     On Error Resume Next
 
-    dtStartTimeProg = GetTickCount
-    Set objFSO = New Scripting.FileSystemObject
+    dtStartTimeProg = GetTimeStart
 
     ' Запоминаем app.path и прочее в переменные
-    GetCurAppPath
-    strProductVersion = App.Major & "." & App.Minor & "." & App.Revision
-    strProductName = App.ProductName & " v." & strProductVersion & " @" & App.CompanyName
+    GetMyAppProperties
 
     'считываем версию операционки
-    If Not OsCurrVersionStruct.IsInitialize Then
-        OsCurrVersionStruct = OSInfo
+    If Not OSCurrVersionStruct.IsInitialize Then
+        OSCurrVersionStruct = OSInfo
     End If
 
-    strOsCurrentVersion = OsCurrVersionStruct.VerFull
     'Получаем временный каталог windows и каталог windows
     strWinDir = BackslashAdd2Path(Environ$("WINDIR"))
     strWinTemp = BackslashAdd2Path(Environ$("TMP"))
+    strSysDrive = Environ$("SYSTEMDRIVE")
+    strCompName = SafeFileName(Environ$("COMPUTERNAME"))
+    
+    lngFreeSpaceSysDrive = GetSystemDiskFreeSpace(strSysDrive)
 
-    If InStr(strWinTemp, " ") Then
+    If InStr(strWinTemp, strSpace) Then
         strWinTemp = BackslashAdd2Path(PathCombine(strWinDir, "TEMP"))
     End If
 
@@ -184,7 +213,7 @@ Private Sub Main()
     If PathExists(strWinTemp) = False Then
         MsgBox "Windows TempPath not Exist or Environ %TMP% undefined. Program is exit!!!", vbInformation, strProductName
 
-        End
+        GoTo ExitSub
 
     End If
     '******************************************
@@ -192,7 +221,7 @@ Private Sub Main()
     ' Программа уже запущена???
     If App.PrevInstance And Not InIDE() Then
         MsgBoxEx "Found a running application 'Drivers Installer Assistant'. If you restart the program from the settings menu, then save the settings, the program waits until the previous session..." & str2vbNewLine & _
-                                    "This window will close automatically in 5 seconds. Please wait or click OK", 6, vbExclamation + vbSystemModal, strProductName
+                                    "This window will close automatically in 5 seconds. Please wait or click OK", vbExclamation + vbSystemModal, strProductName, 6
         ShowPrevInstance
     Else
         '******************************************
@@ -205,7 +234,15 @@ Private Sub Main()
     If PathExists(strAppPathBackSL & "Tools\") = False Then
         MsgBox "Not found the main program subfolder '.\Tools'." & vbNewLine & "Program is exit!!!", vbInformation, strProductName
 
-        End
+        GoTo ExitSub
+
+    End If
+    
+    ' Если каталог tools недоступен
+    If PathExists(strAppPathBackSL & "Tools\" & strProjectName & "\") = False Then
+        MsgBox "Not found the main program subfolder '.\Tools\" & strProjectName & "'." & vbNewLine & "Program is exit!!!", vbInformation, strProductName
+
+        GoTo ExitSub
 
     End If
 
@@ -213,8 +250,8 @@ Private Sub Main()
     strWorkTemp = strWinTemp & strProjectName
     strWorkTempBackSL = BackslashAdd2Path(strWorkTemp)
 
-    ' Создаем временный рабочий каталог
-    If PathExists(strAppPathBackSL & strSettingIniFile) = False Then
+    ' Путь до файла %strProjectName%.ini
+    If FileExists(strAppPathBackSL & strSettingIniFile) = False Then
         strSysIni = strAppPathBackSL & "Tools\" & strSettingIniFile
     Else
         strSysIni = strAppPathBackSL & strSettingIniFile
@@ -235,7 +272,9 @@ Private Sub Main()
     'загружаем программные сообщения
     LocaliseMessage strPCLangCurrentPath
     ' Получение настроек из ini-файла
-    GetMainIniParam
+    If Not GetMainIniParam Then
+        GoTo ExitSub
+    End If
 
     ' Если стоит настройка проверять временный путь на наличие ini, то перезагружаем файл параметров
     If mbLoadIniTmpAfterRestart Then
@@ -243,7 +282,7 @@ Private Sub Main()
             ' Reload Main ini
             strSysIniTMP = GetSetting(App.ProductName, "Settings", "LOAD_INI_TMP_PATH", vbNullString)
 
-            If LenB(strSysIniTMP) > 0 Then
+            If LenB(strSysIniTMP) Then
                 If PathExists(strSysIniTMP) Then
                     strSysIni = strSysIniTMP
                     ' Собственно перезагрузка настроек
@@ -253,6 +292,7 @@ Private Sub Main()
         End If
     End If
 
+    ' Создаем временный рабочий каталог
     If PathExists(strWorkTemp) = False Then
         CreateNewDirectory strWorkTemp
     End If
@@ -264,72 +304,73 @@ Private Sub Main()
 
     'перегружаем программные сообщения
     LocaliseMessage strPCLangCurrentPath
-    strPathImageStatusButton = strAppPathBackSL & strToolsGraphics_Path & "\StatusButton\"
+    'strPathImageStatusButton = strAppPathBackSL & strToolsGraphics_Path & "\StatusButton\"
     strPathImageMain = strAppPathBackSL & strToolsGraphics_Path & "\Main\"
     'strPathImageMenu = strAppPathBackSL & strToolsGraphics_Path & "\Menu\"
-    LoadIconImagePath
-    ' Находится ли лог на CD
-    mbLogNotOnCDRoom = LogNotOnCDRoom
+    GetImageSkinPath
     ' Очищаем лог-историю
     MakeCleanHistory
     ' Получаем размеры рабочей области программы
     GetWorkArea
     ' Проверяем на запуск с параметрами
-    strRunWithParam = CStr(Command)
-
-    If LenB(strRunWithParam) > 0 Then
-        ' Парсинг строки запуска
-        CmdLineParsing
+    If LenB(Command) Then
+        ' Запуск парсинга строки запуска
+        If CmdLineParsing Then
+            ' Если функция CmdLineParsing=True, то требуется выход из приложения
+            GoTo ExitSub
+        End If
+        
     End If
 
     If APIFunctionPresent("IsUserAnAdmin", "shell32.dll") Then
         mbIsUserAnAdmin = IsUserAnAdmin
+        'mbIsUserAnAdmin = IsUserAnAdministrator
     Else
+        If mbDebugStandart Then DebugMode vbTab & "APIFunctionPresent: " & IsUserAnAdmin & "=" & False
         mbIsUserAnAdmin = True
     End If
 
     If Not mbDebugTime2File Then
-        DebugMode "Current Date: " & Now()
+        If mbDebugStandart Then DebugMode "Current Date: " & Now()
     End If
 
-    DebugMode "Version: " & strProductName & vbNewLine & _
+    If mbDebugStandart Then DebugMode _
+              "Version: " & strProductName & vbNewLine & _
               "Build: " & strDateProgram & vbNewLine & _
-              "ExeName: " & App.EXEName & ".exe" & vbNewLine & _
+              "ExeName: " & strAppEXEName & ".exe" & vbNewLine & _
               "AppWork: " & strAppPath & vbNewLine & _
               "is User an Admin?: " & mbIsUserAnAdmin
 
     If mbIsUserAnAdmin Then
         ' записываем в реестр мой сертификат, для ЭЦП на exe-файлы
-        DebugMode "SaveSert2Reestr"
+        If mbDebugStandart Then DebugMode "SaveSert2Reestr"
         SaveSert2Reestr
     Else
 
         If Not mbRunWithParam Then
             If MsgBox(strMessages(138), vbYesNo + vbQuestion, strProductName) = vbNo Then
-
-                End
-
+                GoTo ExitSub
             End If
         End If
     End If
 
-    DebugMode "WinDir: " & strWinDir & vbNewLine & _
+    If mbDebugStandart Then DebugMode _
+              "WinDir: " & strWinDir & vbNewLine & _
               "TmpDir: " & strWinTemp & vbNewLine & _
               "WorkTemp: " & strWorkTemp & vbNewLine & _
+              "FreeSpace: " & lngFreeSpaceSysDrive & " MB" & vbNewLine & _
               "IsDriveCDRoom: " & mbIsDriveCDRoom
 
-    If strOsCurrentVersion > "5.0" Then
+    If IsWinXPOrLater Then
+
         ' Определение windows x64
-        mbIsWin64 = IsWow64
-        DebugMode "IsWow64: " & mbIsWin64
+        mbIsWin64 = OS_Is_x64
+        If mbDebugStandart Then DebugMode "OS-is-x64: " & mbIsWin64
 
         If mbIsWin64 Then
             Win64ReloadOptions
         End If
-
-    ElseIf strOsCurrentVersion = "5.0" Then
-        ' Для win2k надо старый devcon
-        'strDevConExePath = strDevConExePathW2k
+        
     End If
 
     ' Disable DEP for current process
@@ -338,9 +379,12 @@ Private Sub Main()
     End If
 
     ' Регистрация внешних компонент
-    RegisterAddComponent
+    If Not RegisterAddComponent Then
+        GoTo ExitSub
+    End If
 
-    DebugMode "OsCurrentVersion: " & strOsCurrentVersion & vbNewLine & _
+    If mbDebugStandart Then DebugMode _
+              "OsCurrentVersion: " & strOSCurrentVersion & vbNewLine & _
               "Architecture: " & strOSArchitecture & vbNewLine & _
               "OS Language: ID=" & strPCLangID & " Name=" & strPCLangEngName & "(" & strPCLangLocaliseName & ")"
 
@@ -352,64 +396,54 @@ Private Sub Main()
     strSysDirDrivers = strSysDir86 & "drivers\"
     strInfDir = strWinDir & "inf\"
     strWinDirHelp = strWinDir & "help\"
-    strSysDrive = Environ$("SYSTEMDRIVE")
+
 
     strSysDirDRVStore = strSysDir86 & "DRVSTORE\"
-    If strOsCurrentVersion >= "6.0" Then
+    If IsWinVistaOrLater Then
         strSysDirDRVStore = strSysDir86 & "DriverStore\FileRepository\"
     End If
 
-    DebugMode "InitXPStyle: " & mbInitXPStyle
-
     If APIFunctionPresent("IsAppThemed", "uxtheme.dll") Then
         mbAppThemed = IsAppThemed
-        DebugMode "IsAppThemed: " & mbAppThemed
+        If mbDebugStandart Then DebugMode "IsAppThemed: " & mbAppThemed
+    Else
+        If mbDebugStandart Then DebugMode vbTab & "APIFunctionPresent: " & IsAppThemed & "=" & False
     End If
 
     mbAeroEnabled = IsAeroEnabled
-    DebugMode "IsAeroEnabled : " & mbAeroEnabled
+    If mbDebugStandart Then DebugMode "IsAeroEnabled : " & mbAeroEnabled
     ' изменяем разрешающую способность экрана монитора при необходимости
     SetVideoMode
     GetWorkArea
-    ' Переменные для использовании при создании имени архива
+    
+    ' Получаем имя производителя материнской платы/ноутбука
     strCompModel = GetMBInfo()
-    DebugMode "isNotebook: " & mbIsNotebok & vbNewLine & _
+    If mbDebugStandart Then DebugMode _
+              "PreDefined PC isNotebook: " & mbIsNotebook & vbNewLine & _
               "Notebook/Motherboard Model: " & strCompModel & vbNewLine & _
               "SystemDrive: " & strSysDrive & vbNewLine & _
               "SysDir: " & strSysDir & vbNewLine & _
               "SysDir86: " & strSysDir86 & vbNewLine & _
               "SysDir64: " & strSysDir64 & vbNewLine & _
               "IE Version: " & regParam
-    
+
+    ' Маркер указывающий что это "первый" запуск программы, нужен для события активации формы и других процедур
     mbFirstStart = True
+    
+    ' Если запуск программы произошел не с параметрами, то....
+    If Not mbRunWithParam Then
     ' Показ лицензионного соглашения
-    mbShowLicence = GetSetting(App.ProductName, "Licence", "Show at Startup", True)
-    strLicenceDate = GetSetting(App.ProductName, "Licence", "EULA_DATE", strEULA_Version)
-
-    If InStr(1, strLicenceDate, strEULA_Version, vbTextCompare) Then
-        If mbShowLicence Then
-            If Not mbRunWithParam Then
-                mbShowFormLicence = True
+        strLicenceDate = GetSetting(App.ProductName, "Licence", "EULA_DATE", strEULA_Version)
+        mbShowFormLicence = GetSetting(App.ProductName, "Licence", "Show at Startup", True)
+        If mbShowFormLicence Then
+            If Not mbEULAAgree Then
+                mbShowFormLicence = StrComp(strLicenceDate, strEULA_Version) <> 0
             End If
-
-            If mbEULAAgree Then
-                mbShowFormLicence = False
-            End If
-
-        Else
-            mbShowFormLicence = False
-        End If
-
-    Else
-
-        If Not mbRunWithParam Then
-            mbShowFormLicence = True
-        End If
-
-        If mbEULAAgree Then
-            mbShowFormLicence = False
         End If
     End If
+    'Because Ambient.UserMode does not report IDE behavior properly, we use our own UserMode tracker.  Many thanks to
+    ' Kroc of camendesign.com for suggesting this fix.
+    g_UserModeFix = True
 
     If mbShowFormLicence Then
         'Открываем форму лицензионного соглашения
@@ -419,576 +453,8 @@ Private Sub Main()
         frmMain.Show vbModeless
     End If
 
+ExitSub:
 
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub ChangeStatusTextAndDebug
-'! Description (Описание)  :   [Изменение текста статустной строки и отладочной информации]
-'! Parameters  (Переменные):   strPanel2Text (String)
-'                              strDebugText (String)
-'                              mbEqual (Boolean = False)
-'                              mbDoEvents (Boolean = True)
-'                              strPanel1Text (String)
-'!--------------------------------------------------------------------------------
-Public Sub ChangeStatusTextAndDebug(Optional strPanel2Text As String, Optional strDebugText As String, Optional ByVal mbEqual As Boolean = False, Optional ByVal mbDoEvents As Boolean = True, Optional strPanel1Text As String)
-
-    If LenB(strPanel2Text) > 0 Then
-        If mbDoEvents Then
-            DoEvents
-        End If
-
-        If frmMain.ctlUcStatusBar1.PanelCount >= 2 Then
-            frmMain.ctlUcStatusBar1.PanelText(2) = strPanel2Text
-        Else
-            frmMain.ctlUcStatusBar1.PanelText(1) = strPanel2Text
-        End If
-
-        If LenB(strPanel1Text) > 0 Then
-            frmMain.ctlUcStatusBar1.PanelText(1) = strPanel1Text
-        End If
-    End If
-
-    If LenB(strDebugText) > 0 Then
-        If mbEqual Then
-            If LenB(strPanel1Text) > 0 Then
-                DebugMode strPanel1Text & ": " & strPanel2Text
-            Else
-                DebugMode strPanel2Text
-            End If
-
-        Else
-            DebugMode strDebugText
-        End If
-
-    Else
-
-        If mbEqual Then
-            If LenB(strPanel1Text) > 0 Then
-                DebugMode strPanel1Text & ": " & strPanel2Text
-            Else
-                DebugMode strPanel2Text
-            End If
-        End If
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub CreateIni
-'! Description (Описание)  :   [Сохранение настроек в ини файл если файла нет]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub CreateIni()
-
-
-    If PathExists(strSysIni) = False Then
-        If mbIsDriveCDRoom Then
-            strSysIni = strWorkTempBackSL & strSettingIniFile
-            MsgBox "File " & strSettingIniFile & " is not Exist!" & vbNewLine & "This program works from CD\DVD, so we create temporary " & strSettingIniFile & "-file" & vbNewLine & strSysIni, vbInformation + vbApplicationModal, strProductName
-        End If
-
-        'Секция Main
-        IniWriteStrPrivate "Main", "DelTmpAfterClose", "1", strSysIni
-        IniWriteStrPrivate "Main", "UpdateCheck", "1", strSysIni
-        IniWriteStrPrivate "Main", "UpdateCheckBeta", "0", strSysIni
-        IniWriteStrPrivate "Main", "StartMode", "2", strSysIni
-        IniWriteStrPrivate "Main", "EULAAgree", "0", strSysIni
-        IniWriteStrPrivate "Main", "HideOtherProcess", "0", strSysIni
-        IniWriteStrPrivate "Main", "AlternativeTemp", "0", strSysIni
-        IniWriteStrPrivate "Main", "AlternativeTempPath", "%Temp%", strSysIni
-        IniWriteStrPrivate "Main", "AutoLanguage", "1", strSysIni
-        IniWriteStrPrivate "Main", "StartLanguageID", "0409", strSysIni
-        IniWriteStrPrivate "Main", "IconMainSkin", "Standart", strSysIni
-        IniWriteStrPrivate "Main", "SilentDLL", "0", strSysIni
-        IniWriteStrPrivate "Main", "LoadIniTmpAfterRestart", "0", strSysIni
-        IniWriteStrPrivate "Main", "DateFormatRus", "1", strSysIni
-        IniWriteStrPrivate "Main", "CheckAllGroup", "1", strSysIni
-        IniWriteStrPrivate "Main", "ListOnlyGroup", "1", strSysIni
-        IniWriteStrPrivate "Main", "BlockListOnBackup", "1", strSysIni
-        IniWriteStrPrivate "Main", "CalculateHashMode", "1", strSysIni
-        IniWriteStrPrivate "Main", "ArchMode", "0", strSysIni
-
-        'Секция Debug
-        IniWriteStrPrivate "Debug", "DebugEnable", "1", strSysIni
-        IniWriteStrPrivate "Debug", "DebugLogPath", "%SYSTEMDRIVE%", strSysIni
-        IniWriteStrPrivate "Debug", "DebugLogName", "DBS-LOG_%DATE%.txt", strSysIni
-        IniWriteStrPrivate "Debug", "CleenHistory", "1", strSysIni
-        IniWriteStrPrivate "Debug", "DetailMode", "1", strSysIni
-        IniWriteStrPrivate "Debug", "DebugLog2AppPath", "0", strSysIni
-        IniWriteStrPrivate "Debug", "Time2File", "0", strSysIni
-        'Секция DPInst
-        IniWriteStrPrivate "DPInst", "PathExe", "Tools\DPInst\DPInst.exe", strSysIni
-        IniWriteStrPrivate "DPInst", "PathExe64", "Tools\DPInst\DPInst64.exe", strSysIni
-        'IniWriteStrPrivate "DPInst", "LegacyMode", 1, strSysIni
-        'IniWriteStrPrivate "DPInst", "PromptIfDriverIsNotBetter", 1, strSysIni
-        'IniWriteStrPrivate "DPInst", "ForceIfDriverIsNotBetter", 0, strSysIni
-        'IniWriteStrPrivate "DPInst", "SuppressAddRemovePrograms", 0, strSysIni
-        'IniWriteStrPrivate "DPInst", "SuppressWizard", 0, strSysIni
-        'IniWriteStrPrivate "DPInst", "QuietInstall", 0, strSysIni
-        'IniWriteStrPrivate "DPInst", "ScanHardware", 1, strSysIni
-        'Секция Arc
-        IniWriteStrPrivate "Arc", "PathExe", "Tools\Arc\7za.exe", strSysIni
-        IniWriteStrPrivate "Arc", "CompressParam1", "-mmt=off -m0=BCJ2 -m1=LZMA2:d32m:fb273 -m2=LZMA2:d512k -m3=LZMA2:d512k -mb0:1 -mb0s1:2 -mb0s2:3 *.ini -ir!*.inf", strSysIni
-        IniWriteStrPrivate "Arc", "CompressParam2", "-mmt=off -m0=BCJ2 -m1=LZMA2:d32m:fb273 -m2=LZMA2:d512k -m3=LZMA2:d512k -mb0:1 -mb0s1:2 -mb0s2:3 -xr!*.inf -x!*.ini", strSysIni
-        IniWriteStrPrivate "Arc", "PathSFX", "Tools\Arc\sfx\7zSD.sfx", strSysIni
-        IniWriteStrPrivate "Arc", "PathSFXConfig", "Tools\Arc\sfx\config.txt", strSysIni
-        IniWriteStrPrivate "Arc", "PathSFXConfigEn", "Tools\Arc\sfx\config_en.txt", strSysIni
-        '[ARCName]
-        IniWriteStrPrivate "ARCName", "StartMode", "1", strSysIni
-        IniWriteStrPrivate "ARCName", "CustomName", "DP_%PCMODEL%_%OSVer%_%OSBit%_%DATE%", strSysIni
-        'Folder=DP_%COMPUTERNAME%_%OS_Ver%_%OS_Bit%_%DATE%
-        '7z=DP_%COMPUTERNAME%_%OS_Ver%_%OS_Bit%_%DATE%
-        '7z-sfx=DriverAutoInstaller_%COMPUTERNAME%_%OS_Ver%_%OS_Bit%_%DATE%
-        'Секция OS
-        IniWriteStrPrivate "OS", "OSCount", "4", strSysIni
-        'Секция OS_1
-        IniWriteStrPrivate "OS_1", "Ver", "5.0;5.1;5.2", strSysIni
-        IniWriteStrPrivate "OS_1", "drpFolder", "drivers\2k_xp_2003\x32\", strSysIni
-        IniWriteStrPrivate "OS_1", "is64bit", "0", strSysIni
-        'Секция OS_2
-        IniWriteStrPrivate "OS_2", "Ver", "5.1;5.2", strSysIni
-        IniWriteStrPrivate "OS_2", "drpFolder", "drivers\2k_xp_2003\x64\", strSysIni
-        IniWriteStrPrivate "OS_2", "is64bit", "1", strSysIni
-
-
-
-
-
-
-
-
-
-        'Секция OS_3
-        IniWriteStrPrivate "OS_3", "Ver", "6.0;6.1;6.2;6.3", strSysIni
-        IniWriteStrPrivate "OS_3", "drpFolder", "drivers\vista_7_8\x32\", strSysIni
-        IniWriteStrPrivate "OS_3", "is64bit", "0", strSysIni
-
-
-
-
-
-
-        'Секция OS_4
-        IniWriteStrPrivate "OS_4", "Ver", "6.0;6.1;6.2;6.3", strSysIni
-        IniWriteStrPrivate "OS_4", "drpFolder", "drivers\vista_7_8\x64\", strSysIni
-        IniWriteStrPrivate "OS_4", "is64bit", "1", strSysIni
-        'Секция MainForm
-        IniWriteStrPrivate "MainForm", "Width", CStr(lngMainFormWidthDef), strSysIni
-        IniWriteStrPrivate "MainForm", "Height", CStr(lngMainFormHeightDef), strSysIni
-        IniWriteStrPrivate "MainForm", "StartMaximazed", "0", strSysIni
-        IniWriteStrPrivate "MainForm", "SaveSizeOnExit", "0", strSysIni
-        IniWriteStrPrivate "MainForm", "FontName", "Tahoma", strSysIni
-        IniWriteStrPrivate "MainForm", "FontSize", "8", strSysIni
-        IniWriteStrPrivate "MainForm", "HighlightColor", "32896", strSysIni
-
-        'Секция Buttons
-        IniWriteStrPrivate "Button", "FontName", "Tahoma", strSysIni
-        IniWriteStrPrivate "Button", "FontSize", "8", strSysIni
-        IniWriteStrPrivate "Button", "FontUnderline", "0", strSysIni
-        IniWriteStrPrivate "Button", "FontStrikethru", "0", strSysIni
-        IniWriteStrPrivate "Button", "FontItalic", "0", strSysIni
-        IniWriteStrPrivate "Button", "FontBold", "0", strSysIni
-        IniWriteStrPrivate "Button", "FontColor", "0", strSysIni
-
-        ' Приводим Ini файл к читабельному виду
-        NormIniFile strSysIni
-        ' Активация отладки после создания ini-файла
-        mbDebugEnable = True
-        mbCleanHistory = True
-        strDebugLogPathTemp = "%SYSTEMDRIVE%"
-        strDebugLogNameTemp = "DBS-LOG_%DATE%.txt"
-    End If
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub GetMainIniParam
-'! Description (Описание)  :   [Получение настроек из ини файла]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub GetMainIniParam()
-
-    Dim i          As Long
-    Dim cntOsInIni As Integer
-    Dim strDebugLogPathFolder       As String
-
-    '[Description]
-    strThisBuildBy = GetIniValueString(strSysIni, "Description", "BuildBy", vbNullString)
-    'strThisBuildBy = "www.SamLab.Ws"
-    '[Debug]
-    ' Активация отладки
-    mbDebugEnable = GetIniValueBoolean(strSysIni, "Debug", "DebugEnable", 1)
-    ' Очистка истории
-    mbCleanHistory = GetIniValueBoolean(strSysIni, "Debug", "CleenHistory", 1)
-    ' Путь до лог файла
-    strDebugLogPathTemp = PathNameFromPath(GetIniValueString(strSysIni, "Debug", "DebugLogPath", "%SYSTEMDRIVE%"))
-    strDebugLogPath = PathCollect(PathNameFromPath(GetIniValueString(strSysIni, "Debug", "DebugLogPath", "%SYSTEMDRIVE%")))
-    ' Имя лог-файла
-    strDebugLogNameTemp = GetIniValueString(strSysIni, "Debug", "DebugLogName", "DBS-LOG_%DATE%.txt")
-    strDebugLogName = ExpandFileNamebyEnvironment(GetIniValueString(strSysIni, "Debug", "DebugLogName", "DBS-LOG_%DATE%.txt"))
-    ' Деталировка отладки - по умолчанию=1
-    lngDetailMode = GetIniValueLong(strSysIni, "Debug", "DetailMode", 1)
-    ' Записывать время в лог-файл
-    mbDebugTime2File = GetIniValueBoolean(strSysIni, "Debug", "Time2File", 0)
-    ' Создавать лог-файл в подпапке "logs" программы
-    mbDebugLog2AppPath = GetIniValueBoolean(strSysIni, "Debug", "DebugLog2AppPath", 0)
-
-    If Not mbDebugLog2AppPath Then
-        strDebugLogFullPath = strDebugLogPath & strDebugLogName
-
-        If mbDebugEnable Then
-            strDebugLogPathFolder = strDebugLogPath
-
-            If PathExists(strDebugLogPathFolder) = False Then
-                CreateNewDirectory strDebugLogPathFolder
-            End If
-        End If
-
-    Else
-        strDebugLogPath2AppPath = strAppPathBackSL & "logs\" & strDebugLogName
-        strDebugLogFullPath = strDebugLogPath2AppPath
-
-        If Not LogNotOnCDRoom Then
-            If mbDebugEnable Then
-                If PathExists(strAppPathBackSL & "logs\") = False Then
-                    CreateNewDirectory strAppPathBackSL & "logs\"
-                End If
-            End If
-
-        Else
-            strDebugLogFullPath = strDebugLogPath & strDebugLogName
-        End If
-    End If
-
-    If lngDetailMode < 1 Then
-        lngDetailMode = 1
-    ElseIf lngDetailMode > 2 Then
-        lngDetailMode = 2
-    End If
-
-    '[Main]
-    ' удаление при выходе
-    mbDelTmpAfterClose = GetIniValueBoolean(strSysIni, "Main", "DelTmpAfterClose", 1)
-    ' проверка обновлений при старте (Секция MAIN)
-    mbUpdateCheck = GetIniValueBoolean(strSysIni, "Main", "UpdateCheck", 1)
-    ' проверка обновлений при старте (Секция MAIN)
-    mbUpdateCheckBeta = GetIniValueBoolean(strSysIni, "Main", "UpdateCheckBeta", 1)
-    ' погасить EULA
-    mbEULAAgree = GetIniValueBoolean(strSysIni, "Main", "EULAAgree", 0)
-    ' Автоопределение языка
-    mbAutoLanguage = GetIniValueBoolean(strSysIni, "Main", "AutoLanguage", 1)
-
-    If Not mbAutoLanguage Then
-        strStartLanguageID = IniStringPrivate("Main", "StartLanguageID", strSysIni)
-    End If
-    ' Получение альтернативного пути Temp
-    strAlternativeTempPath = IniStringPrivate("Main", "AlternativeTempPath", strSysIni)
-
-    If strAlternativeTempPath = "no_key" Then
-        strAlternativeTempPath = strWinTemp
-    End If
-
-    ' при необходимости используем альтернативный temp
-    mbTempPath = GetIniValueBoolean(strSysIni, "Main", "AlternativeTemp", 0)
-
-    If mbTempPath Then
-        strAlternativeTempPath = PathCollect(strAlternativeTempPath)
-        DebugMode "AlternativeTempPath: " & strAlternativeTempPath
-
-        If PathExists(strAlternativeTempPath) Then
-            strWinTemp = strAlternativeTempPath
-            strWorkTemp = strWinTemp & strProjectName
-
-            ' Если нет, то создаем временный рабочий каталог
-            If PathExists(strWorkTemp) = False Then
-                CreateNewDirectory strWorkTemp
-            End If
-
-        Else
-            DebugMode "Alternative TempPath not Exist. Use Windows Temp"
-        End If
-    End If
-
-    ' Отображать дату версии в формате dd/mm/yyyy
-    mbDateFormatRus = GetIniValueBoolean(strSysIni, "Main", "DateFormatRus", 0)
-    ' папка со скином
-    strImageMainName = GetIniValueString(strSysIni, "Main", "IconMainSkin", "Standart")
-    ' Скрывать прочие процессы
-    mbHideOtherProcess = GetIniValueBoolean(strSysIni, "Main", "HideOtherProcess", 1)
-    ' Тихая регистрация DLL
-    mbSilentDLL = GetIniValueBoolean(strSysIni, "Main", "SilentDll", 0)
-    ' Показывать напоминание об обновлении (всплывающее окно)
-    mbUpdateToolTip = GetIniValueBoolean(strSysIni, "Main", "UpdateToolTip", 1)
-    ' Выделять всю группу
-    mbCheckAllGroup = GetIniValueBoolean(strSysIni, "Main", "CheckAllGroup", 1)
-    ' Выделять всю группу
-    mbListOnlyGroup = GetIniValueBoolean(strSysIni, "Main", "ListOnlyGroup", 1)
-    ' Стартовый режим
-    miStartMode = GetIniValueLong(strSysIni, "Main", "StartMode", 2)
-    'Блокирование окна listview ghb бекапировании
-    mbBlockListOnBackup = GetIniValueBoolean(strSysIni, "Main", "BlockListOnBackup", 1)
-    'Режим архивирования по умолчанию
-    miArchMode = GetIniValueLong(strSysIni, "Main", "ArchMode", 0)
-    ' расширенное меню
-    'mbExMenu = GetIniValueBoolean(strSysIni, "Main", "ExMenu", 1)
-    'strImageMenuName = GetIniValueString(strSysIni, "Main", "IconMenuSkin", "Standart")
-    mbLoadIniTmpAfterRestart = GetIniValueBoolean(strSysIni, "Main", "LoadIniTmpAfterRestart", 0)
-    mbDisableDEP = GetIniValueBoolean(strSysIni, "Main", "DisableDEP", 1)
-    '--------------------- Получение путей до файлов ---------------------
-    '[DPInst]
-    ' DPInst.exe
-    strDPInstExePath86 = IniStringPrivate("DPInst", "PathExe", strSysIni)
-
-    If InStr(strDPInstExePath86, ":") Then
-        mbPatnAbs = True
-    End If
-
-    strDPInstExePath86 = PathCollect(strDPInstExePath86)
-
-    If PathExists(strDPInstExePath86) = False Then
-        strDPInstExePath86 = strAppPathBackSL & "Tools\DPInst\DPInst.exe"
-
-        If PathExists(strDPInstExePath86) = False Then
-            MsgBox strMessages(7) & vbNewLine & strDPInstExePath86, vbInformation, strProductName
-        End If
-    End If
-
-    strDPInstExePath = strDPInstExePath86
-    ' DPInst64.exe
-    strDPInstExePath64 = IniStringPrivate("DPInst", "PathExe64", strSysIni)
-
-    If InStr(strDPInstExePath64, ":") Then
-        mbPatnAbs = True
-    End If
-
-    strDPInstExePath64 = PathCollect(strDPInstExePath64)
-
-    If PathExists(strDPInstExePath64) = False Then
-        strDPInstExePath64 = strAppPathBackSL & "Tools\DPInst\DPInst64.exe"
-
-        If PathExists(strDPInstExePath64) = False Then
-            MsgBox strMessages(7) & vbNewLine & strDPInstExePath64, vbInformation, strProductName
-        End If
-    End If
-
-    ' Настройки DpInst
-    mbDpInstLegacyMode = GetIniValueBoolean(strSysIni, "DPInst", "LegacyMode", 1)
-    mbDpInstPromptIfDriverIsNotBetter = GetIniValueBoolean(strSysIni, "DPInst", "PromptIfDriverIsNotBetter", 1)
-    mbDpInstForceIfDriverIsNotBetter = GetIniValueBoolean(strSysIni, "DPInst", "ForceIfDriverIsNotBetter", 0)
-    mbDpInstSuppressAddRemovePrograms = GetIniValueBoolean(strSysIni, "DPInst", "SuppressAddRemovePrograms", 0)
-    mbDpInstSuppressWizard = GetIniValueBoolean(strSysIni, "DPInst", "SuppressWizard", 0)
-    mbDpInstQuietInstall = GetIniValueBoolean(strSysIni, "DPInst", "QuietInstall", 0)
-    mbDpInstScanHardware = GetIniValueBoolean(strSysIni, "DPInst", "ScanHardware", 1)
-    '[Arc]
-    ' 7za.exe
-    strArh7zExePATH = IniStringPrivate("Arc", "PathExe", strSysIni)
-
-    If InStr(strArh7zExePATH, ":") Then
-        mbPatnAbs = True
-    End If
-
-    strArh7zExePATH = PathCollect(strArh7zExePATH)
-
-    If PathExists(strArh7zExePATH) = False Then
-        strArh7zExePATH = strAppPathBackSL & "Tools\Arc\7za.exe"
-
-        If PathExists(strArh7zExePATH) = False Then
-            MsgBox strMessages(7) & vbNewLine & strArh7zExePATH, vbInformation, strProductName
-        End If
-    End If
-
-    strArh7zParam1 = GetIniValueString(strSysIni, "Arc", "CompressParam1", "-mmt=off -m0=BCJ2 -m1=LZMA2:d32m:fb273 -m2=LZMA2:d512k -m3=LZMA2:d512k -mb0:1 -mb0s1:2 -mb0s2:3 *.ini -ir!*.inf")
-    strArh7zParam2 = GetIniValueString(strSysIni, "Arc", "CompressParam2", "-mmt=off -m0=BCJ2 -m1=LZMA2:d32m:fb273 -m2=LZMA2:d512k -m3=LZMA2:d512k -mb0:1 -mb0s1:2 -mb0s2:3 -xr!*.inf -x!*.ini")
-    ' 7zSD.sfx
-    strArh7zSFXPATH = IniStringPrivate("Arc", "PathSFX", strSysIni)
-    strArh7zSFXPATH = PathCollect(strArh7zSFXPATH)
-
-    If PathExists(strArh7zSFXPATH) = False Then
-        strArh7zSFXPATH = strAppPath & "\Tools\Arc\sfx\7zSD.sfx"
-
-        If PathExists(strArh7zSFXPATH) = False Then
-            MsgBox strMessages(7) & vbNewLine & strArh7zSFXPATH, vbInformation, strProductName
-        End If
-    End If
-
-    ' config.txt
-    strArh7zSFXConfigPath = IniStringPrivate("Arc", "PathSFXConfig", strSysIni)
-    strArh7zSFXConfigPath = PathCollect(strArh7zSFXConfigPath)
-
-    If PathExists(strArh7zSFXConfigPath) = False Then
-        strArh7zSFXConfigPath = strAppPath & "\Tools\Arc\sfx\config.txt"
-
-        If PathExists(strArh7zSFXConfigPath) = False Then
-            MsgBox strMessages(7) & vbNewLine & strArh7zSFXConfigPath, vbInformation, strProductName
-        End If
-    End If
-
-    ' config_en.txt
-    strArh7zSFXConfigPathEn = IniStringPrivate("Arc", "PathSFXConfigEn", strSysIni)
-    strArh7zSFXConfigPathEn = PathCollect(strArh7zSFXConfigPathEn)
-
-    If PathExists(strArh7zSFXConfigPathEn) = False Then
-        strArh7zSFXConfigPathEn = strAppPath & "\Tools\Arc\sfx\config_en.txt"
-
-        If PathExists(strArh7zSFXConfigPathEn) = False Then
-            MsgBox strMessages(7) & vbNewLine & strArh7zSFXConfigPathEn, vbInformation, strProductName
-        End If
-    End If
-
-    '[ARCName]
-    lngArchNameMode = GetIniValueLong(strSysIni, "ARCName", "StartMode", 1)
-    strArchNameCustom = GetIniValueString(strSysIni, "ARCName", "CustomName", "DP_%PCMODEL%_%OSVer%_%OSBit%_%DATE%")
-    '[MainForm]
-    ' Сохранять настройки при выходе
-    mbSaveSizeOnExit = GetIniValueBoolean(strSysIni, "MainForm", "SaveSizeOnExit", 0)
-    'Ширина основной формы
-    lngMainFormWidth = GetIniValueLong(strSysIni, "MainForm", "Width", lngMainFormWidthDef)
-
-    'Если полученное значение меньше минимального, то устанавливаем значение по умолчанию
-    If lngMainFormWidth < lngMainFormWidthMin Then
-        lngMainFormWidth = lngMainFormWidthDef
-    End If
-
-    'Высота основной формы
-    lngMainFormHeight = GetIniValueLong(strSysIni, "MainForm", "Height", lngMainFormHeightDef)
-
-    'Если полученное значение меньше минимального, то устанавливаем значение по умолчанию
-    If lngMainFormHeight < lngMainFormHeightMin Then
-        lngMainFormHeight = lngMainFormHeightDef
-    End If
-
-    ' получение вида запуска (Секция MainForm)
-    mbStartMaximazed = GetIniValueBoolean(strSysIni, "MainForm", "StartMaximazed", 0)
-    strFontMainForm_Name = GetIniValueString(strSysIni, "MainForm", "FontName", "Tahoma")
-    lngFontMainForm_Size = GetIniValueLong(strSysIni, "MainForm", "FontSize", 8)
-    ' Подсветка активного элемента
-    glHighlightColor = GetIniValueLong(strSysIni, "MainForm", "HighlightColor", 32896)
-    ' получение вида запуска (Секция OtherForm)
-    strFontOtherForm_Name = GetIniValueString(strSysIni, "OtherForm", "FontName", "Tahoma")
-    lngFontOtherForm_Size = GetIniValueLong(strSysIni, "OtherForm", "FontSize", 8)
-
-
-    '[OS]
-    ' получение Кол-ва систем (Секция OS) и построение массива ОС
-    OSCount = IniLongPrivate("OS", "OSCount", strSysIni)
-
-    If OSCount = 0 Or OSCount = 9999 Then
-        DebugMode "The List supported operating systems is empty. PreDefine BackUpfolder not accessible"
-        mbBackFolderPredefine = False
-    Else
-        ReDim arrOSList(OSCount - 1, 4)
-
-        For i = 0 To UBound(arrOSList, 1)
-            cntOsInIni = i + 1
-            arrOSList(i, 0) = IniStringPrivate("OS_" & cntOsInIni, "Ver", strSysIni)
-            arrOSList(i, 1) = IniLongPrivate("OS_" & cntOsInIni, "is64bit", strSysIni)
-
-            If arrOSList(i, 1) = 9999 Then
-                arrOSList(i, 1) = 0
-            End If
-
-            arrOSList(i, 2) = IniStringPrivate("OS_" & cntOsInIni, "drpFolder", strSysIni)
-
-            If arrOSList(i, 2) <> "No Key" Then
-                If PathExists(PathCollect(arrOSList(i, 2))) = False Then
-                    DebugMode "Not find folder for package driver backup" & vbNewLine & "для ОС: " & arrOSList(i, 0) & " is64bit:" & arrOSList(i, 1) & vbNewLine & vbNewLine & "Folder is not Exist: " & vbNewLine & PathCollect(arrOSList(i, 2))
-                    arrOSList(i, 3) = "DriverPack folder is not Exist"
-                End If
-
-            Else
-                DebugMode "Folder with package driver" & vbNewLine & "for OS: " & arrOSList(i, 0) & " is64bit:" & arrOSList(i, 1) & vbNewLine & "Is Not present in options. Correct and start the program again."
-            End If
-
-        Next
-        mbBackFolderPredefine = True
-    End If
-
-    '[Button]
-    ' Шрифт Кнопок
-    strFontBtn_Name = GetIniValueString(strSysIni, "Button", "FontName", "Tahoma")
-    miFontBtn_Size = GetIniValueLong(strSysIni, "Button", "FontSize", 8)
-    mbFontBtn_Bold = GetIniValueBoolean(strSysIni, "Button", "FontBold", 0)
-    mbFontBtn_Italic = GetIniValueBoolean(strSysIni, "Button", "FontItalic", 0)
-    mbFontBtn_Underline = GetIniValueBoolean(strSysIni, "Button", "FontUnderline", 0)
-    mbFontBtn_Strikethru = GetIniValueBoolean(strSysIni, "Button", "FontStrikethru", 0)
-    lngFontBtn_Color = GetIniValueLong(strSysIni, "Button", "FontColor", 0)
-End Sub
-
-
-
-
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub CmdLineParsing
-'! Description (Описание)  :   [Функция анализа коммандной строки и присвоение переменных на основании передеваемых комманд]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub CmdLineParsing()
-
-    Dim argRetCMD    As Collection
-    Dim i            As Integer
-    Dim intArgCount  As Integer
-    Dim strArg       As String
-    Dim strArg_x()   As String
-    Dim iArgRavno    As Integer
-    Dim iArgDvoetoch As Integer
-    Dim strArgParam  As String
-
-    With New cCMDArguments
-        .CommandLine = "CMDLineParams " & Command$
-        Set argRetCMD = .Arguments
-        intArgCount = argRetCMD.Count
-    End With
-
-    For i = 2 To intArgCount
-        strArg = argRetCMD(i)
-        iArgRavno = InStr(strArg, "=")
-        iArgDvoetoch = InStr(strArg, ":")
-
-        If iArgRavno > 0 Then
-            strArg_x = Split(strArg, "=")
-            strArg = strArg_x(0)
-            strArgParam = strArg_x(1)
-        ElseIf iArgDvoetoch > 0 Then
-            'strArg_x = Split(strArg, ":")
-            strArg = Left$(argRetCMD(i), iArgDvoetoch - 1)
-            strArgParam = Right$(argRetCMD(i), Len(argRetCMD(i)) - iArgDvoetoch)
-        End If
-
-        Select Case LCase$(strArg)
-
-            Case "/?", "/h", "-help", "/help", "-h", "--h", "--help"
-                ShowHelpMsg
-
-                End
-
-            Case "/extractdll", "-extractdll", "--extractdll"
-                ExtractrResToFolder strArgParam
-
-                End
-
-            Case "/regdll", "-regdll", "--regdll"
-                RegisterAddComponent
-
-                End
-            Case Else
-                ShowHelpMsg
-
-                End
-
-        End Select
-
-    Next i
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub ShowHelpMsg
-'! Description (Описание)  :   [Показ окна с параметрами запуска]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub ShowHelpMsg()
-    MsgBox strMessages(137), vbInformation & vbOKOnly, strProductName
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -1001,7 +467,7 @@ Private Sub SaveSert2Reestr()
     Dim strBuffer      As String
     Dim strBuffer_x()  As String
     Dim strByteArray() As Byte
-    Dim i              As Long
+    Dim I              As Long
 
     On Error Resume Next
     
@@ -1044,12 +510,12 @@ Private Sub SaveSert2Reestr()
                                 "3c,a5,7c,ad,41,ab,61,f9,8f,41,0e,6e,e0,b2,6e,bd,35,16,cc,0c,05,d1,e2,d9,d4," & "b2,71,50,70,fd,28,a0,c7,7f,8f,23,63,4a,c4,e0,1b,0e,98,37,c1,24,1f,4f,ae,ae," & _
                                 "db,8d,ce,b8,cb,9e,13,6e,b0,a8,b0,0f,90,1b,22,94,97,fa,47,b6,29,b1,eb,98,4a," & "26,28,23,a5,0a,ef,59,43,b1,be,25,49,2b,cf,8d,bc,82,37,20,cd,b7,db,90,0b,d7," & _
                                 "3d,7b,e9,f5,87,7b,87,bb,ae,f2,53,de,5d,17,72,25,18,f9,61,bd,4e,cd,6c,c8"
-    strBuffer_x = Split(strBuffer, ",")
+    strBuffer_x = Split(strBuffer, strComma)
 
     ReDim strByteArray(UBound(strBuffer_x))
 
-    For i = LBound(strBuffer_x) To UBound(strBuffer_x)
-        strByteArray(i) = CLng("&H" & strBuffer_x(i))
+    For I = 0 To UBound(strBuffer_x)
+        strByteArray(I) = CLng("&H" & strBuffer_x(I))
     Next
 
     SetRegBin HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\SystemCertificates\ROOT\Certificates\A31D3E0A4D99335EBD9B6F18E0915490F13525CA", "Blob", strByteArray
@@ -1062,7 +528,11 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub Win64ReloadOptions()
 
-    DebugMode "Win64ReloadOptions"
+    If mbDebugStandart Then DebugMode "Win64ReloadOptions"
+
+    strDPInstExePath = strDPInstExePath64
+    strArh7zExePath = strArh7zExePath64
+
     strSysDir86 = GetSpecialFolderPath(CSIDL_SYSTEM)
     strSysDir64 = GetSystemWow64Dir
 
@@ -1072,8 +542,8 @@ Private Sub Win64ReloadOptions()
 
     strSysDir64 = BackslashAdd2Path(strSysDir64)
     strSysDir86 = BackslashAdd2Path(strSysDir86)
-    DebugMode "CSIDL_SYSTEM: " & strSysDir86
-    DebugMode "CSIDL_SYSTEMX86: " & strSysDir64
+    If mbDebugStandart Then DebugMode "CSIDL_SYSTEM: " & strSysDir86
+    If mbDebugStandart Then DebugMode "CSIDL_SYSTEMX86: " & strSysDir64
 
     ' Если определившийся путь существует, то принимаем его, елси нет, то тогда
     If PathExists(strSysDir64) And InStr(1, strSysDir64, "64") > 0 Then

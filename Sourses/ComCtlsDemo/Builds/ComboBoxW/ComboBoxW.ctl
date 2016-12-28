@@ -22,16 +22,24 @@ Attribute VB_Exposed = False
 Option Explicit
 #If False Then
 Private CboStyleDropDownCombo, CboStyleSimpleCombo, CboStyleDropDownList
+Private CboCharacterCasingNormal, CboCharacterCasingUpper, CboCharacterCasingLower
+Private CboDrawModeNormal, CboDrawModeOwnerDrawFixed, CboDrawModeOwnerDrawVariable
 #End If
 Public Enum CboStyleConstants
 CboStyleDropDownCombo = 0
 CboStyleSimpleCombo = 1
 CboStyleDropDownList = 2
 End Enum
-Private Type TagInitCommonControlsEx
-dwSize As Long
-dwICC As Long
-End Type
+Public Enum CboCharacterCasingConstants
+CboCharacterCasingNormal = 0
+CboCharacterCasingUpper = 1
+CboCharacterCasingLower = 2
+End Enum
+Public Enum CboDrawModeConstants
+CboDrawModeNormal = 0
+CboDrawModeOwnerDrawFixed = 1
+CboDrawModeOwnerDrawVariable = 2
+End Enum
 Private Type RECT
 Left As Long
 Top As Long
@@ -43,28 +51,27 @@ X As Long
 Y As Long
 End Type
 Private Type SIZEAPI
-CX As Long
-CY As Long
+Cx As Long
+Cy As Long
 End Type
-Private Const LF_FACESIZE As Long = 32
-Private Const FW_NORMAL As Long = 400
-Private Const FW_BOLD As Long = 700
-Private Const DEFAULT_QUALITY As Long = 0
-Private Type LOGFONT
-LFHeight As Long
-LFWidth As Long
-LFEscapement As Long
-LFOrientation As Long
-LFWeight As Long
-LFItalic As Byte
-LFUnderline As Byte
-LFStrikeOut As Byte
-LFCharset As Byte
-LFOutPrecision As Byte
-LFClipPrecision As Byte
-LFQuality As Byte
-LFPitchAndFamily As Byte
-LFFaceName(0 To ((LF_FACESIZE * 2) - 1)) As Byte
+Private Type MEASUREITEMSTRUCT
+CtlType As Long
+CtlID As Long
+ItemID As Long
+ItemWidth As Long
+ItemHeight As Long
+ItemData As Long
+End Type
+Private Type DRAWITEMSTRUCT
+CtlType As Long
+CtlID As Long
+ItemID As Long
+ItemAction As Long
+ItemState As Long
+hWndItem As Long
+hDC As Long
+RCItem As RECT
+ItemData As Long
 End Type
 Private Type COMBOBOXINFO
 cbSize As Long
@@ -88,10 +95,16 @@ Attribute DblClick.VB_Description = "Occurs when the user presses and releases a
 Attribute DblClick.VB_UserMemId = -601
 Public Event Change()
 Attribute Change.VB_Description = "Occurs when the contents of a control have changed."
+Public Event ContextMenu(ByRef Handled As Boolean, ByVal X As Single, ByVal Y As Single)
+Attribute ContextMenu.VB_Description = "Occurs when the user clicked the right mouse button or types SHIFT + F10."
 Public Event DropDown()
 Attribute DropDown.VB_Description = "Occurs when the drop-down list is about to drop down."
 Public Event CloseUp()
 Attribute CloseUp.VB_Description = "Occurs when the drop-down list has been closed."
+Public Event ItemMeasure(ByVal item As Long, ByRef ItemHeight As Long)
+Attribute ItemMeasure.VB_Description = "Occurs each time an variable owner-drawn combo box item's size needs to be determined in preparation of drawing it."
+Public Event ItemDraw(ByVal item As Long, ByVal ItemAction As Long, ByVal ItemState As Long, ByVal hDC As Long, ByVal Left As Long, ByVal Top As Long, ByVal Right As Long, ByVal Bottom As Long)
+Attribute ItemDraw.VB_Description = "Occurs when a visual aspect of an owner-drawn combo box has changed."
 Public Event PreviewKeyDown(ByVal KeyCode As Integer, ByRef IsInputKey As Boolean)
 Attribute PreviewKeyDown.VB_Description = "Occurs before the KeyDown event."
 Public Event PreviewKeyUp(ByVal KeyCode As Integer, ByRef IsInputKey As Boolean)
@@ -127,16 +140,17 @@ Attribute OLESetData.VB_Description = "Occurs at the OLE drag/drop source contro
 Public Event OLEStartDrag(Data As DataObject, AllowedEffects As Long)
 Attribute OLEStartDrag.VB_Description = "Occurs when an OLE drag/drop operation is initiated either manually or automatically."
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
-Private Declare Function InitCommonControlsEx Lib "comctl32" (ByRef ICCEX As TagInitCommonControlsEx) As Long
 Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExW" (ByVal dwExStyle As Long, ByVal lpClassName As Long, ByVal lpWindowName As Long, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, ByRef lpParam As Any) As Long
 Private Declare Function SendMessage Lib "user32" Alias "SendMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongW" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongW" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function SetFocusAPI Lib "user32" Alias "SetFocus" (ByVal hWnd As Long) As Long
 Private Declare Function GetFocus Lib "user32" () As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
 Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function LockWindowUpdate Lib "user32" (ByVal hWndLock As Long) As Long
 Private Declare Function EnableWindow Lib "user32" (ByVal hWnd As Long, ByVal fEnable As Long) As Long
 Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByVal lprcUpdate As Long, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
 Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RECT) As Long
@@ -145,14 +159,13 @@ Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, B
 Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpsz As Long, ByVal cbString As Long, ByRef lpSize As SIZEAPI) As Long
 Private Declare Function FindWindowEx Lib "user32" Alias "FindWindowExW" (ByVal hWndParent As Long, ByVal hWndChildAfter As Long, ByVal lpszClass As Long, ByVal lpszWindow As Long) As Long
-Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectW" (ByRef lpLogFont As LOGFONT) As Long
-Private Declare Function MulDiv Lib "kernel32" (ByVal nNumber As Long, ByVal nNumerator As Long, ByVal nDenominator As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
 Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
 Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
 Private Declare Function ScreenToClient Lib "user32" (ByVal hWnd As Long, ByRef lpPoint As POINTAPI) As Long
+Private Declare Function ClientToScreen Lib "user32" (ByVal hWnd As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorW" (ByVal hInstance As Long, ByVal lpCursorName As Any) As Long
 Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
 Private Declare Function DragDetect Lib "user32" (ByVal hWnd As Long, ByVal PX As Integer, ByVal PY As Integer) As Long
@@ -161,27 +174,25 @@ Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObj
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Const ICC_STANDARD_CLASSES As Long = &H4000
-Private Const RDW_UPDATENOW As Long = &H100
-Private Const RDW_INVALIDATE As Long = &H1
-Private Const RDW_ERASE As Long = &H4
-Private Const RDW_ALLCHILDREN As Long = &H80
+Private Const RDW_UPDATENOW As Long = &H100, RDW_INVALIDATE As Long = &H1, RDW_ERASE As Long = &H4, RDW_ALLCHILDREN As Long = &H80
 Private Const HWND_DESKTOP As Long = &H0
 Private Const GWL_STYLE As Long = (-16)
 Private Const CF_UNICODETEXT As Long = 13
 Private Const WS_VISIBLE As Long = &H10000000
 Private Const WS_CHILD As Long = &H40000000
-Private Const WS_EX_RTLREADING As Long = &H2000
+Private Const WS_EX_RTLREADING As Long = &H2000, WS_EX_RIGHT As Long = &H1000, WS_EX_LEFTSCROLLBAR As Long = &H4000
 Private Const SW_HIDE As Long = &H0
 Private Const WS_HSCROLL As Long = &H100000
 Private Const WS_VSCROLL As Long = &H200000
 Private Const WM_MOUSEACTIVATE As Long = &H21, MA_NOACTIVATE As Long = &H3, MA_NOACTIVATEANDEAT As Long = &H4
 Private Const WM_SETFOCUS As Long = &H7
-Private Const WM_COMMAND As Long = &H111
 Private Const WM_KEYDOWN As Long = &H100
 Private Const WM_KEYUP As Long = &H101
 Private Const WM_CHAR As Long = &H102
+Private Const WM_UNICHAR As Long = &H109, UNICODE_NOCHAR As Long = &HFFFF&
+Private Const WM_INPUTLANGCHANGE As Long = &H51
+Private Const WM_IME_SETCONTEXT As Long = &H281
 Private Const WM_IME_CHAR As Long = &H286
-Private Const WM_CHARTOITEM As Long = &H2F
 Private Const WM_LBUTTONDOWN As Long = &H201
 Private Const WM_LBUTTONUP As Long = &H202
 Private Const WM_MBUTTONDOWN As Long = &H207
@@ -191,11 +202,17 @@ Private Const WM_RBUTTONUP As Long = &H205
 Private Const WM_LBUTTONDBLCLK As Long = &H203
 Private Const WM_MBUTTONDBLCLK As Long = &H209
 Private Const WM_RBUTTONDBLCLK As Long = &H206
+Private Const WM_SIZE As Long = &H5
 Private Const WM_MOUSEMOVE As Long = &H200
+Private Const WM_COMMAND As Long = &H111
+Private Const WM_SHOWWINDOW As Long = &H18
+Private Const WM_SETREDRAW As Long = &HB
+Private Const WM_CONTEXTMENU As Long = &H7B
+Private Const WM_MEASUREITEM As Long = &H2C
+Private Const WM_DRAWITEM As Long = &H2B, ODT_COMBOBOX As Long = &H3
 Private Const WM_HSCROLL As Long = &H114
 Private Const WM_VSCROLL As Long = &H115
 Private Const WM_SETFONT As Long = &H30
-Private Const WM_SETREDRAW As Long = &HB
 Private Const WM_SETCURSOR As Long = &H20, HTCLIENT As Long = 1
 Private Const WM_CTLCOLORLISTBOX As Long = &H134
 Private Const WM_GETTEXTLENGTH As Long = &HE
@@ -212,6 +229,7 @@ Private Const CB_DELETESTRING As Long = &H144
 Private Const CB_GETCOUNT As Long = &H146
 Private Const CB_GETCURSEL As Long = &H147
 Private Const CB_INSERTSTRING As Long = &H14A
+Private Const CB_FINDSTRING As Long = &H14C
 Private Const CB_SETCURSEL As Long = &H14E
 Private Const CB_GETDROPPEDCONTROLRECT As Long = &H152
 Private Const CB_GETTOPINDEX As Long = &H15B
@@ -225,6 +243,7 @@ Private Const CB_GETLBTEXTLEN As Long = &H149
 Private Const CB_GETEDITSEL As Long = &H140
 Private Const CB_SETEDITSEL As Long = &H142
 Private Const CB_RESETCONTENT As Long = &H14B
+Private Const CB_SELECTSTRING As Long = &H14D
 Private Const CB_SETITEMHEIGHT As Long = &H153
 Private Const CB_GETITEMHEIGHT As Long = &H154
 Private Const CB_GETDROPPEDSTATE As Long = &H157
@@ -234,6 +253,7 @@ Private Const CB_GETITEMDATA As Long = &H150
 Private Const CB_SETITEMDATA As Long = &H151
 Private Const CB_SETEXTENDEDUI As Long = &H155
 Private Const CB_GETEXTENDEDUI As Long = &H156
+Private Const CB_FINDSTRINGEXACT As Long = &H158
 Private Const CBM_FIRST As Long = &H1700
 Private Const CB_SETMINVISIBLE As Long = (CBM_FIRST + 1)
 Private Const CB_GETMINVISIBLE As Long = (CBM_FIRST + 2)
@@ -246,6 +266,8 @@ Private Const CBS_AUTOHSCROLL As Long = &H40
 Private Const CBS_SIMPLE As Long = &H1
 Private Const CBS_DROPDOWN As Long = &H2
 Private Const CBS_DROPDOWNLIST As Long = &H3
+Private Const CBS_OWNERDRAWFIXED As Long = &H10
+Private Const CBS_OWNERDRAWVARIABLE As Long = &H20
 Private Const CBS_SORT As Long = &H100
 Private Const CBS_HASSTRINGS As Long = &H200
 Private Const CBS_DISABLENOSCROLL As Long = &H800
@@ -264,10 +286,14 @@ Implements ISubclass
 Implements OLEGuids.IOleInPlaceActiveObjectVB
 Implements OLEGuids.IPerPropertyBrowsingVB
 Private ComboBoxHandle As Long, ComboBoxEditHandle As Long
-Private ComboBoxListBackColorBrush As Long
 Private ComboBoxFontHandle As Long
-Private ComboBoxLogFont As LOGFONT
+Private ComboBoxListBackColorBrush As Long
+Private ComboBoxIMCHandle As Long
+Private ComboBoxCharCodeCache As Long
 Private ComboBoxNewIndex As Long
+Private ComboBoxResizeFrozen As Boolean
+Private ComboBoxInitFieldHeight As Long
+Private ComboBoxDropDownHeightState As Boolean
 Private ComboBoxAutoDragInSel As Boolean, ComboBoxAutoDragIsActive As Boolean
 Private ComboBoxAutoDragSelStart As Integer, ComboBoxAutoDragSelEnd As Integer
 Private DispIDMousePointer As Long
@@ -276,6 +302,9 @@ Attribute PropFont.VB_VarHelpID = -1
 Private PropVisualStyles As Boolean
 Private PropOLEDragMode As VBRUN.OLEDragConstants
 Private PropMousePointer As Integer, PropMouseIcon As IPictureDisp
+Private PropRightToLeft As Boolean
+Private PropRightToLeftLayout As Boolean
+Private PropRightToLeftMode As CCRightToLeftModeConstants
 Private PropRedraw As Boolean
 Private PropStyle As CboStyleConstants
 Private PropLocked As Boolean
@@ -291,6 +320,10 @@ Private PropListBackColor As OLE_COLOR
 Private PropListForeColor As OLE_COLOR
 Private PropSorted As Boolean
 Private PropHorizontalExtent As Long
+Private PropDisableNoScroll As Boolean
+Private PropCharacterCasing As CboCharacterCasingConstants
+Private PropDrawMode As CboDrawModeConstants
+Private PropIMEMode As CCIMEModeConstants
 
 Private Sub IOleInPlaceActiveObjectVB_TranslateAccelerator(ByRef Handled As Boolean, ByRef RetVal As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal Shift As Long)
 If wMsg = WM_KEYDOWN Or wMsg = WM_KEYUP Then
@@ -327,14 +360,14 @@ End Sub
 
 Private Sub IPerPropertyBrowsingVB_GetDisplayString(ByRef Handled As Boolean, ByVal DispID As Long, ByRef DisplayName As String)
 If DispID = DispIDMousePointer Then
-    Call ComCtlsMousePointerSetDisplayString(PropMousePointer, DisplayName)
+    Call ComCtlsIPPBSetDisplayStringMousePointer(PropMousePointer, DisplayName)
     Handled = True
 End If
 End Sub
 
 Private Sub IPerPropertyBrowsingVB_GetPredefinedStrings(ByRef Handled As Boolean, ByVal DispID As Long, ByRef StringsOut() As String, ByRef CookiesOut() As Long)
 If DispID = DispIDMousePointer Then
-    Call ComCtlsMousePointerSetPredefinedStrings(StringsOut(), CookiesOut())
+    Call ComCtlsIPPBSetPredefinedStringsMousePointer(StringsOut(), CookiesOut())
     Handled = True
 End If
 End Sub
@@ -348,12 +381,7 @@ End Sub
 
 Private Sub UserControl_Initialize()
 Call ComCtlsLoadShellMod
-Dim ICCEX As TagInitCommonControlsEx
-With ICCEX
-.dwSize = LenB(ICCEX)
-.dwICC = ICC_STANDARD_CLASSES
-End With
-InitCommonControlsEx ICCEX
+Call ComCtlsInitCC(ICC_STANDARD_CLASSES)
 Call SetVTableSubclass(Me, VTableInterfaceInPlaceActiveObject)
 Call SetVTableSubclass(Me, VTableInterfacePerPropertyBrowsing)
 DispIDMousePointer = GetDispID(Me, "MousePointer")
@@ -363,7 +391,12 @@ Private Sub UserControl_InitProperties()
 Set PropFont = Ambient.Font
 PropVisualStyles = True
 PropOLEDragMode = vbOLEDragManual
+Me.OLEDropMode = vbOLEDropNone
 PropMousePointer = 0: Set PropMouseIcon = Nothing
+PropRightToLeft = Ambient.RightToLeft
+PropRightToLeftLayout = False
+PropRightToLeftMode = CCRightToLeftModeVBAME
+If PropRightToLeft = True Then Me.RightToLeft = True
 PropRedraw = True
 PropStyle = CboStyleDropDownCombo
 PropLocked = False
@@ -379,7 +412,15 @@ PropListBackColor = vbWindowBackground
 PropListForeColor = vbWindowText
 PropSorted = False
 PropHorizontalExtent = 0
-Call CreateComboBox
+PropDisableNoScroll = False
+PropCharacterCasing = CboCharacterCasingNormal
+PropDrawMode = CboDrawModeNormal
+PropIMEMode = CCIMEModeNoControl
+If Ambient.UserMode = True Then
+    Call ComCtlsSetSubclass(UserControl.hWnd, Me, 3)
+Else
+    Call CreateComboBox
+End If
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -393,6 +434,10 @@ Me.Enabled = .ReadProperty("Enabled", True)
 Me.OLEDropMode = .ReadProperty("OLEDropMode", vbOLEDropNone)
 PropMousePointer = .ReadProperty("MousePointer", 0)
 Set PropMouseIcon = .ReadProperty("MouseIcon", Nothing)
+PropRightToLeft = .ReadProperty("RightToLeft", False)
+PropRightToLeftLayout = .ReadProperty("RightToLeftLayout", False)
+PropRightToLeftMode = .ReadProperty("RightToLeftMode", CCRightToLeftModeVBAME)
+If PropRightToLeft = True Then Me.RightToLeft = True
 PropRedraw = .ReadProperty("Redraw", True)
 PropStyle = .ReadProperty("Style", CboStyleDropDownCombo)
 PropLocked = .ReadProperty("Locked", False)
@@ -408,8 +453,16 @@ PropListBackColor = .ReadProperty("ListBackColor", vbWindowBackground)
 PropListForeColor = .ReadProperty("ListForeColor", vbWindowText)
 PropSorted = .ReadProperty("Sorted", False)
 PropHorizontalExtent = .ReadProperty("HorizontalExtent", 0)
+PropDisableNoScroll = .ReadProperty("DisableNoScroll", False)
+PropCharacterCasing = .ReadProperty("CharacterCasing", CboCharacterCasingNormal)
+PropDrawMode = .ReadProperty("DrawMode", CboDrawModeNormal)
+PropIMEMode = .ReadProperty("IMEMode", CCIMEModeNoControl)
 End With
-Call CreateComboBox
+If Ambient.UserMode = True Then
+    Call ComCtlsSetSubclass(UserControl.hWnd, Me, 3)
+Else
+    Call CreateComboBox
+End If
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -423,6 +476,9 @@ With PropBag
 .WriteProperty "OLEDropMode", Me.OLEDropMode, vbOLEDropNone
 .WriteProperty "MousePointer", PropMousePointer, 0
 .WriteProperty "MouseIcon", PropMouseIcon, Nothing
+.WriteProperty "RightToLeft", PropRightToLeft, False
+.WriteProperty "RightToLeftLayout", PropRightToLeftLayout, False
+.WriteProperty "RightToLeftMode", PropRightToLeftMode, CCRightToLeftModeVBAME
 .WriteProperty "Redraw", PropRedraw, True
 .WriteProperty "Style", PropStyle, CboStyleDropDownCombo
 .WriteProperty "Locked", PropLocked, False
@@ -438,6 +494,10 @@ With PropBag
 .WriteProperty "ListForeColor", PropListForeColor, vbWindowText
 .WriteProperty "Sorted", PropSorted, False
 .WriteProperty "HorizontalExtent", PropHorizontalExtent, 0
+.WriteProperty "DisableNoScroll", PropDisableNoScroll, False
+.WriteProperty "CharacterCasing", PropCharacterCasing, CboCharacterCasingNormal
+.WriteProperty "DrawMode", PropDrawMode, CboDrawModeNormal
+.WriteProperty "IMEMode", PropIMEMode, CCIMEModeNoControl
 End With
 End Sub
 
@@ -492,10 +552,10 @@ Private Sub UserControl_AmbientChanged(PropertyName As String)
 If Ambient.UserMode = False And PropertyName = "DisplayName" And PropStyle = CboStyleDropDownList Then
     If ComboBoxHandle <> 0 Then
         If SendMessage(ComboBoxHandle, CB_GETCOUNT, 0, ByVal 0&) > 0 Then
-            Dim Buffer As String
-            Buffer = Ambient.DisplayName
+            Dim buffer As String
+            buffer = Ambient.DisplayName
             SendMessage ComboBoxHandle, CB_RESETCONTENT, 0, ByVal 0&
-            SendMessage ComboBoxHandle, CB_ADDSTRING, 0, ByVal StrPtr(Buffer)
+            SendMessage ComboBoxHandle, CB_ADDSTRING, 0, ByVal StrPtr(buffer)
             SendMessage ComboBoxHandle, CB_SETCURSEL, 0, ByVal 0&
         End If
     End If
@@ -504,46 +564,82 @@ End Sub
 
 Private Sub UserControl_Resize()
 Static InProc As Boolean
-If InProc = True Then Exit Sub
-If ComboBoxHandle = 0 Then Exit Sub
+If InProc = True Or ComboBoxResizeFrozen = True Then Exit Sub
+InProc = True
 With UserControl
+If DPICorrectionFactor() <> 1 Then
+    .Extender.Move .Extender.Left + .ScaleX(1, vbPixels, vbContainerPosition), .Extender.Top + .ScaleY(1, vbPixels, vbContainerPosition)
+    .Extender.Move .Extender.Left - .ScaleX(1, vbPixels, vbContainerPosition), .Extender.Top - .ScaleY(1, vbPixels, vbContainerPosition)
+End If
+If ComboBoxHandle = 0 Then InProc = False: Exit Sub
 Dim WndRect As RECT
 If PropStyle <> CboStyleSimpleCombo Then
-    MoveWindow ComboBoxHandle, 0, 0, .ScaleWidth, .ScaleHeight, 1
-    GetWindowRect ComboBoxHandle, WndRect
-    If (WndRect.Bottom - WndRect.Top) <> .ScaleHeight Or (WndRect.Right - WndRect.Left) <> .ScaleWidth Then
-        InProc = True
-        .Size .ScaleX((WndRect.Right - WndRect.Left), vbPixels, vbTwips), .ScaleY((WndRect.Bottom - WndRect.Top), vbPixels, vbTwips)
-        InProc = False
-    End If
-Else
-    If PropIntegralHeight = True Then
-        Dim ListRect As RECT, EditHeight As Long, Height As Long
-        MoveWindow ComboBoxHandle, 0, 0, .ScaleWidth, .ScaleHeight + IIf(PropIntegralHeight = True, 2, 0), 1
-        GetWindowRect ComboBoxHandle, WndRect
-        GetWindowRect Me.hWndList, ListRect
-        MapWindowPoints HWND_DESKTOP, ComboBoxHandle, ListRect, 2
-        EditHeight = ListRect.Top
-        Const SM_CYEDGE As Long = 46
-        If (ListRect.Bottom - ListRect.Top) > (GetSystemMetrics(SM_CYEDGE) * 2) Then
-            Height = EditHeight + (ListRect.Bottom - ListRect.Top)
+    If DPICorrectionFactor() <> 1 Then
+        If .Extender.Height > 0 Then
+            MoveWindow ComboBoxHandle, 0, 0, .ScaleX(.Extender.Width, vbContainerSize, vbPixels), .ScaleY(.Extender.Height, vbContainerSize, vbPixels), 1
         Else
-            Height = EditHeight
+            MoveWindow ComboBoxHandle, 0, 0, .ScaleX(.Extender.Width, vbContainerSize, vbPixels), 1, 1
         End If
-        InProc = True
+    Else
+        If .ScaleHeight > 0 Then
+            MoveWindow ComboBoxHandle, 0, 0, .ScaleWidth, .ScaleHeight, 1
+        Else
+            MoveWindow ComboBoxHandle, 0, 0, .ScaleWidth, 1, 1
+        End If
+    End If
+    GetWindowRect ComboBoxHandle, WndRect
+    If DPICorrectionFactor() <> 1 Then
+        If (WndRect.Bottom - WndRect.Top) <> CLng(.ScaleY(.Extender.Height, vbContainerSize, vbPixels)) Or (WndRect.Right - WndRect.Left) <> CLng(.ScaleX(.Extender.Width, vbContainerSize, vbPixels)) Then
+            .Extender.Move .Extender.Left, .Extender.Top, .ScaleX((WndRect.Right - WndRect.Left), vbPixels, vbContainerSize), .ScaleY((WndRect.Bottom - WndRect.Top), vbPixels, vbContainerSize)
+            .Extender.Move .Extender.Left + .ScaleX(1, vbPixels, vbContainerPosition), .Extender.Top + .ScaleY(1, vbPixels, vbContainerPosition)
+            .Extender.Move .Extender.Left - .ScaleX(1, vbPixels, vbContainerPosition), .Extender.Top - .ScaleY(1, vbPixels, vbContainerPosition)
+        End If
+    Else
+        If (WndRect.Bottom - WndRect.Top) <> .ScaleHeight Or (WndRect.Right - WndRect.Left) <> .ScaleWidth Then
+            .Size .ScaleX((WndRect.Right - WndRect.Left), vbPixels, vbTwips), .ScaleY((WndRect.Bottom - WndRect.Top), vbPixels, vbTwips)
+        End If
+    End If
+    Call CheckDropDownHeight(True)
+Else
+    Dim ListRect As RECT, EditHeight As Long, Height As Long
+    If DPICorrectionFactor() <> 1 Then
+        MoveWindow ComboBoxHandle, 0, 0, .ScaleX(.Extender.Width, vbContainerSize, vbPixels), .ScaleY(.Extender.Height, vbContainerSize, vbPixels) + IIf(PropIntegralHeight = True, 1, 0), 1
+    Else
+        MoveWindow ComboBoxHandle, 0, 0, .ScaleWidth, .ScaleHeight + IIf(PropIntegralHeight = True, 1, 0), 1
+    End If
+    GetWindowRect ComboBoxHandle, WndRect
+    GetWindowRect Me.hWndList, ListRect
+    MapWindowPoints HWND_DESKTOP, ComboBoxHandle, ListRect, 2
+    EditHeight = ListRect.Top
+    Const SM_CYEDGE As Long = 46
+    If (ListRect.Bottom - ListRect.Top) > (GetSystemMetrics(SM_CYEDGE) * 2) Then
+        Height = EditHeight + (ListRect.Bottom - ListRect.Top)
+    Else
+        Height = EditHeight
+    End If
+    If DPICorrectionFactor() <> 1 Then
+        .Extender.Move .Extender.Left, .Extender.Top, .ScaleX((WndRect.Right - WndRect.Left), vbPixels, vbContainerSize), .ScaleY(Height, vbPixels, vbContainerSize)
+        .Extender.Move .Extender.Left + .ScaleX(1, vbPixels, vbContainerPosition), .Extender.Top + .ScaleY(1, vbPixels, vbContainerPosition)
+        .Extender.Move .Extender.Left - .ScaleX(1, vbPixels, vbContainerPosition), .Extender.Top - .ScaleY(1, vbPixels, vbContainerPosition)
+    Else
         .Size .ScaleX((WndRect.Right - WndRect.Left), vbPixels, vbTwips), .ScaleY(Height, vbPixels, vbTwips)
-        InProc = False
     End If
     MoveWindow ComboBoxHandle, 0, 0, .ScaleWidth, .ScaleHeight, 1
     Me.Refresh
 End If
 End With
+InProc = False
+End Sub
+
+Private Sub UserControl_Show()
+If Ambient.UserMode = False Then Call UserControl_Resize
 End Sub
 
 Private Sub UserControl_Terminate()
 Call RemoveVTableSubclass(Me, VTableInterfaceInPlaceActiveObject)
 Call RemoveVTableSubclass(Me, VTableInterfacePerPropertyBrowsing)
 Call DestroyComboBox
+Call ComCtlsRemoveSubclass(UserControl.hWnd)
 Call ComCtlsReleaseShellMod
 End Sub
 
@@ -564,6 +660,15 @@ End Property
 Public Property Get Parent() As Object
 Attribute Parent.VB_Description = "Returns the object on which this object is located."
 Set Parent = UserControl.Parent
+End Property
+
+Public Property Get Container() As Object
+Attribute Container.VB_Description = "Returns the container of an object."
+Set Container = Extender.Container
+End Property
+
+Public Property Set Container(ByVal Value As Object)
+Set Extender.Container = Value
 End Property
 
 Public Property Get Left() As Single
@@ -602,6 +707,61 @@ Public Property Let Height(ByVal Value As Single)
 Extender.Height = Value
 End Property
 
+Public Property Get Visible() As Boolean
+Attribute Visible.VB_Description = "Returns/sets a value that determines whether an object is visible or hidden."
+Visible = Extender.Visible
+End Property
+
+Public Property Let Visible(ByVal Value As Boolean)
+Extender.Visible = Value
+End Property
+
+Public Property Get ToolTipText() As String
+Attribute ToolTipText.VB_Description = "Returns/sets the text displayed when the mouse is paused over the control."
+ToolTipText = Extender.ToolTipText
+End Property
+
+Public Property Let ToolTipText(ByVal Value As String)
+Extender.ToolTipText = Value
+End Property
+
+Public Property Get DragIcon() As IPictureDisp
+Attribute DragIcon.VB_Description = "Returns/sets the icon to be displayed as the pointer in a drag-and-drop operation."
+Set DragIcon = Extender.DragIcon
+End Property
+
+Public Property Let DragIcon(ByVal Value As IPictureDisp)
+Extender.DragIcon = Value
+End Property
+
+Public Property Set DragIcon(ByVal Value As IPictureDisp)
+Set Extender.DragIcon = Value
+End Property
+
+Public Property Get DragMode() As Integer
+Attribute DragMode.VB_Description = "Returns/sets a value that determines whether manual or automatic drag mode is used."
+DragMode = Extender.DragMode
+End Property
+
+Public Property Let DragMode(ByVal Value As Integer)
+Extender.DragMode = Value
+End Property
+
+Public Sub Drag(Optional ByRef Action As Variant)
+Attribute Drag.VB_Description = "Begins, ends, or cancels a drag operation of any object except Line, Menu, Shape, and Timer."
+If IsMissing(Action) Then Extender.Drag Else Extender.Drag Action
+End Sub
+
+Public Sub SetFocus()
+Attribute SetFocus.VB_Description = "Moves the focus to the specified object."
+Extender.SetFocus
+End Sub
+
+Public Sub ZOrder(Optional ByRef Position As Variant)
+Attribute ZOrder.VB_Description = "Places a specified object at the front or back of the z-order within its graphical level."
+If IsMissing(Position) Then Extender.ZOrder Else Extender.ZOrder Position
+End Sub
+
 Public Property Get hWnd() As Long
 Attribute hWnd.VB_Description = "Returns a handle to a control."
 Attribute hWnd.VB_UserMemId = -515
@@ -639,11 +799,11 @@ Set Me.Font = NewFont
 End Property
 
 Public Property Set Font(ByVal NewFont As StdFont)
+If NewFont Is Nothing Then Set NewFont = Ambient.Font
 Dim OldFontHandle As Long
 Set PropFont = NewFont
-Call OLEFontToLogFont(NewFont, ComboBoxLogFont)
 OldFontHandle = ComboBoxFontHandle
-ComboBoxFontHandle = CreateFontIndirect(ComboBoxLogFont)
+ComboBoxFontHandle = CreateGDIFontFromOLEFont(PropFont)
 If ComboBoxHandle <> 0 Then SendMessage ComboBoxHandle, WM_SETFONT, ComboBoxFontHandle, ByVal 1&
 If OldFontHandle <> 0 Then DeleteObject OldFontHandle
 Call UserControl_Resize
@@ -652,28 +812,12 @@ End Property
 
 Private Sub PropFont_FontChanged(ByVal PropertyName As String)
 Dim OldFontHandle As Long
-Call OLEFontToLogFont(PropFont, ComboBoxLogFont)
 OldFontHandle = ComboBoxFontHandle
-ComboBoxFontHandle = CreateFontIndirect(ComboBoxLogFont)
+ComboBoxFontHandle = CreateGDIFontFromOLEFont(PropFont)
 If ComboBoxHandle <> 0 Then SendMessage ComboBoxHandle, WM_SETFONT, ComboBoxFontHandle, ByVal 1&
 If OldFontHandle <> 0 Then DeleteObject OldFontHandle
 Call UserControl_Resize
 UserControl.PropertyChanged "Font"
-End Sub
-
-Private Sub OLEFontToLogFont(ByVal Font As StdFont, ByRef LF As LOGFONT)
-Dim FontName As String
-With LF
-FontName = Left$(Font.Name, LF_FACESIZE)
-CopyMemory .LFFaceName(0), ByVal StrPtr(FontName), LenB(FontName)
-.LFHeight = -MulDiv(CLng(Font.Size), DPI_Y(), 72)
-If Font.Bold = True Then .LFWeight = FW_BOLD Else .LFWeight = FW_NORMAL
-.LFItalic = IIf(Font.Italic = True, 1, 0)
-.LFStrikeOut = IIf(Font.Strikethrough = True, 1, 0)
-.LFUnderline = IIf(Font.Underline = True, 1, 0)
-.LFQuality = DEFAULT_QUALITY
-.LFCharset = CByte(Font.Charset And &HFF)
-End With
 End Sub
 
 Public Property Get VisualStyles() As Boolean
@@ -684,12 +828,11 @@ End Property
 Public Property Let VisualStyles(ByVal Value As Boolean)
 PropVisualStyles = Value
 If ComboBoxHandle <> 0 And EnabledVisualStyles() = True Then
-    Select Case PropVisualStyles
-        Case True
-            ActivateVisualStyles ComboBoxHandle
-        Case False
-            RemoveVisualStyles ComboBoxHandle
-    End Select
+    If PropVisualStyles = True Then
+        ActivateVisualStyles ComboBoxHandle
+    Else
+        RemoveVisualStyles ComboBoxHandle
+    End If
     Me.Refresh
 End If
 UserControl.PropertyChanged "VisualStyles"
@@ -803,6 +946,49 @@ End If
 UserControl.PropertyChanged "MouseIcon"
 End Property
 
+Public Property Get RightToLeft() As Boolean
+Attribute RightToLeft.VB_Description = "Determines text display direction and control visual appearance on a bidirectional system."
+Attribute RightToLeft.VB_UserMemId = -611
+RightToLeft = PropRightToLeft
+End Property
+
+Public Property Let RightToLeft(ByVal Value As Boolean)
+PropRightToLeft = Value
+UserControl.RightToLeft = PropRightToLeft
+Call ComCtlsCheckRightToLeft(PropRightToLeft, UserControl.RightToLeft, PropRightToLeftMode)
+Dim dwMask As Long
+If PropRightToLeft = True Then dwMask = WS_EX_RTLREADING Or WS_EX_RIGHT Or WS_EX_LEFTSCROLLBAR
+If ComboBoxHandle <> 0 Then Call ComCtlsSetRightToLeft(ComboBoxHandle, dwMask)
+If ComboBoxEditHandle <> 0 Then Call ComCtlsSetRightToLeft(ComboBoxEditHandle, dwMask)
+If PropRightToLeft = False And ComboBoxEditHandle <> 0 Then
+    Const ES_RIGHT As Long = &H2
+    Dim dwStyle As Long
+    dwStyle = GetWindowLong(ComboBoxEditHandle, GWL_STYLE)
+    If (dwStyle And ES_RIGHT) = ES_RIGHT Then dwStyle = dwStyle And Not ES_RIGHT
+    SetWindowLong ComboBoxEditHandle, GWL_STYLE, dwStyle
+End If
+Dim ListHandle As Long
+ListHandle = Me.hWndList
+If ListHandle <> 0 Then Call ComCtlsSetRightToLeft(ListHandle, dwMask)
+UserControl.PropertyChanged "RightToLeft"
+End Property
+
+Public Property Get RightToLeftMode() As CCRightToLeftModeConstants
+Attribute RightToLeftMode.VB_Description = "Returns/sets the right-to-left mode."
+RightToLeftMode = PropRightToLeftMode
+End Property
+
+Public Property Let RightToLeftMode(ByVal Value As CCRightToLeftModeConstants)
+Select Case Value
+    Case CCRightToLeftModeNoControl, CCRightToLeftModeVBAME, CCRightToLeftModeSystemLocale, CCRightToLeftModeUserLocale, CCRightToLeftModeOSLanguage
+        PropRightToLeftMode = Value
+    Case Else
+        Err.Raise 380
+End Select
+Me.RightToLeft = PropRightToLeft
+UserControl.PropertyChanged "RightToLeftMode"
+End Property
+
 Public Property Get Redraw() As Boolean
 Attribute Redraw.VB_Description = "Returns/sets a value that determines whether or not the combo box redraws when changing the items. You can speed up the creation of large lists by disabling this property before adding the items."
 Redraw = PropRedraw
@@ -839,8 +1025,8 @@ End Property
 Public Property Get Locked() As Boolean
 Attribute Locked.VB_Description = "Returns/sets a value indicating whether the contents can be edited. This property does not have any effect if the style property is set to 'DropDownList'."
 If PropStyle = CboStyleDropDownList Then Exit Property
-If ComboBoxHandle <> 0 And Ambient.UserMode = True Then
-    Locked = CBool((GetWindowLong(ComboBoxHandle, GWL_STYLE) And ES_READONLY) <> 0)
+If ComboBoxHandle <> 0 And ComboBoxEditHandle <> 0 Then
+    Locked = CBool((GetWindowLong(ComboBoxEditHandle, GWL_STYLE) And ES_READONLY) <> 0)
 Else
     Locked = PropLocked
 End If
@@ -849,7 +1035,7 @@ End Property
 Public Property Let Locked(ByVal Value As Boolean)
 If PropStyle = CboStyleDropDownList Then Exit Property
 PropLocked = Value
-If ComboBoxHandle <> 0 And Ambient.UserMode = True Then SendMessage ComboBoxEditHandle, EM_SETREADONLY, IIf(PropLocked = True, 1, 0), ByVal 0&
+If ComboBoxHandle <> 0 And ComboBoxEditHandle <> 0 Then SendMessage ComboBoxEditHandle, EM_SETREADONLY, IIf(PropLocked = True, 1, 0), ByVal 0&
 UserControl.PropertyChanged "Locked"
 End Property
 
@@ -859,14 +1045,14 @@ Attribute Text.VB_UserMemId = -517
 Attribute Text.VB_MemberFlags = "123c"
 Select Case PropStyle
     Case CboStyleDropDownCombo, CboStyleSimpleCombo
-        If ComboBoxHandle <> 0 Then
+        If ComboBoxHandle <> 0 And ComboBoxEditHandle <> 0 Then
             Text = String(SendMessage(ComboBoxEditHandle, WM_GETTEXTLENGTH, 0, ByVal 0&), vbNullChar)
             SendMessage ComboBoxEditHandle, WM_GETTEXT, Len(Text) + 1, ByVal StrPtr(Text)
         Else
             Text = PropText
         End If
     Case CboStyleDropDownList
-        If Ambient.UserMode = True Then
+        If ComboBoxHandle <> 0 And Ambient.UserMode = True Then
             Dim SelIndex As Long
             SelIndex = SendMessage(ComboBoxHandle, CB_GETCURSEL, 0, ByVal 0&)
             If Not SelIndex = CB_ERR Then Text = Me.List(SelIndex)
@@ -877,19 +1063,34 @@ End Select
 End Property
 
 Public Property Let Text(ByVal Value As String)
+Dim Changed As Boolean
 Select Case PropStyle
     Case CboStyleDropDownCombo, CboStyleSimpleCombo
         PropText = Value
-        If ComboBoxHandle <> 0 Then SendMessage ComboBoxEditHandle, WM_SETTEXT, 0, ByVal StrPtr(PropText)
+        If ComboBoxHandle <> 0 And ComboBoxEditHandle <> 0 Then
+            Changed = CBool(Me.Text <> PropText)
+            SendMessage ComboBoxEditHandle, WM_SETTEXT, 0, ByVal StrPtr(PropText)
+        End If
     Case CboStyleDropDownList
-        Exit Property
+        If ComboBoxHandle <> 0 And Ambient.UserMode = True Then
+            Dim Index As Long
+            Index = SendMessage(ComboBoxHandle, CB_FINDSTRINGEXACT, -1, ByVal StrPtr(Value))
+            If Not Index = CB_ERR Then
+                Me.ListIndex = Index
+            Else
+                Err.Raise Number:=383, Description:="Property is read-only"
+            End If
+        Else
+            Exit Property
+        End If
 End Select
 UserControl.PropertyChanged "Text"
+If Changed = True Then RaiseEvent Change
 End Property
 
 Public Property Get ExtendedUI() As Boolean
 Attribute ExtendedUI.VB_Description = "Returns/sets a value that determines whether the default UI or the extended UI is used."
-If ComboBoxHandle <> 0 Then
+If ComboBoxHandle <> 0 And PropStyle <> CboStyleSimpleCombo Then
     ExtendedUI = CBool(SendMessage(ComboBoxHandle, CB_GETEXTENDEDUI, 0, ByVal 0&) = 1)
 Else
     ExtendedUI = PropExtendedUI
@@ -898,7 +1099,7 @@ End Property
 
 Public Property Let ExtendedUI(ByVal Value As Boolean)
 PropExtendedUI = Value
-If ComboBoxHandle <> 0 Then SendMessage ComboBoxHandle, CB_SETEXTENDEDUI, IIf(PropExtendedUI = True, 1, 0), ByVal 0&
+If ComboBoxHandle <> 0 And PropStyle <> CboStyleSimpleCombo Then SendMessage ComboBoxHandle, CB_SETEXTENDEDUI, IIf(PropExtendedUI = True, 1, 0), ByVal 0&
 UserControl.PropertyChanged "ExtendedUI"
 End Property
 
@@ -908,21 +1109,24 @@ MaxDropDownItems = PropMaxDropDownItems
 End Property
 
 Public Property Let MaxDropDownItems(ByVal Value As Integer)
-If Value < 1 Or Value > 30 Then
-    If Ambient.UserMode = False Then
-        MsgBox "Invalid property value", vbCritical + vbOKOnly
-        Exit Property
-    Else
-        Err.Raise 380
-    End If
-End If
-PropMaxDropDownItems = Value
-Call SetDropListHeight(True)
+Select Case Value
+    Case 1 To 30
+        PropMaxDropDownItems = Value
+        ComboBoxDropDownHeightState = False
+    Case Else
+        If Ambient.UserMode = False Then
+            MsgBox "Invalid property value", vbCritical + vbOKOnly
+            Exit Property
+        Else
+            Err.Raise 380
+        End If
+End Select
+Call CheckDropDownHeight(True)
 UserControl.PropertyChanged "MaxDropDownItems"
 End Property
 
 Public Property Get IntegralHeight() As Boolean
-Attribute IntegralHeight.VB_Description = "Returns/sets a value indicating whether the control displays partial items."
+Attribute IntegralHeight.VB_Description = "Returns/sets a value indicating whether the control displays partial items. This property has no effect in an variable owner-drawn combo box."
 IntegralHeight = PropIntegralHeight
 End Property
 
@@ -998,8 +1202,8 @@ PropListBackColor = Value
 If ComboBoxHandle <> 0 Then
     If ComboBoxListBackColorBrush <> 0 Then DeleteObject ComboBoxListBackColorBrush
     ComboBoxListBackColorBrush = CreateSolidBrush(WinColor(PropListBackColor))
-    Me.Refresh
 End If
+Me.Refresh
 UserControl.PropertyChanged "ListBackColor"
 End Property
 
@@ -1048,12 +1252,77 @@ If ComboBoxHandle <> 0 Then SendMessage ComboBoxHandle, CB_SETHORIZONTALEXTENT, 
 UserControl.PropertyChanged "HorizontalExtent"
 End Property
 
-Public Sub AddItem(ByVal Item As String, Optional ByVal Index As Variant)
+Public Property Get DisableNoScroll() As Boolean
+Attribute DisableNoScroll.VB_Description = "Returns/sets a value that determines whether scroll bars are disabled instead of hided when they are not needed."
+DisableNoScroll = PropDisableNoScroll
+End Property
+
+Public Property Let DisableNoScroll(ByVal Value As Boolean)
+PropDisableNoScroll = Value
+If ComboBoxHandle <> 0 Then Call ReCreateComboBox
+UserControl.PropertyChanged "DisableNoScroll"
+End Property
+
+Public Property Get CharacterCasing() As CboCharacterCasingConstants
+Attribute CharacterCasing.VB_Description = "Returns/sets a value indicating if the combo box modifies the case of characters in both the selection field and the list."
+CharacterCasing = PropCharacterCasing
+End Property
+
+Public Property Let CharacterCasing(ByVal Value As CboCharacterCasingConstants)
+Select Case Value
+    Case CboCharacterCasingNormal, CboCharacterCasingUpper, CboCharacterCasingLower
+        PropCharacterCasing = Value
+    Case Else
+        Err.Raise 380
+End Select
+If ComboBoxHandle <> 0 Then Call ReCreateComboBox
+UserControl.PropertyChanged "CharacterCasing"
+End Property
+
+Public Property Get DrawMode() As CboDrawModeConstants
+Attribute DrawMode.VB_Description = "Returns/sets a value indicating whether your code or the operating system will handle drawing of the elements."
+DrawMode = PropDrawMode
+End Property
+
+Public Property Let DrawMode(ByVal Value As CboDrawModeConstants)
+Select Case Value
+    Case CboDrawModeNormal, CboDrawModeOwnerDrawFixed, CboDrawModeOwnerDrawVariable
+        If Ambient.UserMode = True Then
+            Err.Raise Number:=382, Description:="DrawMode property is read-only at run time"
+        Else
+            PropDrawMode = Value
+        End If
+    Case Else
+        Err.Raise 380
+End Select
+If ComboBoxHandle <> 0 Then Call ReCreateComboBox
+UserControl.PropertyChanged "DrawMode"
+End Property
+
+Public Property Get IMEMode() As CCIMEModeConstants
+Attribute IMEMode.VB_Description = "Returns/sets the Input Method Editor (IME) mode."
+IMEMode = PropIMEMode
+End Property
+
+Public Property Let IMEMode(ByVal Value As CCIMEModeConstants)
+Select Case Value
+    Case CCIMEModeNoControl, CCIMEModeOn, CCIMEModeOff, CCIMEModeDisable, CCIMEModeHiragana, CCIMEModeKatakana, CCIMEModeKatakanaHalf, CCIMEModeAlphaFull, CCIMEModeAlpha, CCIMEModeHangulFull, CCIMEModeHangul
+        PropIMEMode = Value
+    Case Else
+        Err.Raise 380
+End Select
+If ComboBoxHandle <> 0 And ComboBoxEditHandle <> 0 And Ambient.UserMode = True Then
+    If GetFocus() = ComboBoxEditHandle Then Call ComCtlsSetIMEMode(ComboBoxEditHandle, ComboBoxIMCHandle, PropIMEMode)
+End If
+UserControl.PropertyChanged "IMEMode"
+End Property
+
+Public Sub AddItem(ByVal item As String, Optional ByVal Index As Variant)
 Attribute AddItem.VB_Description = "Adds an item to the combo box."
 If ComboBoxHandle <> 0 Then
     Dim RetVal As Long
     If IsMissing(Index) = True Then
-        RetVal = SendMessage(ComboBoxHandle, CB_ADDSTRING, 0, ByVal StrPtr(Item))
+        RetVal = SendMessage(ComboBoxHandle, CB_ADDSTRING, 0, ByVal StrPtr(item))
     Else
         Dim IndexLong As Long
         Select Case VarType(Index)
@@ -1063,20 +1332,26 @@ If ComboBoxHandle <> 0 Then
                 Else
                     Err.Raise 5
                 End If
+            Case vbDouble, vbSingle
+                If CLng(Index) >= 0 Then
+                    IndexLong = CLng(Index)
+                Else
+                    Err.Raise 5
+                End If
             Case vbString
                 IndexLong = CLng(Index)
                 If IndexLong < 0 Then Err.Raise 5
             Case Else
                 Err.Raise 13
         End Select
-        RetVal = SendMessage(ComboBoxHandle, CB_INSERTSTRING, IndexLong, ByVal StrPtr(Item))
+        RetVal = SendMessage(ComboBoxHandle, CB_INSERTSTRING, IndexLong, ByVal StrPtr(item))
     End If
     If Not RetVal = CB_ERR Then
         ComboBoxNewIndex = RetVal
     Else
         Err.Raise 5
     End If
-    Call SetDropListHeight(False)
+    Call CheckDropDownHeight(False)
 End If
 End Sub
 
@@ -1092,6 +1367,7 @@ If ComboBoxHandle <> 0 Then
     Else
         Err.Raise 5
     End If
+    Call CheckDropDownHeight(False)
 End If
 End Sub
 
@@ -1100,6 +1376,7 @@ Attribute Clear.VB_Description = "Clears the contents of the combo box."
 If ComboBoxHandle <> 0 Then
     SendMessage ComboBoxHandle, CB_RESETCONTENT, 0, ByVal 0&
     ComboBoxNewIndex = -1
+    Call CheckDropDownHeight(False)
 End If
 End Sub
 
@@ -1163,6 +1440,7 @@ End Property
 
 Public Property Get ItemData(ByVal Index As Long) As Long
 Attribute ItemData.VB_Description = "Returns/sets a specific number for each item in a combo box."
+Attribute ItemData.VB_MemberFlags = "400"
 If ComboBoxHandle <> 0 Then
     If Not SendMessage(ComboBoxHandle, CB_GETLBTEXTLEN, Index, ByVal 0&) = CB_ERR Then
         ItemData = SendMessage(ComboBoxHandle, CB_GETITEMDATA, Index, ByVal 0&)
@@ -1186,6 +1464,7 @@ Private Sub CreateComboBox()
 If ComboBoxHandle <> 0 Then Exit Sub
 Dim dwStyle As Long, dwExStyle As Long
 dwStyle = WS_CHILD Or WS_VISIBLE Or CBS_AUTOHSCROLL Or WS_VSCROLL Or WS_HSCROLL
+If PropRightToLeft = True Then dwExStyle = dwExStyle Or WS_EX_RTLREADING Or WS_EX_RIGHT Or WS_EX_LEFTSCROLLBAR
 Select Case PropStyle
     Case CboStyleDropDownCombo
         dwStyle = dwStyle Or CBS_DROPDOWN
@@ -1197,7 +1476,20 @@ Select Case PropStyle
 End Select
 If PropIntegralHeight = False Then dwStyle = dwStyle Or CBS_NOINTEGRALHEIGHT
 If PropSorted = True Then dwStyle = dwStyle Or CBS_SORT
-If Ambient.RightToLeft = True Then dwExStyle = WS_EX_RTLREADING
+If PropDisableNoScroll = True Then dwStyle = dwStyle Or CBS_DISABLENOSCROLL
+Select Case PropCharacterCasing
+    Case CboCharacterCasingUpper
+        dwStyle = dwStyle Or CBS_UPPERCASE
+    Case CboCharacterCasingLower
+        dwStyle = dwStyle Or CBS_LOWERCASE
+End Select
+Select Case PropDrawMode
+    Case CboDrawModeOwnerDrawFixed
+        dwStyle = dwStyle Or CBS_OWNERDRAWFIXED Or CBS_HASSTRINGS
+    Case CboDrawModeOwnerDrawVariable
+        dwStyle = dwStyle Or CBS_OWNERDRAWVARIABLE Or CBS_HASSTRINGS
+        If Not (dwStyle And CBS_NOINTEGRALHEIGHT) = CBS_NOINTEGRALHEIGHT Then dwStyle = dwStyle Or CBS_NOINTEGRALHEIGHT
+End Select
 ComboBoxHandle = CreateWindowEx(dwExStyle, StrPtr("ComboBox"), StrPtr("Combo Box"), dwStyle, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, UserControl.hWnd, 0, App.hInstance, ByVal 0&)
 If ComboBoxHandle <> 0 Then
     If PropStyle = CboStyleDropDownCombo Then
@@ -1205,6 +1497,7 @@ If ComboBoxHandle <> 0 Then
         CBI.cbSize = LenB(CBI)
         SendMessage ComboBoxHandle, CB_GETCOMBOBOXINFO, 0, ByVal VarPtr(CBI)
         ComboBoxEditHandle = CBI.hWndItem
+        If ComboBoxEditHandle = 0 Then ComboBoxEditHandle = FindWindowEx(ComboBoxHandle, 0, StrPtr("Edit"), 0)
     ElseIf PropStyle = CboStyleSimpleCombo Then
         ComboBoxEditHandle = FindWindowEx(ComboBoxHandle, 0, StrPtr("Edit"), 0)
         If PropIntegralHeight = False Then MoveWindow ComboBoxHandle, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight + 2, 1
@@ -1226,23 +1519,26 @@ Me.VisualStyles = PropVisualStyles
 Me.Enabled = UserControl.Enabled
 If PropRedraw = False Then Me.Redraw = False
 If PropLocked = True Then Me.Locked = PropLocked
-Me.Text = PropText
+If PropStyle <> CboStyleDropDownList And ComboBoxEditHandle <> 0 Then SendMessage ComboBoxEditHandle, WM_SETTEXT, 0, ByVal StrPtr(PropText)
 Me.ExtendedUI = PropExtendedUI
 Me.MaxDropDownItems = PropMaxDropDownItems
 If Not PropCueBanner = vbNullString Then Me.CueBanner = PropCueBanner
 If Ambient.UserMode = True Then
     If ComboBoxHandle <> 0 Then
+        ComboBoxInitFieldHeight = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, -1, ByVal 0&)
         If ComboBoxListBackColorBrush = 0 Then ComboBoxListBackColorBrush = CreateSolidBrush(WinColor(PropListBackColor))
         Call ComCtlsSetSubclass(ComboBoxHandle, Me, 1)
-        If ComboBoxEditHandle <> 0 Then Call ComCtlsSetSubclass(ComboBoxEditHandle, Me, 2)
+        If ComboBoxEditHandle <> 0 Then
+            Call ComCtlsSetSubclass(ComboBoxEditHandle, Me, 2)
+            Call ComCtlsCreateIMC(ComboBoxEditHandle, ComboBoxIMCHandle)
+        End If
     End If
-    Call ComCtlsSetSubclass(UserControl.hWnd, Me, 3)
 Else
     If PropStyle = CboStyleDropDownList Then
         If ComboBoxHandle <> 0 Then
-            Dim Buffer As String
-            Buffer = Ambient.DisplayName
-            SendMessage ComboBoxHandle, CB_ADDSTRING, 0, ByVal StrPtr(Buffer)
+            Dim buffer As String
+            buffer = Ambient.DisplayName
+            SendMessage ComboBoxHandle, CB_ADDSTRING, 0, ByVal StrPtr(buffer)
             SendMessage ComboBoxHandle, CB_SETCURSEL, 0, ByVal 0&
         End If
     End If
@@ -1251,51 +1547,70 @@ End Sub
 
 Private Sub ReCreateComboBox()
 If Ambient.UserMode = True Then
-    Dim Visible As Boolean
-    Visible = Extender.Visible
+    Dim Locked As Boolean
     With Me
-    If Visible = True Then SendMessage UserControl.hWnd, WM_SETREDRAW, 0, ByVal 0&
+    Locked = CBool(LockWindowUpdate(UserControl.hWnd) <> 0)
     Dim ListArr() As String, ItemDataArr() As Long
-    Dim ItemHeight As Long, ListIndex As Long, Text As String, SelStart As Long, SelEnd As Long, DroppedWidth As Long, NewIndex As Long
-    Dim Count As Long, i As Long
+    Dim ItemHeight As Long, ListIndex As Long, TopIndex As Long, Text As String, SelStart As Long, SelEnd As Long, DroppedWidth As Long, FieldHeight As Long, NewIndex As Long
+    Dim count As Long, I As Long, FieldHeightCustomized As Boolean
     If ComboBoxHandle <> 0 Then
-        Count = SendMessage(ComboBoxHandle, CB_GETCOUNT, 0, ByVal 0&)
-        If Count > 0 Then
-            ReDim ListArr(0 To (Count - 1)) As String
-            ReDim ItemDataArr(0 To (Count - 1)) As Long
-            For i = 0 To (Count - 1)
-                ListArr(i) = .List(i)
-                ItemDataArr(i) = SendMessage(ComboBoxHandle, CB_GETITEMDATA, i, ByVal 0&)
-            Next i
+        If PropDrawMode <> CboDrawModeOwnerDrawVariable Then
+            ' ItemHeight does not need to be restored in an variable owner-drawn combo box as the 'MeasureItem' event will handle this.
+            ItemHeight = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, 0, ByVal 0&)
         End If
-        ItemHeight = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, 0, ByVal 0&)
+        count = SendMessage(ComboBoxHandle, CB_GETCOUNT, 0, ByVal 0&)
+        If count > 0 Then
+            ReDim ListArr(0 To (count - 1)) As String
+            ReDim ItemDataArr(0 To (count - 1)) As Long
+            For I = 0 To (count - 1)
+                ListArr(I) = .List(I)
+                ItemDataArr(I) = SendMessage(ComboBoxHandle, CB_GETITEMDATA, I, ByVal 0&)
+            Next I
+        End If
         ListIndex = .ListIndex
+        TopIndex = .TopIndex
         Text = .Text
         If ComboBoxEditHandle <> 0 Then SendMessage ComboBoxHandle, CB_GETEDITSEL, VarPtr(SelStart), ByVal VarPtr(SelEnd)
         DroppedWidth = SendMessage(ComboBoxHandle, CB_GETDROPPEDWIDTH, 0, ByVal 0&)
+        FieldHeight = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, -1, ByVal 0&)
     End If
     NewIndex = ComboBoxNewIndex
+    FieldHeightCustomized = CBool(FieldHeight <> ComboBoxInitFieldHeight)
+    If FieldHeightCustomized = True Then
+        Call DestroyComboBox ' This is necessary to be able to resize without any adjustments.
+        With UserControl
+        If DPICorrectionFactor() <> 1 Then
+            .Extender.Move .Extender.Left, .Extender.Top, .Extender.Width, .Extender.Height - .ScaleY((FieldHeight - ComboBoxInitFieldHeight), vbPixels, vbContainerSize)
+            .Extender.Move .Extender.Left + .ScaleX(1, vbPixels, vbContainerPosition), .Extender.Top + .ScaleY(1, vbPixels, vbContainerPosition)
+            .Extender.Move .Extender.Left - .ScaleX(1, vbPixels, vbContainerPosition), .Extender.Top - .ScaleY(1, vbPixels, vbContainerPosition)
+        Else
+            .Size .ScaleX(.ScaleWidth, vbPixels, vbTwips), .ScaleY(.ScaleHeight - (FieldHeight - ComboBoxInitFieldHeight), vbPixels, vbTwips)
+        End If
+        End With
+    End If
     Call DestroyComboBox
     Call CreateComboBox
     Call UserControl_Resize
-    If Count > 0 Then
-        SendMessage ComboBoxHandle, WM_SETREDRAW, 0, ByVal 0&
-        For i = 0 To (Count - 1)
-            SendMessage ComboBoxHandle, CB_INSERTSTRING, i, ByVal StrPtr(ListArr(i))
-            SendMessage ComboBoxHandle, CB_SETITEMDATA, i, ByVal ItemDataArr(i)
-        Next i
-        SendMessage ComboBoxHandle, WM_SETREDRAW, 1, ByVal 0&
-        Call SetDropListHeight(True)
-    End If
     If ComboBoxHandle <> 0 Then
-        SendMessage ComboBoxHandle, CB_SETITEMHEIGHT, 0, ByVal ItemHeight
+        If PropDrawMode <> CboDrawModeOwnerDrawVariable Then SendMessage ComboBoxHandle, CB_SETITEMHEIGHT, 0, ByVal ItemHeight
+        If count > 0 Then
+            SendMessage ComboBoxHandle, WM_SETREDRAW, 0, ByVal 0&
+            For I = 0 To (count - 1)
+                SendMessage ComboBoxHandle, CB_INSERTSTRING, I, ByVal StrPtr(ListArr(I))
+                SendMessage ComboBoxHandle, CB_SETITEMDATA, I, ByVal ItemDataArr(I)
+            Next I
+            SendMessage ComboBoxHandle, WM_SETREDRAW, 1, ByVal 0&
+            Call CheckDropDownHeight(True)
+        End If
         .ListIndex = ListIndex
+        .TopIndex = TopIndex
         .Text = Text
         If ComboBoxEditHandle <> 0 Then SendMessage ComboBoxEditHandle, EM_SETSEL, SelStart, ByVal SelEnd
         If Not DroppedWidth = CB_ERR Then SendMessage ComboBoxHandle, CB_SETDROPPEDWIDTH, DroppedWidth, ByVal 0&
+        If FieldHeightCustomized = True Then SendMessage ComboBoxHandle, CB_SETITEMHEIGHT, -1, ByVal FieldHeight
     End If
     ComboBoxNewIndex = NewIndex
-    If Visible = True Then SendMessage UserControl.hWnd, WM_SETREDRAW, 1, ByVal 0&
+    If Locked = True Then LockWindowUpdate 0
     .Refresh
     If PropRedraw = False Then .Redraw = PropRedraw
     End With
@@ -1309,13 +1624,19 @@ End Sub
 Private Sub DestroyComboBox()
 If ComboBoxHandle = 0 Then Exit Sub
 Call ComCtlsRemoveSubclass(ComboBoxHandle)
-If ComboBoxEditHandle <> 0 Then Call ComCtlsRemoveSubclass(ComboBoxEditHandle)
-Call ComCtlsRemoveSubclass(UserControl.hWnd)
+If ComboBoxEditHandle <> 0 Then
+    Call ComCtlsRemoveSubclass(ComboBoxEditHandle)
+    Call ComCtlsDestroyIMC(ComboBoxEditHandle, ComboBoxIMCHandle)
+End If
 ShowWindow ComboBoxHandle, SW_HIDE
 SetParent ComboBoxHandle, 0
 DestroyWindow ComboBoxHandle
 ComboBoxHandle = 0
 ComboBoxEditHandle = 0
+If ComboBoxFontHandle <> 0 Then
+    DeleteObject ComboBoxFontHandle
+    ComboBoxFontHandle = 0
+End If
 If ComboBoxListBackColorBrush <> 0 Then
     DeleteObject ComboBoxListBackColorBrush
     ComboBoxListBackColorBrush = 0
@@ -1326,7 +1647,7 @@ Public Sub Refresh()
 Attribute Refresh.VB_Description = "Forces a complete repaint of a object."
 Attribute Refresh.VB_UserMemId = -550
 UserControl.Refresh
-RedrawWindow UserControl.hWnd, 0, 0, RDW_UPDATENOW Or RDW_INVALIDATE Or RDW_ERASE Or RDW_ALLCHILDREN
+If PropRedraw = True Or Ambient.UserMode = False Then RedrawWindow UserControl.hWnd, 0, 0, RDW_UPDATENOW Or RDW_INVALIDATE Or RDW_ERASE Or RDW_ALLCHILDREN
 End Sub
 
 Public Property Get SelStart() As Long
@@ -1378,7 +1699,7 @@ If ComboBoxHandle <> 0 Then
         SelText = Mid$(Me.Text, SelStart + 1, (SelEnd - SelStart))
         On Error GoTo 0
     Else
-        SelText = Me.Text
+        Err.Raise 380
     End If
 End If
 End Property
@@ -1388,21 +1709,72 @@ If ComboBoxHandle <> 0 Then
     If ComboBoxEditHandle <> 0 Then
         SendMessage ComboBoxEditHandle, EM_REPLACESEL, 0, ByVal StrPtr(Value)
     Else
-        Me.Text = Value
+        Err.Raise 380
     End If
 End If
 End Property
 
-Public Property Get ItemHeight() As Single
-Attribute ItemHeight.VB_Description = "Returns/sets the height of an item in the drop-down list."
+Public Property Get ItemHeight(Optional ByVal Index As Long) As Single
+Attribute ItemHeight.VB_Description = "Returns/sets the height of an item in the drop-down list. The optional index argument can be specified in an variable owner-drawn combo box."
 Attribute ItemHeight.VB_MemberFlags = "400"
-If ComboBoxHandle <> 0 Then ItemHeight = UserControl.ScaleY(SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, 0, ByVal 0&), vbPixels, vbContainerSize)
+If Index < 0 Then Err.Raise 380
+If ComboBoxHandle <> 0 Then
+    Dim RetVal As Long
+    If PropDrawMode <> CboDrawModeOwnerDrawVariable Then
+        If Index = 0 Then
+            RetVal = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, 0, ByVal 0&)
+        Else
+            RetVal = CB_ERR
+        End If
+    Else
+        RetVal = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, Index, ByVal 0&)
+    End If
+    If Not RetVal = CB_ERR Then
+        ItemHeight = UserControl.ScaleY(RetVal, vbPixels, vbContainerSize)
+    Else
+        Err.Raise 5
+    End If
+End If
 End Property
 
-Public Property Let ItemHeight(ByVal Value As Single)
+Public Property Let ItemHeight(Optional ByVal Index As Long, ByVal Value As Single)
+If Value < 0 Or Index < 0 Then Err.Raise 380
+If ComboBoxHandle <> 0 Then
+    Dim RetVal As Long
+    If PropDrawMode <> CboDrawModeOwnerDrawVariable Then
+        If Index = 0 Then
+            RetVal = SendMessage(ComboBoxHandle, CB_SETITEMHEIGHT, 0, ByVal CLng(UserControl.ScaleY(Value, vbContainerSize, vbPixels)))
+        Else
+            RetVal = CB_ERR
+        End If
+    Else
+        RetVal = SendMessage(ComboBoxHandle, CB_SETITEMHEIGHT, Index, ByVal CLng(UserControl.ScaleY(Value, vbContainerSize, vbPixels)))
+    End If
+    If Not RetVal = CB_ERR Then
+        If PropIntegralHeight = True Then Call UserControl_Resize
+        Me.Refresh
+    Else
+        Err.Raise 5
+    End If
+End If
+Call CheckDropDownHeight(True)
+End Property
+
+Public Property Get FieldHeight() As Single
+Attribute FieldHeight.VB_Description = "Returns/sets the height of the edit-control (or static-text) portion of the combo box."
+Attribute FieldHeight.VB_MemberFlags = "400"
+If ComboBoxHandle <> 0 Then FieldHeight = UserControl.ScaleY(SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, -1, ByVal 0&), vbPixels, vbContainerSize)
+End Property
+
+Public Property Let FieldHeight(ByVal Value As Single)
 If Value < 0 Then Err.Raise 380
-If ComboBoxHandle <> 0 Then SendMessage ComboBoxHandle, CB_SETITEMHEIGHT, 0, ByVal CLng(UserControl.ScaleY(Value, vbContainerSize, vbPixels))
-Call SetDropListHeight(True)
+If ComboBoxHandle <> 0 Then
+    If Not SendMessage(ComboBoxHandle, CB_SETITEMHEIGHT, -1, ByVal CLng(UserControl.ScaleY(Value, vbContainerSize, vbPixels))) = CB_ERR Then
+        Me.Refresh
+    Else
+        Err.Raise 5
+    End If
+End If
 End Property
 
 Public Property Get DroppedDown() As Boolean
@@ -1415,25 +1787,60 @@ Public Property Let DroppedDown(ByVal Value As Boolean)
 If ComboBoxHandle <> 0 Then SendMessage ComboBoxHandle, CB_SHOWDROPDOWN, IIf(Value = True, 1, 0), ByVal 0&
 End Property
 
-Public Property Get DroppedWidth() As Single
-Attribute DroppedWidth.VB_Description = "Returns/sets the width of the drop-down list."
-Attribute DroppedWidth.VB_MemberFlags = "400"
+Public Property Get DropDownWidth() As Single
+Attribute DropDownWidth.VB_Description = "Returns/sets the width of the drop-down list. This property is not supported in a simple combo box."
+Attribute DropDownWidth.VB_MemberFlags = "400"
 If ComboBoxHandle <> 0 Then
     Dim RetVal As Long
     RetVal = SendMessage(ComboBoxHandle, CB_GETDROPPEDWIDTH, 0, ByVal 0&)
-    If Not RetVal = CB_ERR Then DroppedWidth = UserControl.ScaleX(RetVal, vbPixels, vbContainerSize)
+    If Not RetVal = CB_ERR Then
+        DropDownWidth = UserControl.ScaleX(RetVal, vbPixels, vbContainerSize)
+    Else
+        Err.Raise 5
+    End If
 End If
 End Property
 
-Public Property Let DroppedWidth(ByVal Value As Single)
+Public Property Let DropDownWidth(ByVal Value As Single)
 If Value < 0 Then Err.Raise 380
 If ComboBoxHandle <> 0 Then
-    Dim LngValue As Long
-    On Error Resume Next
-    LngValue = CLng(UserControl.ScaleX(Value, vbContainerSize, vbPixels))
-    If Err.Number <> 0 Then LngValue = 0
-    On Error GoTo 0
-    SendMessage ComboBoxHandle, CB_SETDROPPEDWIDTH, LngValue, ByVal 0&
+    If SendMessage(ComboBoxHandle, CB_SETDROPPEDWIDTH, CLng(UserControl.ScaleX(Value, vbContainerSize, vbPixels)), ByVal 0&) = CB_ERR Then Err.Raise 5
+End If
+End Property
+
+Public Property Get DropDownHeight() As Single
+Attribute DropDownHeight.VB_Description = "Returns/sets the height of the drop-down list. Setting this property resets the integral height property to false. Also the max drop-down items property gets not meaningful anymore. This property is not supported in a simple combo box."
+Attribute DropDownHeight.VB_MemberFlags = "400"
+If ComboBoxHandle <> 0 Then
+    If PropStyle <> CboStyleSimpleCombo Then
+        Dim ListRect As RECT
+        GetWindowRect Me.hWndList, ListRect
+        DropDownHeight = UserControl.ScaleY((ListRect.Bottom - ListRect.Top), vbPixels, vbContainerSize)
+    Else
+        Err.Raise 5
+    End If
+End If
+End Property
+
+Public Property Let DropDownHeight(ByVal Value As Single)
+If Value < 0 Then Err.Raise 380
+If ComboBoxHandle <> 0 Then
+    If PropStyle <> CboStyleSimpleCombo Then
+        Dim LngValue As Long
+        LngValue = CLng(UserControl.ScaleY(Value, vbContainerSize, vbPixels))
+        If LngValue > 0 Then
+            If PropIntegralHeight = True Then
+                PropIntegralHeight = False
+                Call ReCreateComboBox
+            End If
+            ComboBoxDropDownHeightState = True
+            MoveWindow ComboBoxHandle, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight + LngValue, 1
+        Else
+            Err.Raise 380
+        End If
+    Else
+        Err.Raise 5
+    End If
 End If
 End Property
 
@@ -1459,16 +1866,31 @@ If ComboBoxHandle <> 0 Then
 End If
 End Property
 
+Public Function FindItem(ByVal Text As String, Optional ByVal Index As Long = -1, Optional ByVal Partial As Boolean) As Long
+Attribute FindItem.VB_Description = "Finds an item in the combo box and returns the index of that item."
+If ComboBoxHandle <> 0 Then
+    If Not SendMessage(ComboBoxHandle, CB_GETLBTEXTLEN, Index, ByVal 0&) = CB_ERR Or Index = -1 Then
+        If Partial = True Then
+            FindItem = SendMessage(ComboBoxHandle, CB_FINDSTRING, Index, ByVal StrPtr(Text))
+        Else
+            FindItem = SendMessage(ComboBoxHandle, CB_FINDSTRINGEXACT, Index, ByVal StrPtr(Text))
+        End If
+    Else
+        Err.Raise 381
+    End If
+End If
+End Function
+
 Public Function GetIdealHorizontalExtent() As Single
 Attribute GetIdealHorizontalExtent.VB_Description = "Gets the ideal value for the horizontal extent property."
 If ComboBoxHandle <> 0 Then
-    Dim Count As Long
-    Count = SendMessage(ComboBoxHandle, CB_GETCOUNT, 0, ByVal 0&)
-    If Count > 0 Then
+    Dim count As Long
+    count = SendMessage(ComboBoxHandle, CB_GETCOUNT, 0, ByVal 0&)
+    If count > 0 Then
         Dim ListHandle As Long
         ListHandle = Me.hWndList
         If ListHandle <> 0 Then
-            Dim RC(0 To 1) As RECT, CX As Long, ScrollWidth As Long, hDC As Long, i As Long, Length As Long, Text As String, Size As SIZEAPI
+            Dim RC(0 To 1) As RECT, Cx As Long, ScrollWidth As Long, hDC As Long, I As Long, Length As Long, Text As String, Size As SIZEAPI
             GetWindowRect ListHandle, RC(0)
             GetClientRect ListHandle, RC(1)
             If (GetWindowLong(ListHandle, GWL_STYLE) And WS_VSCROLL) = WS_VSCROLL Then
@@ -1477,45 +1899,63 @@ If ComboBoxHandle <> 0 Then
             End If
             hDC = GetDC(ComboBoxHandle)
             SelectObject hDC, ComboBoxFontHandle
-            For i = 0 To Count - 1
-                Length = SendMessage(ComboBoxHandle, CB_GETLBTEXTLEN, i, ByVal 0&)
+            For I = 0 To count - 1
+                Length = SendMessage(ComboBoxHandle, CB_GETLBTEXTLEN, I, ByVal 0&)
                 If Not Length = CB_ERR Then
                     Text = String(Length, vbNullChar)
-                    SendMessage ComboBoxHandle, CB_GETLBTEXT, i, ByVal StrPtr(Text)
+                    SendMessage ComboBoxHandle, CB_GETLBTEXT, I, ByVal StrPtr(Text)
                     GetTextExtentPoint32 hDC, ByVal StrPtr(Text), Length, Size
-                    If (Size.CX - ScrollWidth) > CX Then CX = (Size.CX - ScrollWidth)
+                    If (Size.Cx - ScrollWidth) > Cx Then Cx = (Size.Cx - ScrollWidth)
                 End If
-            Next i
+            Next I
             ReleaseDC ComboBoxHandle, hDC
-            If CX > 0 Then GetIdealHorizontalExtent = UserControl.ScaleX(CX + ((RC(0).Right - RC(0).Left) - (RC(1).Right - RC(1).Left)), vbPixels, vbContainerSize)
+            If Cx > 0 Then GetIdealHorizontalExtent = UserControl.ScaleX(Cx + ((RC(0).Right - RC(0).Left) - (RC(1).Right - RC(1).Left)), vbPixels, vbContainerSize)
         End If
     End If
 End If
 End Function
 
-Private Sub SetDropListHeight(ByVal Calculate As Boolean)
-If ComboBoxHandle <> 0 Then
-    Static LastCount As Long, ItemHeight As Long
-    Dim Count As Long
-    Count = SendMessage(ComboBoxHandle, CB_GETCOUNT, 0, ByVal 0&)
-    Select Case Count
-        Case 0
-            Count = 1
-        Case Is > PropMaxDropDownItems
-            Count = PropMaxDropDownItems
-    End Select
-    If Calculate = False Then
-        If Count = LastCount Then Exit Sub
+Private Sub CheckDropDownHeight(ByVal Calculate As Boolean)
+Static LastCount As Long, ItemHeight As Long
+If ComboBoxHandle <> 0 And ComboBoxDropDownHeightState = False Then
+    Dim count As Long, Height As Long
+    count = SendMessage(ComboBoxHandle, CB_GETCOUNT, 0, ByVal 0&)
+    If PropDrawMode <> CboDrawModeOwnerDrawVariable Then
+        Select Case count
+            Case 0
+                count = 1
+            Case Is > PropMaxDropDownItems
+                count = PropMaxDropDownItems
+        End Select
+        If Calculate = False Then
+            If count = LastCount Then Exit Sub
+        Else
+            ItemHeight = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, 0, ByVal 0&)
+        End If
+        Height = (ItemHeight * count)
     Else
-        ItemHeight = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, 0, ByVal 0&)
+        If Calculate = False Then Exit Sub
+        If count > 0 Then
+            Dim TopIndex As Long, I As Long, RetVal As Long
+            TopIndex = SendMessage(ComboBoxHandle, CB_GETTOPINDEX, 0, ByVal 0&)
+            If Not TopIndex = CB_ERR Then
+                For I = TopIndex To (TopIndex + (PropMaxDropDownItems - 1))
+                    RetVal = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, I, ByVal 0&)
+                    If RetVal = CB_ERR Then Exit For
+                    Height = Height + RetVal
+                Next I
+            End If
+        Else
+            Height = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, -1, ByVal 0&)
+        End If
     End If
     If PropStyle <> CboStyleSimpleCombo Then
-        MoveWindow ComboBoxHandle, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight + (ItemHeight * Count) + 2, 1
+        MoveWindow ComboBoxHandle, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight + Height + 2, 1
         If PropIntegralHeight = True And ComCtlsSupportLevel() >= 1 Then SendMessage ComboBoxHandle, CB_SETMINVISIBLE, PropMaxDropDownItems, ByVal 0&
     Else
         RedrawWindow ComboBoxHandle, 0, 0, RDW_UPDATENOW Or RDW_INVALIDATE Or RDW_ERASE Or RDW_ALLCHILDREN
     End If
-    LastCount = Count
+    LastCount = count
 End If
 End Sub
 
@@ -1537,7 +1977,7 @@ Select Case wMsg
         Call ActivateIPAO(Me)
     Case WM_MOUSEACTIVATE
         Static InProc As Boolean
-        If GetFocus() <> ComboBoxHandle And (GetFocus() <> ComboBoxEditHandle Or ComboBoxEditHandle = 0) Then
+        If ComCtlsRootIsEditor(hWnd) = False And GetFocus() <> ComboBoxHandle And (GetFocus() <> ComboBoxEditHandle Or ComboBoxEditHandle = 0) Then
             If InProc = True Then WindowProcControl = MA_NOACTIVATEANDEAT: Exit Function
             Select Case HiWord(lParam)
                 Case WM_LBUTTONDOWN
@@ -1577,7 +2017,7 @@ Select Case wMsg
     Case WM_CTLCOLORLISTBOX
         WindowProcControl = ComCtlsDefaultProc(hWnd, wMsg, wParam, lParam)
         If PropUseListBackColor = True Or PropUseListForeColor = True Then SetBkMode wParam, 1
-        If PropUseListForeColor = True Then SetTextColor wParam, WinColor(Me.ListForeColor)
+        If PropUseListForeColor = True Then SetTextColor wParam, WinColor(PropListForeColor)
         If PropUseListBackColor = True And ComboBoxListBackColorBrush <> 0 Then WindowProcControl = ComboBoxListBackColorBrush
         Exit Function
     Case WM_KEYDOWN, WM_KEYUP
@@ -1585,24 +2025,70 @@ Select Case wMsg
             Dim KeyCode As Integer
             KeyCode = wParam And &HFF&
             If wMsg = WM_KEYDOWN Then
-                RaiseEvent KeyDown(KeyCode, GetShiftState())
+                RaiseEvent KeyDown(KeyCode, GetShiftStateFromMsg())
+                ComboBoxCharCodeCache = ComCtlsPeekCharCode(hWnd)
             ElseIf wMsg = WM_KEYUP Then
-                RaiseEvent KeyUp(KeyCode, GetShiftState())
+                RaiseEvent KeyUp(KeyCode, GetShiftStateFromMsg())
             End If
             wParam = KeyCode
         End If
     Case WM_CHAR
         If PropStyle = CboStyleDropDownList Then
             Dim KeyChar As Integer
-            KeyChar = CUIntToInt(wParam And &HFFFF&)
+            If ComboBoxCharCodeCache <> 0 Then
+                KeyChar = CUIntToInt(ComboBoxCharCodeCache And &HFFFF&)
+                ComboBoxCharCodeCache = 0
+            Else
+                KeyChar = CUIntToInt(wParam And &HFFFF&)
+            End If
             RaiseEvent KeyPress(KeyChar)
             wParam = CIntToUInt(KeyChar)
+        End If
+    Case WM_UNICHAR
+        If PropStyle = CboStyleDropDownList Then
+            If wParam = UNICODE_NOCHAR Then WindowProcControl = 1 Else SendMessage hWnd, WM_CHAR, wParam, ByVal lParam
+            Exit Function
         End If
     Case WM_IME_CHAR
         If PropStyle = CboStyleDropDownList Then
             SendMessage hWnd, WM_CHAR, wParam, ByVal lParam
             Exit Function
         End If
+    Case WM_CONTEXTMENU
+        If wParam = ComboBoxHandle Then
+            Dim p As POINTAPI, Handled As Boolean
+            p.X = Get_X_lParam(lParam)
+            p.Y = Get_Y_lParam(lParam)
+            If p.X > 0 And p.Y > 0 Then
+                ScreenToClient ComboBoxHandle, p
+                RaiseEvent ContextMenu(Handled, UserControl.ScaleX(p.X, vbPixels, vbContainerPosition), UserControl.ScaleY(p.Y, vbPixels, vbContainerPosition))
+            ElseIf p.X = -1 And p.Y = -1 Then
+                ' If the user types SHIFT + F10 then the X and Y coordinates are -1.
+                RaiseEvent ContextMenu(Handled, -1, -1)
+            End If
+            If Handled = True Then Exit Function
+        End If
+    Case WM_SIZE
+        If ComboBoxResizeFrozen = False Then
+            Dim WndRect As RECT
+            GetWindowRect hWnd, WndRect
+            With UserControl
+            If (WndRect.Bottom - WndRect.Top) <> .ScaleHeight Or (WndRect.Right - WndRect.Left) <> .ScaleWidth Then
+                ComboBoxResizeFrozen = True
+                If DPICorrectionFactor() <> 1 Then
+                    .Extender.Move .Extender.Left, .Extender.Top, .ScaleX((WndRect.Right - WndRect.Left), vbPixels, vbContainerSize), .ScaleY((WndRect.Bottom - WndRect.Top), vbPixels, vbContainerSize)
+                    .Extender.Move .Extender.Left + .ScaleX(1, vbPixels, vbContainerPosition), .Extender.Top + .ScaleY(1, vbPixels, vbContainerPosition)
+                    .Extender.Move .Extender.Left - .ScaleX(1, vbPixels, vbContainerPosition), .Extender.Top - .ScaleY(1, vbPixels, vbContainerPosition)
+                Else
+                    .Size .ScaleX((WndRect.Right - WndRect.Left), vbPixels, vbTwips), .ScaleY((WndRect.Bottom - WndRect.Top), vbPixels, vbTwips)
+                End If
+                ComboBoxResizeFrozen = False
+            End If
+            End With
+        End If
+End Select
+WindowProcControl = ComCtlsDefaultProc(hWnd, wMsg, wParam, lParam)
+Select Case wMsg
     Case WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_MOUSEMOVE, WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP
         Dim X As Single
         Dim Y As Single
@@ -1610,31 +2096,55 @@ Select Case wMsg
         Y = UserControl.ScaleY(Get_Y_lParam(lParam), vbPixels, vbTwips)
         Select Case wMsg
             Case WM_LBUTTONDOWN
-                RaiseEvent MouseDown(vbLeftButton, GetShiftState(), X, Y)
+                RaiseEvent MouseDown(vbLeftButton, GetShiftStateFromParam(wParam), X, Y)
             Case WM_MBUTTONDOWN
-                RaiseEvent MouseDown(vbMiddleButton, GetShiftState(), X, Y)
+                RaiseEvent MouseDown(vbMiddleButton, GetShiftStateFromParam(wParam), X, Y)
             Case WM_RBUTTONDOWN
-                RaiseEvent MouseDown(vbRightButton, GetShiftState(), X, Y)
+                RaiseEvent MouseDown(vbRightButton, GetShiftStateFromParam(wParam), X, Y)
             Case WM_MOUSEMOVE
-                RaiseEvent MouseMove(GetMouseState(), GetShiftState(), X, Y)
+                RaiseEvent MouseMove(GetMouseStateFromParam(wParam), GetShiftStateFromParam(wParam), X, Y)
             Case WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP
                 Select Case wMsg
                     Case WM_LBUTTONUP
-                        RaiseEvent MouseUp(vbLeftButton, GetShiftState(), X, Y)
+                        RaiseEvent MouseUp(vbLeftButton, GetShiftStateFromParam(wParam), X, Y)
                     Case WM_MBUTTONUP
-                        RaiseEvent MouseUp(vbMiddleButton, GetShiftState(), X, Y)
+                        RaiseEvent MouseUp(vbMiddleButton, GetShiftStateFromParam(wParam), X, Y)
                     Case WM_RBUTTONUP
-                        RaiseEvent MouseUp(vbRightButton, GetShiftState(), X, Y)
+                        RaiseEvent MouseUp(vbRightButton, GetShiftStateFromParam(wParam), X, Y)
                 End Select
         End Select
 End Select
-WindowProcControl = ComCtlsDefaultProc(hWnd, wMsg, wParam, lParam)
 End Function
 
 Private Function WindowProcEdit(ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Select Case wMsg
     Case WM_SETFOCUS
         If wParam <> ComboBoxHandle Then SetFocusAPI UserControl.hWnd: Exit Function
+    Case WM_MOUSEACTIVATE
+        Static InProc As Boolean
+        If ComCtlsRootIsEditor(hWnd) = False And GetFocus() <> ComboBoxHandle And (GetFocus() <> ComboBoxEditHandle Or ComboBoxEditHandle = 0) Then
+            If InProc = True Then WindowProcEdit = MA_NOACTIVATEANDEAT: Exit Function
+            Select Case HiWord(lParam)
+                Case WM_LBUTTONDOWN, WM_RBUTTONDOWN
+                    On Error Resume Next
+                    If Extender.CausesValidation = True Then
+                        InProc = True
+                        Screen.ActiveForm.ValidateControls
+                        InProc = False
+                        If Err.Number = 380 Then
+                            WindowProcEdit = MA_NOACTIVATEANDEAT
+                        Else
+                            SetFocusAPI UserControl.hWnd
+                            WindowProcEdit = MA_NOACTIVATE
+                        End If
+                    Else
+                        SetFocusAPI UserControl.hWnd
+                        WindowProcEdit = MA_NOACTIVATE
+                    End If
+                    On Error GoTo 0
+                    Exit Function
+            End Select
+        End If
     Case WM_SETCURSOR
         If LoWord(lParam) = HTCLIENT Then
             If PropOLEDragMode = vbOLEDragAutomatic Then
@@ -1662,23 +2172,64 @@ Select Case wMsg
         Dim KeyCode As Integer
         KeyCode = wParam And &HFF&
         If wMsg = WM_KEYDOWN Then
-            RaiseEvent KeyDown(KeyCode, GetShiftState())
+            RaiseEvent KeyDown(KeyCode, GetShiftStateFromMsg())
+            ComboBoxCharCodeCache = ComCtlsPeekCharCode(hWnd)
         ElseIf wMsg = WM_KEYUP Then
-            RaiseEvent KeyUp(KeyCode, GetShiftState())
+            RaiseEvent KeyUp(KeyCode, GetShiftStateFromMsg())
         End If
         wParam = KeyCode
     Case WM_CHAR
         Dim KeyChar As Integer
-        KeyChar = CUIntToInt(wParam And &HFFFF&)
+        If ComboBoxCharCodeCache <> 0 Then
+            KeyChar = CUIntToInt(ComboBoxCharCodeCache And &HFFFF&)
+            ComboBoxCharCodeCache = 0
+        Else
+            KeyChar = CUIntToInt(wParam And &HFFFF&)
+        End If
         RaiseEvent KeyPress(KeyChar)
         If (wParam And &HFFFF&) <> 0 And KeyChar = 0 Then
             Exit Function
         Else
             wParam = CIntToUInt(KeyChar)
         End If
+    Case WM_UNICHAR
+        If wParam = UNICODE_NOCHAR Then WindowProcEdit = 1 Else SendMessage hWnd, WM_CHAR, wParam, ByVal lParam
+        Exit Function
+    Case WM_INPUTLANGCHANGE
+        Call ComCtlsSetIMEMode(hWnd, ComboBoxIMCHandle, PropIMEMode)
+    Case WM_IME_SETCONTEXT
+        If wParam <> 0 Then Call ComCtlsSetIMEMode(hWnd, ComboBoxIMCHandle, PropIMEMode)
     Case WM_IME_CHAR
         SendMessage hWnd, WM_CHAR, wParam, ByVal lParam
         Exit Function
+    Case WM_LBUTTONDOWN
+        If PropOLEDragMode = vbOLEDragAutomatic And ComboBoxAutoDragInSel = True Then
+            Dim P2 As POINTAPI
+            P2.X = Get_X_lParam(lParam)
+            P2.Y = Get_Y_lParam(lParam)
+            ClientToScreen ComboBoxEditHandle, P2
+            If DragDetect(ComboBoxEditHandle, CUIntToInt(P2.X And &HFFFF&), CUIntToInt(P2.Y And &HFFFF&)) <> 0 Then
+                Me.OLEDrag
+            End If
+            Exit Function
+        End If
+    Case WM_CONTEXTMENU
+        If wParam = hWnd Then
+            Dim P3 As POINTAPI, Handled As Boolean
+            P3.X = Get_X_lParam(lParam)
+            P3.Y = Get_Y_lParam(lParam)
+            If P3.X > 0 And P3.Y > 0 Then
+                ScreenToClient hWnd, P3
+                RaiseEvent ContextMenu(Handled, UserControl.ScaleX(P3.X, vbPixels, vbContainerPosition), UserControl.ScaleY(P3.Y, vbPixels, vbContainerPosition))
+            ElseIf P3.X = -1 And P3.Y = -1 Then
+                ' If the user types SHIFT + F10 then the X and Y coordinates are -1.
+                RaiseEvent ContextMenu(Handled, -1, -1)
+            End If
+            If Handled = True Then Exit Function
+        End If
+End Select
+WindowProcEdit = ComCtlsDefaultProc(hWnd, wMsg, wParam, lParam)
+Select Case wMsg
     Case WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_MOUSEMOVE, WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP
         Dim X As Single
         Dim Y As Single
@@ -1686,40 +2237,30 @@ Select Case wMsg
         Y = UserControl.ScaleY(Get_Y_lParam(lParam), vbPixels, vbTwips)
         Select Case wMsg
             Case WM_LBUTTONDOWN
-                RaiseEvent MouseDown(vbLeftButton, GetShiftState(), X, Y)
-                If PropOLEDragMode = vbOLEDragAutomatic And ComboBoxAutoDragInSel = True Then
-                    Dim P2 As POINTAPI
-                    GetCursorPos P2
-                    If DragDetect(ComboBoxEditHandle, CInt(P2.X), CInt(P2.Y)) <> 0 Then
-                        Me.OLEDrag
-                    Else
-                        WindowProcEdit = ComCtlsDefaultProc(hWnd, wMsg, wParam, lParam)
-                        ReleaseCapture
-                    End If
-                    Exit Function
-                End If
+                RaiseEvent MouseDown(vbLeftButton, GetShiftStateFromParam(wParam), X, Y)
             Case WM_MBUTTONDOWN
-                RaiseEvent MouseDown(vbMiddleButton, GetShiftState(), X, Y)
+                RaiseEvent MouseDown(vbMiddleButton, GetShiftStateFromParam(wParam), X, Y)
             Case WM_RBUTTONDOWN
-                RaiseEvent MouseDown(vbRightButton, GetShiftState(), X, Y)
+                RaiseEvent MouseDown(vbRightButton, GetShiftStateFromParam(wParam), X, Y)
             Case WM_MOUSEMOVE
-                RaiseEvent MouseMove(GetMouseState(), GetShiftState(), X, Y)
+                RaiseEvent MouseMove(GetMouseStateFromParam(wParam), GetShiftStateFromParam(wParam), X, Y)
             Case WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP
                 Select Case wMsg
                     Case WM_LBUTTONUP
-                        RaiseEvent MouseUp(vbLeftButton, GetShiftState(), X, Y)
+                        RaiseEvent MouseUp(vbLeftButton, GetShiftStateFromParam(wParam), X, Y)
                     Case WM_MBUTTONUP
-                        RaiseEvent MouseUp(vbMiddleButton, GetShiftState(), X, Y)
+                        RaiseEvent MouseUp(vbMiddleButton, GetShiftStateFromParam(wParam), X, Y)
                     Case WM_RBUTTONUP
-                        RaiseEvent MouseUp(vbRightButton, GetShiftState(), X, Y)
+                        RaiseEvent MouseUp(vbRightButton, GetShiftStateFromParam(wParam), X, Y)
                 End Select
         End Select
 End Select
-WindowProcEdit = ComCtlsDefaultProc(hWnd, wMsg, wParam, lParam)
 End Function
 
 Private Function WindowProcUserControl(ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Select Case wMsg
+    Case WM_SHOWWINDOW
+        If ComboBoxHandle = 0 Then Call CreateComboBox
     Case WM_COMMAND
         Dim hWndFocus As Long
         Select Case HiWord(wParam)
@@ -1727,7 +2268,7 @@ Select Case wMsg
                 Dim SelIndex As Long
                 SelIndex = SendMessage(lParam, CB_GETCURSEL, 0, ByVal 0&)
                 If Not SelIndex = CB_ERR Then
-                    Me.Text = Me.List(SelIndex)
+                    If PropStyle <> CboStyleDropDownList And ComboBoxEditHandle <> 0 Then SendMessage ComboBoxEditHandle, WM_SETTEXT, 0, ByVal StrPtr(Me.List(SelIndex))
                     RaiseEvent Click
                 End If
             Case CBN_DBLCLK
@@ -1736,10 +2277,36 @@ Select Case wMsg
                 UserControl.PropertyChanged "Text"
                 RaiseEvent Change
             Case CBN_DROPDOWN
+                If PropDrawMode = CboDrawModeOwnerDrawVariable Then Call CheckDropDownHeight(True)
                 RaiseEvent DropDown
             Case CBN_CLOSEUP
                 RaiseEvent CloseUp
         End Select
+    Case WM_MEASUREITEM
+        If PropDrawMode = CboDrawModeOwnerDrawVariable Then
+            Dim MIS As MEASUREITEMSTRUCT
+            CopyMemory MIS, ByVal lParam, LenB(MIS)
+            If MIS.CtlType = ODT_COMBOBOX And MIS.ItemID > -1 Then
+                With MIS
+                RaiseEvent ItemMeasure(.ItemID, .ItemHeight)
+                End With
+                CopyMemory ByVal lParam, MIS, LenB(MIS)
+                WindowProcUserControl = 1
+                Exit Function
+            End If
+        End If
+    Case WM_DRAWITEM
+        If PropDrawMode <> CboDrawModeNormal Then
+            Dim DIS As DRAWITEMSTRUCT
+            CopyMemory DIS, ByVal lParam, LenB(DIS)
+            If DIS.CtlType = ODT_COMBOBOX And DIS.hWndItem = ComboBoxHandle And DIS.ItemID > -1 Then
+                With DIS
+                RaiseEvent ItemDraw(.ItemID, .ItemAction, .ItemState, .hDC, .RCItem.Left, .RCItem.Top, .RCItem.Right, .RCItem.Bottom)
+                End With
+                WindowProcUserControl = 1
+                Exit Function
+            End If
+        End If
 End Select
 WindowProcUserControl = ComCtlsDefaultProc(hWnd, wMsg, wParam, lParam)
 If wMsg = WM_SETFOCUS Then SetFocusAPI ComboBoxHandle

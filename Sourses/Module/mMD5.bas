@@ -1,4 +1,5 @@
 Attribute VB_Name = "mMD5"
+'http://www.Planet-Source-Code.com/vb/scripts/ShowCode.asp?txtCodeId=69092&lngWId=1
 'This module is used to gather the contents of a file quickly and to grab the MD5 of a file quickly by using API functions. Use this
 'code in any projects you wish, no need to give credit. Please vote though.
 'marcin@malwarebytes.org if you have any questions.
@@ -21,10 +22,9 @@ Private Declare Function CryptCreateHash Lib "advapi32.dll" (ByVal hProv As Long
 Private Declare Function CryptHashData Lib "advapi32.dll" (ByVal hHash As Long, pbData As Any, ByVal dwDataLen As Long, ByVal dwFlags As Long) As Long
 Private Declare Function CryptGetHashParam Lib "advapi32.dll" (ByVal pCryptHash As Long, ByVal dwParam As Long, ByRef pbData As Any, ByRef pcbData As Long, ByVal dwFlags As Long) As Long
 
-'Расчет хэш-суммы MD5 файла
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function GetMD5
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Расчет хэш-суммы MD5 файла]
 '! Parameters  (Переменные):   sFile (String)
 '!--------------------------------------------------------------------------------
 Public Function GetMD5(sFile As String) As String
@@ -34,27 +34,35 @@ Public Function GetMD5(sFile As String) As String
     Dim lFileSize        As Long
     Dim lBytesRead       As Long
     Dim uMD5(lMD5Length) As Byte
-    Dim i                As Long
+    Dim ii               As Long
     Dim hCrypt           As Long
     Dim hHash            As Long
     Dim sMD5             As String
-
+    Dim lngFilePathPtr   As Long
+    
+    'Get a pointer to a string with file name.
+    If PathIsValidUNC(sFile) = False Then
+        lngFilePathPtr = StrPtr("\\?\" & sFile)
+    Else
+        '\\?\UNC\
+        lngFilePathPtr = StrPtr("\\?\UNC\" & Right$(sFile, Len(sFile) - 2))
+    End If
     'Get a handle to the file
-    hFile = CreateFile(StrPtr(sFile & vbNullChar), GENERIC_READ, FILE_SHARE_READ, ByVal 0&, OPEN_EXISTING, ByVal 0&, ByVal 0&)
+    hFile = CreateFile(lngFilePathPtr, GENERIC_READ, FILE_SHARE_READ, ByVal 0&, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, ByVal 0&)
 
     'Check if file opened successfully
-    If hFile > 0 Then
+    If hFile Then
         'Get the file size
         lFileSize = GetFileSize(hFile, ByVal 0&)
 
         'File size must be greater than 0
-        If lFileSize > 0 Then
+        If lFileSize Then
 
             'Prepare the buffer
-            ReDim uBuffer(lFileSize - 1) As Byte
+            ReDim uBuffer(lFileSize - 1)
 
             'Read the file
-            If ReadFile(hFile, uBuffer(0), lFileSize, lBytesRead, ByVal 0&) <> 0 Then
+            If ReadFile(hFile, VarPtr(uBuffer(0)), lFileSize, lBytesRead, 0) <> 0 Then
                 If lBytesRead <> lFileSize Then
 
                     ReDim Preserve uBuffer(lBytesRead - 1)
@@ -68,8 +76,8 @@ Public Function GetMD5(sFile As String) As String
                             If CryptGetHashParam(hHash, HP_HASHVAL, uMD5(0), lMD5Length, 0) <> 0 Then
 
                                 'Build the MD5 string
-                                For i = 0 To lMD5Length - 1
-                                    sMD5 = sMD5 & (Right$("0" & Hex$(uMD5(i)), 2))
+                                For ii = 0 To lMD5Length - 1
+                                    sMD5 = sMD5 & (Right$("0" & Hex$(uMD5(ii)), 2))
                                 Next
 
                             End If
