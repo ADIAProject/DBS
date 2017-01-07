@@ -51,8 +51,8 @@ X As Long
 Y As Long
 End Type
 Private Type SIZEAPI
-Cx As Long
-Cy As Long
+CX As Long
+CY As Long
 End Type
 Private Type MEASUREITEMSTRUCT
 CtlType As Long
@@ -101,9 +101,9 @@ Public Event DropDown()
 Attribute DropDown.VB_Description = "Occurs when the drop-down list is about to drop down."
 Public Event CloseUp()
 Attribute CloseUp.VB_Description = "Occurs when the drop-down list has been closed."
-Public Event ItemMeasure(ByVal item As Long, ByRef ItemHeight As Long)
+Public Event ItemMeasure(ByVal Item As Long, ByRef ItemHeight As Long)
 Attribute ItemMeasure.VB_Description = "Occurs each time an variable owner-drawn combo box item's size needs to be determined in preparation of drawing it."
-Public Event ItemDraw(ByVal item As Long, ByVal ItemAction As Long, ByVal ItemState As Long, ByVal hDC As Long, ByVal Left As Long, ByVal Top As Long, ByVal Right As Long, ByVal Bottom As Long)
+Public Event ItemDraw(ByVal Item As Long, ByVal ItemAction As Long, ByVal ItemState As Long, ByVal hDC As Long, ByVal Left As Long, ByVal Top As Long, ByVal Right As Long, ByVal Bottom As Long)
 Attribute ItemDraw.VB_Description = "Occurs when a visual aspect of an owner-drawn combo box has changed."
 Public Event PreviewKeyDown(ByVal KeyCode As Integer, ByRef IsInputKey As Boolean)
 Attribute PreviewKeyDown.VB_Description = "Occurs before the KeyDown event."
@@ -552,10 +552,10 @@ Private Sub UserControl_AmbientChanged(PropertyName As String)
 If Ambient.UserMode = False And PropertyName = "DisplayName" And PropStyle = CboStyleDropDownList Then
     If ComboBoxHandle <> 0 Then
         If SendMessage(ComboBoxHandle, CB_GETCOUNT, 0, ByVal 0&) > 0 Then
-            Dim buffer As String
-            buffer = Ambient.DisplayName
+            Dim Buffer As String
+            Buffer = Ambient.DisplayName
             SendMessage ComboBoxHandle, CB_RESETCONTENT, 0, ByVal 0&
-            SendMessage ComboBoxHandle, CB_ADDSTRING, 0, ByVal StrPtr(buffer)
+            SendMessage ComboBoxHandle, CB_ADDSTRING, 0, ByVal StrPtr(Buffer)
             SendMessage ComboBoxHandle, CB_SETCURSEL, 0, ByVal 0&
         End If
     End If
@@ -1066,11 +1066,10 @@ Public Property Let Text(ByVal Value As String)
 Dim Changed As Boolean
 Select Case PropStyle
     Case CboStyleDropDownCombo, CboStyleSimpleCombo
+        If PropMaxLength > 0 Then Value = Left$(Value, PropMaxLength)
+        Changed = CBool(Me.Text <> Value)
         PropText = Value
-        If ComboBoxHandle <> 0 And ComboBoxEditHandle <> 0 Then
-            Changed = CBool(Me.Text <> PropText)
-            SendMessage ComboBoxEditHandle, WM_SETTEXT, 0, ByVal StrPtr(PropText)
-        End If
+        If ComboBoxHandle <> 0 And ComboBoxEditHandle <> 0 Then SendMessage ComboBoxEditHandle, WM_SETTEXT, 0, ByVal StrPtr(PropText)
     Case CboStyleDropDownList
         If ComboBoxHandle <> 0 And Ambient.UserMode = True Then
             Dim Index As Long
@@ -1317,12 +1316,12 @@ End If
 UserControl.PropertyChanged "IMEMode"
 End Property
 
-Public Sub AddItem(ByVal item As String, Optional ByVal Index As Variant)
+Public Sub AddItem(ByVal Item As String, Optional ByVal Index As Variant)
 Attribute AddItem.VB_Description = "Adds an item to the combo box."
 If ComboBoxHandle <> 0 Then
     Dim RetVal As Long
     If IsMissing(Index) = True Then
-        RetVal = SendMessage(ComboBoxHandle, CB_ADDSTRING, 0, ByVal StrPtr(item))
+        RetVal = SendMessage(ComboBoxHandle, CB_ADDSTRING, 0, ByVal StrPtr(Item))
     Else
         Dim IndexLong As Long
         Select Case VarType(Index)
@@ -1344,7 +1343,7 @@ If ComboBoxHandle <> 0 Then
             Case Else
                 Err.Raise 13
         End Select
-        RetVal = SendMessage(ComboBoxHandle, CB_INSERTSTRING, IndexLong, ByVal StrPtr(item))
+        RetVal = SendMessage(ComboBoxHandle, CB_INSERTSTRING, IndexLong, ByVal StrPtr(Item))
     End If
     If Not RetVal = CB_ERR Then
         ComboBoxNewIndex = RetVal
@@ -1511,6 +1510,7 @@ If ComboBoxHandle <> 0 Then
         Exit Sub
     End If
     SendMessage ComboBoxHandle, CB_LIMITTEXT, IIf(PropMaxLength = 0, 255, PropMaxLength), ByVal 0&
+    If PropStyle <> CboStyleDropDownList And ComboBoxEditHandle <> 0 Then SendMessage ComboBoxEditHandle, WM_SETTEXT, 0, ByVal StrPtr(PropText)
     If PropHorizontalExtent > 0 Then SendMessage ComboBoxHandle, CB_SETHORIZONTALEXTENT, PropHorizontalExtent, ByVal 0&
     ComboBoxNewIndex = -1
 End If
@@ -1519,7 +1519,6 @@ Me.VisualStyles = PropVisualStyles
 Me.Enabled = UserControl.Enabled
 If PropRedraw = False Then Me.Redraw = False
 If PropLocked = True Then Me.Locked = PropLocked
-If PropStyle <> CboStyleDropDownList And ComboBoxEditHandle <> 0 Then SendMessage ComboBoxEditHandle, WM_SETTEXT, 0, ByVal StrPtr(PropText)
 Me.ExtendedUI = PropExtendedUI
 Me.MaxDropDownItems = PropMaxDropDownItems
 If Not PropCueBanner = vbNullString Then Me.CueBanner = PropCueBanner
@@ -1536,9 +1535,9 @@ If Ambient.UserMode = True Then
 Else
     If PropStyle = CboStyleDropDownList Then
         If ComboBoxHandle <> 0 Then
-            Dim buffer As String
-            buffer = Ambient.DisplayName
-            SendMessage ComboBoxHandle, CB_ADDSTRING, 0, ByVal StrPtr(buffer)
+            Dim Buffer As String
+            Buffer = Ambient.DisplayName
+            SendMessage ComboBoxHandle, CB_ADDSTRING, 0, ByVal StrPtr(Buffer)
             SendMessage ComboBoxHandle, CB_SETCURSEL, 0, ByVal 0&
         End If
     End If
@@ -1552,20 +1551,20 @@ If Ambient.UserMode = True Then
     Locked = CBool(LockWindowUpdate(UserControl.hWnd) <> 0)
     Dim ListArr() As String, ItemDataArr() As Long
     Dim ItemHeight As Long, ListIndex As Long, TopIndex As Long, Text As String, SelStart As Long, SelEnd As Long, DroppedWidth As Long, FieldHeight As Long, NewIndex As Long
-    Dim count As Long, I As Long, FieldHeightCustomized As Boolean
+    Dim Count As Long, i As Long, FieldHeightCustomized As Boolean
     If ComboBoxHandle <> 0 Then
         If PropDrawMode <> CboDrawModeOwnerDrawVariable Then
             ' ItemHeight does not need to be restored in an variable owner-drawn combo box as the 'MeasureItem' event will handle this.
             ItemHeight = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, 0, ByVal 0&)
         End If
-        count = SendMessage(ComboBoxHandle, CB_GETCOUNT, 0, ByVal 0&)
-        If count > 0 Then
-            ReDim ListArr(0 To (count - 1)) As String
-            ReDim ItemDataArr(0 To (count - 1)) As Long
-            For I = 0 To (count - 1)
-                ListArr(I) = .List(I)
-                ItemDataArr(I) = SendMessage(ComboBoxHandle, CB_GETITEMDATA, I, ByVal 0&)
-            Next I
+        Count = SendMessage(ComboBoxHandle, CB_GETCOUNT, 0, ByVal 0&)
+        If Count > 0 Then
+            ReDim ListArr(0 To (Count - 1)) As String
+            ReDim ItemDataArr(0 To (Count - 1)) As Long
+            For i = 0 To (Count - 1)
+                ListArr(i) = .List(i)
+                ItemDataArr(i) = SendMessage(ComboBoxHandle, CB_GETITEMDATA, i, ByVal 0&)
+            Next i
         End If
         ListIndex = .ListIndex
         TopIndex = .TopIndex
@@ -1593,12 +1592,12 @@ If Ambient.UserMode = True Then
     Call UserControl_Resize
     If ComboBoxHandle <> 0 Then
         If PropDrawMode <> CboDrawModeOwnerDrawVariable Then SendMessage ComboBoxHandle, CB_SETITEMHEIGHT, 0, ByVal ItemHeight
-        If count > 0 Then
+        If Count > 0 Then
             SendMessage ComboBoxHandle, WM_SETREDRAW, 0, ByVal 0&
-            For I = 0 To (count - 1)
-                SendMessage ComboBoxHandle, CB_INSERTSTRING, I, ByVal StrPtr(ListArr(I))
-                SendMessage ComboBoxHandle, CB_SETITEMDATA, I, ByVal ItemDataArr(I)
-            Next I
+            For i = 0 To (Count - 1)
+                SendMessage ComboBoxHandle, CB_INSERTSTRING, i, ByVal StrPtr(ListArr(i))
+                SendMessage ComboBoxHandle, CB_SETITEMDATA, i, ByVal ItemDataArr(i)
+            Next i
             SendMessage ComboBoxHandle, WM_SETREDRAW, 1, ByVal 0&
             Call CheckDropDownHeight(True)
         End If
@@ -1884,13 +1883,13 @@ End Function
 Public Function GetIdealHorizontalExtent() As Single
 Attribute GetIdealHorizontalExtent.VB_Description = "Gets the ideal value for the horizontal extent property."
 If ComboBoxHandle <> 0 Then
-    Dim count As Long
-    count = SendMessage(ComboBoxHandle, CB_GETCOUNT, 0, ByVal 0&)
-    If count > 0 Then
+    Dim Count As Long
+    Count = SendMessage(ComboBoxHandle, CB_GETCOUNT, 0, ByVal 0&)
+    If Count > 0 Then
         Dim ListHandle As Long
         ListHandle = Me.hWndList
         If ListHandle <> 0 Then
-            Dim RC(0 To 1) As RECT, Cx As Long, ScrollWidth As Long, hDC As Long, I As Long, Length As Long, Text As String, Size As SIZEAPI
+            Dim RC(0 To 1) As RECT, CX As Long, ScrollWidth As Long, hDC As Long, i As Long, Length As Long, Text As String, Size As SIZEAPI
             GetWindowRect ListHandle, RC(0)
             GetClientRect ListHandle, RC(1)
             If (GetWindowLong(ListHandle, GWL_STYLE) And WS_VSCROLL) = WS_VSCROLL Then
@@ -1899,17 +1898,17 @@ If ComboBoxHandle <> 0 Then
             End If
             hDC = GetDC(ComboBoxHandle)
             SelectObject hDC, ComboBoxFontHandle
-            For I = 0 To count - 1
-                Length = SendMessage(ComboBoxHandle, CB_GETLBTEXTLEN, I, ByVal 0&)
+            For i = 0 To Count - 1
+                Length = SendMessage(ComboBoxHandle, CB_GETLBTEXTLEN, i, ByVal 0&)
                 If Not Length = CB_ERR Then
                     Text = String(Length, vbNullChar)
-                    SendMessage ComboBoxHandle, CB_GETLBTEXT, I, ByVal StrPtr(Text)
+                    SendMessage ComboBoxHandle, CB_GETLBTEXT, i, ByVal StrPtr(Text)
                     GetTextExtentPoint32 hDC, ByVal StrPtr(Text), Length, Size
-                    If (Size.Cx - ScrollWidth) > Cx Then Cx = (Size.Cx - ScrollWidth)
+                    If (Size.CX - ScrollWidth) > CX Then CX = (Size.CX - ScrollWidth)
                 End If
-            Next I
+            Next i
             ReleaseDC ComboBoxHandle, hDC
-            If Cx > 0 Then GetIdealHorizontalExtent = UserControl.ScaleX(Cx + ((RC(0).Right - RC(0).Left) - (RC(1).Right - RC(1).Left)), vbPixels, vbContainerSize)
+            If CX > 0 Then GetIdealHorizontalExtent = UserControl.ScaleX(CX + ((RC(0).Right - RC(0).Left) - (RC(1).Right - RC(1).Left)), vbPixels, vbContainerSize)
         End If
     End If
 End If
@@ -1918,32 +1917,32 @@ End Function
 Private Sub CheckDropDownHeight(ByVal Calculate As Boolean)
 Static LastCount As Long, ItemHeight As Long
 If ComboBoxHandle <> 0 And ComboBoxDropDownHeightState = False Then
-    Dim count As Long, Height As Long
-    count = SendMessage(ComboBoxHandle, CB_GETCOUNT, 0, ByVal 0&)
+    Dim Count As Long, Height As Long
+    Count = SendMessage(ComboBoxHandle, CB_GETCOUNT, 0, ByVal 0&)
     If PropDrawMode <> CboDrawModeOwnerDrawVariable Then
-        Select Case count
+        Select Case Count
             Case 0
-                count = 1
+                Count = 1
             Case Is > PropMaxDropDownItems
-                count = PropMaxDropDownItems
+                Count = PropMaxDropDownItems
         End Select
         If Calculate = False Then
-            If count = LastCount Then Exit Sub
+            If Count = LastCount Then Exit Sub
         Else
             ItemHeight = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, 0, ByVal 0&)
         End If
-        Height = (ItemHeight * count)
+        Height = (ItemHeight * Count)
     Else
         If Calculate = False Then Exit Sub
-        If count > 0 Then
-            Dim TopIndex As Long, I As Long, RetVal As Long
+        If Count > 0 Then
+            Dim TopIndex As Long, i As Long, RetVal As Long
             TopIndex = SendMessage(ComboBoxHandle, CB_GETTOPINDEX, 0, ByVal 0&)
             If Not TopIndex = CB_ERR Then
-                For I = TopIndex To (TopIndex + (PropMaxDropDownItems - 1))
-                    RetVal = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, I, ByVal 0&)
+                For i = TopIndex To (TopIndex + (PropMaxDropDownItems - 1))
+                    RetVal = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, i, ByVal 0&)
                     If RetVal = CB_ERR Then Exit For
                     Height = Height + RetVal
-                Next I
+                Next i
             End If
         Else
             Height = SendMessage(ComboBoxHandle, CB_GETITEMHEIGHT, -1, ByVal 0&)
@@ -1955,7 +1954,7 @@ If ComboBoxHandle <> 0 And ComboBoxDropDownHeightState = False Then
     Else
         RedrawWindow ComboBoxHandle, 0, 0, RDW_UPDATENOW Or RDW_INVALIDATE Or RDW_ERASE Or RDW_ALLCHILDREN
     End If
-    LastCount = count
+    LastCount = Count
 End If
 End Sub
 
@@ -2056,13 +2055,13 @@ Select Case wMsg
         End If
     Case WM_CONTEXTMENU
         If wParam = ComboBoxHandle Then
-            Dim p As POINTAPI, Handled As Boolean
-            p.X = Get_X_lParam(lParam)
-            p.Y = Get_Y_lParam(lParam)
-            If p.X > 0 And p.Y > 0 Then
-                ScreenToClient ComboBoxHandle, p
-                RaiseEvent ContextMenu(Handled, UserControl.ScaleX(p.X, vbPixels, vbContainerPosition), UserControl.ScaleY(p.Y, vbPixels, vbContainerPosition))
-            ElseIf p.X = -1 And p.Y = -1 Then
+            Dim P As POINTAPI, Handled As Boolean
+            P.X = Get_X_lParam(lParam)
+            P.Y = Get_Y_lParam(lParam)
+            If P.X > 0 And P.Y > 0 Then
+                ScreenToClient ComboBoxHandle, P
+                RaiseEvent ContextMenu(Handled, UserControl.ScaleX(P.X, vbPixels, vbContainerPosition), UserControl.ScaleY(P.Y, vbPixels, vbContainerPosition))
+            ElseIf P.X = -1 And P.Y = -1 Then
                 ' If the user types SHIFT + F10 then the X and Y coordinates are -1.
                 RaiseEvent ContextMenu(Handled, -1, -1)
             End If

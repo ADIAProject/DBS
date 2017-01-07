@@ -1768,7 +1768,7 @@ End Function
 '!--------------------------------------------------------------------------------
 Private Function ProcessFilter(sFilter As String) As String
 
-    Dim I As Long
+    Dim ii As Long
 
     '   This routine replaces the Pipe (|) character for filter
     '   strings and pads the size to the required legnth.
@@ -1787,10 +1787,10 @@ Private Function ProcessFilter(sFilter As String) As String
     End If
 
     '   Now Replace the Pipes in the Filter String
-    For I = 1 To Len(sFilter)
+    For ii = 1 To Len(sFilter)
 
-        If (Mid$(sFilter, I, 1) = "|") Then
-            Mid$(sFilter, I, 1) = vbNullChar
+        If (Mid$(sFilter, ii, 1) = "|") Then
+            Mid$(sFilter, ii, 1) = vbNullChar
         End If
 
     Next
@@ -2589,7 +2589,7 @@ End Sub
 Private Sub cmdPick_Click()
 
     Dim psFile    As SelectedFile
-    Dim I         As Long
+    Dim ii        As Long
     Dim sExt      As String
     Dim sFolder   As String
     Dim AutoTheme As String
@@ -2691,9 +2691,9 @@ Private Sub cmdPick_Click()
                                     .cmbMultiSel.Clear
 
                                     '   Store the Filenames
-                                    For I = 1 To m_FileCount
-                                        .cmbMultiSel.AddItem TrimPathByLen(QualifyPath(m_Path) & psFile.sFiles(I), .txtResult.Width - 40)
-                                        m_Filename(I) = m_Path & psFile.sFiles(I)
+                                    For ii = 1 To m_FileCount
+                                        .cmbMultiSel.AddItem TrimPathByLen(QualifyPath(m_Path) & psFile.sFiles(ii), .txtResult.Width - 40)
+                                        m_Filename(ii) = m_Path & psFile.sFiles(ii)
                                     Next
 
                                 End If
@@ -3058,7 +3058,7 @@ End Sub
 Private Sub txtResult_LostFocus()
 
     Dim TmpName As String
-    Dim I       As Long
+    Dim ii      As Long
 
     On Error Resume Next
 

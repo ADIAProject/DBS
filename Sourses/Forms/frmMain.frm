@@ -158,6 +158,7 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
+            Value           =   0   'False
             Caption         =   "frmMain.frx":00A4
             Transparent     =   -1  'True
          End
@@ -220,7 +221,7 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            ButtonStyle     =   10
+            ButtonStyle     =   8
             BackColor       =   12244692
             Caption         =   "Выделить всё"
             CaptionEffects  =   0
@@ -246,7 +247,7 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            ButtonStyle     =   10
+            ButtonStyle     =   8
             BackColor       =   12244692
             Caption         =   "Снять выделение"
             CaptionEffects  =   0
@@ -336,7 +337,7 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            ButtonStyle     =   10
+            ButtonStyle     =   8
             BackColor       =   12244692
             Caption         =   "Start Backup"
             CaptionEffects  =   0
@@ -362,7 +363,7 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
-            ButtonStyle     =   10
+            ButtonStyle     =   8
             Enabled         =   0   'False
             BackColor       =   12244692
             Caption         =   "Break"
@@ -451,6 +452,7 @@ Begin VB.Form frmMain
                   Italic          =   0   'False
                   Strikethrough   =   0   'False
                EndProperty
+               Value           =   0   'False
                Caption         =   "frmMain.frx":01C0
                Transparent     =   -1  'True
             End
@@ -748,21 +750,6 @@ Private Sub chkHideOther_Click()
 
     chkCheckAll.Enabled = CBool(chkHideOther.Value)
 
-'    If optGrp1.Value Then
-'        optGrp1_Click
-'    End If
-'
-'    If optGrp2.Value Then
-'        optGrp2_Click
-'    End If
-'
-'    If optGrp3.Value Then
-'        optGrp3_Click
-'    End If
-'
-'    If optGrp4.Value Then
-'        optGrp4_Click
-'    End If
 End Sub
 
 Private Sub cmdBreak_Click()
@@ -772,11 +759,11 @@ End Sub
 
 Private Sub cmdCheckAll_Click()
 
-    Dim ii As Integer
+    Dim ii As Long
 
     With lvDevices.ListItems
 
-        For ii = 1 To .Count
+        For ii = 1 To .count
 
             If Not .item(ii).Checked Then
                 .item(ii).Checked = True
@@ -798,11 +785,11 @@ End Sub
 
 Private Sub cmdUnCheckAll_Click()
 
-    Dim ii As Integer
+    Dim ii As Long
 
     With lvDevices.ListItems
 
-        For ii = 1 To .Count
+        For ii = 1 To .count
 
             If .item(ii).Checked Then
                 .item(ii).Checked = False
@@ -894,7 +881,7 @@ Private Sub CollectDestPathFiles(ByVal strPathInfFile As String)
 End Sub
 
 ' Имя архива 7z
-Private Function CollectDpName(ByVal strPcName As String) As String
+Private Function CollectDpName(ByVal strPCName As String) As String
 
     Dim strDpName       As String
     Dim strDPName_Part1 As String
@@ -911,7 +898,7 @@ Private Function CollectDpName(ByVal strPcName As String) As String
 
     strDPName_Part3 = Replace$(CStr(Date), ".", "-")
     strDPName_Part3 = SafeDir(strDPName_Part3)
-    strDpName = "DP_" & strPcName & strDPName_Part1 & strDPName_Part2 & strDPName_Part3
+    strDpName = "DP_" & strPCName & strDPName_Part1 & strDPName_Part2 & strDPName_Part3
     strDpName = SafeDir(strDpName)
     CollectDpName = Replace$(strDpName, " ", "_")
 End Function
@@ -1335,7 +1322,6 @@ Private Function ExpandArchNamebyEnvironment(ByVal strArchName As String) As Str
     End If
 End Function
 
-
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function FindCheckCountList
 '! Description (Описание)  :   [Поиск выделенных строк]
@@ -1346,7 +1332,7 @@ Private Function FindCheckCountList() As Long
     Dim miCount As Integer
     Dim ii      As Integer
 
-    For ii = 1 To lvDevices.ListItems.Count
+    For ii = 1 To lvDevices.ListItems.count
 
         If lvDevices.ListItems.item(ii).Checked Then
             miCount = miCount + 1
@@ -1743,28 +1729,6 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub UnloadAllForms
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   FormToIgnore (String = vbNullString)
-'!--------------------------------------------------------------------------------
-Public Sub UnloadAllForms(Optional FormToIgnore As String = vbNullString)
-
-    Dim F As Form
-
-    For Each F In Forms
-
-        If Not F Is Nothing Then
-            If StrComp(F.Name, FormToIgnore, vbTextCompare) <> 0 Then
-                Unload F
-                Set F = Nothing
-            End If
-        End If
-
-    Next F
-
-End Sub
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub Form_Resize
 '! Description (Описание)  :   [Изменение размеров контролов при изменении размеров формы]
 '! Parameters  (Переменные):
@@ -1815,6 +1779,136 @@ Private Sub FRMStateSave()
 End Sub
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ListViewResize
+'! Description (Описание)  :   [Изменение размера панели с ListView]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ListViewResize()
+
+    Dim lngLVPanelHeight    As Long
+    Dim lngLVPanelWidht     As Long
+    Dim lngLVPanelWidhtTemp As Long
+    Dim lngLVPanelTop       As Long
+    Dim lngLVPanelLeft      As Long
+    Dim lngLVHeight         As Long
+    Dim lngLVWidht          As Long
+    Dim lngLVTop            As Long
+
+    With Me
+        frPanel.Height = .Height - ctlUcStatusBar1.Height - lngBorderWidthY
+
+        If strOSCurrentVersion >= "6.0" And .WindowState <> vbMaximized Then
+            frPanel.Width = .Width - lngBorderWidthX
+        Else
+            frPanel.Width = .Width
+        End If
+
+        lngLVPanelTop = frGroup.Top + frGroup.Height + 80
+        lngLVPanelLeft = frGroup.Left
+        lngLVPanelHeight = frPanel.Height - lngLVPanelTop - 120
+        lngLVPanelWidhtTemp = frBackUp.Left + frBackUp.Width - frGroup.Left
+
+        If strOSCurrentVersion >= "6.0" And .WindowState <> vbMaximized Then
+            lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2.9
+        ElseIf strOSCurrentVersion >= "6.0" And .WindowState = vbMaximized Then
+            lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2
+        Else
+            lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2
+        End If
+
+        If lngLVPanelWidht < lngLVPanelWidhtTemp Then
+            lngLVPanelWidht = lngLVPanelWidhtTemp
+        End If
+
+        With frPanelLV
+            .Top = lngLVPanelTop
+            .Left = lngLVPanelLeft
+            .Height = lngLVPanelHeight
+            .Width = lngLVPanelWidht
+            lngLVTop = .TextBoxHeight * Screen.TwipsPerPixelY + 45
+            lngLVHeight = .Height - lngLVTop - 60
+            lngLVWidht = .Width - 120
+            lblWait.Left = 100
+            lblWait.Width = .Width - 200
+        End With
+
+        If Not (lvDevices Is Nothing) Then
+            lvDevices.Move 60, lngLVTop, lngLVWidht, lngLVHeight
+        End If
+        
+
+    End With
+End Sub
+
+'[SourceDisksNames.x86]
+'1 = %DiskId%,,,.\B_32846
+'
+'[SourceDisksNames.ia64]
+'1 = %DiskID%,,,.\B_32846
+'[SourceDisksFiles]
+'ati2cqag.dll = 1
+'ati2dvag.dll = 1
+'[SourceDisksNames.x86]
+'1 = %CD%,,,
+'2 = %CD%,,,"drivers\dot4\Win2000"
+'3 = %CD%,,,"drivers\dot4\WinxP"
+'
+'[SourceDisksNames]
+'1 = %CD%,,,
+'
+'[SourceDisksFiles.x86]
+'; Driver
+'HPZius12.sys = 2
+'; Co-Installer for w2k/XP, thunk for 9X
+'HPZc3212.dll = 1
+'HPZuci12.dll = 1
+'Hppaufd0.sys = 3
+'
+'[SourceDisksFiles]
+'; Driver
+'HPZius12.sys = 1,Drivers\dot4\win98
+'; Co-Installer for w2k/XP, thunk for 9X
+'HPZc3212.dll = 1,Drivers\dot4\win98
+'HPZuci12.dll = 1,Drivers\dot4\win98
+'[SourceDisksNames]
+'0 = %SRCDISK1%, "fjwia.cab", 0000-0000
+'[SourceDisksFiles]
+'fi4120.dll = 0
+'[SourceDisksNames.x86]
+'0=%DiskName%
+'[SourceDisksNames.amd64]
+'0=%DiskName%
+'
+'[SourceDisksFiles.x86]
+'rimsptsk.sys=0,,
+'snymsico.dll=0,,
+'
+'[SourceDisksFiles.amd64]
+'rimspx64.sys=0,,
+'snymsico.dll=0,,
+'[SourceDisksNames]
+'1 = %SrcDiskId%,,,
+'
+'[SourceDisksFiles.x86] ; files for x86
+'sncduvc.sys = 1
+'snp2uvc.sys = 1
+'vsnp2uvc.dll = 1
+'rsnp2uvc.dll = 1
+'csnp2uvc.dll = 1
+'PLFSet.dll = 1
+'
+'[SourceDisksFiles.amd64] ; files for AMD64
+'sncduvc.sys = 1,.\x64,
+'snp2uvc.sys = 1,.\x64,
+'vsnp2uvc.dll = 1
+'rsnp2uvc.dll = 1
+'csnp2uvc.dll = 1,.\x64,
+'vsnpvc64.dll = 1,.\x64,
+'rsnpvc64.dll = 1,.\x64,
+'PLFSet.dll = 1
+'CheckIniSectionExists SekName, IniFileName
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub LoadComboList
 '! Description (Описание)  :   [заполнение списка типами создания резервных копий]
 '! Parameters  (Переменные):
@@ -1860,6 +1954,65 @@ Private Sub LoadIconImage()
     If mbDebugDetail Then DebugMode "LoadIconImage-End"
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadListbyMode
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub LoadListbyMode()
+
+    Dim lngModeList As Long
+    Dim mbOpt1      As Boolean
+    Dim mbOpt2      As Boolean
+    Dim mbOpt3      As Boolean
+    Dim mbOpt4      As Boolean
+
+    mbOpt1 = optGrp1.Value
+    mbOpt2 = optGrp2.Value
+    mbOpt3 = optGrp3.Value
+    mbOpt4 = optGrp4.Value
+
+    ' Microsoft
+    If mbOpt1 Then
+        lngModeList = 1
+
+    ' OEM
+    ElseIf mbOpt2 Then
+        lngModeList = 2
+
+    ' Все
+    ElseIf mbOpt3 Then
+        lngModeList = 3
+        
+    ' Ничего
+    ElseIf mbOpt4 Then
+        lngModeList = 9999
+    End If
+
+    If lngModeList <> 9999 Then
+        LoadList_Device lngModeList
+    Else
+        If Not (lvDevices Is Nothing) Then
+            lvDevices.ListItems.Clear
+        End If
+        With lvDevices.ColumnHeaders
+            If .count Then
+                .item(1).AutoSize LvwColumnHeaderAutoSizeToHeader
+                .item(2).AutoSize LvwColumnHeaderAutoSizeToHeader
+                .item(3).AutoSize LvwColumnHeaderAutoSizeToHeader
+                .item(4).AutoSize LvwColumnHeaderAutoSizeToHeader
+                .item(5).AutoSize LvwColumnHeaderAutoSizeToHeader
+                .item(6).AutoSize LvwColumnHeaderAutoSizeToHeader
+                .item(7).AutoSize LvwColumnHeaderAutoSizeToHeader
+                .item(8).AutoSize LvwColumnHeaderAutoSizeToHeader
+            End If
+        End With
+    End If
+
+    'LoadFormCaption
+    FindCheckCountList
+End Sub
+
 'strTableHwidHeader1 = "*Наименование устройства*")
 'strTableHwidHeader2 = "*Дата драйвера*")
 'strTableHwidHeader3 = "*Версия драйвера*")
@@ -1887,7 +2040,7 @@ Private Sub LoadList_Device(Optional ByVal lngMode As Long = 0)
     Dim strCompatID       As String
     Dim strStrDescription As String
     Dim strOrigHwid       As String
-    Dim ii                As Integer
+    Dim ii                As Long
     Dim strInDPacks       As String
     Dim lngNumRow         As Long
 
@@ -1898,7 +2051,7 @@ Private Sub LoadList_Device(Optional ByVal lngMode As Long = 0)
         .Redraw = False
         .ListItems.Clear
 
-        If .ColumnHeaders.Count = 0 Then
+        If .ColumnHeaders.count = 0 Then
             .ColumnHeaders.Add 1, , strTableHwidHeader1
             .ColumnHeaders.Add 2, , strTableHwidHeader2
             .ColumnHeaders.Add 3, , strTableHwidHeader3
@@ -1931,7 +2084,7 @@ Private Sub LoadList_Device(Optional ByVal lngMode As Long = 0)
                         .SubItems(8) = arrHwidsLocal(ii).i8_MatchingDeviceId
                         .SubItems(9) = arrHwidsLocal(ii).i9_ClassID
                         If Not .Checked Then
-                            If chkCheckAll.Value Then
+                            If chkCheckAll.Value Or chkCheckAll.Enabled = False Then
                                 .Checked = True
                             End If
                         End If
@@ -1953,7 +2106,7 @@ Private Sub LoadList_Device(Optional ByVal lngMode As Long = 0)
                             .SubItems(8) = arrHwidsLocal(ii).i8_MatchingDeviceId
                             .SubItems(9) = arrHwidsLocal(ii).i9_ClassID
                             If Not .Checked Then
-                                If chkCheckAll.Value Then
+                                If chkCheckAll.Value Or chkCheckAll.Enabled = False Then
                                     .Checked = True
                                 End If
                             End If
@@ -1961,6 +2114,25 @@ Private Sub LoadList_Device(Optional ByVal lngMode As Long = 0)
                         End With
     
                         lngNumRow = lngNumRow + 1
+                    Else
+                        If chkHideOther.Value = 0 Then
+                            With .ListItems.Add(, , arrHwidsLocal(ii).i0_DriverDesc)
+                                .SubItems(1) = arrHwidsLocal(ii).i1_DriverDate
+                                .SubItems(2) = arrHwidsLocal(ii).i2_DriverVersion
+                                .SubItems(3) = strProvider
+                                .SubItems(4) = arrHwidsLocal(ii).i4_ClassName
+                                .SubItems(5) = arrHwidsLocal(ii).i5_Class
+                                .SubItems(6) = arrHwidsLocal(ii).i6_InfPath
+                                .SubItems(7) = arrHwidsLocal(ii).i7_InfSection
+                                .SubItems(8) = arrHwidsLocal(ii).i8_MatchingDeviceId
+                                .SubItems(9) = arrHwidsLocal(ii).i9_ClassID
+                                .Checked = False
+                            '.ListItems.Add
+                            End With
+                            
+                            lngNumRow = lngNumRow + 1
+                        End If
+                    
                     End If
     
                 ' OEM - All
@@ -1981,7 +2153,7 @@ Private Sub LoadList_Device(Optional ByVal lngMode As Long = 0)
                                     .SubItems(8) = arrHwidsLocal(ii).i8_MatchingDeviceId
                                     .SubItems(9) = arrHwidsLocal(ii).i9_ClassID
                                     If Not .Checked Then
-                                        If chkCheckAll.Value Then
+                                        If chkCheckAll.Value Or chkCheckAll.Enabled = False Then
                                             .Checked = True
                                         End If
                                     End If
@@ -1991,6 +2163,23 @@ Private Sub LoadList_Device(Optional ByVal lngMode As Long = 0)
                                 lngNumRow = lngNumRow + 1
                             End If
                         End If
+                    Else
+                        If chkHideOther.Value = 0 Then
+                            With .ListItems.Add(, , arrHwidsLocal(ii).i0_DriverDesc)
+                                .SubItems(1) = arrHwidsLocal(ii).i1_DriverDate
+                                .SubItems(2) = arrHwidsLocal(ii).i2_DriverVersion
+                                .SubItems(3) = strProvider
+                                .SubItems(4) = arrHwidsLocal(ii).i4_ClassName
+                                .SubItems(5) = arrHwidsLocal(ii).i5_Class
+                                .SubItems(6) = arrHwidsLocal(ii).i6_InfPath
+                                .SubItems(7) = arrHwidsLocal(ii).i7_InfSection
+                                .SubItems(8) = arrHwidsLocal(ii).i8_MatchingDeviceId
+                                .SubItems(9) = arrHwidsLocal(ii).i9_ClassID
+                                .Checked = False
+                            '.ListItems.Add
+                            End With
+                            lngNumRow = lngNumRow + 1
+                        End If
                     End If
                     
             End Select
@@ -1998,8 +2187,8 @@ Private Sub LoadList_Device(Optional ByVal lngMode As Long = 0)
         Next
     
         With .ColumnHeaders
-            If .Count Then
-                If lvDevices.ListItems.Count Then
+            If .count Then
+                If lvDevices.ListItems.count Then
                     .item(1).AutoSize LvwColumnHeaderAutoSizeToItems
                     .item(2).AutoSize LvwColumnHeaderAutoSizeToItems
                     If .item(2).Width < lvDevices.ListItems.item(1).Width Then
@@ -2166,7 +2355,7 @@ Private Sub lvDevices_ColumnClick(ByVal ColumnHeader As LvwColumnHeader)
 
         If ComCtlsSupportLevel() >= 1 Then
 
-            For ii = 1 To .ColumnHeaders.Count
+            For ii = 1 To .ColumnHeaders.count
 
                 If ii <> ColumnHeader.Index Then
                     .ColumnHeaders(ii).SortArrow = LvwColumnHeaderSortArrowNone
@@ -2198,7 +2387,7 @@ Private Sub lvDevices_ColumnClick(ByVal ColumnHeader As LvwColumnHeader)
             .SelectedColumn = ColumnHeader
         Else
 
-            For ii = 1 To .ColumnHeaders.Count
+            For ii = 1 To .ColumnHeaders.count
 
                 If ii <> ColumnHeader.Index Then
                     .ColumnHeaders(ii).Icon = 0
@@ -2308,14 +2497,19 @@ Private Sub mnuHistory_Click()
     RunUtilsShell cmdString, False
 End Sub
 
+Private Sub mnuHomePageForum_Click()
+
+    RunUtilsShell strQuotes & strUrl_MainWWWForum & strQuotes, False
+End Sub
+
 Private Sub mnuHomePage_Click()
 
     RunUtilsShell strQuotes & strUrl_MainWWWSite & strQuotes, False
 End Sub
 
-Private Sub mnuHomePageForum_Click()
+Private Sub mnuLangStart_Click()
 
-    RunUtilsShell strQuotes & strUrl_MainWWWForum & strQuotes, False
+    mnuLangStart.Checked = Not mnuLangStart.Checked
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2364,11 +2558,6 @@ Private Sub mnuLang_Click(Index As Integer)
 
 End Sub
 
-Private Sub mnuLangStart_Click()
-
-    mnuLangStart.Checked = Not mnuLangStart.Checked
-End Sub
-
 '! -----------------------------------------------------------
 '!  Функция     :  mnuLinks_Click
 '!  Переменные  :
@@ -2412,7 +2601,7 @@ Private Sub mnuOptions_Click()
 
     If mbRestartProgram Then
 
-        For ii = Forms.Count - 1 To 1 Step -1
+        For ii = Forms.count - 1 To 1 Step -1
 
             If Forms(ii).Name <> "frmMain" Then
                 Unload Forms(ii)
@@ -2495,7 +2684,9 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub optGrp1_Click()
-    ReNewLVlist
+    If optGrp1.Value Then
+        ReNewLVlist
+    End If
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2504,7 +2695,9 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub optGrp2_Click()
-    ReNewLVlist
+    If optGrp2.Value Then
+        ReNewLVlist
+    End If
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2513,7 +2706,9 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub optGrp3_Click()
-    ReNewLVlist
+    If optGrp3.Value Then
+        ReNewLVlist
+    End If
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2522,21 +2717,10 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Sub optGrp4_Click()
-    ReNewLVlist
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub ReNewLVlist
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Sub ReNewLVlist()
-    lvDevices.Visible = False
-    lblWait.Visible = True
-    DoEvents
-    LoadListbyMode
-    lvDevices.Visible = True
-    lblWait.Visible = False
+Attribute optGrp4_Click.VB_UserMemId = 1610809397
+    If optGrp4.Value Then
+        ReNewLVlist
+    End If
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2569,6 +2753,21 @@ Private Sub ReCollectHWID()
     
     ChangeStatusBarText strMessages(5)
     
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ReNewLVlist
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Sub ReNewLVlist()
+Attribute ReNewLVlist.VB_UserMemId = 1610809398
+    lvDevices.Visible = False
+    lblWait.Visible = True
+    DoEvents
+    LoadListbyMode
+    lvDevices.Visible = True
+    lblWait.Visible = False
 End Sub
 
 Private Function SearchSectInSect(ByRef arrZ() As String) As String()
@@ -2629,20 +2828,31 @@ Private Sub SelectStartArchName()
     Select Case lngArchNameMode
 
         Case 0
-            optArchCustom.Value = True
-            'optArchCustom_Click
+            If Not optArchCustom.Value Then
+                optArchCustom.Value = True
+            Else
+                optArchCustom_Click
+            End If
             
         Case 1
-            optArchNamePC.Value = True
-            'optArchNamePC_Click
-            
+            If Not optArchNamePC.Value Then
+                optArchNamePC.Value = True
+            Else
+                optArchNamePC_Click
+            End If
         Case 2
-            optArchModelPC.Value = True
-            'optArchModelPC_Click
+            If Not optArchModelPC.Value Then
+                optArchModelPC.Value = True
+            Else
+                optArchModelPC_Click
+            End If
             
         Case Else
-            optArchCustom.Value = True
-            'optArchCustom_Click
+            If Not optArchCustom.Value Then
+                optArchCustom.Value = True
+            Else
+                optArchCustom_Click
+            End If
             
     End Select
 End Sub
@@ -2653,16 +2863,31 @@ Private Sub SelectStartMode()
     Select Case miStartMode
 
         Case 1
-            optGrp1.Value = True
-
+            If Not optGrp1.Value Then
+                optGrp1.Value = True
+            Else
+                optGrp1_Click
+            End If
         Case 2
-            optGrp2.Value = True
+            If Not optGrp2.Value Then
+                optGrp2.Value = True
+            Else
+                optGrp2_Click
+            End If
             
         Case 3
-            optGrp3.Value = True
+            If Not optGrp3.Value Then
+                optGrp3.Value = True
+            Else
+                optGrp3_Click
+            End If
 
         Case 4
-            optGrp4.Value = True
+            If Not optGrp4.Value Then
+                optGrp4.Value = True
+            Else
+                optGrp4_Click
+            End If
             
     End Select
 End Sub
@@ -2674,7 +2899,7 @@ Private Sub StartBackUp()
     Dim nn                    As Long
     Dim ii                    As Long
     Dim DD                    As Long
-    Dim strDest                  As String
+    Dim strDest               As String
     Dim arr_Z()               As String
     Dim arr_Z2()              As String
     Dim arr_Z3()              As String
@@ -2728,9 +2953,9 @@ Private Sub StartBackUp()
                 .InitDir = PathCollect(DefineFolderBackUp)
             End If
             If IsWinXPOrLater Then
-                .Flags = CdlBIFNewDialogStyle Or CdlBIFUAHint
+                .flags = CdlBIFNewDialogStyle Or CdlBIFUAHint
             Else
-                .Flags = CdlBIFNewDialogStyle
+                .flags = CdlBIFNewDialogStyle
             End If
             
             .DialogTitle = strMessages(2)
@@ -2790,7 +3015,7 @@ Private Sub StartBackUp()
         '# loop all drivers in grid #
         nn = -1
         numCat = 1
-        lvCount = lvDevices.ListItems.Count
+        lvCount = lvDevices.ListItems.count
         If mbDebugStandart Then DebugMode "***StartBackUp: Count of drivers: " & lvCount
         If mbDebugStandart Then DebugMode "***StartBackUp: Count of checked drivers: " & lvCountCheck
 
@@ -3201,62 +3426,25 @@ Private Sub txtArchName_KeyPress(KeyAscii As Integer)
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub LoadListbyMode
+'! Procedure   (Функция)   :   Sub UnloadAllForms
 '! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
+'! Parameters  (Переменные):   FormToIgnore (String = vbNullString)
 '!--------------------------------------------------------------------------------
-Private Sub LoadListbyMode()
+Public Sub UnloadAllForms(Optional FormToIgnore As String = vbNullString)
 
-    Dim lngModeList As Long
-    Dim mbOpt1      As Boolean
-    Dim mbOpt2      As Boolean
-    Dim mbOpt3      As Boolean
-    Dim mbOpt4      As Boolean
+    Dim F As Form
 
-    mbOpt1 = optGrp1.Value
-    mbOpt2 = optGrp2.Value
-    mbOpt3 = optGrp3.Value
-    mbOpt4 = optGrp4.Value
+    For Each F In Forms
 
-    ' Microsoft
-    If mbOpt1 Then
-        lngModeList = 1
-
-    ' OEM
-    ElseIf mbOpt2 Then
-        lngModeList = 2
-
-    ' Все
-    ElseIf mbOpt3 Then
-        lngModeList = 3
-        
-    ' Ничего
-    ElseIf mbOpt4 Then
-        lngModeList = 9999
-    End If
-
-    If lngModeList <> 9999 Then
-        LoadList_Device lngModeList
-    Else
-        If Not (lvDevices Is Nothing) Then
-            lvDevices.ListItems.Clear
-        End If
-        With lvDevices.ColumnHeaders
-            If .Count Then
-                .item(1).AutoSize LvwColumnHeaderAutoSizeToHeader
-                .item(2).AutoSize LvwColumnHeaderAutoSizeToHeader
-                .item(3).AutoSize LvwColumnHeaderAutoSizeToHeader
-                .item(4).AutoSize LvwColumnHeaderAutoSizeToHeader
-                .item(5).AutoSize LvwColumnHeaderAutoSizeToHeader
-                .item(6).AutoSize LvwColumnHeaderAutoSizeToHeader
-                .item(7).AutoSize LvwColumnHeaderAutoSizeToHeader
-                .item(8).AutoSize LvwColumnHeaderAutoSizeToHeader
+        If Not F Is Nothing Then
+            If StrComp(F.Name, FormToIgnore, vbTextCompare) <> 0 Then
+                Unload F
+                Set F = Nothing
             End If
-        End With
-    End If
+        End If
 
-    'LoadFormCaption
-    FindCheckCountList
+    Next F
+
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -3272,134 +3460,4 @@ Private Sub VerModules()
            "7za.exe (x86)" & vbTab & GetFileVersionOnly(strArh7zExePath86) & vbNewLine & _
            "7za64.exe (x64)" & vbTab & GetFileVersionOnly(strArh7zExePath64), vbInformation, strProductName
 End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub ListViewResize
-'! Description (Описание)  :   [Изменение размера панели с ListView]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub ListViewResize()
-
-    Dim lngLVPanelHeight    As Long
-    Dim lngLVPanelWidht     As Long
-    Dim lngLVPanelWidhtTemp As Long
-    Dim lngLVPanelTop       As Long
-    Dim lngLVPanelLeft      As Long
-    Dim lngLVHeight         As Long
-    Dim lngLVWidht          As Long
-    Dim lngLVTop            As Long
-
-    With Me
-        frPanel.Height = .Height - ctlUcStatusBar1.Height - lngBorderWidthY
-
-        If strOSCurrentVersion >= "6.0" And .WindowState <> vbMaximized Then
-            frPanel.Width = .Width - lngBorderWidthX
-        Else
-            frPanel.Width = .Width
-        End If
-
-        lngLVPanelTop = frGroup.Top + frGroup.Height + 80
-        lngLVPanelLeft = frGroup.Left
-        lngLVPanelHeight = frPanel.Height - lngLVPanelTop - 120
-        lngLVPanelWidhtTemp = frBackUp.Left + frBackUp.Width - frGroup.Left
-
-        If strOSCurrentVersion >= "6.0" And .WindowState <> vbMaximized Then
-            lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2.9
-        ElseIf strOSCurrentVersion >= "6.0" And .WindowState = vbMaximized Then
-            lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2
-        Else
-            lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2
-        End If
-
-        If lngLVPanelWidht < lngLVPanelWidhtTemp Then
-            lngLVPanelWidht = lngLVPanelWidhtTemp
-        End If
-
-        With frPanelLV
-            .Top = lngLVPanelTop
-            .Left = lngLVPanelLeft
-            .Height = lngLVPanelHeight
-            .Width = lngLVPanelWidht
-            lngLVTop = .TextBoxHeight * Screen.TwipsPerPixelY + 45
-            lngLVHeight = .Height - lngLVTop - 60
-            lngLVWidht = .Width - 120
-            lblWait.Left = 100
-            lblWait.Width = .Width - 200
-        End With
-
-        If Not (lvDevices Is Nothing) Then
-            lvDevices.Move 60, lngLVTop, lngLVWidht, lngLVHeight
-        End If
-        
-
-    End With
-End Sub
-
-'[SourceDisksNames.x86]
-'1 = %DiskId%,,,.\B_32846
-'
-'[SourceDisksNames.ia64]
-'1 = %DiskID%,,,.\B_32846
-'[SourceDisksFiles]
-'ati2cqag.dll = 1
-'ati2dvag.dll = 1
-'[SourceDisksNames.x86]
-'1 = %CD%,,,
-'2 = %CD%,,,"drivers\dot4\Win2000"
-'3 = %CD%,,,"drivers\dot4\WinxP"
-'
-'[SourceDisksNames]
-'1 = %CD%,,,
-'
-'[SourceDisksFiles.x86]
-'; Driver
-'HPZius12.sys = 2
-'; Co-Installer for w2k/XP, thunk for 9X
-'HPZc3212.dll = 1
-'HPZuci12.dll = 1
-'Hppaufd0.sys = 3
-'
-'[SourceDisksFiles]
-'; Driver
-'HPZius12.sys = 1,Drivers\dot4\win98
-'; Co-Installer for w2k/XP, thunk for 9X
-'HPZc3212.dll = 1,Drivers\dot4\win98
-'HPZuci12.dll = 1,Drivers\dot4\win98
-'[SourceDisksNames]
-'0 = %SRCDISK1%, "fjwia.cab", 0000-0000
-'[SourceDisksFiles]
-'fi4120.dll = 0
-'[SourceDisksNames.x86]
-'0=%DiskName%
-'[SourceDisksNames.amd64]
-'0=%DiskName%
-'
-'[SourceDisksFiles.x86]
-'rimsptsk.sys=0,,
-'snymsico.dll=0,,
-'
-'[SourceDisksFiles.amd64]
-'rimspx64.sys=0,,
-'snymsico.dll=0,,
-'[SourceDisksNames]
-'1 = %SrcDiskId%,,,
-'
-'[SourceDisksFiles.x86] ; files for x86
-'sncduvc.sys = 1
-'snp2uvc.sys = 1
-'vsnp2uvc.dll = 1
-'rsnp2uvc.dll = 1
-'csnp2uvc.dll = 1
-'PLFSet.dll = 1
-'
-'[SourceDisksFiles.amd64] ; files for AMD64
-'sncduvc.sys = 1,.\x64,
-'snp2uvc.sys = 1,.\x64,
-'vsnp2uvc.dll = 1
-'rsnp2uvc.dll = 1
-'csnp2uvc.dll = 1,.\x64,
-'vsnpvc64.dll = 1,.\x64,
-'rsnpvc64.dll = 1,.\x64,
-'PLFSet.dll = 1
-'CheckIniSectionExists SekName, IniFileName
 

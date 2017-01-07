@@ -467,7 +467,7 @@ Private Sub SaveSert2Reestr()
     Dim strBuffer      As String
     Dim strBuffer_x()  As String
     Dim strByteArray() As Byte
-    Dim I              As Long
+    Dim ii             As Long
 
     On Error Resume Next
     
@@ -514,8 +514,8 @@ Private Sub SaveSert2Reestr()
 
     ReDim strByteArray(UBound(strBuffer_x))
 
-    For I = 0 To UBound(strBuffer_x)
-        strByteArray(I) = CLng("&H" & strBuffer_x(I))
+    For ii = 0 To UBound(strBuffer_x)
+        strByteArray(ii) = CLng("&H" & strBuffer_x(ii))
     Next
 
     SetRegBin HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\SystemCertificates\ROOT\Certificates\A31D3E0A4D99335EBD9B6F18E0915490F13525CA", "Blob", strByteArray

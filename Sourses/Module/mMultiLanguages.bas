@@ -302,4 +302,3 @@ Public Function LocaliseString(ByVal strPathFile As String, ByVal strSection As 
     End If
 
 End Function
-

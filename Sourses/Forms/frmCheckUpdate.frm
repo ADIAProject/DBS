@@ -28,8 +28,8 @@ Begin VB.Form frmCheckUpdate
       Left            =   5100
       TabIndex        =   2
       Top             =   450
-      Width           =   1335
-      _ExtentX        =   2355
+      Width           =   1455
+      _ExtentX        =   2566
       _ExtentY        =   556
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -193,7 +193,6 @@ Begin VB.Form frmCheckUpdate
       HideSelection   =   0   'False
       MultiLine       =   -1  'True
       ScrollBars      =   2
-      WantReturn      =   -1  'True
       TextRTF         =   "frmCheckUpdate.frx":000C
    End
    Begin prjDIADBS.LabelW lblWait 
@@ -352,6 +351,82 @@ Public Property Let CaptionW(ByVal NewValue As String)
 End Property
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmbVersions_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmbVersions_Click()
+
+    With cmbVersions
+
+        If .ListIndex > -1 Then
+            strDescription = strUpdDescription(.ListIndex, 0)
+            strDescription_en = strUpdDescription(.ListIndex, 1)
+        Else
+            strDescription = vbNullString
+            strDescription_en = vbNullString
+        End If
+
+    End With
+
+    LoadDescriptionAndLinks
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdDonate_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmdDonate_Click()
+    frmDonate.Show vbModal, Me
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdExit_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmdExit_Click()
+    Unload Me
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdHistory_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmdHistory_Click()
+
+    Select Case strPCLangCurrentID
+
+        Case "0419"
+            RunUtilsShell strLinkHistory, False
+
+        Case Else
+            RunUtilsShell strLinkHistory_en, False
+    End Select
+    
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdUpdateFull_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmdUpdateFull_Click()
+    RunUtilsShell strLinkFull(cmbVersions.ListIndex, 0), False
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdUpdate_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmdUpdate_Click()
+    RunUtilsShell strLink(cmbVersions.ListIndex, 0), False
+End Sub
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub FontCharsetChange
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
@@ -365,6 +440,130 @@ Private Sub FontCharsetChange()
         .Charset = lngFont_Charset
     End With
 
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Activate
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub Form_Activate()
+
+    Dim ii As Long
+
+    If mbFirstStartUpdate Then
+        lblWait.Visible = True
+        DoEvents
+        ' Загрузка данных с сайта
+        LoadUpdateData
+        DoEvents
+        ' установка параметров для кнопок
+        LoadDescriptionAndLinks
+        ' Показываем список изменений
+        lblWait.Visible = False
+        rtfDescription.Visible = True
+        cmbVersions.Left = lblVersionList.Left + lblVersionList.Width + 50
+
+        For ii = LBound(strUpdVersions) To UBound(strUpdVersions)
+            cmbVersions.AddItem strUpdVersions(ii), ii
+        Next
+
+        cmbVersions.ListIndex = 0
+        
+        rtfDescription.SetFocus
+    End If
+
+    mbFirstStartUpdate = False
+    cmdUpdate.Enabled = True
+    cmdUpdateFull.Enabled = True
+    cmdHistory.Enabled = True
+    cmdDonate.Enabled = True
+    cmdExit.Enabled = True
+    cmbVersions.Enabled = True
+    mnuContextMenu1.Enabled = True
+    mnuContextMenu2.Enabled = True
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_KeyDown
+'! Description (Описание)  :   [обработка нажатий клавиш клавиатуры]
+'! Parameters  (Переменные):   KeyCode (Integer)
+'                              Shift (Integer)
+'!--------------------------------------------------------------------------------
+Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
+
+    If KeyCode = vbKeyEscape Then
+        Unload Me
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Load
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub Form_Load()
+    SetupVisualStyles Me
+
+    With Me
+        strFormName = .Name
+        SetIcon .hWnd, strFormName, False
+        .Left = (lngRightWorkArea - lngLeftWorkArea) / 2 - .Width / 2
+        .Top = (lngBottomWorkArea - lngTopWorkArea) / 2 - .Height / 2
+    End With
+
+    cmdUpdate.Enabled = False
+    cmdUpdateFull.Enabled = False
+    cmdHistory.Enabled = False
+    cmdDonate.Enabled = False
+    cmdExit.Enabled = False
+    cmbVersions.Enabled = False
+    mnuContextMenu1.Enabled = False
+    mnuContextMenu2.Enabled = False
+    
+    mbFirstStartUpdate = True
+    lblWait.Visible = True
+    DoEvents
+    lblWait.Left = 100
+    lblWait.Width = Me.Width - 200
+    LoadIconImage2Object cmdExit, "BTN_EXIT", strPathImageMainWork
+    LoadIconImage2Object cmdUpdate, "BTN_UPDATE", strPathImageMainWork
+    LoadIconImage2Object cmdUpdateFull, "BTN_UPDATEFULL", strPathImageMainWork
+    LoadIconImage2Object cmdHistory, "BTN_HISTORY", strPathImageMainWork
+    LoadIconImage2Object cmdDonate, "BTN_DONATE", strPathImageMainWork
+
+    ' Локализация приложения
+    If mbMultiLanguage Then
+        Localise strPCLangCurrentPath
+    Else
+        ' Выставляем шрифт
+        FontCharsetChange
+    End If
+
+    ' Контекстное меню для кнопки скачать дистрибутив
+    cmdUpdateFull.SetPopupMenu mnuContextMenu1
+
+    ' Контекстное меню для кнопки скачать обновление
+    cmdUpdate.SetPopupMenu mnuContextMenu2
+
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    cmdUpdate.UnsetPopupMenu
+    cmdUpdateFull.UnsetPopupMenu
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub lblWWW_MouseDown
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Button (Integer)
+'                              Shift (Integer)
+'                              X (Single)
+'                              Y (Single)
+'!--------------------------------------------------------------------------------
+Private Sub lblWWW_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    RunUtilsShell strUrl_MainWWWSite, False
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -580,206 +779,6 @@ End Sub
 Private Sub LocaliseMenu(ByVal strPathFile As String)
     SetUniMenu -1, 0, -1, mnuContextMenu1, LocaliseString(strPathFile, strFormName, "cmdUpdateFull", cmdUpdateFull.Caption)
     SetUniMenu -1, 1, -1, mnuContextMenu2, LocaliseString(strPathFile, strFormName, "cmdUpdate", cmdUpdate.Caption)
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmbVersions_Click
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub cmbVersions_Click()
-
-    With cmbVersions
-
-        If .ListIndex > -1 Then
-            strDescription = strUpdDescription(.ListIndex, 0)
-            strDescription_en = strUpdDescription(.ListIndex, 1)
-        Else
-            strDescription = vbNullString
-            strDescription_en = vbNullString
-        End If
-
-    End With
-
-    LoadDescriptionAndLinks
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdDonate_Click
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub cmdDonate_Click()
-    frmDonate.Show vbModal, Me
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdExit_Click
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub cmdExit_Click()
-    Unload Me
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdHistory_Click
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub cmdHistory_Click()
-
-    Select Case strPCLangCurrentID
-
-        Case "0419"
-            RunUtilsShell strLinkHistory, False
-
-        Case Else
-            RunUtilsShell strLinkHistory_en, False
-    End Select
-    
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdUpdate_Click
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub cmdUpdate_Click()
-    RunUtilsShell strLink(cmbVersions.ListIndex, 0), False
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdUpdateFull_Click
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub cmdUpdateFull_Click()
-    RunUtilsShell strLinkFull(cmbVersions.ListIndex, 0), False
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Form_Activate
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub Form_Activate()
-
-    Dim ii As Long
-
-    If mbFirstStartUpdate Then
-        lblWait.Visible = True
-        DoEvents
-        ' Загрузка данных с сайта
-        LoadUpdateData
-        DoEvents
-        ' установка параметров для кнопок
-        LoadDescriptionAndLinks
-        ' Показываем список изменений
-        lblWait.Visible = False
-        rtfDescription.Visible = True
-        cmbVersions.Left = lblVersionList.Left + lblVersionList.Width + 50
-
-        For ii = LBound(strUpdVersions) To UBound(strUpdVersions)
-            cmbVersions.AddItem strUpdVersions(ii), ii
-        Next
-
-        cmbVersions.ListIndex = 0
-        
-        rtfDescription.SetFocus
-    End If
-
-    mbFirstStartUpdate = False
-    cmdUpdate.Enabled = True
-    cmdUpdateFull.Enabled = True
-    cmdHistory.Enabled = True
-    cmdDonate.Enabled = True
-    cmdExit.Enabled = True
-    cmbVersions.Enabled = True
-    mnuContextMenu1.Enabled = True
-    mnuContextMenu2.Enabled = True
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Form_KeyDown
-'! Description (Описание)  :   [обработка нажатий клавиш клавиатуры]
-'! Parameters  (Переменные):   KeyCode (Integer)
-'                              Shift (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-
-    If KeyCode = vbKeyEscape Then
-        Unload Me
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Form_Load
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub Form_Load()
-    SetupVisualStyles Me
-
-    With Me
-        strFormName = .Name
-        SetIcon .hWnd, strFormName, False
-        .Left = (lngRightWorkArea - lngLeftWorkArea) / 2 - .Width / 2
-        .Top = (lngBottomWorkArea - lngTopWorkArea) / 2 - .Height / 2
-    End With
-
-    cmdUpdate.Enabled = False
-    cmdUpdateFull.Enabled = False
-    cmdHistory.Enabled = False
-    cmdDonate.Enabled = False
-    cmdExit.Enabled = False
-    cmbVersions.Enabled = False
-    mnuContextMenu1.Enabled = False
-    mnuContextMenu2.Enabled = False
-    
-    mbFirstStartUpdate = True
-    lblWait.Visible = True
-    DoEvents
-    lblWait.Left = 100
-    lblWait.Width = Me.Width - 200
-    LoadIconImage2Object cmdExit, "BTN_EXIT", strPathImageMainWork
-    LoadIconImage2Object cmdUpdate, "BTN_UPDATE", strPathImageMainWork
-    LoadIconImage2Object cmdUpdateFull, "BTN_UPDATEFULL", strPathImageMainWork
-    LoadIconImage2Object cmdHistory, "BTN_HISTORY", strPathImageMainWork
-    LoadIconImage2Object cmdDonate, "BTN_DONATE", strPathImageMainWork
-
-    ' Локализация приложения
-    If mbMultiLanguage Then
-        Localise strPCLangCurrentPath
-    Else
-        ' Выставляем шрифт
-        FontCharsetChange
-    End If
-
-    ' Контекстное меню для кнопки скачать дистрибутив
-    cmdUpdateFull.SetPopupMenu mnuContextMenu1
-
-    ' Контекстное меню для кнопки скачать обновление
-    cmdUpdate.SetPopupMenu mnuContextMenu2
-
-End Sub
-
-Private Sub Form_Unload(Cancel As Integer)
-    cmdUpdate.UnsetPopupMenu
-    cmdUpdateFull.UnsetPopupMenu
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub lblWWW_MouseDown
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Button (Integer)
-'                              Shift (Integer)
-'                              X (Single)
-'                              Y (Single)
-'!--------------------------------------------------------------------------------
-Private Sub lblWWW_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    RunUtilsShell strUrl_MainWWWSite, False
 End Sub
 
 '!--------------------------------------------------------------------------------

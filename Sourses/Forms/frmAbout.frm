@@ -365,202 +365,6 @@ Public Property Let CaptionW(ByVal NewValue As String)
     DefWindowProc Me.hWnd, WM_SETTEXT, 0, ByVal StrPtr(NewValue & vbNullChar)
 End Property
 
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub FontCharsetChange
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub FontCharsetChange()
-
-    ' Выставляем шрифт
-    With Me.Font
-        .Name = strFontOtherForm_Name
-        .Size = lngFontOtherForm_Size
-        .Charset = lngFont_Charset
-    End With
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub GenerateThankyou
-'! Description (Описание)  :   [Генерация текста благодарности со ссылкой на страницу]
-'!                              Idea from
-'!                              Copyright ©2001-2013 by Tanner Helland
-'!                              http://www.tannerhelland.com/photodemon
-'! Parameters  (Переменные):   thxText (String)
-'                              creditURL (String = vbNullString)
-'!--------------------------------------------------------------------------------
-Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL As String = vbNullString)
-    'Because I now have too many people to thank, it's necessary to split the list into multiple columns
-    Dim columnLimit As Long
-    Dim thxOffset   As Long
-
-    'Generate a new label
-    Load lblThanks(lngCurCredit)
-    
-    columnLimit = 7
-    thxOffset = 750
-
-    With lblThanks(lngCurCredit)
-
-        If lngCurCredit = 1 Then
-            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60
-            .Left = lblThanks(0).Left + 30 + thxOffset
-        ElseIf lngCurCredit < columnLimit Then
-            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60
-            .Left = lblThanks(0).Left + 30 + thxOffset
-        ElseIf lngCurCredit = columnLimit Then
-            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60 - (lblThanks(columnLimit - 1).Top - lblThanks(0).Top)
-            .Left = lblThanks(0).Left + 2700 + thxOffset
-        ElseIf lngCurCredit < columnLimit * 2 - 1 Then
-            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60
-            .Left = lblThanks(0).Left + 2700 + thxOffset
-        ElseIf lngCurCredit = columnLimit * 2 - 1 Then
-            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60 - (lblThanks(columnLimit * 2 - 2).Top - lblThanks(0).Top)
-            .Left = lblThanks(0).Left + 5400 + thxOffset
-        ElseIf lngCurCredit < columnLimit * 3 - 1 Then
-            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60
-            .Left = lblThanks(0).Left + 5400 + thxOffset
-        ElseIf lngCurCredit = columnLimit * 3 - 1 Then
-            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60 - (lblThanks(columnLimit * 3 - 3).Top - lblThanks(0).Top)
-            .Left = lblThanks(0).Left + 8100 + thxOffset
-        Else
-            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60
-            .Left = lblThanks(0).Left + 8100 + thxOffset
-        End If
-
-        .Caption = thxText
-
-        If LenB(creditURL) = 0 Then
-            .MousePointer = vbDefault
-        Else
-            .Font.Underline = True
-            .MouseIcon = lblMailTo.MouseIcon
-            .MousePointer = lblMailTo.MousePointer
-            .ForeColor = lblMailTo.ForeColor
-            .ToolTipText = creditURL
-        End If
-
-        .Visible = True
-    End With
-
-    ReDim Preserve strCreditList(0 To lngCurCredit)
-
-    strCreditList(lngCurCredit) = creditURL
-    lngCurCredit = lngCurCredit + 1
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub LoadThankYou
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub LoadThankYou()
-    lngCurCredit = 1
-    
-    GenerateThankyou "SamLab", "http://driveroff.net/"
-    GenerateThankyou "OSzone.net forum's users", "http://forum.oszone.net/forum-62.html"
-    ' Replacement CommonControls (TextBoxW, ListView, ComboBoxW, ListBoxW, ProgressBar, ToolTip, ImageList, OptionButtonW,RichTextBox, CheckBoxW, LabelW, SpinBox)
-    GenerateThankyou "Krool", "http://www.vbforums.com/showthread.php?698563-CommonControls-(Replacement-of-the-MS-common-controls)"
-    'JCbutton
-    GenerateThankyou "Juned Chhipa", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
-    'jcFrames
-    GenerateThankyou "Juan Carlos San Roman", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=64261&lngWId=1"
-    'clsmenuimage, ScrollControl
-    GenerateThankyou "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
-    GenerateThankyou "VBnet and Randy Birch", "http://vbnet.mvps.org/"
-    'cmdparsing
-    GenerateThankyou "EliteXP Software Solutions", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=72018&lngWId=1"
-    'ucPickBox' ucStatusBar
-    GenerateThankyou "Paul R.Territos", "http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=63905&lngWId=1"
-    '[VB6] Function Wait (non-freezing & non-CPU-intensive)
-    GenerateThankyou "Bonnie West", "http://www.vbforums.com/showthread.php?700373-VB6-Shell-amp-Wait"
-    'Team HomeWork
-    ' Timed MessageBox
-    GenerateThankyou "Anirudha Vengurlekar", "anirudhav@yahoo.com"
-    'AnimateForm
-    GenerateThankyou "Jim Jose", "jimjosev33@yahoo.com"
-    'MD5
-    GenerateThankyou "Marcin Kleczynski", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=69092&lngWId=1"
-    'HighlightActiveControl
-    GenerateThankyou "Giorgio Brausi", "http://nuke.vbcorner.net/"
-    'Unicode String Array Sorting Class - cBlizzard.cls
-    GenerateThankyou "Rohan Edwards aka Rd", "http://www.Planet-Source-Code.com/vb/scripts/ShowCode.asp?txtCodeId=72576&lngWId=1"
-    'LoadThankYou and other idea
-    GenerateThankyou "Tanner Helland", "http://photodemon.org/"
-    ' SortDMArray
-    GenerateThankyou "Ellis Dee"
-    GenerateThankyou "Zhu JinYong"
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub LoadTranslator
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub LoadTranslator()
-
-    Select Case strPCLangCurrentID
-
-        Case "0419"
-            lblTranslator.Caption = "Перевод программы: " & strTranslatorName
-
-        Case Else
-            lblTranslator.Caption = "Translation of the program: " & strTranslatorName
-    End Select
-
-    If LenB(strTranslatorUrl) Then
-
-        With lblTranslator
-            .MouseIcon = lblMailTo.MouseIcon
-            .MousePointer = lblMailTo.MousePointer
-            .ForeColor = lblMailTo.ForeColor
-            .ToolTipText = strTranslatorUrl
-        End With
-
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Localise
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   StrPathFile (String)
-'!--------------------------------------------------------------------------------
-Private Sub Localise(ByVal strPathFile As String)
-    ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
-    FontCharsetChange
-    ' Название формы
-    Me.CaptionW = LocaliseString(strPathFile, strFormName, strFormName, Me.Caption)
-    '  Вызов основной функции для вывода Caption меню с поддержкой Unicode
-    Call LocaliseMenu(strPathFile)
-    'Кнопки
-    cmdDonate.Caption = LocaliseString(strPathFile, strFormName, "cmdDonate", cmdDonate.Caption)
-    cmdCheckUpd.Caption = LocaliseString(strPathFile, strFormName, "cmdCheckUpd", cmdCheckUpd.Caption)
-    cmdLicence.Caption = LocaliseString(strPathFile, strFormName, "cmdLicence", cmdLicence.Caption)
-    cmdHomePage.Caption = LocaliseString(strPathFile, strFormName, "cmdHomePage", cmdHomePage.Caption)
-    cmdOsZoneNet.Caption = LocaliseString(strPathFile, strFormName, "cmdOsZoneNet", cmdOsZoneNet.Caption)
-    cmdExit.Caption = LocaliseString(strPathFile, strFormName, "cmdExit", cmdExit.Caption)
-    ' Лейблы
-    lblMailTo.Caption = LocaliseString(strPathFile, strFormName, "lblMailTo", lblMailTo.Caption)
-    lblInfo.Caption = LocaliseString(strPathFile, strFormName, "lblInfo", lblInfo.Caption)
-    ' Перевод программы
-    strTranslatorName = LocaliseString(strPathFile, "Lang", "TranslatorName", lblTranslator.Caption)
-    strTranslatorUrl = LocaliseString(strPathFile, "Lang", "TranslatorUrl", vbNullString)
-    LoadTranslator
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub LocaliseMenu
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   strPathFile (String)
-'!--------------------------------------------------------------------------------
-Private Sub LocaliseMenu(ByVal strPathFile As String)
-    SetUniMenu -1, 0, -1, mnuContextMenu1, LocaliseString(strPathFile, strFormName, "cmdHomePage", cmdHomePage.Caption)
-    SetUniMenu 0, 0, -1, mnuContextMenu1, LocaliseString(strPathFile, strFormName, "mnuContextLink1", mnuContextLink(0).Caption)
-    SetUniMenu 0, 2, -1, mnuContextMenu1, LocaliseString(strPathFile, strFormName, "mnuContextLink2", mnuContextLink(2).Caption)
-End Sub
-
 Private Sub cmdCheckUpd_Click()
 
     CheckUpd False
@@ -618,6 +422,22 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub ctlAquaButton_Click()
     RunUtilsShell strUrl_MainWWWSite, False
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub FontCharsetChange
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub FontCharsetChange()
+
+    ' Выставляем шрифт
+    With Me.Font
+        .Name = strFontOtherForm_Name
+        .Size = lngFontOtherForm_Size
+        .Charset = lngFont_Charset
+    End With
+
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -700,6 +520,75 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub GenerateThankyou
+'! Description (Описание)  :   [Генерация текста благодарности со ссылкой на страницу]
+'!                              Idea from
+'!                              Copyright ©2001-2013 by Tanner Helland
+'!                              http://www.tannerhelland.com/photodemon
+'! Parameters  (Переменные):   thxText (String)
+'                              creditURL (String = vbNullString)
+'!--------------------------------------------------------------------------------
+Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL As String = vbNullString)
+    'Because I now have too many people to thank, it's necessary to split the list into multiple columns
+    Dim columnLimit As Long
+    Dim thxOffset   As Long
+
+    'Generate a new label
+    Load lblThanks(lngCurCredit)
+    
+    columnLimit = 7
+    thxOffset = 750
+
+    With lblThanks(lngCurCredit)
+
+        If lngCurCredit = 1 Then
+            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60
+            .Left = lblThanks(0).Left + 30 + thxOffset
+        ElseIf lngCurCredit < columnLimit Then
+            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60
+            .Left = lblThanks(0).Left + 30 + thxOffset
+        ElseIf lngCurCredit = columnLimit Then
+            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60 - (lblThanks(columnLimit - 1).Top - lblThanks(0).Top)
+            .Left = lblThanks(0).Left + 2700 + thxOffset
+        ElseIf lngCurCredit < columnLimit * 2 - 1 Then
+            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60
+            .Left = lblThanks(0).Left + 2700 + thxOffset
+        ElseIf lngCurCredit = columnLimit * 2 - 1 Then
+            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60 - (lblThanks(columnLimit * 2 - 2).Top - lblThanks(0).Top)
+            .Left = lblThanks(0).Left + 5400 + thxOffset
+        ElseIf lngCurCredit < columnLimit * 3 - 1 Then
+            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60
+            .Left = lblThanks(0).Left + 5400 + thxOffset
+        ElseIf lngCurCredit = columnLimit * 3 - 1 Then
+            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60 - (lblThanks(columnLimit * 3 - 3).Top - lblThanks(0).Top)
+            .Left = lblThanks(0).Left + 8100 + thxOffset
+        Else
+            .Top = lblThanks(lngCurCredit - 1).Top + lblThanks(lngCurCredit - 1).Height + 60
+            .Left = lblThanks(0).Left + 8100 + thxOffset
+        End If
+
+        .Caption = thxText
+
+        If LenB(creditURL) = 0 Then
+            .MousePointer = vbDefault
+        Else
+            .Font.Underline = True
+            .MouseIcon = lblMailTo.MouseIcon
+            .MousePointer = lblMailTo.MousePointer
+            .ForeColor = lblMailTo.ForeColor
+            .ToolTipText = creditURL
+        End If
+
+        .Visible = True
+    End With
+
+    ReDim Preserve strCreditList(0 To lngCurCredit)
+
+    strCreditList(lngCurCredit) = creditURL
+    lngCurCredit = lngCurCredit + 1
+End Sub
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ctlAquaButton1_Click
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
@@ -758,6 +647,117 @@ Private Sub lblTranslator_MouseDown(Button As Integer, Shift As Integer, X As Si
 End Sub
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadThankYou
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub LoadThankYou()
+    lngCurCredit = 1
+    
+    GenerateThankyou "SamLab", "http://driveroff.net/"
+    GenerateThankyou "OSzone.net forum's users", "http://forum.oszone.net/forum-62.html"
+    ' Replacement CommonControls (TextBoxW, ListView, ComboBoxW, ListBoxW, ProgressBar, ToolTip, ImageList, OptionButtonW,RichTextBox, CheckBoxW, LabelW, SpinBox)
+    GenerateThankyou "Krool", "http://www.vbforums.com/showthread.php?698563-CommonControls-(Replacement-of-the-MS-common-controls)"
+    'JCbutton
+    GenerateThankyou "Juned Chhipa", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1"
+    'jcFrames
+    GenerateThankyou "Juan Carlos San Roman", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=64261&lngWId=1"
+    'clsmenuimage, ScrollControl
+    GenerateThankyou "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/"
+    GenerateThankyou "VBnet and Randy Birch", "http://vbnet.mvps.org/"
+    'cmdparsing
+    GenerateThankyou "EliteXP Software Solutions", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=72018&lngWId=1"
+    'ucPickBox' ucStatusBar
+    GenerateThankyou "Paul R.Territos", "http://planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=63905&lngWId=1"
+    '[VB6] Function Wait (non-freezing & non-CPU-intensive)
+    GenerateThankyou "Bonnie West", "http://www.vbforums.com/showthread.php?700373-VB6-Shell-amp-Wait"
+    'Team HomeWork
+    ' Timed MessageBox
+    GenerateThankyou "Anirudha Vengurlekar", "anirudhav@yahoo.com"
+    'AnimateForm
+    GenerateThankyou "Jim Jose", "jimjosev33@yahoo.com"
+    'MD5
+    GenerateThankyou "Marcin Kleczynski", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=69092&lngWId=1"
+    'HighlightActiveControl
+    GenerateThankyou "Giorgio Brausi", "http://nuke.vbcorner.net/"
+    'Unicode String Array Sorting Class - cBlizzard.cls
+    GenerateThankyou "Rohan Edwards aka Rd", "http://www.Planet-Source-Code.com/vb/scripts/ShowCode.asp?txtCodeId=72576&lngWId=1"
+    'LoadThankYou and other idea
+    GenerateThankyou "Tanner Helland", "http://photodemon.org/"
+    ' SortDMArray
+    GenerateThankyou "Ellis Dee"
+    GenerateThankyou "Zhu JinYong"
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadTranslator
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub LoadTranslator()
+
+    Select Case strPCLangCurrentID
+
+        Case "0419"
+            lblTranslator.Caption = "Перевод программы: " & strTranslatorName
+
+        Case Else
+            lblTranslator.Caption = "Translation of the program: " & strTranslatorName
+    End Select
+
+    If LenB(strTranslatorUrl) Then
+
+        With lblTranslator
+            .MouseIcon = lblMailTo.MouseIcon
+            .MousePointer = lblMailTo.MousePointer
+            .ForeColor = lblMailTo.ForeColor
+            .ToolTipText = strTranslatorUrl
+        End With
+
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Localise
+'! Description (Описание)  :   [Загрузка данных локализации для компонентов]
+'! Parameters  (Переменные):   strPathFile (String)
+'!--------------------------------------------------------------------------------
+Private Sub Localise(ByVal strPathFile As String)
+    ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
+    FontCharsetChange
+    ' Название формы
+    Me.CaptionW = LocaliseString(strPathFile, strFormName, strFormName, Me.Caption)
+    '  Вызов основной функции для вывода Caption меню с поддержкой Unicode
+    Call LocaliseMenu(strPathFile)
+    'Кнопки
+    cmdDonate.Caption = LocaliseString(strPathFile, strFormName, "cmdDonate", cmdDonate.Caption)
+    cmdCheckUpd.Caption = LocaliseString(strPathFile, strFormName, "cmdCheckUpd", cmdCheckUpd.Caption)
+    cmdLicence.Caption = LocaliseString(strPathFile, strFormName, "cmdLicence", cmdLicence.Caption)
+    cmdHomePage.Caption = LocaliseString(strPathFile, strFormName, "cmdHomePage", cmdHomePage.Caption)
+    cmdOsZoneNet.Caption = LocaliseString(strPathFile, strFormName, "cmdOsZoneNet", cmdOsZoneNet.Caption)
+    cmdExit.Caption = LocaliseString(strPathFile, strFormName, "cmdExit", cmdExit.Caption)
+    ' Лейблы
+    lblMailTo.Caption = LocaliseString(strPathFile, strFormName, "lblMailTo", lblMailTo.Caption)
+    lblInfo.Caption = LocaliseString(strPathFile, strFormName, "lblInfo", lblInfo.Caption)
+    ' Перевод программы
+    strTranslatorName = LocaliseString(strPathFile, "Lang", "TranslatorName", lblTranslator.Caption)
+    strTranslatorUrl = LocaliseString(strPathFile, "Lang", "TranslatorUrl", vbNullString)
+    LoadTranslator
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LocaliseMenu
+'! Description (Описание)  :   [Загрузка данных локализации для меню]
+'! Parameters  (Переменные):   strPathFile (String)
+'!--------------------------------------------------------------------------------
+Private Sub LocaliseMenu(ByVal strPathFile As String)
+    SetUniMenu -1, 0, -1, mnuContextMenu1, LocaliseString(strPathFile, strFormName, "cmdHomePage", cmdHomePage.Caption)
+    SetUniMenu 0, 0, -1, mnuContextMenu1, LocaliseString(strPathFile, strFormName, "mnuContextLink1", mnuContextLink(0).Caption)
+    SetUniMenu 0, 2, -1, mnuContextMenu1, LocaliseString(strPathFile, strFormName, "mnuContextLink2", mnuContextLink(2).Caption)
+End Sub
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub mnuContextLink_Click
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):   Index (Integer)
@@ -774,4 +774,3 @@ Private Sub mnuContextLink_Click(Index As Integer)
     End Select
     
 End Sub
-

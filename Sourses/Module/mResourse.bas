@@ -2,63 +2,13 @@ Attribute VB_Name = "mResource"
 Option Explicit
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function GetBinaryFileFromResource
-'! Description (Описание)  :   [Извлечение бинарного ресурса программы в файла по имени ресурса и его ID]
-'! Parameters  (Переменные):   strFilePath (String)
-'                              ID (String)
-'                              Resource (String)
-'!--------------------------------------------------------------------------------
-Public Function GetBinaryFileFromResource(ByVal strFilePath As String, ByVal strID As String, ByVal strResource As String) As Boolean
-
-    Dim iFile        As Long
-    Dim BinaryData() As Byte
-
-    iFile = FreeFile
-    GetBinaryFileFromResource = False
-
-    'загрузка из ресурсов
-    On Error GoTo HandErr
-
-    BinaryData = LoadResData(strID, strResource)
-
-    If LenB(BinaryData(1)) Then
-        'Если что - то есть, то все гуд
-        Open strFilePath For Binary Access Write Lock Write As #iFile
-        'запись в файл
-        Put #iFile, 1, BinaryData
-        Close #iFile
-        'операция успешна
-        GetBinaryFileFromResource = True
-    End If
-
-ExitFromSub:
-
-    Exit Function
-
-HandErr:
-
-    If Err.Number = 326 Then
-        If MsgBox("Error №: " & Err.Number & vbNewLine & "Description: " & Err.Description & str2vbNewLine & "This Error in Function 'GetBinaryFileFromResource'." & vbNewLine & _
-                                    "Executable file is corrupted, or required library removed from the resources of program." & str2vbNewLine & "Download the latest re-distribution program!!!" & vbNewLine & _
-                                    "If the error persists, please report it to the developer." & str2vbNewLine & "Normal work of program is not guaranteed, you want to continue?", vbCritical + vbYesNo, strProductName) = vbNo Then
-
-            End
-
-        End If
-
-    ElseIf Err.Number <> 0 Then
-        GoTo ExitFromSub
-    End If
-
-End Function
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function ExtractResource
 '! Description (Описание)  :   [Извлечение бинарного ресурса программы в файла по имени ресурса и его ID]
 '! Parameters  (Переменные):   strOCXFileName (String)
 '                              strPathOcx (String)
 '!--------------------------------------------------------------------------------
 Public Function ExtractResource(ByVal strOCXFileName As String, ByVal strPathOcx As String) As Boolean
+Attribute ExtractResource.VB_UserMemId = 1610612737
 
     Dim strCopyOcxFileTo As String
 
@@ -80,6 +30,7 @@ End Function
 '! Parameters  (Переменные):   strPathOcxTo (String)
 '!--------------------------------------------------------------------------------
 Public Function ExtractResourceAll(ByVal strPathOcxTo As String) As Boolean
+Attribute ExtractResourceAll.VB_UserMemId = 1610612738
     If mbDebugStandart Then DebugMode "ExtractResourceAll - Start"
     ExtractResourceAll = True
 
@@ -137,6 +88,7 @@ End Function
 '! Parameters  (Переменные):   strArg (String)
 '!--------------------------------------------------------------------------------
 Public Sub ExtractrResToFolder(strArg As String)
+Attribute ExtractrResToFolder.VB_UserMemId = 1610612739
 
     Dim strPathToTemp As String
     Dim strPathTo     As String
@@ -169,3 +121,55 @@ Public Sub ExtractrResToFolder(strArg As String)
     End If
 
 End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetBinaryFileFromResource
+'! Description (Описание)  :   [Извлечение бинарного ресурса программы в файла по имени ресурса и его ID]
+'! Parameters  (Переменные):   strFilePath (String)
+'                              ID (String)
+'                              Resource (String)
+'!--------------------------------------------------------------------------------
+Public Function GetBinaryFileFromResource(ByVal strFilePath As String, ByVal strID As String, ByVal strResource As String) As Boolean
+
+    Dim iFile        As Long
+    Dim BinaryData() As Byte
+
+    iFile = FreeFile
+    GetBinaryFileFromResource = False
+
+    'загрузка из ресурсов
+    On Error GoTo HandErr
+
+    BinaryData = LoadResData(strID, strResource)
+
+    If LenB(BinaryData(1)) Then
+        'Если что - то есть, то все гуд
+        Open strFilePath For Binary Access Write Lock Write As #iFile
+        'запись в файл
+        Put #iFile, 1, BinaryData
+        Close #iFile
+        'операция успешна
+        GetBinaryFileFromResource = True
+    End If
+
+ExitFromSub:
+
+    Exit Function
+
+HandErr:
+
+    If Err.Number = 326 Then
+        If MsgBox("Error №: " & Err.Number & vbNewLine & "Description: " & Err.Description & str2vbNewLine & "This Error in Function 'GetBinaryFileFromResource'." & vbNewLine & _
+                                    "Executable file is corrupted, or required library removed from the resources of program." & str2vbNewLine & "Download the latest re-distribution program!!!" & vbNewLine & _
+                                    "If the error persists, please report it to the developer." & str2vbNewLine & "Normal work of program is not guaranteed, you want to continue?", vbCritical + vbYesNo, strProductName) = vbNo Then
+
+            End
+
+        End If
+
+    ElseIf Err.Number <> 0 Then
+        GoTo ExitFromSub
+    End If
+
+End Function
+

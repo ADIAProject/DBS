@@ -1519,7 +1519,7 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Function GetPanelIndex() As Long
 
-    Dim I      As Long
+    Dim ii     As Long
     Dim tPt    As POINTAPI
     Dim lpRect As RECT
 
@@ -1533,28 +1533,28 @@ Private Function GetPanelIndex() As Long
         Call ScreenToClient(UserControl.hWnd, tPt)
 
         '   Loop Over the RECTs a see if it is in
-        For I = 1 To m_PanelCount
-            lpRect = m_PanelItems(I).ItemRect
+        For ii = 1 To m_PanelCount
+            lpRect = m_PanelItems(ii).ItemRect
 
-            If Not m_PanelItems(I).Icon Is Nothing Then
-                If m_PanelItems(I).Alignment = DT_SB_LEFT Then
+            If Not m_PanelItems(ii).Icon Is Nothing Then
+                If m_PanelItems(ii).Alignment = DT_SB_LEFT Then
                     OffsetRect lpRect, -16, 0
-                ElseIf m_PanelItems(I).Alignment = DT_SB_CENTER Then
+                ElseIf m_PanelItems(ii).Alignment = DT_SB_CENTER Then
                     OffsetRect lpRect, -8, 0
-                ElseIf m_PanelItems(I).Alignment = DT_SB_RIGHT Then
+                ElseIf m_PanelItems(ii).Alignment = DT_SB_RIGHT Then
                     InflateRect lpRect, 2, 0
                 End If
             End If
 
-            If I > 1 Then
-                If (m_PanelItems(I - 1).ItemRect.Right + 10) < lpRect.Left Then
+            If ii > 1 Then
+                If (m_PanelItems(ii - 1).ItemRect.Right + 10) < lpRect.Left Then
                     OffsetRect lpRect, -8, 0
                     InflateRect lpRect, 6, 0
                 End If
             End If
 
             If PtInRect(lpRect, tPt.X, tPt.Y) Then
-                GetPanelIndex = I
+                GetPanelIndex = ii
 
                 Exit For
 
@@ -1698,7 +1698,7 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub PaintGradients()
 
-    Dim I       As Long
+    Dim ii      As Long
     Dim Y1      As Long
     Dim BtnFace As Long
     Dim lColor  As Long
@@ -1720,9 +1720,9 @@ Private Sub PaintGradients()
             Clear
 
             '   Draw the Smooth Gradient across the whole control
-            For I = 0 To ScaleHeight
-                Y1 = I
-                APILine 0, Y1, .ScaleWidth, Y1, AlphaBlend(&HFFFFFF, BtnFace, (I / ScaleHeight) * 48)
+            For ii = 0 To ScaleHeight
+                Y1 = ii
+                APILine 0, Y1, .ScaleWidth, Y1, AlphaBlend(&HFFFFFF, BtnFace, (ii / ScaleHeight) * 48)
             Next
 
             '   Draw The Top Lines
@@ -1749,9 +1749,9 @@ Private Sub PaintGradients()
             APILine 0, 3, .ScaleWidth, 3, ShiftColor(BtnFace, -&H9)
 
             '   Draw the Bottom Gradient
-            For I = 0 To 5
-                Y1 = .ScaleHeight - 5 + I
-                APILine 0, Y1, .ScaleWidth, Y1, ShiftColor(BtnFace, -&H1 * ((((I / 3) * 100) * .ScaleHeight) / 100))
+            For ii = 0 To 5
+                Y1 = .ScaleHeight - 5 + ii
+                APILine 0, Y1, .ScaleWidth, Y1, ShiftColor(BtnFace, -&H1 * ((((ii / 3) * 100) * .ScaleHeight) / 100))
             Next
 
         End If
@@ -1882,7 +1882,7 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub PaintPanels()
 
-    Dim I           As Long
+    Dim ii          As Long
     Dim lX          As Long
     Dim lForeColor  As Long
     Dim lIconOffset As Long
@@ -1901,9 +1901,9 @@ Private Sub PaintPanels()
         lGripSize = 18
     End If
 
-    For I = 1 To PanelCount
+    For ii = 1 To PanelCount
 
-        With m_PanelItems(I)
+        With m_PanelItems(ii)
             '   Set the Individual ForeColor & Font
             UserControl.ForeColor = .ForeColor
             Set UserControl.Font = .Font
@@ -1989,7 +1989,7 @@ Private Sub PaintPanels()
                 If Not .Icon Is Nothing Then
 
                     '   Adjust the Initial Items RECT to line up correctly
-                    If I = 1 Then
+                    If ii = 1 Then
                         OffsetRect .ItemRect, -2, 0
                     End If
 
@@ -2078,8 +2078,8 @@ Private Sub PaintPanels()
 
                         '   Keep the Width, but set the Left, Top and Height
                         With .BoundObject
-                            .Left = m_PanelItems(I).ItemRect.Left * Screen.TwipsPerPixelX
-                            .Top = m_PanelItems(I).ItemRect.Top * Screen.TwipsPerPixelY
+                            .Left = m_PanelItems(ii).ItemRect.Left * Screen.TwipsPerPixelX
+                            .Top = m_PanelItems(ii).ItemRect.Top * Screen.TwipsPerPixelY
                             .Height = 16 * Screen.TwipsPerPixelY
                             '   Under development....;-)
                             '   Should be hidden if too small to fit the control..
@@ -2097,26 +2097,26 @@ Private Sub PaintPanels()
 
                             '   Resize all properties to make it fit
                             If m_iTheme <> usbClassic Then
-                                .Left = (m_PanelItems(I).ItemRect.Left) * Screen.TwipsPerPixelX
-                                .Width = ((m_PanelItems(I).ItemRect.Right - m_PanelItems(I).ItemRect.Left)) * Screen.TwipsPerPixelX
+                                .Left = (m_PanelItems(ii).ItemRect.Left) * Screen.TwipsPerPixelX
+                                .Width = ((m_PanelItems(ii).ItemRect.Right - m_PanelItems(ii).ItemRect.Left)) * Screen.TwipsPerPixelX
 
                                 '   See if we were avel to resize the controls width, if not
                                 '   then the control might have a minimum width (i.e. ComboBox)
                                 '   so we can simply use this as an indicator to hide the control...
-                                If (.Width <> (((m_PanelItems(I).ItemRect.Right - m_PanelItems(I).ItemRect.Left)) * Screen.TwipsPerPixelX)) Then
+                                If (.Width <> (((m_PanelItems(ii).ItemRect.Right - m_PanelItems(ii).ItemRect.Left)) * Screen.TwipsPerPixelX)) Then
                                     bMinWidth = True
                                 Else
                                     bMinWidth = False
                                 End If
 
                             Else
-                                .Left = (m_PanelItems(I).ItemRect.Left - 4) * Screen.TwipsPerPixelX
-                                .Width = ((m_PanelItems(I).ItemRect.Right - m_PanelItems(I).ItemRect.Left) + 9) * Screen.TwipsPerPixelX
+                                .Left = (m_PanelItems(ii).ItemRect.Left - 4) * Screen.TwipsPerPixelX
+                                .Width = ((m_PanelItems(ii).ItemRect.Right - m_PanelItems(ii).ItemRect.Left) + 9) * Screen.TwipsPerPixelX
 
                                 '   See if we were avel to resize the controls width, if not
                                 '   then the control might have a minimum width (i.e. ComboBox)
                                 '   so we can simply use this as an indicator to hide the control...
-                                If (.Width <> (((m_PanelItems(I).ItemRect.Right - m_PanelItems(I).ItemRect.Left) + 9) * Screen.TwipsPerPixelX)) Then
+                                If (.Width <> (((m_PanelItems(ii).ItemRect.Right - m_PanelItems(ii).ItemRect.Left) + 9) * Screen.TwipsPerPixelX)) Then
                                     bMinWidth = True
                                 Else
                                     bMinWidth = False
@@ -3151,14 +3151,14 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Terminate()
 
-    Dim I As Long
+    Dim ii As Long
 
     On Error Resume Next
 
     '   Set the Parents of the Object Back....
-    For I = 1 To m_PanelCount
+    For ii = 1 To m_PanelCount
 
-        With m_PanelItems(I)
+        With m_PanelItems(ii)
 
             If Not .BoundObject Is Nothing Then
                 SetParent .BoundObject.hWnd, .BoundParent

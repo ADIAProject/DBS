@@ -1700,7 +1700,7 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub PaintShpInBar(iColorA As Long, iColorB As Long, ByVal m_Height As Long)
 
-    Dim I            As Integer
+    Dim ii           As Integer
     Dim x_left       As Integer
     Dim y_top        As Integer
     Dim SpaceBtwnShp As Integer
@@ -1721,10 +1721,10 @@ Private Sub PaintShpInBar(iColorA As Long, iColorB As Long, ByVal m_Height As Lo
     x_left = (UserControl.ScaleWidth - NumShp * RectWidth - (NumShp - 1) * SpaceBtwnShp) / 2
     y_top = (m_Height - RectHeight) / 2
 
-    For I = 0 To NumShp - 1
-        SetRect r, x_left + I * SpaceBtwnShp + I * RectWidth + 1, y_top + 1, 1, 1
+    For ii = 0 To NumShp - 1
+        SetRect r, x_left + ii * SpaceBtwnShp + ii * RectWidth + 1, y_top + 1, 1, 1
         APIRectangle UserControl.hDC, r.Left, r.Top, r.Right, r.Bottom, iColorA
-        SetRect r, x_left + I * SpaceBtwnShp + I * RectWidth, y_top, 1, 1
+        SetRect r, x_left + ii * SpaceBtwnShp + ii * RectWidth, y_top, 1, 1
         APIRectangle UserControl.hDC, r.Left, r.Top, r.Right, r.Bottom, iColorB
     Next
 
@@ -2168,7 +2168,7 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
     Dim b        As Long
     Dim H        As Long
     Dim F        As Long
-    Dim I        As Long
+    Dim ii       As Long
     Dim newW     As Long
     Dim TmpDC    As Long
     Dim TmpBmp   As Long
@@ -2252,37 +2252,37 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
             F = H * DstW
 
             For b = 0 To newW
-                I = F + b
+                ii = F + b
 
-                If GetNearestColor(hDC, CLng(Data2(I).Red) + 256& * Data2(I).Green + 65536 * Data2(I).Blue) <> transColor Then
+                If GetNearestColor(hDC, CLng(Data2(ii).Red) + 256& * Data2(ii).Green + 65536 * Data2(ii).Blue) <> transColor Then
 
-                    With Data1(I)
+                    With Data1(ii)
 
                         If BrushColor > -1 Then
                             If MonoMask Then
-                                If (CLng(Data2(I).Red) + Data2(I).Green + Data2(I).Blue) <= 384 Then
-                                    Data1(I) = BrushRGB
+                                If (CLng(Data2(ii).Red) + Data2(ii).Green + Data2(ii).Blue) <= 384 Then
+                                    Data1(ii) = BrushRGB
                                 End If
 
                             Else
-                                Data1(I) = BrushRGB
+                                Data1(ii) = BrushRGB
                             End If
 
                         Else
 
                             If isGreyscale Then
-                                gCol = CLng(Data2(I).Red * 0.3) + Data2(I).Green * 0.59 + Data2(I).Blue * 0.11
+                                gCol = CLng(Data2(ii).Red * 0.3) + Data2(ii).Green * 0.59 + Data2(ii).Blue * 0.11
                                 .Red = gCol
                                 .Green = gCol
                                 .Blue = gCol
                             Else
 
                                 If XPBlend Then
-                                    .Red = (CLng(.Red) + Data2(I).Red * 2) \ 3
-                                    .Green = (CLng(.Green) + Data2(I).Green * 2) \ 3
-                                    .Blue = (CLng(.Blue) + Data2(I).Blue * 2) \ 3
+                                    .Red = (CLng(.Red) + Data2(ii).Red * 2) \ 3
+                                    .Green = (CLng(.Green) + Data2(ii).Green * 2) \ 3
+                                    .Blue = (CLng(.Blue) + Data2(ii).Blue * 2) \ 3
                                 Else
-                                    Data1(I) = Data2(I)
+                                    Data1(ii) = Data2(ii)
                                 End If
                             End If
                         End If

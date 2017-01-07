@@ -843,7 +843,7 @@ PropUseSystemPasswordChar = .ReadProperty("UseSystemPasswordChar", False)
 PropMultiLine = .ReadProperty("MultiLine", False)
 PropMaxLength = .ReadProperty("MaxLength", 0)
 PropScrollBars = .ReadProperty("ScrollBars", vbSBNone)
-PropWantReturn = .ReadProperty("WantReturn", False)
+PropWantReturn = .ReadProperty("WantReturn", True)
 PropDisableNoScroll = .ReadProperty("DisableNoScroll", False)
 PropAutoURLDetect = .ReadProperty("AutoURLDetect", True)
 PropBulletIndent = .ReadProperty("BulletIndent", 0)
@@ -880,7 +880,7 @@ With PropBag
 .WriteProperty "MultiLine", PropMultiLine, False
 .WriteProperty "MaxLength", PropMaxLength, 0
 .WriteProperty "ScrollBars", PropScrollBars, vbSBNone
-.WriteProperty "WantReturn", PropWantReturn, False
+.WriteProperty "WantReturn", PropWantReturn, True
 .WriteProperty "DisableNoScroll", PropDisableNoScroll, False
 .WriteProperty "AutoURLDetect", PropAutoURLDetect, True
 .WriteProperty "BulletIndent", PropBulletIndent, 0

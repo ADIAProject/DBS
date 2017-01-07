@@ -1877,7 +1877,7 @@ Private Sub DrawGradientEx(ByVal X As Long, ByVal Y As Long, ByVal lngWidth As L
     Dim dG      As Long
     Dim dB      As Long
     Dim Scan    As Long
-    Dim I       As Long
+    Dim ii      As Long
     Dim iEnd    As Long
     Dim iOffset As Long
     Dim J       As Long
@@ -1928,8 +1928,8 @@ Private Sub DrawGradientEx(ByVal X As Long, ByVal Y As Long, ByVal lngWidth As L
             lGrad(0) = (B1 \ 2 + B2 \ 2) + 256 * (g1 \ 2 + G2 \ 2) + 65536 * (r1 \ 2 + R2 \ 2)
         Else
 
-            For I = 0 To iEnd
-                lGrad(I) = B1 + (dB * I) \ iEnd + 256 * (g1 + (dG * I) \ iEnd) + 65536 * (r1 + (dR * I) \ iEnd)
+            For ii = 0 To iEnd
+                lGrad(ii) = B1 + (dB * ii) \ iEnd + 256 * (g1 + (dG * ii) \ iEnd) + 65536 * (r1 + (dR * ii) \ iEnd)
             Next
 
         End If
@@ -1947,8 +1947,8 @@ Private Sub DrawGradientEx(ByVal X As Long, ByVal Y As Long, ByVal lngWidth As L
             Case [gdHorizontal]
 
                 For J = 0 To jEnd
-                    For I = iOffset To iEnd + iOffset
-                        lBits(I) = lGrad(I - iOffset)
+                    For ii = iOffset To iEnd + iOffset
+                        lBits(ii) = lGrad(ii - iOffset)
                     Next
 
                     iOffset = iOffset + Scan
@@ -1957,8 +1957,8 @@ Private Sub DrawGradientEx(ByVal X As Long, ByVal Y As Long, ByVal lngWidth As L
             Case [gdVertical]
 
                 For J = jEnd To 0 Step -1
-                    For I = iOffset To iEnd + iOffset
-                        lBits(I) = lGrad(J)
+                    For ii = iOffset To iEnd + iOffset
+                        lBits(ii) = lGrad(J)
                     Next
 
                     iOffset = iOffset + Scan
@@ -1968,8 +1968,8 @@ Private Sub DrawGradientEx(ByVal X As Long, ByVal Y As Long, ByVal lngWidth As L
                 iOffset = jEnd * Scan
 
                 For J = 1 To jEnd + 1
-                    For I = iOffset To iEnd + iOffset
-                        lBits(I) = lGrad(iGrad)
+                    For ii = iOffset To iEnd + iOffset
+                        lBits(ii) = lGrad(iGrad)
                         iGrad = iGrad + 1
                     Next
 
@@ -1981,8 +1981,8 @@ Private Sub DrawGradientEx(ByVal X As Long, ByVal Y As Long, ByVal lngWidth As L
                 iOffset = 0
 
                 For J = 1 To jEnd + 1
-                    For I = iOffset To iEnd + iOffset
-                        lBits(I) = lGrad(iGrad)
+                    For ii = iOffset To iEnd + iOffset
+                        lBits(ii) = lGrad(iGrad)
                         iGrad = iGrad + 1
                     Next
 
@@ -2724,22 +2724,22 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub SetAccessKey()
 
-    Dim I As Long
+    Dim ii As Long
 
     UserControl.AccessKeys = vbNullString
 
     If Len(m_Caption) > 1 Then
-        I = InStr(m_Caption, "&")
+        ii = InStr(m_Caption, "&")
 
-        If I < Len(m_Caption) Then
-            If I Then
-                If Mid$(m_Caption, I + 1, 1) <> "&" Then
-                    AccessKeys = LCase$(Mid$(m_Caption, I + 1, 1))
+        If ii < Len(m_Caption) Then
+            If ii Then
+                If Mid$(m_Caption, ii + 1, 1) <> "&" Then
+                    AccessKeys = LCase$(Mid$(m_Caption, ii + 1, 1))
                 Else
-                    I = InStr(I + 2, m_Caption, "&", vbTextCompare)
+                    ii = InStr(ii + 2, m_Caption, "&", vbTextCompare)
 
-                    If Mid$(m_Caption, I + 1, 1) <> "&" Then
-                        AccessKeys = LCase$(Mid$(m_Caption, I + 1, 1))
+                    If Mid$(m_Caption, ii + 1, 1) <> "&" Then
+                        AccessKeys = LCase$(Mid$(m_Caption, ii + 1, 1))
                     End If
                 End If
             End If
@@ -3101,7 +3101,7 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
     Dim b           As Long
     Dim H           As Long
     Dim F           As Long
-    Dim I           As Long
+    Dim ii          As Long
     Dim newW        As Long
     Dim TmpDC       As Long
     Dim TmpBmp      As Long
@@ -3218,7 +3218,7 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
             F = H * DstW
 
             For b = 0 To newW
-                I = F + b
+                ii = F + b
 
                 If m_Buttonstate = eStateOver Then
                     a1 = OverOpacity
@@ -3228,20 +3228,20 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
 
                 a2 = 255 - a1
 
-                If GetNearestColor(hDC, CLng(DataSrc(I).Red) + 256& * DataSrc(I).Green + 65536 * DataSrc(I).Blue) <> transColor Then
+                If GetNearestColor(hDC, CLng(DataSrc(ii).Red) + 256& * DataSrc(ii).Green + 65536 * DataSrc(ii).Blue) <> transColor Then
 
-                    With DataDest(I)
+                    With DataDest(ii)
 
                         If BrushColor > -1 Then
                             If MonoMask Then
-                                If (CLng(DataSrc(I).Red) + DataSrc(I).Green + DataSrc(I).Blue) <= 384 Then
-                                    DataDest(I) = BrushRGB
+                                If (CLng(DataSrc(ii).Red) + DataSrc(ii).Green + DataSrc(ii).Blue) <= 384 Then
+                                    DataDest(ii) = BrushRGB
                                 End If
 
                             Else
 
                                 If a1 = 255 Then
-                                    DataDest(I) = BrushRGB
+                                    DataDest(ii) = BrushRGB
                                 ElseIf a1 Then
                                     .Red = (a2 * .Red + a1 * BrushRGB.Red) \ 256
                                     .Green = (a2 * .Green + a1 * BrushRGB.Green) \ 256
@@ -3252,7 +3252,7 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
                         Else
 
                             If isGreyscale Then
-                                gCol = CLng(DataSrc(I).Red * 0.3) + DataSrc(I).Green * 0.59 + DataSrc(I).Blue * 0.11
+                                gCol = CLng(DataSrc(ii).Red * 0.3) + DataSrc(ii).Green * 0.59 + DataSrc(ii).Blue * 0.11
 
                                 If a1 = 255 Then
                                     .Red = gCol
@@ -3268,31 +3268,31 @@ Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long
 
                                 If a1 = 255 Then
                                     If PicEffect = epeLighter Then
-                                        .Red = aLighten(DataSrc(I).Red)
-                                        .Green = aLighten(DataSrc(I).Green)
-                                        .Blue = aLighten(DataSrc(I).Blue)
+                                        .Red = aLighten(DataSrc(ii).Red)
+                                        .Green = aLighten(DataSrc(ii).Green)
+                                        .Blue = aLighten(DataSrc(ii).Blue)
                                     ElseIf PicEffect = epeDarker Then
-                                        .Red = aDarken(DataSrc(I).Red)
-                                        .Green = aDarken(DataSrc(I).Green)
-                                        .Blue = aDarken(DataSrc(I).Blue)
+                                        .Red = aDarken(DataSrc(ii).Red)
+                                        .Green = aDarken(DataSrc(ii).Green)
+                                        .Blue = aDarken(DataSrc(ii).Blue)
                                     Else
-                                        DataDest(I) = DataSrc(I)
+                                        DataDest(ii) = DataSrc(ii)
                                     End If
 
                                 ElseIf a1 Then
 
                                     If PicEffect = epeLighter Then
-                                        .Red = (a2 * .Red + a1 * aLighten(DataSrc(I).Red)) \ 256
-                                        .Green = (a2 * .Green + a1 * aLighten(DataSrc(I).Green)) \ 256
-                                        .Blue = (a2 * .Blue + a1 * aLighten(DataSrc(I).Blue)) \ 256
+                                        .Red = (a2 * .Red + a1 * aLighten(DataSrc(ii).Red)) \ 256
+                                        .Green = (a2 * .Green + a1 * aLighten(DataSrc(ii).Green)) \ 256
+                                        .Blue = (a2 * .Blue + a1 * aLighten(DataSrc(ii).Blue)) \ 256
                                     ElseIf PicEffect = epeDarker Then
-                                        .Red = (a2 * .Red + a1 * aDarken(DataSrc(I).Red)) \ 256
-                                        .Green = (a2 * .Green + a1 * aDarken(DataSrc(I).Green)) \ 256
-                                        .Blue = (a2 * .Blue + a1 * aDarken(DataSrc(I).Blue)) \ 256
+                                        .Red = (a2 * .Red + a1 * aDarken(DataSrc(ii).Red)) \ 256
+                                        .Green = (a2 * .Green + a1 * aDarken(DataSrc(ii).Green)) \ 256
+                                        .Blue = (a2 * .Blue + a1 * aDarken(DataSrc(ii).Blue)) \ 256
                                     Else
-                                        .Red = (a2 * .Red + a1 * DataSrc(I).Red) \ 256
-                                        .Green = (a2 * .Green + a1 * DataSrc(I).Green) \ 256
-                                        .Blue = (a2 * .Blue + a1 * DataSrc(I).Blue) \ 256
+                                        .Red = (a2 * .Red + a1 * DataSrc(ii).Red) \ 256
+                                        .Green = (a2 * .Green + a1 * DataSrc(ii).Green) \ 256
+                                        .Blue = (a2 * .Blue + a1 * DataSrc(ii).Blue) \ 256
                                     End If
                                 End If
                             End If
@@ -3340,7 +3340,7 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Lo
     Dim b           As Long
     Dim H           As Long
     Dim F           As Long
-    Dim I           As Long
+    Dim ii          As Long
     Dim newW        As Long
     Dim TmpDC       As Long
     Dim TmpBmp      As Long
@@ -3443,26 +3443,26 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Lo
             F = H * DstW
 
             For b = 0 To newW
-                I = F + b
+                ii = F + b
 
                 If m_bEnabled Then
                     If m_Buttonstate = eStateOver Then
-                        a1 = (CLng(DataSrc(I).Alpha) * OverOpacity) \ 255
+                        a1 = (CLng(DataSrc(ii).Alpha) * OverOpacity) \ 255
                     Else
-                        a1 = (CLng(DataSrc(I).Alpha) * m_PictureOpacity) \ 255
+                        a1 = (CLng(DataSrc(ii).Alpha) * m_PictureOpacity) \ 255
                     End If
 
                 Else
-                    a1 = (CLng(DataSrc(I).Alpha) * bDisOpacity) \ 255
+                    a1 = (CLng(DataSrc(ii).Alpha) * bDisOpacity) \ 255
                 End If
 
                 a2 = 255 - a1
 
-                With DataDest(I)
+                With DataDest(ii)
 
                     If BrushColor <> -1 Then
                         If a1 = 255 Then
-                            DataDest(I) = BrushRGB
+                            DataDest(ii) = BrushRGB
                         ElseIf a1 Then
                             .Red = (a2 * .Red + a1 * BrushRGB.Red) \ 256
                             .Green = (a2 * .Green + a1 * BrushRGB.Green) \ 256
@@ -3472,7 +3472,7 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Lo
                     Else
 
                         If isGreyscale Then
-                            gCol = CLng(DataSrc(I).Red * 0.3) + DataSrc(I).Green * 0.59 + DataSrc(I).Blue * 0.11
+                            gCol = CLng(DataSrc(ii).Red * 0.3) + DataSrc(ii).Green * 0.59 + DataSrc(ii).Blue * 0.11
 
                             If a1 = 255 Then
                                 .Red = gCol
@@ -3488,31 +3488,31 @@ Private Sub TransBlt32(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Lo
 
                             If a1 = 255 Then
                                 If PicEffect = epeLighter Then
-                                    .Red = aLighten(DataSrc(I).Red)
-                                    .Green = aLighten(DataSrc(I).Green)
-                                    .Blue = aLighten(DataSrc(I).Blue)
+                                    .Red = aLighten(DataSrc(ii).Red)
+                                    .Green = aLighten(DataSrc(ii).Green)
+                                    .Blue = aLighten(DataSrc(ii).Blue)
                                 ElseIf PicEffect = epeDarker Then
-                                    .Red = aDarken(DataSrc(I).Red)
-                                    .Green = aDarken(DataSrc(I).Green)
-                                    .Blue = aDarken(DataSrc(I).Blue)
+                                    .Red = aDarken(DataSrc(ii).Red)
+                                    .Green = aDarken(DataSrc(ii).Green)
+                                    .Blue = aDarken(DataSrc(ii).Blue)
                                 Else
-                                    DataDest(I) = DataSrc(I)
+                                    DataDest(ii) = DataSrc(ii)
                                 End If
 
                             ElseIf a1 Then
 
                                 If PicEffect = epeLighter Then
-                                    .Red = (a2 * .Red + a1 * aLighten(DataSrc(I).Red)) \ 256
-                                    .Green = (a2 * .Green + a1 * aLighten(DataSrc(I).Green)) \ 256
-                                    .Blue = (a2 * .Blue + a1 * aLighten(DataSrc(I).Blue)) \ 256
+                                    .Red = (a2 * .Red + a1 * aLighten(DataSrc(ii).Red)) \ 256
+                                    .Green = (a2 * .Green + a1 * aLighten(DataSrc(ii).Green)) \ 256
+                                    .Blue = (a2 * .Blue + a1 * aLighten(DataSrc(ii).Blue)) \ 256
                                 ElseIf PicEffect = epeDarker Then
-                                    .Red = (a2 * .Red + a1 * aDarken(DataSrc(I).Red)) \ 256
-                                    .Green = (a2 * .Green + a1 * aDarken(DataSrc(I).Green)) \ 256
-                                    .Blue = (a2 * .Blue + a1 * aDarken(DataSrc(I).Blue)) \ 256
+                                    .Red = (a2 * .Red + a1 * aDarken(DataSrc(ii).Red)) \ 256
+                                    .Green = (a2 * .Green + a1 * aDarken(DataSrc(ii).Green)) \ 256
+                                    .Blue = (a2 * .Blue + a1 * aDarken(DataSrc(ii).Blue)) \ 256
                                 Else
-                                    .Red = (a2 * .Red + a1 * DataSrc(I).Red) \ 256
-                                    .Green = (a2 * .Green + a1 * DataSrc(I).Green) \ 256
-                                    .Blue = (a2 * .Blue + a1 * DataSrc(I).Blue) \ 256
+                                    .Red = (a2 * .Red + a1 * DataSrc(ii).Red) \ 256
+                                    .Green = (a2 * .Green + a1 * DataSrc(ii).Green) \ 256
+                                    .Blue = (a2 * .Blue + a1 * DataSrc(ii).Blue) \ 256
                                 End If
                             End If
                         End If
@@ -4679,12 +4679,12 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Initialize()
 
-    Dim I As Long
+    Dim ii As Long
 
     'Prebuid Lighten/Darken arrays
-    For I = 0 To 255
-        aLighten(I) = Lighten(I)
-        aDarken(I) = Darken(I)
+    For ii = 0 To 255
+        aLighten(ii) = Lighten(ii)
+        aDarken(ii) = Darken(ii)
     Next
 
     ' --Get the operating system version for text drawing purposes.

@@ -96,6 +96,65 @@ Private Const TOKEN_ELEVATION_TYPE As Long = 18
 Private Declare Function OpenProcessToken Lib "advapi32.dll" (ByVal ProcessHandle As Long, ByVal DesiredAccess As Long, TokenHandle As Long) As Long
 Private Declare Function GetTokenInformation Lib "advapi32.dll" (ByVal TokenHandle As Long, ByVal TokenInformationClass As Long, TokenInformation As Any, ByVal TokenInformationLength As Long, ReturnLength As Long) As Long
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   GetFileName4Snap
+'! Description (Описание)  :   [Получение имени файла для снимка системы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Function GetFileName4Snap() As String
+Attribute GetFileName4Snap.VB_UserMemId = 1610612751
+    If mbIsNotebook Then
+        If Not OSCurrVersionStruct.ClientOrServer Then
+            GetFileName4Snap = ExpandFileNameByEnvironment("hwids_%PCMODEL%-Notebook_" & strOSCurrentVersion & "-Server_%OSBIT%" & "_%DATE%")
+        Else
+            GetFileName4Snap = ExpandFileNameByEnvironment("hwids_%PCMODEL%-Notebook_" & strOSCurrentVersion & "_%OSBIT%" & "_%DATE%")
+        End If
+    Else
+        If Not OSCurrVersionStruct.ClientOrServer Then
+            GetFileName4Snap = ExpandFileNameByEnvironment("hwids_%PCMODEL%_" & strOSCurrentVersion & "-Server_%OSBIT%" & "_%DATE%")
+        Else
+            GetFileName4Snap = ExpandFileNameByEnvironment("hwids_%PCMODEL%_" & strOSCurrentVersion & "_%OSBIT%" & "_%DATE%")
+        End If
+    End If
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetMBInfo
+'! Description (Описание)  :   [Итоговая строка производитель/модель материнской платы/ноутбука]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Function GetMBInfo() As String
+Attribute GetMBInfo.VB_UserMemId = 1610612739
+
+    Dim strMB_Manufacturer As String
+    Dim strMB_Model        As String
+    Dim mbMB_Model         As Boolean
+    Dim mbMB_Manufacturer  As Boolean
+
+    strMB_Manufacturer = GetMB_Manufacturer()
+    strMB_Model = GetMB_Model()
+    
+    mbMB_Model = LenB(strMB_Model)
+    mbMB_Manufacturer = LenB(strMB_Manufacturer)
+
+    If mbMB_Manufacturer Then
+        If mbMB_Model Then
+            GetMBInfo = strMB_Manufacturer & strDash & strMB_Model
+        Else
+            GetMBInfo = strMB_Manufacturer
+        End If
+    Else
+        If mbMB_Model Then
+            GetMBInfo = strMB_Model
+        Else
+            GetMBInfo = "Unknown"
+        End If
+    End If
+    
+    If InStr(GetMBInfo, "_") Then
+        GetMBInfo = Replace$(GetMBInfo, "_", strDash)
+    End If
+End Function
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function GetMB_Manufacturer
@@ -214,6 +273,25 @@ Public Function GetMB_Model() As String
 
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   GetSystemDiskFreeSpace
+'! Description (Описание)  :   [Определения свободного места на системном диске]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Function GetSystemDiskFreeSpace(ByVal strDrive As String) As Long
+Attribute GetSystemDiskFreeSpace.VB_UserMemId = 1610612752
+Dim BytesFreeToCalller  As Currency
+Dim TotalBytes          As Currency
+Dim TotalFreeBytes      As Currency
+Dim TotalBytesUsed      As Currency
+
+    If LenB(strDrive) Then
+        GetDiskFreeSpaceEx strDrive, BytesFreeToCalller, TotalBytes, TotalFreeBytes
+        GetSystemDiskFreeSpace = (TotalFreeBytes * 10000 / 1024 / 1024)
+    End If
+    
+End Function
+
 ' уточнение про "статус" компьютер-ноутбук по корпусу или батарее
 Public Sub IsPCisNotebook()
     
@@ -275,55 +353,55 @@ ExitSub:
         
     End If
 End Sub
+
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function GetMBInfo
-'! Description (Описание)  :   [Итоговая строка производитель/модель материнской платы/ноутбука]
+'! Procedure   (Функция)   :   IsUserAnAdministrator
+'! Description (Описание)  :   [Определения свободного места на системном диске]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Public Function GetMBInfo() As String
-
-    Dim strMB_Manufacturer As String
-    Dim strMB_Model        As String
-    Dim mbMB_Model         As Boolean
-    Dim mbMB_Manufacturer  As Boolean
-
-    strMB_Manufacturer = GetMB_Manufacturer()
-    strMB_Model = GetMB_Model()
-    
-    mbMB_Model = LenB(strMB_Model)
-    mbMB_Manufacturer = LenB(strMB_Manufacturer)
-
-    If mbMB_Manufacturer Then
-        If mbMB_Model Then
-            GetMBInfo = strMB_Manufacturer & strDash & strMB_Model
-        Else
-            GetMBInfo = strMB_Manufacturer
-        End If
-    Else
-        If mbMB_Model Then
-            GetMBInfo = strMB_Model
-        Else
-            GetMBInfo = "Unknown"
-        End If
-    End If
-    
-    If InStr(GetMBInfo, "_") Then
-        GetMBInfo = Replace$(GetMBInfo, "_", strDash)
-    End If
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function IsWin10OrLater
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Function IsWin10OrLater() As Boolean
-
+Public Function IsUserAnAdministrator() As Boolean
+Attribute IsUserAnAdministrator.VB_UserMemId = 1610612753
     If Not OSCurrVersionStruct.IsInitialize Then
         OSCurrVersionStruct = OSInfo
     End If
+    
+    If OSCurrVersionStruct.VerMajor = 5 Then
+        If IsUserAnAdmin() Then
+            IsUserAnAdministrator = True
+        End If
+    Else
+        ' If we’re on Vista onwards, check for UAC elevation token
+        ' as we may be an admin but we’re not elevated yet, so the
+        ' IsUserAnAdmin() function will return false
+        If OSCurrVersionStruct.VerMajor >= 6 Then
+            Dim Result As Long
+            Dim hProcessID As Long
+            Dim hToken As Long
+            Dim lReturnLength As Long
+            Dim tokenElevationType As Long
+            
+            ' We need to get the token for the current process
+            'hProcessID = GetCurrentProcess()
+            hProcessID = App.hInstance
+            If hProcessID <> 0 Then
+                If OpenProcessToken(hProcessID, TOKEN_READ, hToken) = 1 Then
+                    Result = GetTokenInformation(hToken, TOKEN_ELEVATION_TYPE, tokenElevationType, 4, lReturnLength)
+                    If Result = 0 Then
+                        CloseHandle hProcessID
+                        ' Couldn’t get token information
+                        Exit Function
+                    End If
+                    If tokenElevationType <> 1 Then
+                        IsUserAnAdministrator = True
+                    End If
+                    CloseHandle hToken
+                End If
+                CloseHandle hProcessID
+            End If
+            Exit Function
+        End If
+    End If
 
-    IsWin10OrLater = OSCurrVersionStruct.VerFull >= "10.0"
 End Function
 
 '!--------------------------------------------------------------------------------
@@ -332,6 +410,7 @@ End Function
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Function IsWin10() As Boolean
+Attribute IsWin10.VB_UserMemId = 1610612741
 
     If Not OSCurrVersionStruct.IsInitialize Then
         OSCurrVersionStruct = OSInfo
@@ -341,11 +420,42 @@ Public Function IsWin10() As Boolean
 End Function
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function IsWin10OrLater
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Function IsWin10OrLater() As Boolean
+Attribute IsWin10OrLater.VB_UserMemId = 1610612740
+
+    If Not OSCurrVersionStruct.IsInitialize Then
+        OSCurrVersionStruct = OSInfo
+    End If
+
+    IsWin10OrLater = OSCurrVersionStruct.VerFull >= "10.0"
+End Function
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function IsWin7
+'! Description (Описание)  :   [type_description_here]0
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Function IsWin7() As Boolean
+Attribute IsWin7.VB_UserMemId = 1610612743
+
+    If Not OSCurrVersionStruct.IsInitialize Then
+        OSCurrVersionStruct = OSInfo
+    End If
+
+    IsWin7 = OSCurrVersionStruct.VerFull = "6.1"
+End Function
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function IsWin7OrLater
 '! Description (Описание)  :   [type_description_here]0
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Function IsWin7OrLater() As Boolean
+Attribute IsWin7OrLater.VB_UserMemId = 1610612742
 
     If Not OSCurrVersionStruct.IsInitialize Then
         OSCurrVersionStruct = OSInfo
@@ -359,17 +469,19 @@ Public Function IsWin7OrLater() As Boolean
 End Function
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function IsWin7
-'! Description (Описание)  :   [type_description_here]0
+'! Procedure   (Функция)   :   Function IsWinVista
+'! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Public Function IsWin7() As Boolean
+Public Function IsWinVista() As Boolean
+Attribute IsWinVista.VB_UserMemId = 1610612745
 
     If Not OSCurrVersionStruct.IsInitialize Then
         OSCurrVersionStruct = OSInfo
     End If
 
-    IsWin7 = OSCurrVersionStruct.VerFull = "6.1"
+    IsWinVista = OSCurrVersionStruct.VerFull = "6.0"
+
 End Function
 
 '!--------------------------------------------------------------------------------
@@ -378,6 +490,7 @@ End Function
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Function IsWinVistaOrLater() As Boolean
+Attribute IsWinVistaOrLater.VB_UserMemId = 1610612744
 
     If Not OSCurrVersionStruct.IsInitialize Then
         OSCurrVersionStruct = OSInfo
@@ -391,18 +504,18 @@ Public Function IsWinVistaOrLater() As Boolean
 End Function
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function IsWinVista
+'! Procedure   (Функция)   :   Function IsWinXP
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Public Function IsWinVista() As Boolean
+Public Function IsWinXP() As Boolean
+Attribute IsWinXP.VB_UserMemId = 1610612747
 
     If Not OSCurrVersionStruct.IsInitialize Then
         OSCurrVersionStruct = OSInfo
     End If
 
-    IsWinVista = OSCurrVersionStruct.VerFull = "6.0"
-
+    IsWinXP = OSCurrVersionStruct.VerFull = "5.1"
 End Function
 
 '!--------------------------------------------------------------------------------
@@ -411,6 +524,7 @@ End Function
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Function IsWinXPOrLater() As Boolean
+Attribute IsWinXPOrLater.VB_UserMemId = 1610612746
 
     If Not OSCurrVersionStruct.IsInitialize Then
         OSCurrVersionStruct = OSInfo
@@ -424,66 +538,12 @@ Public Function IsWinXPOrLater() As Boolean
 End Function
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function IsWinXP
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Function IsWinXP() As Boolean
-
-    If Not OSCurrVersionStruct.IsInitialize Then
-        OSCurrVersionStruct = OSInfo
-    End If
-
-    IsWinXP = OSCurrVersionStruct.VerFull = "5.1"
-End Function
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function IsWow64
-'! Description (Описание)  :   [Проверяет является ли запущенный процесс 64-битным]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Function OS_Is_x64() As Boolean
-
-    Dim SI As SYSTEM_INFO
-    Dim lngIts64 As Long
-
-    strOSArchitecture = "x86"
-
-    If APIFunctionPresent("GetNativeSystemInfo", "kernel32.dll") Then
-        GetNativeSystemInfo SI
-
-        Select Case SI.wProcessorArchitecture
-
-            Case PROCESSOR_ARCHITECTURE_IA64
-                OS_Is_x64 = True
-                strOSArchitecture = "ia64"
-
-            Case PROCESSOR_ARCHITECTURE_AMD64
-                OS_Is_x64 = True
-                strOSArchitecture = "amd64"
-
-            Case Else
-                OS_Is_x64 = False
-        End Select
-        
-        If APIFunctionPresent("IsWow64Process", "kernel32.dll") Then
-            ' IsWow64Process function exists
-            ' Now use the function to determine if
-            ' we are running under Wow64
-            IsWow64Process GetCurrentProcess(), lngIts64
-            If mbDebugStandart Then DebugMode "IsWow64: " & CBool(lngIts64)
-        End If
-
-    End If
-
-End Function
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function OSInfo
 '! Description (Описание)  :   [Получение расширенной информации о версии Windows]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Function OSInfo() As OSInfoStruct
+Attribute OSInfo.VB_UserMemId = 1610612749
 
     Dim OSVerInfo As OSVERSIONINFOEX
     Dim OSN       As String
@@ -587,6 +647,7 @@ End Function
 '! Parameters  (Переменные):   Nfo (Long)
 '!--------------------------------------------------------------------------------
 Public Function OSInfoWMI(ByVal Nfo As Long) As String
+Attribute OSInfoWMI.VB_UserMemId = 1610612750
 
     'Defining Variables
     Dim objWMI   As Object
@@ -661,89 +722,43 @@ Public Function OSInfoWMI(ByVal Nfo As Long) As String
 End Function
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   GetFileName4Snap
-'! Description (Описание)  :   [Получение имени файла для снимка системы]
+'! Procedure   (Функция)   :   Function IsWow64
+'! Description (Описание)  :   [Проверяет является ли запущенный процесс 64-битным]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Public Function GetFileName4Snap() As String
-    If mbIsNotebook Then
-        If Not OSCurrVersionStruct.ClientOrServer Then
-            GetFileName4Snap = ExpandFileNameByEnvironment("hwids_%PCMODEL%-Notebook_" & strOSCurrentVersion & "-Server_%OSBIT%" & "_%DATE%")
-        Else
-            GetFileName4Snap = ExpandFileNameByEnvironment("hwids_%PCMODEL%-Notebook_" & strOSCurrentVersion & "_%OSBIT%" & "_%DATE%")
-        End If
-    Else
-        If Not OSCurrVersionStruct.ClientOrServer Then
-            GetFileName4Snap = ExpandFileNameByEnvironment("hwids_%PCMODEL%_" & strOSCurrentVersion & "-Server_%OSBIT%" & "_%DATE%")
-        Else
-            GetFileName4Snap = ExpandFileNameByEnvironment("hwids_%PCMODEL%_" & strOSCurrentVersion & "_%OSBIT%" & "_%DATE%")
-        End If
-    End If
-End Function
+Public Function OS_Is_x64() As Boolean
+Attribute OS_Is_x64.VB_UserMemId = 1610612748
 
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   GetSystemDiskFreeSpace
-'! Description (Описание)  :   [Определения свободного места на системном диске]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Function GetSystemDiskFreeSpace(ByVal strDrive As String) As Long
-Dim BytesFreeToCalller  As Currency
-Dim TotalBytes          As Currency
-Dim TotalFreeBytes      As Currency
-Dim TotalBytesUsed      As Currency
+    Dim SI As SYSTEM_INFO
+    Dim lngIts64 As Long
 
-    If LenB(strDrive) Then
-        GetDiskFreeSpaceEx strDrive, BytesFreeToCalller, TotalBytes, TotalFreeBytes
-        GetSystemDiskFreeSpace = (TotalFreeBytes * 10000 / 1024 / 1024)
-    End If
-    
-End Function
+    strOSArchitecture = "x86"
 
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   IsUserAnAdministrator
-'! Description (Описание)  :   [Определения свободного места на системном диске]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Public Function IsUserAnAdministrator() As Boolean
-    If Not OSCurrVersionStruct.IsInitialize Then
-        OSCurrVersionStruct = OSInfo
-    End If
-    
-    If OSCurrVersionStruct.VerMajor = 5 Then
-        If IsUserAnAdmin() Then
-            IsUserAnAdministrator = True
+    If APIFunctionPresent("GetNativeSystemInfo", "kernel32.dll") Then
+        GetNativeSystemInfo SI
+
+        Select Case SI.wProcessorArchitecture
+
+            Case PROCESSOR_ARCHITECTURE_IA64
+                OS_Is_x64 = True
+                strOSArchitecture = "ia64"
+
+            Case PROCESSOR_ARCHITECTURE_AMD64
+                OS_Is_x64 = True
+                strOSArchitecture = "amd64"
+
+            Case Else
+                OS_Is_x64 = False
+        End Select
+        
+        If APIFunctionPresent("IsWow64Process", "kernel32.dll") Then
+            ' IsWow64Process function exists
+            ' Now use the function to determine if
+            ' we are running under Wow64
+            IsWow64Process GetCurrentProcess(), lngIts64
+            If mbDebugStandart Then DebugMode "IsWow64: " & CBool(lngIts64)
         End If
-    Else
-        ' If we’re on Vista onwards, check for UAC elevation token
-        ' as we may be an admin but we’re not elevated yet, so the
-        ' IsUserAnAdmin() function will return false
-        If OSCurrVersionStruct.VerMajor >= 6 Then
-            Dim Result As Long
-            Dim hProcessID As Long
-            Dim hToken As Long
-            Dim lReturnLength As Long
-            Dim tokenElevationType As Long
-            
-            ' We need to get the token for the current process
-            'hProcessID = GetCurrentProcess()
-            hProcessID = App.hInstance
-            If hProcessID <> 0 Then
-                If OpenProcessToken(hProcessID, TOKEN_READ, hToken) = 1 Then
-                    Result = GetTokenInformation(hToken, TOKEN_ELEVATION_TYPE, tokenElevationType, 4, lReturnLength)
-                    If Result = 0 Then
-                        CloseHandle hProcessID
-                        ' Couldn’t get token information
-                        Exit Function
-                    End If
-                    If tokenElevationType <> 1 Then
-                        IsUserAnAdministrator = True
-                    End If
-                    CloseHandle hToken
-                End If
-                CloseHandle hProcessID
-            End If
-            Exit Function
-        End If
+
     End If
 
 End Function

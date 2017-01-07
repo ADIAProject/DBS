@@ -792,16 +792,14 @@ End If
 End Property
 
 Public Property Let Value(ByVal NewValue As Long)
-Select Case NewValue
-    Case Me.Min To Me.Max
-        PropValue = NewValue
-    Case Is < Me.Min
-        PropValue = Me.Min
-    Case Is > Me.Max
-        PropValue = Me.Max
-End Select
+If NewValue > Me.Max Then
+    NewValue = Me.Max
+ElseIf NewValue < Me.Min Then
+    NewValue = Me.Min
+End If
 Dim Changed As Boolean
-Changed = CBool(Me.Value <> PropValue)
+Changed = CBool(Me.Value <> NewValue)
+PropValue = NewValue
 If SpinBoxUpDownHandle <> 0 Then SendMessage SpinBoxUpDownHandle, UDM_SETPOS32, 0, ByVal PropValue
 UserControl.PropertyChanged "Value"
 If Changed = True Then RaiseEvent Change

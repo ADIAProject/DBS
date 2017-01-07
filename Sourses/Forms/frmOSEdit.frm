@@ -70,9 +70,10 @@ Begin VB.Form frmOSEdit
       _ExtentX        =   10398
       _ExtentY        =   556
       DefaultExt      =   ""
-      DialogType      =   1
       Enabled         =   0   'False
+      FileFlags       =   524288
       Filters         =   "Supported files|*.*|All Files (*.*)"
+      UseDialogText   =   0   'False
    End
    Begin prjDIADBS.ctlJCbutton cmdOK 
       Height          =   750
@@ -91,7 +92,7 @@ Begin VB.Form frmOSEdit
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ButtonStyle     =   10
+      ButtonStyle     =   8
       BackColor       =   16765357
       Caption         =   "Сохранить изменения и выйти"
       CaptionEffects  =   0
@@ -100,13 +101,13 @@ Begin VB.Form frmOSEdit
       PictureShadow   =   -1  'True
    End
    Begin prjDIADBS.ctlJCbutton cmdExit 
-      Height          =   735
+      Height          =   750
       Left            =   4560
       TabIndex        =   3
       Top             =   1320
       Width           =   1815
       _ExtentX        =   3201
-      _ExtentY        =   1296
+      _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -116,7 +117,7 @@ Begin VB.Form frmOSEdit
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ButtonStyle     =   10
+      ButtonStyle     =   8
       BackColor       =   16765357
       Caption         =   "Выход без сохранения"
       CaptionEffects  =   0
@@ -186,6 +187,26 @@ Public Property Let CaptionW(ByVal NewValue As String)
 End Property
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdExit_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmdExit_Click()
+    Unload Me
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdOK_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmdOK_Click()
+
+    SaveOptions
+    Unload Me
+End Sub
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub FontCharsetChange
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
@@ -198,6 +219,58 @@ Private Sub FontCharsetChange()
         .Size = lngFontOtherForm_Size
         .Charset = lngFont_Charset
     End With
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Activate
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub Form_Activate()
+    txtOSVer_Change
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_KeyDown
+'! Description (Описание)  :   [обработка нажатий клавиш клавиатуры]
+'! Parameters  (Переменные):   KeyCode (Integer)
+'                              Shift (Integer)
+'!--------------------------------------------------------------------------------
+Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
+
+    If KeyCode = vbKeyEscape Then
+        Unload Me
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Load
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub Form_Load()
+    SetupVisualStyles Me
+
+    With Me
+        strFormName = .Name
+        SetIcon .hWnd, strFormName, False
+        .Left = (lngRightWorkArea - lngLeftWorkArea) / 2 - .Width / 2
+        .Top = (lngBottomWorkArea - lngTopWorkArea) / 2 - .Height / 2
+    End With
+
+    ' Устанавливаем картинки кнопок
+    LoadIconImage2Object cmdOK, "BTN_SAVE", strPathImageMainWork
+    LoadIconImage2Object cmdExit, "BTN_EXIT", strPathImageMainWork
+
+    ' Локализация приложения
+    If mbMultiLanguage Then
+        Localise strPCLangCurrentPath
+    Else
+        ' Выставляем шрифт
+        FontCharsetChange
+    End If
 
 End Sub
 
@@ -270,78 +343,6 @@ Private Sub SaveOptions()
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdExit_Click
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub cmdExit_Click()
-    Unload Me
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdOK_Click
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub cmdOK_Click()
-
-    SaveOptions
-    Unload Me
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Form_Activate
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub Form_Activate()
-    txtOSVer_Change
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Form_KeyDown
-'! Description (Описание)  :   [обработка нажатий клавиш клавиатуры]
-'! Parameters  (Переменные):   KeyCode (Integer)
-'                              Shift (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-
-    If KeyCode = vbKeyEscape Then
-        Unload Me
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Form_Load
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub Form_Load()
-    SetupVisualStyles Me
-
-    With Me
-        strFormName = .Name
-        SetIcon .hWnd, strFormName, False
-        .Left = (lngRightWorkArea - lngLeftWorkArea) / 2 - .Width / 2
-        .Top = (lngBottomWorkArea - lngTopWorkArea) / 2 - .Height / 2
-    End With
-
-    ' Устанавливаем картинки кнопок
-    LoadIconImage2Object cmdOK, "BTN_SAVE", strPathImageMainWork
-    LoadIconImage2Object cmdExit, "BTN_EXIT", strPathImageMainWork
-
-    ' Локализация приложения
-    If mbMultiLanguage Then
-        Localise strPCLangCurrentPath
-    Else
-        ' Выставляем шрифт
-        FontCharsetChange
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub txtOSVer_Change
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
@@ -367,7 +368,6 @@ End Sub
 Private Sub txtOSVer_LostFocus()
     HighlightActiveControl Me, txtOSVer, False
 End Sub
-
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucPathDRP_Click

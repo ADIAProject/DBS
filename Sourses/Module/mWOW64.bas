@@ -4,10 +4,7 @@ Option Explicit
 Public Declare Function Wow64DisableWow64FsRedirection Lib "kernel32.dll" (ByRef OldValue As Long) As Long
 Public Declare Function Wow64RevertWow64FsRedirection Lib "kernel32.dll" (ByRef OldValue As Long) As Long
 
-Private Declare Function GetSystemWow64Directory _
-                Lib "kernel32.dll" _
-                Alias "GetSystemWow64DirectoryA" (ByVal lpBuffer As String, _
-                                                  ByVal uSize As Long) As Long
+Private Declare Function GetSystemWow64Directory Lib "kernel32.dll" Alias "GetSystemWow64DirectoryA" (ByVal lpBuffer As String, ByVal uSize As Long) As Long
 
 Public Function GetSystemWow64Dir() As String
 

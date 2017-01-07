@@ -22,6 +22,109 @@ Begin VB.Form frmOptions
    ScaleHeight     =   8145
    ScaleWidth      =   13725
    StartUpPosition =   1  'CenterOwner
+   Begin prjDIADBS.ctlJCFrames frOptions 
+      Height          =   5300
+      Left            =   50
+      Top             =   25
+      Width           =   3000
+      _ExtentX        =   5292
+      _ExtentY        =   9340
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   204
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      BackColor       =   14016736
+      FillColor       =   14016736
+      RoundedCorner   =   0   'False
+      Caption         =   "Настройки"
+      TextBoxHeight   =   18
+      ThemeColor      =   2
+      HeaderStyle     =   1
+      Begin prjDIADBS.ctlJCbutton cmdOK 
+         Height          =   645
+         Left            =   75
+         TabIndex        =   1
+         Top             =   3735
+         Width           =   2850
+         _ExtentX        =   5027
+         _ExtentY        =   1138
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ButtonStyle     =   8
+         BackColor       =   16765357
+         Caption         =   "Сохранить изменения и выйти"
+         CaptionEffects  =   0
+         PictureAlign    =   0
+         PicturePushOnHover=   -1  'True
+         PictureShadow   =   -1  'True
+      End
+      Begin prjDIADBS.ctlJCbutton cmdExit 
+         Default         =   -1  'True
+         Height          =   645
+         Left            =   75
+         TabIndex        =   2
+         Top             =   4515
+         Width           =   2850
+         _ExtentX        =   5027
+         _ExtentY        =   1138
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   9
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ButtonStyle     =   8
+         BackColor       =   16765357
+         Caption         =   "Выход без сохранения"
+         CaptionEffects  =   0
+         PictureAlign    =   0
+         PicturePushOnHover=   -1  'True
+         PictureShadow   =   -1  'True
+      End
+      Begin prjDIADBS.ListView lvOptions 
+         Height          =   3195
+         Left            =   120
+         TabIndex        =   0
+         Top             =   480
+         Width           =   2775
+         _ExtentX        =   4895
+         _ExtentY        =   5636
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         SmallIcons      =   "ImageListOptions"
+         BorderStyle     =   1
+         View            =   2
+         Arrange         =   3
+         LabelEdit       =   2
+         LabelWrap       =   0   'False
+         HideSelection   =   0   'False
+         ClickableColumnHeaders=   0   'False
+         TrackSizeColumnHeaders=   0   'False
+         ResizableColumnHeaders=   0   'False
+      End
+   End
    Begin prjDIADBS.ctlJCFrames frMain 
       Height          =   5300
       Left            =   3105
@@ -194,9 +297,11 @@ Begin VB.Form frmOptions
          _ExtentY        =   556
          UseAutoForeColor=   0   'False
          DefaultExt      =   ""
-         DialogType      =   1
          Enabled         =   0   'False
+         FileFlags       =   524288
          Filters         =   "Supported files|*.*|All Files (*.*)"
+         UseDialogText   =   0   'False
+         Locked          =   -1  'True
       End
       Begin prjDIADBS.OptionButtonW optGrp1 
          Height          =   255
@@ -324,7 +429,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblOptionsTemp 
          Height          =   285
          Left            =   240
-         TabIndex        =   51
+         TabIndex        =   50
          Top             =   3150
          Width           =   8175
          _ExtentX        =   14420
@@ -345,7 +450,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblOptionsStart 
          Height          =   285
          Left            =   240
-         TabIndex        =   52
+         TabIndex        =   51
          Top             =   360
          Width           =   8175
          _ExtentX        =   14420
@@ -366,7 +471,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblRezim 
          Height          =   285
          Left            =   240
-         TabIndex        =   53
+         TabIndex        =   52
          Top             =   1485
          Width           =   8175
          _ExtentX        =   14420
@@ -387,7 +492,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblTypeBackUp 
          Height          =   225
          Left            =   240
-         TabIndex        =   54
+         TabIndex        =   53
          Top             =   2400
          Width           =   8175
          _ExtentX        =   7726
@@ -407,115 +512,20 @@ Begin VB.Form frmOptions
          AutoSize        =   -1  'True
       End
    End
-   Begin prjDIADBS.ctlJCFrames frOptions 
-      Height          =   5300
-      Left            =   50
-      Top             =   25
-      Width           =   3000
-      _ExtentX        =   5292
-      _ExtentY        =   9340
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   204
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   14016736
-      FillColor       =   14016736
-      RoundedCorner   =   0   'False
-      Caption         =   "Настройки"
-      TextBoxHeight   =   18
-      ThemeColor      =   2
-      HeaderStyle     =   1
-      Begin prjDIADBS.ctlJCbutton cmdOK 
-         Height          =   645
-         Left            =   75
-         TabIndex        =   0
-         Top             =   3735
-         Width           =   2850
-         _ExtentX        =   5027
-         _ExtentY        =   1138
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ButtonStyle     =   8
-         BackColor       =   16765357
-         Caption         =   "Сохранить изменения и выйти"
-         CaptionEffects  =   0
-         PictureAlign    =   0
-         PicturePushOnHover=   -1  'True
-         PictureShadow   =   -1  'True
-      End
-      Begin prjDIADBS.ctlJCbutton cmdExit 
-         Default         =   -1  'True
-         Height          =   645
-         Left            =   75
-         TabIndex        =   1
-         Top             =   4515
-         Width           =   2850
-         _ExtentX        =   5027
-         _ExtentY        =   1138
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ButtonStyle     =   8
-         BackColor       =   16765357
-         Caption         =   "Выход без сохранения"
-         CaptionEffects  =   0
-         PictureAlign    =   0
-         PicturePushOnHover=   -1  'True
-         PictureShadow   =   -1  'True
-      End
-      Begin prjDIADBS.ListView lvOptions 
-         Height          =   3195
-         Left            =   120
-         TabIndex        =   87
-         Top             =   480
-         Width           =   2775
-         _ExtentX        =   4895
-         _ExtentY        =   5636
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BorderStyle     =   1
-         View            =   2
-         Arrange         =   3
-         LabelEdit       =   2
-         LabelWrap       =   0   'False
-         HideSelection   =   0   'False
-         ClickableColumnHeaders=   0   'False
-         TrackSizeColumnHeaders=   0   'False
-         ResizableColumnHeaders=   0   'False
-      End
+   Begin prjDIADBS.ImageList ImageListOptions 
+      Left            =   120
+      Top             =   5520
+      _ExtentX        =   1005
+      _ExtentY        =   1005
+      InitListImages  =   "frmOptions.frx":041A
    End
    Begin prjDIADBS.ctlJCFrames frMainTools 
-      Height          =   5280
+      Height          =   5300
       Left            =   3375
       Top             =   375
       Width           =   8655
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   15266
+      _ExtentY        =   9340
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -535,15 +545,17 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.ctlUcPickBox ucDPInst86Path 
          Height          =   315
          Left            =   2535
-         TabIndex        =   2
+         TabIndex        =   84
          Top             =   510
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   556
          DefaultExt      =   ""
-         DialogType      =   3
+         DialogType      =   1
          Enabled         =   0   'False
-         Filters         =   "Supported files|*.*|All Files (*.*)"
+         Filters         =   "Supported files|*.exe|EXE Files (*.exe)"
+         UseDialogText   =   0   'False
+         Locked          =   -1  'True
       End
       Begin prjDIADBS.ctlUcPickBox ucDPInst64Path 
          Height          =   315
@@ -554,11 +566,13 @@ Begin VB.Form frmOptions
          _ExtentX        =   10398
          _ExtentY        =   556
          DefaultExt      =   ""
-         DialogType      =   3
+         DialogType      =   1
          Enabled         =   0   'False
-         Filters         =   "Supported files|*.*|All Files (*.*)"
+         Filters         =   "Supported files|*.exe|EXE Files (*.exe)"
+         UseDialogText   =   0   'False
+         Locked          =   -1  'True
       End
-      Begin prjDIADBS.ctlUcPickBox ucArchPath 
+      Begin prjDIADBS.ctlUcPickBox ucArch86Path 
          Height          =   315
          Left            =   2535
          TabIndex        =   18
@@ -567,15 +581,17 @@ Begin VB.Form frmOptions
          _ExtentX        =   10398
          _ExtentY        =   556
          DefaultExt      =   ""
-         DialogType      =   3
+         DialogType      =   1
          Enabled         =   0   'False
-         Filters         =   "Supported files|*.*|All Files (*.*)"
+         Filters         =   "Supported files|*.exe|EXE Files (*.exe)"
+         UseDialogText   =   0   'False
+         Locked          =   -1  'True
       End
       Begin prjDIADBS.ctlJCbutton cmdPathDefault 
          Height          =   495
          Left            =   4815
          TabIndex        =   19
-         Top             =   3210
+         Top             =   3690
          Width           =   3615
          _ExtentX        =   6376
          _ExtentY        =   873
@@ -588,7 +604,7 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ButtonStyle     =   10
+         ButtonStyle     =   8
          BackColor       =   16765357
          Caption         =   "Сбросить настройки расположения утилит"
          CaptionEffects  =   0
@@ -600,46 +616,86 @@ Begin VB.Form frmOptions
          Height          =   315
          Left            =   2535
          TabIndex        =   29
-         Top             =   1770
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   556
-         DefaultExt      =   ""
-         DialogType      =   3
-         Enabled         =   0   'False
-         Filters         =   "Supported files|*.*|All Files (*.*)"
-      End
-      Begin prjDIADBS.ctlUcPickBox ucArchPathSFXConfig 
-         Height          =   315
-         Left            =   2535
-         TabIndex        =   30
          Top             =   2250
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   556
          DefaultExt      =   ""
-         DialogType      =   3
+         DialogType      =   1
          Enabled         =   0   'False
          Filters         =   "Supported files|*.*|All Files (*.*)"
+         UseDialogText   =   0   'False
       End
-      Begin prjDIADBS.ctlUcPickBox ucArchPathSFXConfigEn 
+      Begin prjDIADBS.ctlUcPickBox ucArchPathSFXConfig 
          Height          =   315
          Left            =   2535
-         TabIndex        =   39
+         TabIndex        =   30
          Top             =   2730
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   556
          DefaultExt      =   ""
-         DialogType      =   3
+         DialogType      =   1
          Enabled         =   0   'False
          Filters         =   "Supported files|*.*|All Files (*.*)"
+         UseDialogText   =   0   'False
+      End
+      Begin prjDIADBS.ctlUcPickBox ucArchPathSFXConfigEn 
+         Height          =   315
+         Left            =   2535
+         TabIndex        =   38
+         Top             =   3210
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   556
+         DefaultExt      =   ""
+         DialogType      =   1
+         Enabled         =   0   'False
+         Filters         =   "Supported files|*.*|All Files (*.*)"
+         UseDialogText   =   0   'False
+      End
+      Begin prjDIADBS.ctlUcPickBox ucArch64Path 
+         Height          =   315
+         Left            =   2535
+         TabIndex        =   116
+         Top             =   1800
+         Width           =   5895
+         _ExtentX        =   10239
+         _ExtentY        =   556
+         DefaultExt      =   ""
+         DialogType      =   1
+         Enabled         =   0   'False
+         Filters         =   "Supported files|*.exe|EXE Files (*.exe)"
+         UseDialogText   =   0   'False
+         Locked          =   -1  'True
+      End
+      Begin prjDIADBS.LabelW lblArc64 
+         Height          =   255
+         Left            =   150
+         TabIndex        =   117
+         Top             =   1800
+         Width           =   2280
+         _ExtentX        =   4022
+         _ExtentY        =   450
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Alignment       =   1
+         BackStyle       =   0
+         Caption         =   "7za.exe (64-bit)"
+         WordWrap        =   0   'False
       End
       Begin prjDIADBS.LabelW lblArcSFXConfigEn 
          Height          =   255
          Left            =   150
-         TabIndex        =   62
-         Top             =   2730
+         TabIndex        =   59
+         Top             =   3210
          Width           =   2280
          _ExtentX        =   0
          _ExtentY        =   0
@@ -652,14 +708,15 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Alignment       =   1
          BackStyle       =   0
          Caption         =   "7za-SFXConfig (English)"
       End
       Begin prjDIADBS.LabelW lblArcSFXConfig 
          Height          =   255
          Left            =   150
-         TabIndex        =   63
-         Top             =   2250
+         TabIndex        =   60
+         Top             =   2730
          Width           =   2280
          _ExtentX        =   0
          _ExtentY        =   0
@@ -672,13 +729,14 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Alignment       =   1
          BackStyle       =   0
          Caption         =   "7za-SFXConfig"
       End
-      Begin prjDIADBS.LabelW lblArc 
+      Begin prjDIADBS.LabelW lblArc86 
          Height          =   255
          Left            =   150
-         TabIndex        =   64
+         TabIndex        =   61
          Top             =   1350
          Width           =   2280
          _ExtentX        =   0
@@ -692,13 +750,15 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Alignment       =   1
          BackStyle       =   0
-         Caption         =   "7za"
+         Caption         =   "7za.exe (32-bit)"
+         WordWrap        =   0   'False
       End
       Begin prjDIADBS.LabelW lblDPInst64 
          Height          =   255
          Left            =   150
-         TabIndex        =   65
+         TabIndex        =   62
          Top             =   930
          Width           =   2280
          _ExtentX        =   0
@@ -712,13 +772,15 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Alignment       =   1
          BackStyle       =   0
          Caption         =   "DPInst.exe (64-bit)"
+         WordWrap        =   0   'False
       End
       Begin prjDIADBS.LabelW lblDPInst86 
          Height          =   255
          Left            =   150
-         TabIndex        =   66
+         TabIndex        =   63
          Top             =   510
          Width           =   2280
          _ExtentX        =   0
@@ -732,14 +794,16 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Alignment       =   1
          BackStyle       =   0
          Caption         =   "DPInst.exe (32-bit)"
+         WordWrap        =   0   'False
       End
       Begin prjDIADBS.LabelW lblArcSFX 
          Height          =   255
          Left            =   150
-         TabIndex        =   67
-         Top             =   1770
+         TabIndex        =   64
+         Top             =   2250
          Width           =   2280
          _ExtentX        =   0
          _ExtentY        =   0
@@ -752,17 +816,18 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Alignment       =   1
          BackStyle       =   0
          Caption         =   "7za-sfxModule"
       End
    End
    Begin prjDIADBS.ctlJCFrames frArchName 
-      Height          =   5280
+      Height          =   5300
       Left            =   3645
       Top             =   705
       Width           =   8655
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   15266
+      _ExtentY        =   9340
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -782,7 +847,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.TextBoxW txtArchNameShablon 
          Height          =   330
          Left            =   480
-         TabIndex        =   50
+         TabIndex        =   49
          Top             =   2205
          Width           =   7635
          _ExtentX        =   0
@@ -800,7 +865,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.TextBoxW txtMacrosPCName 
          Height          =   255
          Left            =   480
-         TabIndex        =   49
+         TabIndex        =   48
          Top             =   3285
          Width           =   1500
          _ExtentX        =   0
@@ -816,13 +881,13 @@ Begin VB.Form frmOptions
          EndProperty
          BackColor       =   -2147483633
          BorderStyle     =   0
-         Text            =   "frmOptions.frx":041A
+         Text            =   "frmOptions.frx":043A
          Locked          =   -1  'True
       End
       Begin prjDIADBS.TextBoxW txtMacrosPCModel 
          Height          =   255
          Left            =   480
-         TabIndex        =   48
+         TabIndex        =   47
          Top             =   3645
          Width           =   1500
          _ExtentX        =   0
@@ -838,13 +903,13 @@ Begin VB.Form frmOptions
          EndProperty
          BackColor       =   -2147483633
          BorderStyle     =   0
-         Text            =   "frmOptions.frx":044A
+         Text            =   "frmOptions.frx":046A
          Locked          =   -1  'True
       End
       Begin prjDIADBS.TextBoxW txtMacrosOSVER 
          Height          =   255
          Left            =   480
-         TabIndex        =   47
+         TabIndex        =   46
          Top             =   4005
          Width           =   1500
          _ExtentX        =   0
@@ -860,13 +925,13 @@ Begin VB.Form frmOptions
          EndProperty
          BackColor       =   -2147483633
          BorderStyle     =   0
-         Text            =   "frmOptions.frx":047C
+         Text            =   "frmOptions.frx":049C
          Locked          =   -1  'True
       End
       Begin prjDIADBS.TextBoxW txtMacrosOSBIT 
          Height          =   255
          Left            =   480
-         TabIndex        =   46
+         TabIndex        =   45
          Top             =   4365
          Width           =   1500
          _ExtentX        =   0
@@ -882,13 +947,13 @@ Begin VB.Form frmOptions
          EndProperty
          BackColor       =   -2147483633
          BorderStyle     =   0
-         Text            =   "frmOptions.frx":04AA
+         Text            =   "frmOptions.frx":04CA
          Locked          =   -1  'True
       End
       Begin prjDIADBS.TextBoxW txtMacrosDate 
          Height          =   255
          Left            =   480
-         TabIndex        =   45
+         TabIndex        =   44
          Top             =   4725
          Width           =   1500
          _ExtentX        =   0
@@ -904,7 +969,7 @@ Begin VB.Form frmOptions
          EndProperty
          BackColor       =   -2147483633
          BorderStyle     =   0
-         Text            =   "frmOptions.frx":04D8
+         Text            =   "frmOptions.frx":04F8
          Locked          =   -1  'True
       End
       Begin prjDIADBS.OptionButtonW optArchModelPC 
@@ -925,13 +990,13 @@ Begin VB.Form frmOptions
             Strikethrough   =   0   'False
          EndProperty
          Value           =   0   'False
-         Caption         =   "frmOptions.frx":0504
+         Caption         =   "frmOptions.frx":0524
          Transparent     =   -1  'True
       End
       Begin prjDIADBS.OptionButtonW optArchNamePC 
          Height          =   255
          Left            =   480
-         TabIndex        =   40
+         TabIndex        =   39
          Top             =   765
          Width           =   7635
          _ExtentX        =   13467
@@ -946,13 +1011,13 @@ Begin VB.Form frmOptions
             Strikethrough   =   0   'False
          EndProperty
          Value           =   0   'False
-         Caption         =   "frmOptions.frx":0546
+         Caption         =   "frmOptions.frx":0566
          Transparent     =   -1  'True
       End
       Begin prjDIADBS.OptionButtonW optArchCustom 
          Height          =   255
          Left            =   480
-         TabIndex        =   44
+         TabIndex        =   43
          Top             =   1485
          Width           =   7635
          _ExtentX        =   13467
@@ -966,13 +1031,13 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Caption         =   "frmOptions.frx":0582
+         Caption         =   "frmOptions.frx":05A2
          Transparent     =   -1  'True
       End
       Begin prjDIADBS.LabelW lblMacrosDate 
          Height          =   375
          Left            =   2400
-         TabIndex        =   68
+         TabIndex        =   65
          Top             =   4725
          Width           =   5775
          _ExtentX        =   0
@@ -992,7 +1057,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosOSBit 
          Height          =   375
          Left            =   2400
-         TabIndex        =   69
+         TabIndex        =   66
          Top             =   4365
          Width           =   5775
          _ExtentX        =   0
@@ -1012,7 +1077,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosOSVer 
          Height          =   375
          Left            =   2400
-         TabIndex        =   70
+         TabIndex        =   67
          Top             =   4005
          Width           =   5775
          _ExtentX        =   0
@@ -1032,7 +1097,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosPCModel 
          Height          =   375
          Left            =   2400
-         TabIndex        =   71
+         TabIndex        =   68
          Top             =   3645
          Width           =   5775
          _ExtentX        =   0
@@ -1052,7 +1117,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosParam 
          Height          =   255
          Left            =   480
-         TabIndex        =   72
+         TabIndex        =   69
          Top             =   2970
          Width           =   1755
          _ExtentX        =   0
@@ -1072,7 +1137,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosDescription 
          Height          =   255
          Left            =   2400
-         TabIndex        =   73
+         TabIndex        =   70
          Top             =   2970
          Width           =   5865
          _ExtentX        =   0
@@ -1092,7 +1157,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosPCName 
          Height          =   375
          Left            =   2400
-         TabIndex        =   74
+         TabIndex        =   71
          Top             =   3285
          Width           =   5775
          _ExtentX        =   0
@@ -1112,7 +1177,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosType 
          Height          =   285
          Left            =   480
-         TabIndex        =   75
+         TabIndex        =   72
          Top             =   2685
          Width           =   7860
          _ExtentX        =   13864
@@ -1132,7 +1197,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblArchShablon 
          Height          =   285
          Left            =   240
-         TabIndex        =   76
+         TabIndex        =   73
          Top             =   1845
          Width           =   8175
          _ExtentX        =   14420
@@ -1152,7 +1217,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblArchNameStart 
          Height          =   285
          Left            =   240
-         TabIndex        =   77
+         TabIndex        =   74
          Top             =   405
          Width           =   8100
          _ExtentX        =   14288
@@ -1171,12 +1236,12 @@ Begin VB.Form frmOptions
       End
    End
    Begin prjDIADBS.ctlJCFrames frOS 
-      Height          =   5280
+      Height          =   5300
       Left            =   3900
       Top             =   1020
       Width           =   8655
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   15266
+      _ExtentY        =   9340
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -1196,10 +1261,10 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.ListView lvOS 
          Height          =   3795
          Left            =   120
-         TabIndex        =   88
+         TabIndex        =   85
          Top             =   480
-         Width           =   8295
-         _ExtentX        =   14631
+         Width           =   8415
+         _ExtentX        =   14843
          _ExtentY        =   6694
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -1210,10 +1275,47 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         View            =   3
+         Arrange         =   1
+         AllowColumnReorder=   -1  'True
+         FullRowSelect   =   -1  'True
+         GridLines       =   -1  'True
+         LabelEdit       =   2
+         HideSelection   =   0   'False
+         ShowLabelTips   =   -1  'True
+         HoverSelection  =   -1  'True
+         HotTracking     =   -1  'True
+         HighlightHot    =   -1  'True
+         TextBackground  =   1
       End
       Begin prjDIADBS.ctlJCbutton cmdAddOS 
          Height          =   750
          Left            =   120
+         TabIndex        =   40
+         Top             =   4400
+         Width           =   1815
+         _ExtentX        =   3201
+         _ExtentY        =   1323
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ButtonStyle     =   8
+         BackColor       =   16765357
+         Caption         =   "Добавить"
+         CaptionEffects  =   0
+         PictureAlign    =   0
+         PicturePushOnHover=   -1  'True
+         PictureShadow   =   -1  'True
+      End
+      Begin prjDIADBS.ctlJCbutton cmdEditOS 
+         Height          =   750
+         Left            =   2160
          TabIndex        =   41
          Top             =   4400
          Width           =   1815
@@ -1228,17 +1330,17 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ButtonStyle     =   10
+         ButtonStyle     =   8
          BackColor       =   16765357
-         Caption         =   "Добавить"
+         Caption         =   "Изменить"
          CaptionEffects  =   0
          PictureAlign    =   0
          PicturePushOnHover=   -1  'True
          PictureShadow   =   -1  'True
       End
-      Begin prjDIADBS.ctlJCbutton cmdEditOS 
+      Begin prjDIADBS.ctlJCbutton cmdDelOS 
          Height          =   750
-         Left            =   2160
+         Left            =   4200
          TabIndex        =   42
          Top             =   4400
          Width           =   1815
@@ -1253,32 +1355,7 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ButtonStyle     =   10
-         BackColor       =   16765357
-         Caption         =   "Изменить"
-         CaptionEffects  =   0
-         PictureAlign    =   0
-         PicturePushOnHover=   -1  'True
-         PictureShadow   =   -1  'True
-      End
-      Begin prjDIADBS.ctlJCbutton cmdDelOS 
-         Height          =   750
-         Left            =   4200
-         TabIndex        =   43
-         Top             =   4400
-         Width           =   1815
-         _ExtentX        =   3201
-         _ExtentY        =   1323
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ButtonStyle     =   10
+         ButtonStyle     =   8
          BackColor       =   16765357
          Caption         =   "Удалить"
          CaptionEffects  =   0
@@ -1288,12 +1365,12 @@ Begin VB.Form frmOptions
       End
    End
    Begin prjDIADBS.ctlJCFrames frDesign 
-      Height          =   5280
+      Height          =   5300
       Left            =   4140
       Top             =   1320
       Width           =   8655
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   15266
+      _ExtentY        =   9340
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -1310,32 +1387,13 @@ Begin VB.Form frmOptions
       TextBoxHeight   =   18
       ThemeColor      =   2
       HeaderStyle     =   1
-      Begin prjDIADBS.ComboBoxW cmbImageMain 
-         Height          =   315
-         Left            =   405
-         TabIndex        =   32
-         Top             =   3075
-         Width           =   3000
-         _ExtentX        =   5292
-         _ExtentY        =   556
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Sorted          =   -1  'True
-      End
       Begin prjDIADBS.CheckBoxW chkButtonDisable 
          Height          =   450
-         Left            =   5790
-         TabIndex        =   33
-         Top             =   1935
-         Width           =   2400
-         _ExtentX        =   4233
+         Left            =   270
+         TabIndex        =   32
+         Top             =   2535
+         Width           =   7785
+         _ExtentX        =   13732
          _ExtentY        =   794
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -1346,13 +1404,14 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Caption         =   "frmOptions.frx":05B6
+         Value           =   1
+         Caption         =   "frmOptions.frx":05D6
          Transparent     =   -1  'True
       End
       Begin prjDIADBS.CheckBoxW chkFormMaximaze 
          Height          =   210
          Left            =   3285
-         TabIndex        =   34
+         TabIndex        =   33
          Top             =   795
          Width           =   5040
          _ExtentX        =   8890
@@ -1366,13 +1425,13 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Caption         =   "frmOptions.frx":062C
+         Caption         =   "frmOptions.frx":064C
          Transparent     =   -1  'True
       End
       Begin prjDIADBS.SpinBox txtFormHeight 
          Height          =   255
          Left            =   1245
-         TabIndex        =   35
+         TabIndex        =   34
          Top             =   795
          Width           =   1575
          _ExtentX        =   2778
@@ -1393,7 +1452,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.SpinBox txtFormWidth 
          Height          =   255
          Left            =   1245
-         TabIndex        =   36
+         TabIndex        =   35
          Top             =   1140
          Width           =   1575
          _ExtentX        =   2778
@@ -1414,7 +1473,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.CheckBoxW chkFormSizeSave 
          Height          =   210
          Left            =   3285
-         TabIndex        =   37
+         TabIndex        =   36
          Top             =   1140
          Width           =   5040
          _ExtentX        =   8890
@@ -1428,14 +1487,14 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Caption         =   "frmOptions.frx":0692
+         Caption         =   "frmOptions.frx":06B2
          Transparent     =   -1  'True
       End
       Begin prjDIADBS.ctlJCbutton cmdFutureButton 
          Height          =   510
-         Left            =   3390
-         TabIndex        =   38
-         Top             =   1935
+         Left            =   270
+         TabIndex        =   37
+         Top             =   1920
          Width           =   2175
          _ExtentX        =   3836
          _ExtentY        =   900
@@ -1448,20 +1507,19 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ButtonStyle     =   10
-         BackColor       =   12244692
+         ButtonStyle     =   8
+         BackColor       =   16765357
          Caption         =   "Твоя будущая кнопка"
          CaptionEffects  =   0
          PictureAlign    =   0
          PicturePushOnHover=   -1  'True
          PictureShadow   =   -1  'True
-         ColorScheme     =   1
       End
       Begin prjDIADBS.ctlJCbutton cmdFontColorButton 
          Height          =   795
-         Left            =   240
-         TabIndex        =   86
-         Top             =   1920
+         Left            =   3240
+         TabIndex        =   83
+         Top             =   1680
          Width           =   2445
          _ExtentX        =   5027
          _ExtentY        =   1402
@@ -1482,14 +1540,14 @@ Begin VB.Form frmOptions
          PicturePushOnHover=   -1  'True
          PictureShadow   =   -1  'True
       End
-      Begin prjDIADBS.LabelW lblFormWidthMin 
-         Height          =   930
-         Left            =   135
-         TabIndex        =   56
-         Top             =   3600
-         Width           =   8370
-         _ExtentX        =   0
-         _ExtentY        =   132
+      Begin prjDIADBS.ComboBoxW cmbImageMain 
+         Height          =   315
+         Left            =   255
+         TabIndex        =   118
+         Top             =   4545
+         Width           =   3000
+         _ExtentX        =   5292
+         _ExtentY        =   556
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -1499,17 +1557,129 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         ForeColor       =   255
-         Caption         =   $"frmOptions.frx":06F6
+         Locked          =   -1  'True
+         Sorted          =   -1  'True
+      End
+      Begin prjDIADBS.ComboBoxW cmbButtonStyle 
+         Height          =   315
+         Left            =   240
+         TabIndex        =   121
+         Top             =   3420
+         Width           =   2595
+         _ExtentX        =   4233
+         _ExtentY        =   556
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Style           =   2
+         Sorted          =   -1  'True
+      End
+      Begin prjDIADBS.ctlColorButton ctlStatusBtnBackColor 
+         Height          =   330
+         Left            =   6120
+         TabIndex        =   123
+         Top             =   3420
+         Visible         =   0   'False
+         Width           =   525
+         _ExtentX        =   926
+         _ExtentY        =   582
+         Icon            =   "frmOptions.frx":0716
+         BackColor       =   14016736
+      End
+      Begin prjDIADBS.ComboBoxW cmbButtonStyleColor 
+         Height          =   315
+         Left            =   3360
+         TabIndex        =   124
+         Top             =   3420
+         Width           =   2595
+         _ExtentX        =   4233
+         _ExtentY        =   556
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Style           =   2
+         Sorted          =   -1  'True
+      End
+      Begin prjDIADBS.LabelW lblButtonStyleColor 
+         Height          =   315
+         Left            =   3360
+         TabIndex        =   125
+         Top             =   3120
+         Width           =   3495
+         _ExtentX        =   6165
+         _ExtentY        =   556
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackStyle       =   0
+         Caption         =   "Стиль оформления кнопки"
+      End
+      Begin prjDIADBS.LabelW lblButtonStyle 
+         Height          =   315
+         Left            =   300
+         TabIndex        =   122
+         Top             =   3120
+         Width           =   3075
+         _ExtentX        =   5424
+         _ExtentY        =   556
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackStyle       =   0
+         Caption         =   "Стиль оформления кнопки"
       End
       Begin prjDIADBS.LabelW lblImageMain 
          Height          =   255
+         Left            =   255
+         TabIndex        =   120
+         Top             =   4245
+         Width           =   3000
+         _ExtentX        =   0
+         _ExtentY        =   0
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         BackStyle       =   0
+         Caption         =   "Основные картинки"
+      End
+      Begin prjDIADBS.LabelW lblTheme 
+         Height          =   225
          Left            =   135
-         TabIndex        =   57
-         Top             =   2775
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   450
+         TabIndex        =   119
+         Top             =   3960
+         Width           =   8145
+         _ExtentX        =   14367
+         _ExtentY        =   397
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
             Size            =   8.25
@@ -1521,12 +1691,12 @@ Begin VB.Form frmOptions
          EndProperty
          ForeColor       =   -2147483635
          BackStyle       =   0
-         Caption         =   "Основные картинки"
+         Caption         =   "Набор оформления программы (изменение основных иконок, и иконок статуса кнопок)"
       End
       Begin prjDIADBS.LabelW lblFormWidth 
          Height          =   210
          Left            =   405
-         TabIndex        =   58
+         TabIndex        =   55
          Top             =   1140
          Width           =   645
          _ExtentX        =   1270
@@ -1546,7 +1716,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblFormHeight 
          Height          =   210
          Left            =   405
-         TabIndex        =   59
+         TabIndex        =   56
          Top             =   795
          Width           =   630
          _ExtentX        =   1191
@@ -1566,7 +1736,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblSizeForm 
          Height          =   255
          Left            =   135
-         TabIndex        =   60
+         TabIndex        =   57
          Top             =   495
          Width           =   8145
          _ExtentX        =   14367
@@ -1587,7 +1757,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblSizeButton 
          Height          =   255
          Left            =   135
-         TabIndex        =   61
+         TabIndex        =   58
          Top             =   1575
          Width           =   8145
          _ExtentX        =   14367
@@ -1607,12 +1777,12 @@ Begin VB.Form frmOptions
       End
    End
    Begin prjDIADBS.ctlJCFrames frDpInstParam 
-      Height          =   5280
+      Height          =   5300
       Left            =   4380
       Top             =   1620
       Width           =   8655
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   15266
+      _ExtentY        =   9340
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
          Size            =   8.25
@@ -1633,7 +1803,7 @@ Begin VB.Form frmOptions
          Caption         =   "?"
          Height          =   255
          Left            =   2655
-         TabIndex        =   97
+         TabIndex        =   94
          ToolTipText     =   "More on MSDN..."
          Top             =   660
          Width           =   255
@@ -1642,7 +1812,7 @@ Begin VB.Form frmOptions
          Caption         =   "?"
          Height          =   255
          Left            =   2640
-         TabIndex        =   100
+         TabIndex        =   97
          ToolTipText     =   "More on MSDN..."
          Top             =   1305
          Width           =   255
@@ -1651,7 +1821,7 @@ Begin VB.Form frmOptions
          Caption         =   "?"
          Height          =   255
          Left            =   2655
-         TabIndex        =   103
+         TabIndex        =   100
          ToolTipText     =   "More on MSDN..."
          Top             =   1905
          Width           =   255
@@ -1660,7 +1830,7 @@ Begin VB.Form frmOptions
          Caption         =   "?"
          Height          =   255
          Left            =   2655
-         TabIndex        =   106
+         TabIndex        =   103
          ToolTipText     =   "More on MSDN..."
          Top             =   2460
          Width           =   255
@@ -1669,7 +1839,7 @@ Begin VB.Form frmOptions
          Caption         =   "?"
          Height          =   255
          Left            =   2655
-         TabIndex        =   109
+         TabIndex        =   106
          ToolTipText     =   "More on MSDN..."
          Top             =   2955
          Width           =   255
@@ -1714,7 +1884,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.CheckBoxW chkLegacyMode 
          Height          =   210
          Left            =   120
-         TabIndex        =   96
+         TabIndex        =   93
          Top             =   660
          Width           =   2520
          _ExtentX        =   4445
@@ -1728,13 +1898,13 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Caption         =   "frmOptions.frx":07B1
+         Caption         =   "frmOptions.frx":0C9C
          Transparent     =   -1  'True
       End
       Begin prjDIADBS.CheckBoxW chkPromptIfDriverIsNotBetter 
          Height          =   210
          Left            =   120
-         TabIndex        =   99
+         TabIndex        =   96
          Top             =   1305
          Width           =   2520
          _ExtentX        =   4445
@@ -1748,13 +1918,13 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Caption         =   "frmOptions.frx":07E5
+         Caption         =   "frmOptions.frx":0CD0
          Transparent     =   -1  'True
       End
       Begin prjDIADBS.CheckBoxW chkForceIfDriverIsNotBetter 
          Height          =   210
          Left            =   120
-         TabIndex        =   102
+         TabIndex        =   99
          Top             =   1905
          Width           =   2520
          _ExtentX        =   4445
@@ -1768,14 +1938,14 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Caption         =   "frmOptions.frx":0837
+         Caption         =   "frmOptions.frx":0D22
          Transparent     =   -1  'True
       End
       Begin prjDIADBS.CheckBoxW chkSuppressAddRemovePrograms 
          CausesValidation=   0   'False
          Height          =   210
          Left            =   120
-         TabIndex        =   105
+         TabIndex        =   102
          Top             =   2460
          Width           =   2520
          _ExtentX        =   4445
@@ -1789,13 +1959,13 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Caption         =   "frmOptions.frx":0887
+         Caption         =   "frmOptions.frx":0D72
          Transparent     =   -1  'True
       End
       Begin prjDIADBS.CheckBoxW chkSuppressWizard 
          Height          =   210
          Left            =   120
-         TabIndex        =   108
+         TabIndex        =   105
          Top             =   2955
          Width           =   2520
          _ExtentX        =   4445
@@ -1809,7 +1979,7 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Caption         =   "frmOptions.frx":08D9
+         Caption         =   "frmOptions.frx":0DC4
          Transparent     =   -1  'True
       End
       Begin prjDIADBS.CheckBoxW chkQuietInstall 
@@ -1829,7 +1999,7 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Caption         =   "frmOptions.frx":0915
+         Caption         =   "frmOptions.frx":0E00
          Transparent     =   -1  'True
       End
       Begin prjDIADBS.CheckBoxW chkScanHardware 
@@ -1849,7 +2019,7 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         Caption         =   "frmOptions.frx":094D
+         Caption         =   "frmOptions.frx":0E38
          Transparent     =   -1  'True
       End
       Begin prjDIADBS.LabelW lblCmdStringDPInst 
@@ -1875,7 +2045,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblDescription 
          Height          =   255
          Left            =   2865
-         TabIndex        =   95
+         TabIndex        =   92
          Top             =   350
          Width           =   5505
          _ExtentX        =   9710
@@ -1896,7 +2066,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblParam 
          Height          =   255
          Left            =   120
-         TabIndex        =   94
+         TabIndex        =   91
          Top             =   350
          Width           =   2595
          _ExtentX        =   4577
@@ -1917,7 +2087,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblPromptIfDriverIsNotBetter 
          Height          =   570
          Left            =   2925
-         TabIndex        =   101
+         TabIndex        =   98
          Top             =   1305
          Width           =   5550
          _ExtentX        =   9790
@@ -1937,7 +2107,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblLegacyMode 
          Height          =   645
          Left            =   2925
-         TabIndex        =   98
+         TabIndex        =   95
          Top             =   660
          Width           =   5550
          _ExtentX        =   9790
@@ -1957,7 +2127,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblForceIfDriverIsNotBetter 
          Height          =   510
          Left            =   2925
-         TabIndex        =   104
+         TabIndex        =   101
          Top             =   1905
          Width           =   5550
          _ExtentX        =   9790
@@ -1977,7 +2147,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblSuppressAddRemovePrograms 
          Height          =   450
          Left            =   2925
-         TabIndex        =   107
+         TabIndex        =   104
          Top             =   2460
          Width           =   5580
          _ExtentX        =   0
@@ -1997,7 +2167,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblSuppressWizard 
          Height          =   450
          Left            =   2925
-         TabIndex        =   110
+         TabIndex        =   107
          Top             =   2955
          Width           =   5550
          _ExtentX        =   0
@@ -2052,11 +2222,11 @@ Begin VB.Form frmOptions
             Strikethrough   =   0   'False
          EndProperty
          BackStyle       =   0
-         Caption         =   $"frmOptions.frx":0985
+         Caption         =   $"frmOptions.frx":0E70
       End
    End
    Begin prjDIADBS.ctlJCFrames frDebug 
-      Height          =   5295
+      Height          =   5300
       Left            =   4620
       Top             =   1920
       Width           =   8655
@@ -2095,11 +2265,132 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
+         Text            =   "frmOptions.frx":0F6E
+      End
+      Begin prjDIADBS.TextBoxW txtMacrosDateDebug 
+         Height          =   255
+         Left            =   480
+         TabIndex        =   108
+         Top             =   4875
+         Width           =   1500
+         _ExtentX        =   0
+         _ExtentY        =   0
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Text            =   "frmOptions.frx":0FB2
+         Locked          =   -1  'True
+      End
+      Begin prjDIADBS.TextBoxW txtMacrosOSBITDebug 
+         Height          =   255
+         Left            =   480
+         TabIndex        =   109
+         Top             =   4515
+         Width           =   1500
+         _ExtentX        =   0
+         _ExtentY        =   0
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Text            =   "frmOptions.frx":0FDE
+         Locked          =   -1  'True
+      End
+      Begin prjDIADBS.TextBoxW txtMacrosOSVERDebug 
+         Height          =   255
+         Left            =   480
+         TabIndex        =   110
+         Top             =   4155
+         Width           =   1500
+         _ExtentX        =   0
+         _ExtentY        =   0
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Text            =   "frmOptions.frx":100C
+         Locked          =   -1  'True
+      End
+      Begin prjDIADBS.TextBoxW txtMacrosPCModelDebug 
+         Height          =   255
+         Left            =   480
+         TabIndex        =   111
+         Top             =   3795
+         Width           =   1500
+         _ExtentX        =   0
+         _ExtentY        =   0
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Text            =   "frmOptions.frx":103A
+         Locked          =   -1  'True
+      End
+      Begin prjDIADBS.TextBoxW txtMacrosPCNameDebug 
+         Height          =   255
+         Left            =   480
+         TabIndex        =   112
+         Top             =   3435
+         Width           =   1500
+         _ExtentX        =   0
+         _ExtentY        =   0
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Text            =   "frmOptions.frx":106C
+         Locked          =   -1  'True
+      End
+      Begin prjDIADBS.CheckBoxW chkDebug 
+         Height          =   210
+         Left            =   495
+         TabIndex        =   113
+         Top             =   720
+         Width           =   4440
+         _ExtentX        =   7832
+         _ExtentY        =   370
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   "frmOptions.frx":109C
+         Transparent     =   -1  'True
       End
       Begin prjDIADBS.ctlUcPickBox ucDebugLogPath 
          Height          =   315
          Left            =   480
-         TabIndex        =   55
+         TabIndex        =   54
          Top             =   1890
          Width           =   7845
          _ExtentX        =   10821
@@ -2111,10 +2402,50 @@ Begin VB.Form frmOptions
          UseDialogText   =   0   'False
          Locked          =   -1  'True
       End
+      Begin prjDIADBS.CheckBoxW chkDebugLog2AppPath 
+         Height          =   210
+         Left            =   495
+         TabIndex        =   114
+         Top             =   1320
+         Width           =   7920
+         _ExtentX        =   11245
+         _ExtentY        =   370
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   "frmOptions.frx":10EC
+         Transparent     =   -1  'True
+      End
+      Begin prjDIADBS.CheckBoxW chkDebugTime2File 
+         Height          =   210
+         Left            =   495
+         TabIndex        =   115
+         Top             =   1020
+         Width           =   7920
+         _ExtentX        =   11245
+         _ExtentY        =   370
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   204
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Caption         =   "frmOptions.frx":116C
+         Transparent     =   -1  'True
+      End
       Begin prjDIADBS.SpinBox txtDebugLogLevel 
          Height          =   255
          Left            =   7680
-         TabIndex        =   78
+         TabIndex        =   75
          Top             =   720
          Width           =   735
          _ExtentX        =   1296
@@ -2131,170 +2462,10 @@ Begin VB.Form frmOptions
          Min             =   1
          Value           =   1
       End
-      Begin prjDIADBS.TextBoxW txtMacrosDateDebug 
-         Height          =   255
-         Left            =   480
-         TabIndex        =   111
-         Top             =   4875
-         Width           =   1500
-         _ExtentX        =   0
-         _ExtentY        =   0
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Text            =   "frmOptions.frx":0A83
-         Locked          =   -1  'True
-      End
-      Begin prjDIADBS.TextBoxW txtMacrosOSBITDebug 
-         Height          =   255
-         Left            =   480
-         TabIndex        =   112
-         Top             =   4515
-         Width           =   1500
-         _ExtentX        =   0
-         _ExtentY        =   0
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Text            =   "frmOptions.frx":0AAF
-         Locked          =   -1  'True
-      End
-      Begin prjDIADBS.TextBoxW txtMacrosOSVERDebug 
-         Height          =   255
-         Left            =   480
-         TabIndex        =   113
-         Top             =   4155
-         Width           =   1500
-         _ExtentX        =   0
-         _ExtentY        =   0
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Text            =   "frmOptions.frx":0ADD
-         Locked          =   -1  'True
-      End
-      Begin prjDIADBS.TextBoxW txtMacrosPCModelDebug 
-         Height          =   255
-         Left            =   480
-         TabIndex        =   114
-         Top             =   3795
-         Width           =   1500
-         _ExtentX        =   0
-         _ExtentY        =   0
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Text            =   "frmOptions.frx":0B0B
-         Locked          =   -1  'True
-      End
-      Begin prjDIADBS.TextBoxW txtMacrosPCNameDebug 
-         Height          =   255
-         Left            =   480
-         TabIndex        =   115
-         Top             =   3435
-         Width           =   1500
-         _ExtentX        =   0
-         _ExtentY        =   0
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Text            =   "frmOptions.frx":0B3D
-         Locked          =   -1  'True
-      End
-      Begin prjDIADBS.CheckBoxW chkDebug 
-         Height          =   210
-         Left            =   495
-         TabIndex        =   116
-         Top             =   720
-         Width           =   4440
-         _ExtentX        =   7832
-         _ExtentY        =   370
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Caption         =   "frmOptions.frx":0B6D
-         Transparent     =   -1  'True
-      End
-      Begin prjDIADBS.CheckBoxW chkDebugLog2AppPath 
-         Height          =   210
-         Left            =   495
-         TabIndex        =   117
-         Top             =   1320
-         Width           =   7920
-         _ExtentX        =   11245
-         _ExtentY        =   370
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Caption         =   "frmOptions.frx":0BBD
-         Transparent     =   -1  'True
-      End
-      Begin prjDIADBS.CheckBoxW chkDebugTime2File 
-         Height          =   210
-         Left            =   495
-         TabIndex        =   118
-         Top             =   1020
-         Width           =   7920
-         _ExtentX        =   11245
-         _ExtentY        =   370
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   204
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Caption         =   "frmOptions.frx":0C3D
-         Transparent     =   -1  'True
-      End
       Begin prjDIADBS.LabelW lblDebugLogLevel 
          Height          =   255
          Left            =   4680
-         TabIndex        =   79
+         TabIndex        =   76
          Top             =   720
          Width           =   3015
          _ExtentX        =   5318
@@ -2315,7 +2486,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosDateDebug 
          Height          =   375
          Left            =   2400
-         TabIndex        =   80
+         TabIndex        =   77
          Top             =   4905
          Width           =   5775
          _ExtentX        =   0
@@ -2335,7 +2506,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosOSBitDebug 
          Height          =   375
          Left            =   2400
-         TabIndex        =   81
+         TabIndex        =   78
          Top             =   4545
          Width           =   5775
          _ExtentX        =   0
@@ -2355,7 +2526,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosOSVerDebug 
          Height          =   375
          Left            =   2400
-         TabIndex        =   82
+         TabIndex        =   79
          Top             =   4185
          Width           =   5775
          _ExtentX        =   0
@@ -2375,7 +2546,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosPCModelDebug 
          Height          =   375
          Left            =   2400
-         TabIndex        =   83
+         TabIndex        =   80
          Top             =   3825
          Width           =   5775
          _ExtentX        =   0
@@ -2395,7 +2566,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosParamDebug 
          Height          =   255
          Left            =   480
-         TabIndex        =   84
+         TabIndex        =   81
          Top             =   3150
          Width           =   1755
          _ExtentX        =   0
@@ -2415,7 +2586,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosDescriptionDebug 
          Height          =   255
          Left            =   2400
-         TabIndex        =   85
+         TabIndex        =   82
          Top             =   3150
          Width           =   5865
          _ExtentX        =   0
@@ -2435,7 +2606,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosPCNameDebug 
          Height          =   375
          Left            =   2400
-         TabIndex        =   89
+         TabIndex        =   86
          Top             =   3465
          Width           =   5775
          _ExtentX        =   0
@@ -2455,7 +2626,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblMacrosTypeDebug 
          Height          =   285
          Left            =   480
-         TabIndex        =   90
+         TabIndex        =   87
          Top             =   2865
          Width           =   7860
          _ExtentX        =   13864
@@ -2476,7 +2647,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblDebugLogPath 
          Height          =   285
          Left            =   480
-         TabIndex        =   91
+         TabIndex        =   88
          Top             =   1575
          Width           =   7845
          _ExtentX        =   13838
@@ -2497,7 +2668,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblDebug 
          Height          =   270
          Left            =   240
-         TabIndex        =   92
+         TabIndex        =   89
          Top             =   420
          Width           =   8295
          _ExtentX        =   14631
@@ -2518,7 +2689,7 @@ Begin VB.Form frmOptions
       Begin prjDIADBS.LabelW lblDebugLogName 
          Height          =   285
          Left            =   495
-         TabIndex        =   93
+         TabIndex        =   90
          Top             =   2225
          Width           =   7845
          _ExtentX        =   13838
@@ -2538,7 +2709,7 @@ Begin VB.Form frmOptions
       End
    End
    Begin prjDIADBS.ctlJCFrames frOther 
-      Height          =   5295
+      Height          =   5300
       Left            =   4890
       Top             =   2235
       Width           =   8655
@@ -2568,12 +2739,13 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Private strItemOptions1           As String
-Private strItemOptions2           As String
-Private strItemOptions3           As String
-Private strItemOptions4           As String
-Private strItemOptions5           As String
-Private strItemOptions6           As String
+Private strItemOptions1           As String 'Основные настройки
+Private strItemOptions2           As String 'Поддерживаемые ОС
+Private strItemOptions3           As String 'Рабочие утилиты
+Private strItemOptions4           As String 'Имя Архива
+Private strItemOptions5           As String 'Оформление программы
+Private strItemOptions6           As String 'Параметры запуска DPInst
+Private strItemOptions7           As String 'Отладочный режим
 Private strTableOSHeader1         As String
 Private strTableOSHeader2         As String
 Private strTableOSHeader3         As String
@@ -2594,93 +2766,258 @@ Public Property Let CaptionW(ByVal NewValue As String)
     DefWindowProc Me.hWnd, WM_SETTEXT, 0, ByVal StrPtr(NewValue & vbNullChar)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ChangeButtonProperties
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ChangeButtonProperties()
 
     SetBtnFontProperties cmdFutureButton
-    'ucFontButton.FontColor = cmdFutureButton.ForeColor
+
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkButtonDisable_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub chkButtonDisable_Click()
-
-    cmdFutureButton.Enabled = chkButtonDisable.Value
+    If chkButtonDisable.Value = 1 Then
+        cmdFutureButton.Enabled = True
+    Else
+        cmdFutureButton.Enabled = False
+    End If
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkDebugLog2AppPath_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub chkDebugLog2AppPath_Click()
+    DebugCtlEnableLog2App Not CBool(chkDebugLog2AppPath.Value)
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkDebug_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub chkDebug_Click()
+    DebugCtlEnable CBool(chkDebug.Value)
+    DebugCtlEnableLog2App Not CBool(chkDebugLog2AppPath.Value)
 
-    DebugCtlEnable chkDebug.Value
+    If Not CBool(chkDebug.Value) Then
+        If Not CBool(chkDebugLog2AppPath.Value) Then
+            ucDebugLogPath.Enabled = False
+        End If
+    End If
+
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkForceIfDriverIsNotBetter_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub chkForceIfDriverIsNotBetter_Click()
-
-    mbDpInstForceIfDriverIsNotBetter = chkForceIfDriverIsNotBetter.Value
+    mbDpInstForceIfDriverIsNotBetter = CBool(chkForceIfDriverIsNotBetter.Value)
     txtCmdStringDPInst = CollectCmdString
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkFormMaximaze_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub chkFormMaximaze_Click()
 
     If chkFormMaximaze.Value Then
-        chkFormSizeSave.Value = False
+        chkFormSizeSave.Value = vbUnchecked
     End If
+
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkFormSizeSave_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub chkFormSizeSave_Click()
 
     If chkFormSizeSave.Value Then
-        chkFormMaximaze.Value = False
+        chkFormMaximaze.Value = vbUnchecked
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkLegacyMode_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub chkLegacyMode_Click()
+    mbDpInstLegacyMode = CBool(chkLegacyMode.Value)
+    txtCmdStringDPInst = CollectCmdString
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkPromptIfDriverIsNotBetter_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub chkPromptIfDriverIsNotBetter_Click()
+    mbDpInstPromptIfDriverIsNotBetter = CBool(chkPromptIfDriverIsNotBetter.Value)
+    txtCmdStringDPInst = CollectCmdString
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkQuietInstall_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub chkQuietInstall_Click()
+    mbDpInstQuietInstall = CBool(chkQuietInstall.Value)
+    txtCmdStringDPInst = CollectCmdString
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkScanHardware_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub chkScanHardware_Click()
+    mbDpInstScanHardware = CBool(chkScanHardware.Value)
+    txtCmdStringDPInst = CollectCmdString
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkSuppressAddRemovePrograms_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub chkSuppressAddRemovePrograms_Click()
+    mbDpInstSuppressAddRemovePrograms = CBool(chkSuppressAddRemovePrograms.Value)
+    txtCmdStringDPInst = CollectCmdString
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkSuppressWizard_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub chkSuppressWizard_Click()
+    mbDpInstSuppressWizard = CBool(chkSuppressWizard.Value)
+    txtCmdStringDPInst = CollectCmdString
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkTempPath_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub chkTempPath_Click()
+    TempCtlEnable CBool(chkTempPath.Value)
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkUpdate_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub chkUpdate_Click()
+    UpdateCtlEnable CBool(chkUpdate.Value)
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmbButtonStyleColor_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmbButtonStyleColor_Click()
+Dim lngIndex As Long
+
+    lngIndex = cmbButtonStyleColor.ListIndex
+    If lngIndex > -1 Then
+        cmdFutureButton.ColorScheme = lngIndex
+        If lngIndex < 3 Then
+            ctlStatusBtnBackColor.Visible = False
+        Else
+            ctlStatusBtnBackColor.Visible = True
+            cmdFutureButton.BackColor = ctlStatusBtnBackColor.Value
+        End If
     End If
 End Sub
 
-Private Sub chkHideOther_Click()
-
-    chkCheckAll.Enabled = CBool(chkHideOther.Value)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmbButtonStyleColor_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmbButtonStyleColor_GotFocus()
+    HighlightActiveControl Me, cmbButtonStyleColor, True
 End Sub
 
-Private Sub chkLegacyMode_Click()
-
-    mbDpInstLegacyMode = chkLegacyMode.Value
-    txtCmdStringDPInst = CollectCmdString
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmbButtonStyleColor_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmbButtonStyleColor_LostFocus()
+    HighlightActiveControl Me, cmbButtonStyleColor, False
 End Sub
 
-Private Sub chkPromptIfDriverIsNotBetter_Click()
-
-    mbDpInstPromptIfDriverIsNotBetter = chkPromptIfDriverIsNotBetter.Value
-    txtCmdStringDPInst = CollectCmdString
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmbButtonStyle_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmbButtonStyle_Click()
+Dim lngIndex As Long
+    
+    lngIndex = cmbButtonStyle.ListIndex
+    If lngIndex > -1 Then
+        cmdFutureButton.ButtonStyle = lngIndex
+        Select Case lngIndex
+            Case 0, 1, 4, 6, 7, 11, 12
+                cmbButtonStyleColor.Enabled = False
+                ctlStatusBtnBackColor.Visible = True
+                cmbButtonStyleColor.ListIndex = 3
+            Case 2, 3, 5, 8, 9, 10
+                cmbButtonStyleColor.ListIndex = cmdFutureButton.ColorScheme
+                cmbButtonStyleColor.Enabled = True
+                cmbButtonStyleColor_Click
+            Case 13
+                cmbButtonStyleColor.Enabled = False
+                ctlStatusBtnBackColor.Visible = False
+        End Select
+    End If
 End Sub
 
-Private Sub chkQuietInstall_Click()
-
-    mbDpInstQuietInstall = chkQuietInstall.Value
-    txtCmdStringDPInst = CollectCmdString
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmbButtonStyle_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmbButtonStyle_GotFocus()
+    HighlightActiveControl Me, cmbButtonStyle, True
 End Sub
 
-Private Sub chkScanHardware_Click()
-
-    mbDpInstScanHardware = chkScanHardware.Value
-    txtCmdStringDPInst = CollectCmdString
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmbButtonStyle_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub cmbButtonStyle_LostFocus()
+    HighlightActiveControl Me, cmbButtonStyle, False
 End Sub
 
-Private Sub chkSuppressAddRemovePrograms_Click()
-
-    mbDpInstSuppressAddRemovePrograms = chkSuppressAddRemovePrograms.Value
-    txtCmdStringDPInst = CollectCmdString
-End Sub
-
-Private Sub chkSuppressWizard_Click()
-
-    mbDpInstSuppressWizard = chkSuppressWizard.Value
-    txtCmdStringDPInst = CollectCmdString
-End Sub
-
-Private Sub chkTempPath_Click()
-
-    TempCtlEnable chkTempPath.Value
-End Sub
-
-Private Sub chkUpdate_Click()
-
-    UpdateCtlEnable chkUpdate.Value
-End Sub
-
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmbImageMain_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmbImageMain_Click()
 
     If PathExists(strPathImageMain & cmbImageMain.Text) = False Then
@@ -2688,13 +3025,23 @@ Private Sub cmbImageMain_Click()
     Else
         cmbImageMain.BackColor = &H80000005
     End If
+
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmbImageMain_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmbImageMain_GotFocus()
-
     HighlightActiveControl Me, cmbImageMain, True
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmbImageMain_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmbImageMain_LostFocus()
 
     If PathExists(strPathImageMain & cmbImageMain.Text) = False Then
@@ -2706,67 +3053,71 @@ Private Sub cmbImageMain_LostFocus()
     HighlightActiveControl Me, cmbImageMain, False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmbTypeBackUp_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmbTypeBackUp_GotFocus()
 
     HighlightActiveControl Me, cmbTypeBackUp, True
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmbTypeBackUp_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmbTypeBackUp_LostFocus()
 
     HighlightActiveControl Me, cmbTypeBackUp, False
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  cmdAddOS_Click
-'!  Переменные  :
-'!  Описание    :  кнопка добавления ОС
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdAddOS_Click
+'! Description (Описание)  :   [кнопка добавления ОС]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdAddOS_Click()
-
     mbAddInList = True
     frmOSEdit.Show vbModal, Me
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  cmdDelOS_Click
-'!  Переменные  :
-'!  Описание    :  кнопка удаление ОС
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdDelOS_Click
+'! Description (Описание)  :   [кнопка удаление ОС]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdDelOS_Click()
-
-    Dim ii As Long
-    'Dim ii As LvwListItem
 
     With lvOS
 
-        If .ListItems.count > 0 Then
-            'ii = .SelectedItem
-            'ii.ListSubItems.Remove
-            '.RemoveItem (ii)
+        If .ListItems.count Then
+            .ListItems.Remove (.SelectedItem.Index)
             lngLastIdOS = lngLastIdOS - 1
         End If
+
     End With
 
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  cmdEditOS_Click
-'!  Переменные  :
-'!  Описание    :  кнопка редактирование ОС
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdEditOS_Click
+'! Description (Описание)  :   [кнопка редактирование ОС]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdEditOS_Click()
-
     TransferOSData
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  cmdExit_Click
-'!  Переменные  :
-'!  Описание    : Нажатие кнопки Выход. Выход без сохранения
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdExit_Click
+'! Description (Описание)  :   [Нажатие кнопки Выход. Выход без сохранения]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdExit_Click()
-
-    Unload Me
+    Me.Hide
+    ChangeStatusBarText cmdExit.Caption
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2777,7 +3128,7 @@ End Sub
 Private Sub cmdFontColorButton_Click()
 
     With frmFontDialog
-        .optControl(0).Value = True
+        .optControl(3).Value = True
         .txtFont.Font.Name = strFontBtn_Name
         .txtFont.Font.Size = miFontBtn_Size
         .txtFont.Font.Bold = mbFontBtn_Bold
@@ -2785,197 +3136,254 @@ Private Sub cmdFontColorButton_Click()
         .txtFont.Font.Underline = mbFontBtn_Underline
         .txtFont.Font.Charset = lngFont_Charset
         .txtFont.ForeColor = lngFontBtn_Color
+        .ctlFontColor.Value = lngFontBtn_Color
         .Show vbModal, Me
     End With
-
 End Sub
 
-
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdForceIfDriverIsNotBetter_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdForceIfDriverIsNotBetter_Click()
-
-    Dim cmdString   As String
-    Dim nRetShellEx As Boolean
-
-    cmdString = strQuotes & "http://msdn.microsoft.com/en-us/library/ms793551.aspx" & strQuotes
-    If mbDebugStandart Then DebugMode "cmdString: " & cmdString
-    nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
-    If mbDebugStandart Then DebugMode "cmdString: " & nRetShellEx
+    RunUtilsShell "http://msdn.microsoft.com/en-us/library/ff544948.aspx", False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdLegacyMode_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdLegacyMode_Click()
-
-    Dim cmdString   As String
-    Dim nRetShellEx As Boolean
-
-    cmdString = strQuotes & "http://msdn.microsoft.com/en-us/library/ms794322.aspx" & strQuotes
-    If mbDebugStandart Then DebugMode "cmdString: " & cmdString
-    nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
-    If mbDebugStandart Then DebugMode "cmdString: " & nRetShellEx
+    RunUtilsShell "http://msdn.microsoft.com/en-us/library/ff548635.aspx", False
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  cmdOK_Click
-'!  Переменные  :
-'!  Описание    :  Нажатие кнопки ОК. Применение настроек
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdOK_Click
+'! Description (Описание)  :   [Нажатие кнопки ОК. Применение настроек]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdOK_Click()
 
-    Dim MsgRet As Long
+    Dim lngMsgRet As Long
 
     If mbIsDriveCDRoom And mbLoadIniTmpAfterRestart Then
         SaveOptions
-        MsgRet = MsgBox(strMessages(36), vbInformation + vbApplicationModal + vbYesNo, strProductName)
-        mbRestartProgram = MsgRet = vbYes
-    ElseIf Not FileisReadOnly(strSysIni) Then
+        ChangeStatusBarText strMessages(36)
+        lngMsgRet = MsgBox(strMessages(36) & strMessages(147), vbInformation + vbApplicationModal + vbYesNo, strProductName)
+        mbRestartProgram = lngMsgRet = vbYes
+    ElseIf FileExists(strSysIni) Then
+        If Not FileisReadOnly(strSysIni) Then
+            SaveOptions
+            ChangeStatusBarText strMessages(36)
+            lngMsgRet = MsgBox(strMessages(36) & strMessages(147), vbInformation + vbApplicationModal + vbYesNo, strProductName)
+            mbRestartProgram = lngMsgRet = vbYes
+        End If
+    Else
         SaveOptions
-        MsgRet = MsgBox(strMessages(36), vbInformation + vbApplicationModal + vbYesNo, strProductName)
-        mbRestartProgram = MsgRet = vbYes
+        ChangeStatusBarText strMessages(36)
+        lngMsgRet = MsgBox(strMessages(36) & strMessages(147), vbInformation + vbApplicationModal + vbYesNo, strProductName)
+        mbRestartProgram = lngMsgRet = vbYes
     End If
 
-    Unload Me
+    Me.Hide
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdPathDefault_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdPathDefault_Click()
-
     'Секция DPInst
     ucDPInst86Path.Path = "Tools\DPInst\DPInst.exe"
     ucDPInst64Path.Path = "Tools\DPInst\DPInst64.exe"
     'Секция Arc
-    ucArchPath.Path = "Tools\Arc\7za.exe"
+    ucArch86Path.Path = "Tools\Arc\7za.exe"
+    ucArch64Path.Path = "Tools\Arc\7za64.exe"
     ucArchPathSFX.Path = "Tools\Arc\sfx\7zSD.sfx"
     ucArchPathSFXConfig.Path = "Tools\Arc\sfx\config.txt"
     ucArchPathSFXConfigEn.Path = "Tools\Arc\sfx\config_en.txt"
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdPromptIfDriverIsNotBetter_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdPromptIfDriverIsNotBetter_Click()
-
-    Dim cmdString   As String
-    Dim nRetShellEx As String
-
-    cmdString = strQuotes & "http://msdn.microsoft.com/en-us/library/ms793530.aspx" & strQuotes
-    If mbDebugStandart Then DebugMode "cmdString: " & cmdString
-    nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
-    If mbDebugStandart Then DebugMode "cmdString: " & nRetShellEx
+    RunUtilsShell "http://msdn.microsoft.com/en-us/library/ff549759.aspx", False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdQuietInstall_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdQuietInstall_Click()
-
-    Dim cmdString   As String
-    Dim nRetShellEx As String
-
-    cmdString = strQuotes & "http://msdn.microsoft.com/en-us/library/ms794300.aspx" & strQuotes
-    If mbDebugStandart Then DebugMode "cmdString: " & cmdString
-    nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
-    If mbDebugStandart Then DebugMode "cmdString: " & nRetShellEx
+    RunUtilsShell "http://msdn.microsoft.com/en-us/library/ff549799.aspx", False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdScanHardware_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdScanHardware_Click()
-
-    Dim cmdString   As String
-    Dim nRetShellEx As String
-
-    cmdString = strQuotes & "http://msdn.microsoft.com/en-us/library/ms794295.aspx" & strQuotes
-    If mbDebugStandart Then DebugMode "cmdString: " & cmdString
-    nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
-    If mbDebugStandart Then DebugMode "cmdString: " & nRetShellEx
+    RunUtilsShell "http://msdn.microsoft.com/en-us/library/ff550761.aspx", False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdSuppressAddRemovePrograms_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdSuppressAddRemovePrograms_Click()
-
-    Dim cmdString   As String
-    Dim nRetShellEx As String
-
-    cmdString = strQuotes & "http://msdn.microsoft.com/en-us/library/ms794270.aspx" & strQuotes
-    If mbDebugStandart Then DebugMode "cmdString: " & cmdString
-    nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
-    If mbDebugStandart Then DebugMode "cmdString: " & nRetShellEx
+    RunUtilsShell "http://msdn.microsoft.com/en-us/library/ff553404.aspx", False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdSuppressWizard_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdSuppressWizard_Click()
-
-    Dim cmdString   As String
-    Dim nRetShellEx As String
-
-    cmdString = strQuotes & "http://msdn.microsoft.com/en-us/library/ms791062.aspx" & strQuotes
-    If mbDebugStandart Then DebugMode "cmdString: " & cmdString
-    nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL)
-    If mbDebugStandart Then DebugMode "cmdString: " & nRetShellEx
+    RunUtilsShell "http://msdn.microsoft.com/en-us/library/ff550803.aspx#setting_the_suppresswizard_flag", False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DebugCtlEnable
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   mbEnable (Boolean)
+'!--------------------------------------------------------------------------------
 Private Sub DebugCtlEnable(ByVal mbEnable As Boolean)
+    chkDebugTime2File.Enabled = mbEnable
+    txtDebugLogName.Enabled = mbEnable
+    ucDebugLogPath.Enabled = mbEnable
+    chkDebugLog2AppPath.Enabled = mbEnable
+    txtDebugLogLevel.Enabled = mbEnable
+End Sub
 
-    chkRemoveHistory.Enabled = mbEnable
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub DebugCtlEnableLog2App
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   mbEnable (Boolean)
+'!--------------------------------------------------------------------------------
+Private Sub DebugCtlEnableLog2App(ByVal mbEnable As Boolean)
     ucDebugLogPath.Enabled = mbEnable
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub FontCharsetChange
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub FontCharsetChange()
 
     ' Выставляем шрифт
-    Me.Font.Name = strFontOtherForm_Name
-    Me.Font.Size = lngFontOtherForm_Size
-    Me.Font.Charset = lngFont_Charset
+    With Me.Font
+        .Name = strFontOtherForm_Name
+        .Size = lngFontOtherForm_Size
+        .Charset = lngFont_Charset
+    End With
     
-    frArchName.Font.Charset = lngFont_Charset
-    frDesign.Font.Charset = lngFont_Charset
-    frDpInstParam.Font.Charset = lngFont_Charset
-    frMain.Font.Charset = lngFont_Charset
-    frMainTools.Font.Charset = lngFont_Charset
-    frOptions.Font.Charset = lngFont_Charset
-    frOS.Font.Charset = lngFont_Charset
-    frOther.Font.Charset = lngFont_Charset
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  Form_KeyDown
-'!  Переменные  :  KeyCode As Integer, Shift As Integer
-'!  Описание    :  Обработка нажатий клавиш клавиатуры сначала на форме
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub FormLoadAction
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Sub FormLoadAction()
+
+    ' Локализация приложения
+    If mbMultiLanguage Then
+        Localise strPCLangCurrentPath
+    Else
+        ' Выставляем шрифт
+        FontCharsetChange
+    End If
+
+    ' загрузить список опций
+    LoadList_lvOptions
+    ' Заполнить опции
+    ReadOptions
+    ' установить опции шрифта и цвета для будущей кнопки
+    cmdFutureButton.ForeColor = lngFontBtn_Color
+    SetBtnStatusFontProperties cmdFutureButton
+
+    DoEvents
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ctlStatusBtnBackColor_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ctlStatusBtnBackColor_Click()
+    If cmbButtonStyleColor.ListIndex = 3 Then
+        cmdFutureButton.BackColor = ctlStatusBtnBackColor.Value
+    End If
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_KeyDown
+'! Description (Описание)  :   [Обработка нажатий клавиш клавиатуры сначала на форме]
+'! Parameters  (Переменные):   KeyCode (Integer)
+'                              Shift (Integer)
+'!--------------------------------------------------------------------------------
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
 
     If KeyCode = vbKeyEscape Then
         If MsgBox(strMessages(37), vbQuestion + vbYesNo, strProductName) = vbYes Then
-            Unload Me
+            cmdExit_Click
         End If
     End If
+
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  Form_Load
-'!  Переменные  :
-'!  Описание    :  Загрузка формы
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Load
+'! Description (Описание)  :   [Загрузка формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub Form_Load()
-
-    'SetSmallIcon Me.hWnd
-    
     SetupVisualStyles Me
 
     With Me
         strFormName = .Name
         SetIcon .hWnd, strFormName, False
+        .Height = 5850
+        .Width = 11900
         .Left = (lngRightWorkArea - lngLeftWorkArea) / 2 - .Width / 2
         .Top = (lngBottomWorkArea - lngTopWorkArea) / 2 - .Height / 2
-        .Height = 5825
-        .Width = 11900
     End With
-    
-    'Top
+
+    'Top frame position
+    frArchName.Top = 50
     frOptions.Top = 50
+    frDesign.Top = 50
+    frDpInstParam.Top = 50
     frMain.Top = 50
     frMainTools.Top = 50
-    frArchName.Top = 50
+
     frOS.Top = 50
-    frDesign.Top = 50
+
     frOther.Top = 50
-    frDpInstParam.Top = 50
-    'Left
+    frDebug.Top = 50
+
+    'Left frame position
+    frArchName.Left = 3100
+    frDesign.Left = 3100
+    frDpInstParam.Left = 3100
+
     frMain.Left = 3100
     frMainTools.Left = 3100
-    frArchName.Left = 3100
+
     frOS.Left = 3100
-    frDesign.Left = 3100
     frOther.Left = 3100
-    frDpInstParam.Left = 3100
+    frDebug.Left = 3100
     ' Устанавливаем минимальные значения
     txtFormHeight.Min = lngMainFormHeightMin
     txtFormWidth.Min = lngMainFormWidthMin
@@ -2988,49 +3396,95 @@ Private Sub Form_Load()
     LoadIconImage2Object cmdFontColorButton, "BTN_FONT", strPathImageMainWork
     LoadIconImage2Object cmdFutureButton, "BTN_STARTBACKUP", strPathImageMainWork
 
-    ' Локализация приложения
-    If mbMultiLanguage Then
-        Localise strPCLangCurrentPath
-    Else
-        ' Выставляем шрифт
-        FontCharsetChange
-    End If
-    
-    ' загрузить список опций
-    tvOptionsLoad
-    ' Заполнить опции
-    ReadOptions
-    ' установить опции шрифта и цвета
-    'SetBtnFontProperties cmdChooseFont
-    'cmdColorButton.Value = lngDialog_Color
-    ' установить опции шрифта и цвета
-    SetBtnFontProperties cmdFutureButton
-    ' Выставляем основные настройки
-    frMain.ZOrder 0
-    lvOptions.ItemSelected(1) = True
-    DoEvents
-    'ucColorButton.Locked = True
-    'ucFontButton.Locked = True
+    'загружаем список стилей кнопок
+    LoadComboBtnStyle
+    ' Действия при загрузке формы
+    FormLoadAction
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_QueryUnload
+'! Description (Описание)  :   [Выгружаем из памяти форму и другие компоненты]
+'! Parameters  (Переменные):   Cancel (Integer)
+'                              UnloadMode (Integer)
+'!--------------------------------------------------------------------------------
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
-    ' Выгружаем из памяти форму и другие компоненты
-    'lvOS.Destroy
-    'Set lvOS = Nothing
-    'lvOptions.Destroy
-    'Set lvOptions = Nothing
-    Set frmOptions = Nothing
+    If UnloadMode = vbFormControlMenu Then
+        Cancel = 1
+        Me.Hide
+        ChangeStatusBarText cmdExit.Caption
+    Else
+        Set frmOptions = Nothing
+    End If
+
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Resize
+'! Description (Описание)  :   [Изменение размеров формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub Form_Resize()
+
+    On Error Resume Next
+
+    If Me.WindowState <> vbMinimized Then
+        SetTrayIcon NIM_DELETE, Me.hWnd, 0&, vbNullString
+    Else
+        SetTrayIcon NIM_ADD, Me.hWnd, Me.Icon, "Drivers Installer Assistant"
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub InitializeObjectProperties
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub InitializeObjectProperties()
+
+    cmbButtonStyle.ListIndex = lngStatusBtnStyle
+    cmbButtonStyleColor.ListIndex = lngStatusBtnStyleColor
 
     ' изменение шрифта и текста
     ChangeButtonProperties
-    'ucFontButton.FontFlags = ScreenFonts Or InitToLogFontStruct
 End Sub
 
-'заполнение списка типами создания резервных копий
+Private Sub LoadComboBtnStyle()
+    
+    With cmbButtonStyle
+        .Clear
+        .AddItem "Standard", 0
+        .AddItem "Flat", 1
+        .AddItem "WindowsXP", 2
+        .AddItem "VistaAero", 3
+        .AddItem "OfficeXP", 4
+        .AddItem "Office2003", 5
+        .AddItem "XPToolbar", 6
+        .AddItem "VistaToolbar", 7
+        .AddItem "Outlook2007", 8
+        .AddItem "InstallShield", 9
+        .AddItem "GelButton", 10
+        .AddItem "3DHover", 11
+        .AddItem "FlatHover", 12
+        .AddItem "WindowsTheme", 13
+    End With
+    
+    With cmbButtonStyleColor
+        .Clear
+        .AddItem "Blue", 0
+        .AddItem "OliveGreen", 1
+        .AddItem "Silver", 2
+        .AddItem "Custom", 3
+    End With
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadComboList
+'! Description (Описание)  :   [заполнение списка типами создания резервных копий]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub LoadComboList()
 
     ' Режимы выделения
@@ -3054,61 +3508,108 @@ Private Sub LoadComboList()
 
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  LoadList_OS
-'!  Переменные  :
-'!  Описание    :  Построение спиcка ОС
-'! -----------------------------------------------------------
-Private Sub LoadList_OS()
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadListImage
+'! Description (Описание)  :   [Загрузка картинок в ListImage]
+'! Parameters  (Переменные):   strImageName as string
+'!                             lngImageIndex as Long
+'!--------------------------------------------------------------------------------
+Private Sub LoadListImage(ByVal strImageName As String, ByVal lngImageIndex As Long)
+Dim objPicTmp As StdPicture
+
+    Set objPicTmp = GetImageFromFile(strImageName, strPathImageMainWork)
+    If Not objPicTmp Is Nothing Then
+        ImageListOptions.ListImages.Add lngImageIndex, , objPicTmp
+    End If
+    
+    Set objPicTmp = Nothing
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadList_lvOptions
+'! Description (Описание)  :   [Построение дерева настроек]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub LoadList_lvOptions()
+
+    ' Загружаем картинки в ImageList
+    If ImageListOptions.ListImages.count = 0 Then
+        LoadListImage "OPT_MAIN", 1
+        LoadListImage "OPT_OSLIST", 2
+        LoadListImage "OPT_TOOLS_MAIN", 3
+        LoadListImage "OPT_ARCHNAME", 4
+        LoadListImage "OPT_DESIGN", 5
+        LoadListImage "OPT_DPINST", 6
+        LoadListImage "OPT_DEVPARSER", 7
+    End If
+           
+    ' Заполняем ListView названием опций программы
+    With lvOptions
+        With .ListItems
+            If .count = 0 Then
+                .Add 1, , strItemOptions1, , 1
+                .Add 2, , strItemOptions2, , 2
+                .Add 3, , strItemOptions3, , 3
+                .Add 4, , strItemOptions4, , 4
+                .Add 5, , strItemOptions5, , 5
+                .Add 6, , strItemOptions6, , 6
+                .Add 7, , strItemOptions7, , 7
+            Else
+                .item(1).Text = strItemOptions1
+                .item(2).Text = strItemOptions2
+                .item(3).Text = strItemOptions3
+                .item(4).Text = strItemOptions4
+                .item(5).Text = strItemOptions5
+                .item(6).Text = strItemOptions6
+                .item(7).Text = strItemOptions7
+            End If
+        End With
+    
+        .ColumnWidth = .Width - 100
+    End With
+    
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadList_lvOS
+'! Description (Описание)  :   [Построение спиcка ОС]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub LoadList_lvOS()
 
     Dim ii As Long
 
-    Set lvOS = New cListView
-
     With lvOS
-        .Create frOS.hWnd, LVS_REPORT Or LVS_AUTOARRANGE, 10, 29, 550, 180, , WS_EX_STATICEDGE
-        .SetStyleEx LVS_EX_FLATSB Or LVS_EX_FULLROWSELECT Or LVS_EX_GRIDLINES
-        .AddColumn 1, strTableOSHeader1, 150
-        .AddColumn 2, strTableOSHeader2, 50
-        .AddColumn 3, strTableOSHeader3, 300
+        .ListItems.Clear
 
-        For ii = 0 To OSCount - 1
-            .AddItem arrOSList(I, 0), , ii
-            .ItemText(1, ii) = arrOSList(ii, 1)
-            .ItemText(2, ii) = arrOSList(ii, 2)
-            .ItemText(3, ii) = arrOSList(ii, 3)
-        Next
-        .AutoArrange = True
-    End With
+        If .ColumnHeaders.count = 0 Then
+            .ColumnHeaders.Add 1, , strTableOSHeader1, 80 * Screen.TwipsPerPixelX
+            .ColumnHeaders.Add 2, , strTableOSHeader2, 150 * Screen.TwipsPerPixelX
+            .ColumnHeaders.Add 3, , strTableOSHeader3, 150 * Screen.TwipsPerPixelX
+        End If
 
-    lngLastIdOS = OSCount
-    lvOS_ReSize
-End Sub
+        For ii = 0 To lngOSCount - 1
 
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub LoadListCombo
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   cmbName (ComboBox)
-'                              strImagePath (String)
-'!--------------------------------------------------------------------------------
-Private Sub LoadListCombo(cmbName As ComboBox, strImagePath As String)
+            With .ListItems.Add(, , arrOSList(ii).Ver)
+                .SubItems(1) = arrOSList(ii).is64bit
+                .SubItems(2) = arrOSList(ii).drpFolder
 
-    Dim strListFolderTemp() As String
-    Dim ii                  As Integer
 
-    strListFolderTemp = SearchFoldersInRoot(strImagePath, "*")
 
-    With cmbName
-        .Clear
+            End With
 
-        For ii = LBound(strListFolderTemp, 2) To UBound(strListFolderTemp, 2)
-            .AddItem strListFolderTemp(1, ii), ii
         Next
 
     End With
 
+    lngLastIdOS = lngOSCount
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadStartMode
+'! Description (Описание)  :   [Построение спиcка ОС]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub LoadStartMode()
     optGrp1.Caption = LocaliseString(strPCLangCurrentPath, strFormName, "optGrp1", optGrp1.Caption)
     optGrp2.Caption = LocaliseString(strPCLangCurrentPath, strFormName, "optGrp2", optGrp2.Caption)
@@ -3120,44 +3621,94 @@ Private Sub LoadStartMode()
     SelectStartMode
 End Sub
 
-Private Sub Localise(strPathFile As String)
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadSkinListCombo
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   cmbName (ComboBox)
+'                              strImagePath (String)
+'!--------------------------------------------------------------------------------
+Private Sub LoadSkinListCombo(cmbName As Object, strImagePath As String)
+
+    Dim strListFolderTemp() As FindListStruct
+    Dim ii                  As Integer
+
+    strListFolderTemp = SearchFoldersInRoot(strImagePath, "*")
+
+    With cmbName
+        .Clear
+
+        For ii = 0 To UBound(strListFolderTemp)
+            .AddItem strListFolderTemp(ii).Name, ii
+        Next
+
+    End With
+
+End Sub
+
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Localise
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   StrPathFile (String)
+'!--------------------------------------------------------------------------------
+Private Sub Localise(ByVal strPathFile As String)
 
     Dim strFormNameMain As String
 
-    strFormNameMain = CStr(frmMain.Name)
+    strFormNameMain = frmMain.Name
     ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
     FontCharsetChange
     ' Название формы
-    Me.Caption = LocaliseString(strPathFile, strFormName, strFormName, Me.Caption)
-    frOptions.Caption = LocaliseString(strPathFile, strFormName, "frOptions", frOptions.Caption)
+    Me.CaptionW = LocaliseString(strPathFile, strFormName, strFormName, Me.Caption)
     ' Описание режимов
+    frOptions.Caption = LocaliseString(strPathFile, strFormName, "frOptions", frOptions.Caption)
     strItemOptions1 = LocaliseString(strPathFile, strFormName, "ItemOptions1", "Основные настройки")
     strItemOptions2 = LocaliseString(strPathFile, strFormName, "ItemOptions2", "Поддерживаемые ОС")
     strItemOptions3 = LocaliseString(strPathFile, strFormName, "ItemOptions3", "Рабочие утилиты")
     strItemOptions4 = LocaliseString(strPathFile, strFormName, "ItemOptions4", "Имя Архива")
     strItemOptions5 = LocaliseString(strPathFile, strFormName, "ItemOptions5", "Оформление программы")
     strItemOptions6 = LocaliseString(strPathFile, strFormName, "ItemOptions6", "Параметры запуска DPInst")
+    strItemOptions7 = LocaliseString(strPathFile, strFormName, "ItemOptions7", "Отладочный режим")
     cmdOK.Caption = LocaliseString(strPathFile, strFormName, "cmdOK", cmdOK.Caption)
     cmdExit.Caption = LocaliseString(strPathFile, strFormName, "cmdExit", cmdExit.Caption)
+    'frMain
     frMain.Caption = LocaliseString(strPathFile, strFormName, "frMain", frMain.Caption)
     lblOptionsStart.Caption = LocaliseString(strPathFile, strFormName, "lblOptionsStart", lblOptionsStart.Caption)
     chkUpdate.Caption = LocaliseString(strPathFile, strFormName, "chkUpdate", chkUpdate.Caption)
     chkUpdateBeta.Caption = LocaliseString(strPathFile, strFormName, "chkUpdateBeta", chkUpdateBeta.Caption)
     chkHideOtherProcess.Caption = LocaliseString(strPathFile, strFormName, "chkHideOtherProcess", chkHideOtherProcess.Caption)
+    chkSilentDll.Caption = LocaliseString(strPathFile, strFormName, "chkSilentDll", chkSilentDll.Caption)
     lblOptionsTemp.Caption = LocaliseString(strPathFile, strFormName, "lblOptionsTemp", lblOptionsTemp.Caption)
     chkTempPath.Caption = LocaliseString(strPathFile, strFormName, "chkTempPath", chkTempPath.Caption)
     chkRemoveTemp.Caption = LocaliseString(strPathFile, strFormName, "chkRemoveTemp", chkRemoveTemp.Caption)
+    lblRezim.Caption = LocaliseString(strPathFile, strFormName, "lblRezim", lblRezim.Caption)
+    lblTypeBackUp.Caption = LocaliseString(strPathFile, strFormName, "lblTypeBackUp", lblTypeBackUp.Caption)
+    'frDebug
+    frDebug.Caption = LocaliseString(strPathFile, strFormName, "frDebug", frDebug.Caption)
     lblDebug.Caption = LocaliseString(strPathFile, strFormName, "lblDebug", lblDebug.Caption)
     chkDebug.Caption = LocaliseString(strPathFile, strFormName, "chkDebug", chkDebug.Caption)
-    chkRemoveHistory.Caption = LocaliseString(strPathFile, strFormName, "chkRemoveHistory", chkRemoveHistory.Caption)
-    lblRezim.Caption = LocaliseString(strPathFile, strFormName, "lblRezim", lblRezim.Caption)
+    chkDebugLog2AppPath.Caption = LocaliseString(strPathFile, strFormName, "chkDebugLog2AppPath", chkDebugLog2AppPath.Caption)
+    chkDebugTime2File.Caption = LocaliseString(strPathFile, strFormName, "chkDebugTime2File", chkDebugTime2File.Caption)
+    lblDebugLogName.Caption = LocaliseString(strPathFile, strFormName, "lblDebugLogName", lblDebugLogName.Caption)
+    lblDebugLogLevel.Caption = LocaliseString(strPathFile, strFormName, "lblDebugLogLevel", lblDebugLogLevel.Caption)
     lblDebugLogPath.Caption = LocaliseString(strPathFile, strFormName, "lblDebugLogPath", lblDebugLogPath.Caption)
-    frMainTools.Caption = LocaliseString(strPathFile, strFormName, "frMainTools", frMainTools.Caption)
-    cmdPathDefault.Caption = LocaliseString(strPathFile, strFormName, "cmdPathDefault", cmdPathDefault.Caption)
+    lblMacrosTypeDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosTypeDebug", lblMacrosTypeDebug.Caption)
+    lblMacrosParamDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosParamDebug", lblMacrosParamDebug.Caption)
+    lblMacrosDescriptionDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosDescriptionDebug", lblMacrosDescriptionDebug.Caption)
+    lblMacrosPCNameDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosPCNameDebug", lblMacrosPCNameDebug.Caption)
+    lblMacrosPCModelDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosPCModelDebug", lblMacrosPCModelDebug.Caption)
+    lblMacrosOSVerDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosOSVerDebug", lblMacrosOSVerDebug.Caption)
+    lblMacrosOSBitDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosOSBitDebug", lblMacrosOSBitDebug.Caption)
+    lblMacrosDateDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosDateDebug", lblMacrosDateDebug.Caption)
+    'frOS
     frOS.Caption = LocaliseString(strPathFile, strFormName, "frOS", frOS.Caption)
     cmdAddOS.Caption = LocaliseString(strPathFile, strFormName, "cmdAddOS", cmdAddOS.Caption)
     cmdEditOS.Caption = LocaliseString(strPathFile, strFormName, "cmdEditOS", cmdEditOS.Caption)
     cmdDelOS.Caption = LocaliseString(strPathFile, strFormName, "cmdDelOS", cmdDelOS.Caption)
+    strTableOSHeader1 = LocaliseString(strPathFile, strFormName, "TableOSHeader1", "Версия")
+    strTableOSHeader2 = LocaliseString(strPathFile, strFormName, "TableOSHeader2", "x64")
+    strTableOSHeader3 = LocaliseString(strPathFile, strFormName, "TableOSHeader3", "Путь")
+    'frDesign
     frDesign.Caption = LocaliseString(strPathFile, strFormName, "frDesign", frDesign.Caption)
     lblSizeForm.Caption = LocaliseString(strPathFile, strFormName, "lblSizeForm", lblSizeForm.Caption)
     lblFormHeight.Caption = LocaliseString(strPathFile, strFormName, "lblFormHeight", lblFormHeight.Caption)
@@ -3165,11 +3716,16 @@ Private Sub Localise(strPathFile As String)
     chkFormMaximaze.Caption = LocaliseString(strPathFile, strFormName, "chkFormMaximaze", chkFormMaximaze.Caption)
     chkFormSizeSave.Caption = LocaliseString(strPathFile, strFormName, "chkFormSizeSave", chkFormSizeSave.Caption)
     lblSizeButton.Caption = LocaliseString(strPathFile, strFormName, "lblSizeButton", lblSizeButton.Caption)
+    cmdFutureButton.Caption = LocaliseString(strPathFile, strFormName, "cmdFutureButton", cmdFutureButton.Caption)
     lblImageMain.Caption = LocaliseString(strPathFile, strFormName, "lblImageMain", lblImageMain.Caption)
-    lblFormWidthMin.Caption = LocaliseString(strPathFile, strFormName, "lblFormWidthMin", lblFormWidthMin.Caption)
     cmdFontColorButton.Caption = LocaliseString(strPathFile, strFormName, "cmdFontColorButton", cmdFontColorButton.Caption)
-    'ucColorButton.DialogMsg(ucColor) = LocaliseString(StrPathFile, strFormName, "ButtonColor", ucColorButton.DialogMsg(ucColor))
-    'ucFontButton.DialogMsg(ucFont) = LocaliseString(StrPathFile, strFormName, "ButtonFont", ucFontButton.DialogMsg(ucFont))
+    cmdFutureButton.Caption = LocaliseString(strPathFile, strFormName, "cmdFutureButton", cmdFutureButton.Caption)
+    chkButtonDisable.Caption = LocaliseString(strPathFile, strFormName, "chkButtonDisable", chkButtonDisable.Caption)
+    lblTheme.Caption = LocaliseString(strPathFile, strFormName, "lblTheme", lblTheme.Caption)
+    ctlStatusBtnBackColor.DropDownCaption = LocaliseString(strPathFile, strFormName, "ctlStatusBtnBackColor", ctlStatusBtnBackColor.DropDownCaption)
+    lblButtonStyle.Caption = LocaliseString(strPathFile, strFormName, "lblButtonStyle", lblButtonStyle.Caption)
+    lblButtonStyleColor.Caption = LocaliseString(strPathFile, strFormName, "lblButtonStyleColor", lblButtonStyleColor.Caption)
+    'frDpInstParam
     frDpInstParam.Caption = LocaliseString(strPathFile, strFormName, "frDpInstParam", frDpInstParam.Caption)
     lblParam.Caption = LocaliseString(strPathFile, strFormName, "lblParam", lblParam.Caption)
     lblDescription.Caption = LocaliseString(strPathFile, strFormName, "lblDescription", lblDescription.Caption)
@@ -3181,10 +3737,7 @@ Private Sub Localise(strPathFile As String)
     lblQuietInstall.Caption = LocaliseString(strPathFile, strFormName, "lblQuietInstall", lblQuietInstall.Caption)
     lblScanHardware.Caption = LocaliseString(strPathFile, strFormName, "lblScanHardware", lblScanHardware.Caption)
     lblCmdStringDPInst.Caption = LocaliseString(strPathFile, strFormName, "lblCmdStringDPInst", lblCmdStringDPInst.Caption)
-    strTableOSHeader1 = LocaliseString(strPathFile, strFormName, "TableOSHeader1", "Версия")
-    strTableOSHeader2 = LocaliseString(strPathFile, strFormName, "TableOSHeader2", "x64")
-    strTableOSHeader3 = LocaliseString(strPathFile, strFormName, "TableOSHeader3", "Путь")
-    chkSilentDll.Caption = LocaliseString(strPathFile, strFormName, "chkSilentDll", chkSilentDll.Caption)
+    'frArchName
     frArchName.Caption = LocaliseString(strPathFile, strFormName, "frArchName", frArchName.Caption)
     lblArchNameStart.Caption = LocaliseString(strPathFile, strFormName, "lblArchNameStart", lblArchNameStart.Caption)
     optArchNamePC.Caption = LocaliseString(strPathFile, strFormName, "optArchNamePC", optArchNamePC.Caption)
@@ -3199,111 +3752,196 @@ Private Sub Localise(strPathFile As String)
     lblMacrosOSVer.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosOSVer", lblMacrosOSVer.Caption)
     lblMacrosOSBit.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosOSBit", lblMacrosOSBit.Caption)
     lblMacrosDate.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosDate", lblMacrosDate.Caption)
-    lblTypeBackUp.Caption = LocaliseString(strPathFile, strFormName, "lblTypeBackUp", lblTypeBackUp.Caption)
-    cmdFutureButton.Caption = LocaliseString(strPathFile, strFormName, "cmdFutureButton", cmdFutureButton.Caption)
-    chkButtonDisable.Caption = LocaliseString(strPathFile, strFormName, "chkButtonDisable", chkButtonDisable.Caption)
-    lblDebugLogLevel.Caption = LocaliseString(strPathFile, strFormName, "lblDebugLogLevel", lblDebugLogLevel.Caption)
+    'frMainTools
+    frMainTools.Caption = LocaliseString(strPathFile, strFormName, "frMainTools", frMainTools.Caption)
+    cmdPathDefault.Caption = LocaliseString(strPathFile, strFormName, "cmdPathDefault", cmdPathDefault.Caption)
+    ' Сообщения диалогов выбора файлов и каталогов
+    ucArch86Path.ToolTipTexts(ucOpen) = strMessages(151)
+    ucArch86Path.DialogMsg(ucOpen) = strMessages(151)
+    ucArch64Path.ToolTipTexts(ucOpen) = strMessages(151)
+    ucArch64Path.DialogMsg(ucOpen) = strMessages(151)
+    ucDebugLogPath.ToolTipTexts(ucFolder) = strMessages(152)
+    ucDebugLogPath.DialogMsg(ucFolder) = strMessages(152)
+    ucDPInst64Path.ToolTipTexts(ucOpen) = strMessages(151)
+    ucDPInst64Path.DialogMsg(ucOpen) = strMessages(151)
+    ucDPInst86Path.ToolTipTexts(ucOpen) = strMessages(151)
+    ucDPInst86Path.DialogMsg(ucOpen) = strMessages(151)
+    ucTempPath.ToolTipTexts(ucFolder) = strMessages(152)
+    ucTempPath.DialogMsg(ucFolder) = strMessages(152)
+    
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  lvOptions_ItemChanged
-'!  Переменные  :
-'!  Описание    :  При выборе опции происходит отображение соответсвующего окна
-'! -----------------------------------------------------------
-Private Sub lvOptions_ItemChanged(ByVal iIndex As Long)
+''!--------------------------------------------------------------------------------
+''! Procedure   (Функция)   :   Sub lvOptions_ItemSelect
+''! Description (Описание)  :   [При выборе опции происходит отображение соответсвующего окна]
+''! Parameters  (Переменные):   item (LvwListItem), Selected (Boolean)
+''!--------------------------------------------------------------------------------
+Private Sub lvOptions_ItemSelect(ByVal item As LvwListItem, ByVal Selected As Boolean)
 
-    Select Case lvOptions.ItemCaption(iIndex)
-
-        Case strItemOptions1
-            frMain.ZOrder 0
-            cmbTypeBackUp.SetFocus
-
-        Case strItemOptions3
-            frMainTools.ZOrder 0
-            ucDPInst86Path.SetFocus
-
-        Case strItemOptions4
-            frArchName.ZOrder 0
-            txtArchNameShablon.SetFocus
-
-        Case strItemOptions2
-            frOS.ZOrder 0
-
-        Case strItemOptions5
-            frDesign.ZOrder 0
-            cmbImageMain.SetFocus
-
-        Case strItemOptions6
-            frDpInstParam.ZOrder 0
-            txtCmdStringDPInst.SetFocus
-
-        Case Else
-            frOther.ZOrder 0
-    End Select
+    If Selected Then
+        Select Case item.Index
+        
+            Case 1
+            'ItemOptions1=Основные настройки
+                frMain.ZOrder 0
+    
+            Case 2
+            ' ItemOptions2=Поддерживаемые ОС
+                frOS.ZOrder 0
+    
+            Case 3
+            'ItemOptions3=Рабочие утилиты
+                frMainTools.ZOrder 0
+    
+            Case 4
+            'ItemOptions4=Имя архива
+                frArchName.ZOrder 0
+    
+            Case 5
+            'ItemOptions5=Оформление программы
+                frDesign.ZOrder 0
+    
+            Case 6
+            'ItemOptions6=Параметры запуска DPInst
+                frDpInstParam.ZOrder 0
+                
+            Case 7
+            'ItemOptions7=Параметры запуска DPInst
+                frDebug.ZOrder 0
+    
+            Case Else
+                frOther.ZOrder 0
+        End Select
+    End If
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  lvOS_DblClick
-'!  Переменные  :
-'!  Описание    :  Двойнок клик по элементу списка вызывает форму редактирования
-'! -----------------------------------------------------------
-'Private Sub lvOS_DblClick(ByVal iItem As Long, ByVal Button As MouseButtonConstants)
-'
-'    TransferOSData
-'End Sub
-'
-''! -----------------------------------------------------------
-''!  Функция     :  lvOS_Size
-''!  Переменные  :
-''!  Описание    :
-''! -----------------------------------------------------------
-'Private Sub lvOS_ReSize()
-'
-'    Dim lngLVHeight As Long
-'    Dim lngLVWidht  As Long
-'    Dim lngLVTop    As Long
-'    Dim lngLVLeft   As Long
-'
-'    lngLVTop = 29
-'    lngLVLeft = (cmdAddOS.Left / Screen.TwipsPerPixelX)
-'    lngLVHeight = (cmdAddOS.Top / Screen.TwipsPerPixelY) - lngLVTop - 10
-'    lngLVWidht = (frOS.Width / Screen.TwipsPerPixelX) - 10 - lngLVLeft
-'
-'    If Not (lvOS Is Nothing) Then
-'        lvOS.Move lngLVLeft, lngLVTop, lngLVWidht, lngLVHeight
-'        lvOS.Refresh
-'    End If
-'End Sub
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub lvOS_ColumnClick
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   ColumnHeader (LvwColumnHeader)
+'!--------------------------------------------------------------------------------
+Private Sub lvOS_ColumnClick(ByVal ColumnHeader As LvwColumnHeader)
 
-'! -----------------------------------------------------------
-'!  Функция     :  ReadOptions
-'!  Переменные  :
-'!  Описание    :  Читаем настройки программы и заполняем поля
-'! -----------------------------------------------------------
+    Dim ii As Long
+
+    With lvOS
+        .Sorted = False
+        .SortKey = ColumnHeader.Index - 1
+
+        If ComCtlsSupportLevel() >= 1 Then
+
+            For ii = 1 To .ColumnHeaders.count
+
+                If ii <> ColumnHeader.Index Then
+                    .ColumnHeaders(ii).SortArrow = LvwColumnHeaderSortArrowNone
+                Else
+
+                    If ColumnHeader.SortArrow = LvwColumnHeaderSortArrowNone Then
+                        ColumnHeader.SortArrow = LvwColumnHeaderSortArrowDown
+                    Else
+
+                        If ColumnHeader.SortArrow = LvwColumnHeaderSortArrowDown Then
+                            ColumnHeader.SortArrow = LvwColumnHeaderSortArrowUp
+                        ElseIf ColumnHeader.SortArrow = LvwColumnHeaderSortArrowUp Then
+                            ColumnHeader.SortArrow = LvwColumnHeaderSortArrowDown
+                        End If
+                    End If
+                End If
+
+            Next ii
+
+            Select Case ColumnHeader.SortArrow
+
+                Case LvwColumnHeaderSortArrowDown, LvwColumnHeaderSortArrowNone
+                    .SortOrder = LvwSortOrderAscending
+
+                Case LvwColumnHeaderSortArrowUp
+                    .SortOrder = LvwSortOrderDescending
+            End Select
+
+            .SelectedColumn = ColumnHeader
+        Else
+
+            For ii = 1 To .ColumnHeaders.count
+
+                If ii <> ColumnHeader.Index Then
+                    .ColumnHeaders(ii).Icon = 0
+                Else
+
+                    If ColumnHeader.Icon = 0 Then
+                        ColumnHeader.Icon = 1
+                    Else
+
+                        If ColumnHeader.Icon = 2 Then
+                            ColumnHeader.Icon = 1
+                        ElseIf ColumnHeader.Icon = 1 Then
+                            ColumnHeader.Icon = 2
+                        End If
+                    End If
+                End If
+
+            Next ii
+
+            Select Case ColumnHeader.Icon
+
+                Case 1, 0
+                    .SortOrder = LvwSortOrderAscending
+
+                Case 2
+                    .SortOrder = LvwSortOrderDescending
+            End Select
+
+        End If
+
+        .Sorted = True
+
+        If Not .SelectedItem Is Nothing Then .SelectedItem.EnsureVisible
+    End With
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub lvOS_ItemDblClick
+'! Description (Описание)  :   [Двойнок клик по элементу списка вызывает форму редактирования]
+'! Parameters  (Переменные):   Item (LvwListItem)
+'                              Button (Integer)
+'!--------------------------------------------------------------------------------
+Private Sub lvOS_ItemDblClick(ByVal item As LvwListItem, ByVal Button As Integer)
+    TransferOSData
+End Sub
+
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ReadOptions
+'! Description (Описание)  :   [Читаем настройки программы и заполняем поля]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ReadOptions()
-
     ' загрузить список ОС
-    LoadList_OS
+    LoadList_lvOS
     ' Остальные параметры
-    chkUpdate.Value = Abs(mbUpdateCheck)
-    chkUpdateBeta.Value = Abs(mbUpdateCheckBeta)
-    chkSilentDll.Value = Abs(mbSilentDLL)
-    chkRemoveTemp.Value = Abs(mbDelTmpAfterClose)
-    chkDebug.Value = Abs(mbDebugStandart)
-    chkRemoveHistory.Value = Abs(mbCleanHistory)
-    chkFormMaximaze.Value = Abs(mbStartMaximazed)
-    chkFormSizeSave.Value = Abs(mbSaveSizeOnExit)
-    chkTempPath.Value = Abs(mbTempPath)
-    ucTempPath.Path = strAlternativeTempPath
-    chkHideOtherProcess.Value = Abs(mbHideOtherProcess)
-    ucDebugLogPath.Path = strDebugLogPath
+    chkUpdate.Value = mbUpdateCheck
+    chkUpdateBeta.Value = mbUpdateCheckBeta
+    chkSilentDll.Value = mbSilentDLL
+    chkRemoveTemp.Value = mbDelTmpAfterClose
+    chkDebug.Value = mbDebugStandart
+    chkDebugTime2File.Value = mbDebugTime2File
+    chkDebugLog2AppPath.Value = mbDebugLog2AppPath
+    ucDebugLogPath.Path = strDebugLogPathTemp
+    txtDebugLogName.Text = strDebugLogNameTemp
     txtDebugLogLevel.Text = lngDetailMode
+    chkFormMaximaze.Value = mbStartMaximazed
+    chkFormSizeSave.Value = mbSaveSizeOnExit
+    chkTempPath.Value = mbTempPath
+    ucTempPath.Path = strAlternativeTempPath
+    chkHideOtherProcess.Value = mbHideOtherProcess
+
     ' Режим при старте
     LoadComboList
     LoadStartMode
     'MainForm
-    txtFormHeight.Text = lngMainFormHeight
-    txtFormWidth.Text = lngMainFormWidth
+    txtFormHeight.Value = lngMainFormHeight
+    txtFormWidth.Value = lngMainFormWidth
 
     'Пути к программам
     If mbPatnAbs Then
@@ -3311,7 +3949,8 @@ Private Sub ReadOptions()
         ucDPInst86Path.Path = strDPInstExePath86
         ucDPInst64Path.Path = strDPInstExePath64
         'Секция Arc
-        ucArchPath.Path = strArh7zExePath
+        ucArch86Path.Path = strArh7zExePath86
+        ucArch64Path.Path = strArh7zExePath64
         ucArchPathSFX.Path = strArh7zSFXPATH
         ucArchPathSFXConfig.Path = strArh7zSFXConfigPath
         ucArchPathSFXConfigEn.Path = strArh7zSFXConfigPathEn
@@ -3320,27 +3959,29 @@ Private Sub ReadOptions()
         ucDPInst86Path.Path = Replace$(strDPInstExePath86, strAppPathBackSL, vbNullString, , , vbTextCompare)
         ucDPInst64Path.Path = Replace$(strDPInstExePath64, strAppPathBackSL, vbNullString, , , vbTextCompare)
         'Секция Arc
-        ucArchPath.Path = Replace$(strArh7zExePath, strAppPathBackSL, vbNullString, , , vbTextCompare)
+        ucArch86Path.Path = Replace$(strArh7zExePath86, strAppPathBackSL, vbNullString, , , vbTextCompare)
+        ucArch64Path.Path = Replace$(strArh7zExePath64, strAppPathBackSL, vbNullString, , , vbTextCompare)
         ucArchPathSFX.Path = Replace$(strArh7zSFXPATH, strAppPathBackSL, vbNullString, , , vbTextCompare)
         ucArchPathSFXConfig.Path = Replace$(strArh7zSFXConfigPath, strAppPathBackSL, vbNullString, , , vbTextCompare)
         ucArchPathSFXConfigEn.Path = Replace$(strArh7zSFXConfigPathEn, strAppPathBackSL, vbNullString, , , vbTextCompare)
     End If
 
     ' Настройки DpInst
-    chkLegacyMode.Value = Abs(mbDpInstLegacyMode)
-    chkPromptIfDriverIsNotBetter.Value = Abs(mbDpInstPromptIfDriverIsNotBetter)
-    chkForceIfDriverIsNotBetter.Value = Abs(mbDpInstForceIfDriverIsNotBetter)
-    chkSuppressAddRemovePrograms.Value = Abs(mbDpInstSuppressAddRemovePrograms)
-    chkSuppressWizard.Value = Abs(mbDpInstSuppressWizard)
-    chkQuietInstall.Value = Abs(mbDpInstQuietInstall)
-    chkScanHardware.Value = Abs(mbDpInstScanHardware)
+    chkLegacyMode.Value = mbDpInstLegacyMode
+    chkPromptIfDriverIsNotBetter.Value = mbDpInstPromptIfDriverIsNotBetter
+    chkForceIfDriverIsNotBetter.Value = mbDpInstForceIfDriverIsNotBetter
+    chkSuppressAddRemovePrograms.Value = mbDpInstSuppressAddRemovePrograms
+    chkSuppressWizard.Value = mbDpInstSuppressWizard
+    chkQuietInstall.Value = mbDpInstQuietInstall
+    chkScanHardware.Value = mbDpInstScanHardware
     ' Другие настройки
-    'txtCmdStringDPInst = CollectCmdString
+    txtCmdStringDPInst = CollectCmdString
     ' Загрузка списка скинов
-    LoadListCombo cmbImageMain, strPathImageMain
+    LoadSkinListCombo cmbImageMain, strPathImageMain
     cmbImageMain.Text = strImageMainName
     ' изменение активности элементов
     DebugCtlEnable CBool(chkDebug.Value)
+    DebugCtlEnableLog2App Not CBool(chkDebugLog2AppPath.Value)
     TempCtlEnable CBool(chkTempPath.Value)
     UpdateCtlEnable CBool(chkUpdate.Value)
     ' Имя архива при старте
@@ -3352,23 +3993,26 @@ Private Sub ReadOptions()
     'ucFontButton.
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  SaveOptions
-'!  Переменные  :
-'!  Описание    :  Сохранение настроек в ини-файл
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SaveOptions
+'! Description (Описание)  :   [Сохранение настроек в ини-файл]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub SaveOptions()
 
-    Dim miRezim       As Long
-    Dim miArchName    As Long
-    Dim cnt           As Long
-    Dim OSCountNew    As Long
+    Dim miRezim          As Long
+    Dim miArchName       As Long
+    Dim cnt              As Long
+    Dim lngOSCountNew    As Long
     Dim strSysIniTemp As String
+    Dim strLogNameTemp   As String
 
     If mbIsDriveCDRoom And Not mbLoadIniTmpAfterRestart Then
-        If strSysIni <> strWorkTemp & "\DriversBackuper.ini" Then
+        If strSysIni <> strWorkTempBackSL & strSettingIniFile Then
             MsgBox strMessages(38), vbInformation + vbApplicationModal, strProductName
+
             Exit Sub
+
         End If
 
     ElseIf mbIsDriveCDRoom And mbLoadIniTmpAfterRestart Then
@@ -3408,27 +4052,32 @@ Private Sub SaveOptions()
     IniWriteStrPrivate "Main", "HideOtherProcess", chkHideOtherProcess.Value, strSysIniTemp
     IniWriteStrPrivate "Main", "AlternativeTemp", chkTempPath.Value, strSysIniTemp
     IniWriteStrPrivate "Main", "AlternativeTempPath", ucTempPath.Path, strSysIniTemp
-    IniWriteStrPrivate "Main", "IconMainSkin", cmbImageMain.Text, strSysIniTemp
     IniWriteStrPrivate "Main", "SilentDLL", chkSilentDll.Value, strSysIniTemp
+    IniWriteStrPrivate "Main", "IconMainSkin", cmbImageMain.Text, strSysIniTemp
+    IniWriteStrPrivate "Main", "LoadIniTmpAfterRestart", Abs(mbLoadIniTmpAfterRestart), strSysIniTemp
     IniWriteStrPrivate "Main", "ArchMode", cmbTypeBackUp.ListIndex, strSysIni
-
-    If mbLoadIniTmpAfterRestart Then
-        IniWriteStrPrivate "Main", "LoadIniTmpAfterRestart", 1, strSysIniTemp
-    End If
-
     IniWriteStrPrivate "Main", "DisableDEP", Abs(mbDisableDEP), strSysIniTemp
+   
     ' Секция Debug
     IniWriteStrPrivate "Debug", "DebugEnable", chkDebug.Value, strSysIniTemp
-    ' Очистка истории:
-    IniWriteStrPrivate "Debug", "CleenHistory", chkRemoveHistory.Value, strSysIniTemp
-    ' Путь до лог-файла
     IniWriteStrPrivate "Debug", "DebugLogPath", ucDebugLogPath.Path, strSysIniTemp
+    strLogNameTemp = "DBS-LOG_%DATE%.txt"
+
+    If LenB(txtDebugLogName.Text) Then
+        If InStr(txtDebugLogName.Text, strDot) Then
+            strLogNameTemp = txtDebugLogName.Text
+        End If
+    End If
+
+    IniWriteStrPrivate "Debug", "DebugLogName", strLogNameTemp, strSysIniTemp
+    IniWriteStrPrivate "Debug", "CleenHistory", 1, strSysIniTemp
     IniWriteStrPrivate "Debug", "Detailmode", txtDebugLogLevel.Text, strSysIniTemp
-    'Секция DPInst
-    IniWriteStrPrivate "DPInst", "PathExe", ucDPInst86Path.Path, strSysIniTemp
-    IniWriteStrPrivate "DPInst", "PathExe64", ucDPInst64Path.Path, strSysIniTemp
+    IniWriteStrPrivate "Debug", "DebugLog2AppPath", chkDebugLog2AppPath.Value, strSysIniTemp
+    IniWriteStrPrivate "Debug", "Time2File", Abs(mbDebugTime2File), strSysIniTemp
+
     'Секция Arc
-    IniWriteStrPrivate "Arc", "PathExe", ucArchPath.Path, strSysIniTemp
+    IniWriteStrPrivate "Arc", "PathExe", ucArch86Path.Path, strSysIniTemp
+    IniWriteStrPrivate "Arc", "PathExe64", ucArch64Path.Path, strSysIniTemp
     IniWriteStrPrivate "Arc", "CompressParam1", "-mmt=off -m0=BCJ2 -m1=LZMA2:d32m:fb273 -m2=LZMA2:d512k -m3=LZMA2:d512k -mb0:1 -mb0s1:2 -mb0s2:3 *.ini -ir!*.inf", strSysIni
     IniWriteStrPrivate "Arc", "CompressParam2", "-mmt=off -m0=BCJ2 -m1=LZMA2:d32m:fb273 -m2=LZMA2:d512k -m3=LZMA2:d512k -mb0:1 -mb0s1:2 -mb0s2:3 -xr!*.inf -x!*.ini", strSysIni
     IniWriteStrPrivate "Arc", "PathSFX", ucArchPathSFX.Path, strSysIni
@@ -3446,27 +4095,41 @@ Private Sub SaveOptions()
 
     IniWriteStrPrivate "ARCName", "StartMode", miArchName, strSysIni
     IniWriteStrPrivate "ARCName", "CustomName", txtArchNameShablon, strSysIni
+
+    'Секция DPInst
+    IniWriteStrPrivate "DPInst", "PathExe", ucDPInst86Path.Path, strSysIniTemp
+    IniWriteStrPrivate "DPInst", "PathExe64", ucDPInst64Path.Path, strSysIniTemp
+    IniWriteStrPrivate "DPInst", "LegacyMode", chkLegacyMode.Value, strSysIniTemp
+    IniWriteStrPrivate "DPInst", "PromptIfDriverIsNotBetter", chkPromptIfDriverIsNotBetter.Value, strSysIniTemp
+    IniWriteStrPrivate "DPInst", "ForceIfDriverIsNotBetter", chkForceIfDriverIsNotBetter.Value, strSysIniTemp
+    IniWriteStrPrivate "DPInst", "SuppressAddRemovePrograms", chkSuppressAddRemovePrograms.Value, strSysIniTemp
+    IniWriteStrPrivate "DPInst", "SuppressWizard", chkSuppressWizard.Value, strSysIniTemp
+    IniWriteStrPrivate "DPInst", "QuietInstall", chkQuietInstall.Value, strSysIniTemp
+    IniWriteStrPrivate "DPInst", "ScanHardware", chkScanHardware.Value, strSysIniTemp
     'Секция OS
-    OSCountNew = lvOS.count
-    IniWriteStrPrivate "OS", "OSCount", OSCountNew, strSysIniTemp
+    'Число ОС
+    lngOSCountNew = lvOS.ListItems.count
+    IniWriteStrPrivate "OS", "OSCount", lngOSCountNew, strSysIniTemp
 
     'Заполяем в цикле подсекции ОС
-    For cnt = 1 To OSCountNew
+    For cnt = 1 To lngOSCountNew
 
         'Секция OS_N
-        With lvOS
-            IniWriteStrPrivate "OS_" & cnt, "Ver", .ItemCaption(cnt - 1), strSysIniTemp
-            IniWriteStrPrivate "OS_" & cnt, "is64bit", .SubItemCaption(cnt - 1, 1), strSysIniTemp
-            IniWriteStrPrivate "OS_" & cnt, "drpFolder", .SubItemCaption(cnt - 1, 2), strSysIniTemp
+        With lvOS.ListItems(cnt)
+            IniWriteStrPrivate "OS_" & cnt, "Ver", .Text, strSysIniTemp
+            IniWriteStrPrivate "OS_" & cnt, "is64bit", .SubItems(1), strSysIniTemp
+            IniWriteStrPrivate "OS_" & cnt, "drpFolder", .SubItems(2), strSysIniTemp
         End With
 
     Next
     'Секция MainForm
-    IniWriteStrPrivate "MainForm", "Width", txtFormWidth.Text, strSysIniTemp
-    IniWriteStrPrivate "MainForm", "Height", txtFormHeight.Text, strSysIniTemp
+    IniWriteStrPrivate "MainForm", "Width", txtFormWidth.Value, strSysIniTemp
+    IniWriteStrPrivate "MainForm", "Height", txtFormHeight.Value, strSysIniTemp
     IniWriteStrPrivate "MainForm", "StartMaximazed", chkFormMaximaze.Value, strSysIniTemp
-    mbSaveSizeOnExit = chkFormSizeSave.Value
+    mbSaveSizeOnExit = CBool(chkFormSizeSave.Value)
     IniWriteStrPrivate "MainForm", "SaveSizeOnExit", chkFormSizeSave.Value, strSysIniTemp
+    IniWriteStrPrivate "MainForm", "FontName", strFontMainForm_Name, strSysIniTemp
+    IniWriteStrPrivate "MainForm", "FontSize", lngFontMainForm_Size, strSysIniTemp
     IniWriteStrPrivate "MainForm", "HighlightColor", CStr(glHighlightColor), strSysIniTemp
     'Секция Buttons
     IniWriteStrPrivate "Button", "FontName", strFontBtn_Name, strSysIniTemp
@@ -3476,11 +4139,16 @@ Private Sub SaveOptions()
     IniWriteStrPrivate "Button", "FontItalic", Abs(mbFontBtn_Italic), strSysIniTemp
     IniWriteStrPrivate "Button", "FontBold", Abs(mbFontBtn_Bold), strSysIniTemp
     IniWriteStrPrivate "Button", "FontColor", CStr(cmdFutureButton.ForeColor), strSysIniTemp
+    IniWriteStrPrivate "Button", "Style", cmbButtonStyle.ListIndex, strSysIniTemp
     ' Приводим Ini файл к читабельному виду
     NormIniFile strSysIniTemp
 End Sub
 
-' Режим при старте
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SelectStartArchName
+'! Description (Описание)  :   [Режим архива при старте]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub SelectStartArchName()
 
     Select Case lngArchNameMode
@@ -3499,7 +4167,11 @@ Private Sub SelectStartArchName()
     End Select
 End Sub
 
-' Режим при старте
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SelectStartMode
+'! Description (Описание)  :   [Режим при старте]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub SelectStartMode()
 
     Select Case miStartMode
@@ -3518,194 +4190,156 @@ Private Sub SelectStartMode()
     End Select
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub TempCtlEnable
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   mbEnable (Boolean)
+'!--------------------------------------------------------------------------------
 Private Sub TempCtlEnable(ByVal mbEnable As Boolean)
-
     ucTempPath.Enabled = mbEnable
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  TransferOSData
-'!  Переменные  :
-'!  Описание    :  Передача параметров ОС из спика в форму редактирования
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub TransferOSData
+'! Description (Описание)  :   [Передача параметров ОС из спика в форму редактирования]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub TransferOSData()
 
     Dim ii As Long
 
     With lvOS
-        ii = .SelectedItem
+        ii = .SelectedItem.Index
 
-        If ii = -1 Then
-            Exit Sub
+        If ii >= 0 Then
+
+            frmOSEdit.txtOSVer.Text = .ListItems.item(ii).Text
+            frmOSEdit.ucPathDRP.Path = .ListItems.item(ii).SubItems(2)
+            frmOSEdit.chk64bit.Value = CBool(.ListItems.item(ii).SubItems(1))
+
+            frmOSEdit.Show vbModal, Me
         End If
-
-        frmOSEdit.txtOSVer.Text = .ItemCaption(ii)
-        frmOSEdit.ucPathDRP.Path = .SubItemCaption(ii, 2)
-        frmOSEdit.chk64bit.Value = CBool(.SubItemCaption(ii, 1))
-    End With
-
-    frmOSEdit.Show vbModal, Me
-End Sub
-
-'! -----------------------------------------------------------
-'!  Функция     :  tvOptionsLoad
-'!  Переменные  :
-'!  Описание    :  Построение дерева настроек
-'! -----------------------------------------------------------
-Private Sub tvOptionsLoad()
-
-    Set lvOptions = New cListView
-
-    With lvOptions
-        .Create frOptions.hWnd, LVS_LIST Or LVS_SINGLESEL Or LVS_SHOWSELALWAYS, 5, 29, 190, 198, , WS_EX_STATICEDGE
-        .SetStyleEx LVS_EX_ONECLICKACTIVATE Or LVS_EX_UNDERLINEHOT
-        .AddItem strItemOptions1, , 0
-        .AddItem strItemOptions2, , 1
-        .AddItem strItemOptions3, , 2
-        .AddItem strItemOptions4, , 3
-        .AddItem strItemOptions5, , 4
-        '.AddItem strItemOptions6, , 4
-        .ImgLst_AddIcon LoadIconImageFromPath("OPT_MAIN", strPathImageMainWork)
-        .ImgLst_AddIcon LoadIconImageFromPath("OPT_OSLIST", strPathImageMainWork)
-        .ImgLst_AddIcon LoadIconImageFromPath("OPT_TOOLS_MAIN", strPathImageMainWork)
-        .ImgLst_AddIcon LoadIconImageFromPath("OPT_ARCHNAME", strPathImageMainWork)
-        .ImgLst_AddIcon LoadIconImageFromPath("OPT_DESIGN", strPathImageMainWork)
-        '.ImgLst_AddIcon LoadIconImageFromPath("OPT_DPINST", strPathImageMainWork)
+        
     End With
 
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtArchNameShablon_GotFocus
+'! Description (Описание)  :   []
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub txtArchNameShablon_GotFocus()
 
     HighlightActiveControl Me, txtArchNameShablon, True
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtArchNameShablon_GotFocus
+'! Description (Описание)  :   []
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub txtArchNameShablon_LostFocus()
 
     HighlightActiveControl Me, txtArchNameShablon, False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtCmdStringDPInst_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub txtCmdStringDPInst_GotFocus()
-
     HighlightActiveControl Me, txtCmdStringDPInst, True
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtCmdStringDPInst_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub txtCmdStringDPInst_LostFocus()
-
     HighlightActiveControl Me, txtCmdStringDPInst, False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtDebugLogName_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub txtDebugLogName_GotFocus()
+    HighlightActiveControl Me, txtDebugLogName, True
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtDebugLogName_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub txtDebugLogName_LostFocus()
+    HighlightActiveControl Me, txtDebugLogName, True
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtMacrosDate_DblClick
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub txtMacrosDate_DblClick()
 
     txtMacrosDate.SelStart = 0
     txtMacrosDate.SelLength = Len(txtMacrosDate.Text)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtMacrosOSBit_DblClick
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub txtMacrosOSBit_DblClick()
 
     txtMacrosOSBIT.SelStart = 0
     txtMacrosOSBIT.SelLength = Len(txtMacrosOSBIT.Text)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtMacrosOSVer_DblClick
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub txtMacrosOSVer_DblClick()
 
     txtMacrosOSVER.SelStart = 0
     txtMacrosOSVER.SelLength = Len(txtMacrosOSVER.Text)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtMacrosPCModel_DblClick
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub txtMacrosPCModel_DblClick()
 
     txtMacrosPCModel.SelStart = 0
     txtMacrosPCModel.SelLength = Len(txtMacrosPCModel.Text)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtMacrosPCName_DblClick
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub txtMacrosPCName_DblClick()
 
     txtMacrosPCName.SelStart = 0
     txtMacrosPCName.SelLength = Len(txtMacrosPCName.Text)
 End Sub
 
-Private Sub ucArchPath_Click()
-
-    Dim strTempPath As String
-
-    If ucArchPath.FileCount > 0 Then
-        strTempPath = ucArchPath.FileName
-
-        If InStr(1, strTempPath, strAppPath, vbTextCompare) > 0 Then
-            strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
-        End If
-    End If
-
-    If LenB(strTempPath) > 0 Then
-        ucArchPath.Path = strTempPath
-    End If
-End Sub
-
-Private Sub ucArchPath_GotFocus()
-
-    HighlightActiveControl Me, ucArchPath, True
-End Sub
-
-Private Sub ucArchPath_LostFocus()
-
-    HighlightActiveControl Me, ucArchPath, False
-End Sub
-
-Private Sub ucArchPathSFX_Click()
-
-    Dim strTempPath As String
-
-    If ucArchPathSFX.FileCount > 0 Then
-        strTempPath = ucArchPathSFX.FileName
-
-        If InStr(1, strTempPath, strAppPath, vbTextCompare) > 0 Then
-            strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
-        End If
-    End If
-
-    If LenB(strTempPath) > 0 Then
-        ucArchPathSFX.Path = strTempPath
-    End If
-End Sub
-
-Private Sub ucArchPathSFX_GotFocus()
-
-    HighlightActiveControl Me, ucArchPathSFX, True
-End Sub
-
-Private Sub ucArchPathSFX_LostFocus()
-
-    HighlightActiveControl Me, ucArchPathSFX, False
-End Sub
-
-Private Sub ucArchPathSFXConfig_Click()
-
-    Dim strTempPath As String
-
-    If ucArchPathSFXConfig.FileCount > 0 Then
-        strTempPath = ucArchPathSFXConfig.FileName
-
-        If InStr(1, strTempPath, strAppPath, vbTextCompare) > 0 Then
-            strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
-        End If
-    End If
-
-    If LenB(strTempPath) > 0 Then
-        ucArchPathSFXConfig.Path = strTempPath
-    End If
-End Sub
-
-Private Sub ucArchPathSFXConfig_GotFocus()
-
-    HighlightActiveControl Me, ucArchPathSFXConfig, True
-End Sub
-
-Private Sub ucArchPathSFXConfig_LostFocus()
-
-    HighlightActiveControl Me, ucArchPathSFXConfig, False
-End Sub
-
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArchPathSFXConfigEn_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucArchPathSFXConfigEn_Click()
 
     Dim strTempPath As String
@@ -3723,183 +4357,370 @@ Private Sub ucArchPathSFXConfigEn_Click()
     End If
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArchPathSFXConfigEn_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucArchPathSFXConfigEn_GotFocus()
 
     HighlightActiveControl Me, ucArchPathSFXConfigEn, True
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArchPathSFXConfigEn_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucArchPathSFXConfigEn_LostFocus()
 
     HighlightActiveControl Me, ucArchPathSFXConfigEn, False
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  ucDebugLogPath_Click
-'!  Переменные  :
-'!  Описание    :  выбор каталога или файла
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArchPathSFXConfig_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ucArchPathSFXConfig_Click()
+
+    Dim strTempPath As String
+
+    If ucArchPathSFXConfig.FileCount > 0 Then
+        strTempPath = ucArchPathSFXConfig.FileName
+
+        If InStr(1, strTempPath, strAppPath, vbTextCompare) > 0 Then
+            strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
+        End If
+    End If
+
+    If LenB(strTempPath) > 0 Then
+        ucArchPathSFXConfig.Path = strTempPath
+    End If
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArchPathSFXConfig_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ucArchPathSFXConfig_GotFocus()
+
+    HighlightActiveControl Me, ucArchPathSFXConfig, True
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArchPathSFXConfig_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ucArchPathSFXConfig_LostFocus()
+
+    HighlightActiveControl Me, ucArchPathSFXConfig, False
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArchPathSFX_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ucArchPathSFX_Click()
+
+    Dim strTempPath As String
+
+    If ucArchPathSFX.FileCount > 0 Then
+        strTempPath = ucArchPathSFX.FileName
+
+        If InStr(1, strTempPath, strAppPath, vbTextCompare) > 0 Then
+            strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
+        End If
+    End If
+
+    If LenB(strTempPath) > 0 Then
+        ucArchPathSFX.Path = strTempPath
+    End If
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArchPathSFX_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ucArchPathSFX_GotFocus()
+
+    HighlightActiveControl Me, ucArchPathSFX, True
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArchPathSFX_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ucArchPathSFX_LostFocus()
+
+    HighlightActiveControl Me, ucArchPathSFX, False
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArch64Path_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ucArch64Path_Click()
+
+    Dim strTempPath As String
+
+    With ucArch64Path
+        If .FileCount Then
+            strTempPath = .FileName
+    
+            If InStr(1, strTempPath, strAppPath, vbTextCompare) Then
+                strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
+            End If
+        End If
+    
+        If LenB(strTempPath) Then
+            .Path = strTempPath
+        End If
+    End With
+    
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArch64Path_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ucArch64Path_GotFocus()
+    HighlightActiveControl Me, ucArch64Path, True
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArch64Path_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ucArch64Path_LostFocus()
+    HighlightActiveControl Me, ucArch64Path, False
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArch86Path_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ucArch86Path_Click()
+
+    Dim strTempPath As String
+
+    With ucArch86Path
+        If .FileCount Then
+            strTempPath = .FileName
+    
+            If InStr(1, strTempPath, strAppPath, vbTextCompare) Then
+                strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
+            End If
+        End If
+    
+        If LenB(strTempPath) Then
+            .Path = strTempPath
+        End If
+    End With
+    
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArch86Path_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ucArch86Path_GotFocus()
+    HighlightActiveControl Me, ucArch86Path, True
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucArch86Path_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ucArch86Path_LostFocus()
+    HighlightActiveControl Me, ucArch86Path, False
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucDebugLogPath_Click
+'! Description (Описание)  :   [выбор каталога или файла]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucDebugLogPath_Click()
 
     Dim strTempPath As String
 
-    If ucDebugLogPath.FileCount > 0 Then
-        strTempPath = ucDebugLogPath.FileName
+    With ucDebugLogPath
+        strTempPath = .FileName
 
-        If InStr(1, strTempPath, strAppPath, vbTextCompare) > 0 Then
+        If InStr(1, strTempPath, strAppPath, vbTextCompare) Then
             strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
         End If
-    End If
-
-    If LenB(strTempPath) > 0 Then
-        ucDebugLogPath.Path = strTempPath
-    End If
+    
+        If LenB(strTempPath) Then
+            .Path = strTempPath
+        End If
+    End With
+    
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucDebugLogPath_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucDebugLogPath_GotFocus()
-
     HighlightActiveControl Me, ucDebugLogPath, True
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucDebugLogPath_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucDebugLogPath_LostFocus()
-
     HighlightActiveControl Me, ucDebugLogPath, False
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  ucDPInst64Path_Click
-'!  Переменные  :
-'!  Описание    :  выбор каталога или файла
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucDPInst64Path_Click
+'! Description (Описание)  :   [выбор каталога или файла]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucDPInst64Path_Click()
 
     Dim strTempPath As String
 
-    If ucDPInst64Path.FileCount > 0 Then
-        strTempPath = ucDPInst64Path.FileName
-
-        If InStr(1, strTempPath, strAppPath, vbTextCompare) > 0 Then
-            strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
+    With ucDPInst64Path
+        If .FileCount Then
+            strTempPath = .FileName
+    
+            If InStr(1, strTempPath, strAppPath, vbTextCompare) Then
+                strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
+            End If
         End If
-    End If
-
-    If LenB(strTempPath) > 0 Then
-        ucDPInst64Path.Path = strTempPath
-    End If
+    
+        If LenB(strTempPath) Then
+            .Path = strTempPath
+        End If
+    End With
+    
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucDPInst64Path_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucDPInst64Path_GotFocus()
-
     HighlightActiveControl Me, ucDPInst64Path, True
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucDPInst64Path_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucDPInst64Path_LostFocus()
-
     HighlightActiveControl Me, ucDPInst64Path, False
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  ucDPInst86Path_Click
-'!  Переменные  :
-'!  Описание    :  выбор каталога или файла
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucDPInst86Path_Click
+'! Description (Описание)  :   [выбор каталога или файла]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucDPInst86Path_Click()
 
     Dim strTempPath As String
 
-    If ucDPInst86Path.FileCount > 0 Then
-        strTempPath = ucDPInst86Path.FileName
-
-        If InStr(1, strTempPath, strAppPath, vbTextCompare) > 0 Then
-            strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
+    With ucDPInst86Path
+        If .FileCount Then
+            strTempPath = .FileName
+    
+            If InStr(1, strTempPath, strAppPath, vbTextCompare) Then
+                strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
+            End If
         End If
-    End If
+    
+        If LenB(strTempPath) Then
+            .Path = strTempPath
+        End If
+    End With
 
-    If LenB(strTempPath) > 0 Then
-        ucDPInst86Path.Path = strTempPath
-    End If
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucDPInst86Path_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucDPInst86Path_GotFocus()
-
     HighlightActiveControl Me, ucDPInst86Path, True
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucDPInst86Path_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucDPInst86Path_LostFocus()
-
     HighlightActiveControl Me, ucDPInst86Path, False
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  ucFontButton_Click
-'!  Переменные  :
-'!  Описание    :  выбор шрифта кнопки
-'! -----------------------------------------------------------
-'Private Sub ucFontButton_Click()
-'
-'    Dim NewFontButton As StdFont
-'
-'    Set NewFontButton = ucFontButton.Font
-'
-'    If Not NewFontButton Is Nothing Then
-'        strFontBtn_Name = NewFontButton.Name
-'        miFontBtn_Size = NewFontButton.Size
-'        mbFontBtn_Underline = NewFontButton.Underline
-'        mbFontBtn_Strikethru = NewFontButton.Strikethrough
-'        mbFontBtn_Bold = NewFontButton.Bold
-'        mbFontBtn_Italic = NewFontButton.Italic
-'        'lngDialog_Language = NewFontButton.Charset
-'        'lngDialog_Color = ucFontButton.Color
-'        'cmdFutureButton.Refresh
-'        'cmdFutureButton.Font.Charset = NewFont.Charset
-'        'cmdFutureButton.Font.Weight = NewFont.Weight
-'    End If
-'
-'    SetBtnFontProperties cmdFutureButton
-'End Sub
-
-'Private Sub ucFontButton_GotFocus()
-'
-'    HighlightActiveControl Me, ucFontButton, True
-'End Sub
-'
-'Private Sub ucFontButton_LostFocus()
-'
-'    HighlightActiveControl Me, ucFontButton, False
-'End Sub
-
-'! -----------------------------------------------------------
-'!  Функция     :  ucTempPath_Click
-'!  Переменные  :
-'!  Описание    :  выбор каталога или файла
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucTempPath_Click
+'! Description (Описание)  :   [выбор каталога или файла]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucTempPath_Click()
 
     Dim strTempPath As String
 
-    If ucTempPath.FileCount > 0 Then
-        strTempPath = ucTempPath.Path
+    With ucTempPath
+        strTempPath = .Path
 
-        If InStr(1, strTempPath, strAppPath, vbTextCompare) > 0 Then
+        If InStr(1, strTempPath, strAppPath, vbTextCompare) Then
             strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
         End If
-    End If
-
-    If LenB(strTempPath) > 0 Then
-        ucTempPath.Path = strTempPath
-    End If
+    
+        If LenB(strTempPath) Then
+            .Path = strTempPath
+        End If
+    End With
+    
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucTempPath_GotFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucTempPath_GotFocus()
-
     HighlightActiveControl Me, ucTempPath, True
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ucTempPath_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub ucTempPath_LostFocus()
-
     HighlightActiveControl Me, ucTempPath, False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub UpdateCtlEnable
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   mbEnable (Boolean)
+'!--------------------------------------------------------------------------------
 Private Sub UpdateCtlEnable(ByVal mbEnable As Boolean)
-
     chkUpdateBeta.Enabled = mbEnable
 End Sub
+

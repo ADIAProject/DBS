@@ -534,7 +534,7 @@ Public Function GetMainIniParam() As Boolean
             If arrOSList(ii).drpFolder <> "No Key" Then
                 If PathExists(PathCollect(arrOSList(ii).drpFolder)) = False Then
                     If mbDebugStandart Then DebugMode "Not find folder for package driver backup" & vbNewLine & "aey IN: " & arrOSList(ii).Ver & " is64bit:" & arrOSList(ii).is64bit & vbNewLine & vbNewLine & "Folder is not Exist: " & vbNewLine & PathCollect(arrOSList(ii).drpFolder)
-                    arrOSList(I).DPFolderNotExist = "DriverPack folder is not Exist"
+                    arrOSList(ii).DPFolderNotExist = "DriverPack folder is not Exist"
                 End If
 
             Else

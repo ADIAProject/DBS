@@ -43,10 +43,28 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private mbRunProgress As Boolean
-'Private WithEvents TaskBar2 As cITaskBarList3
 
 '[Function]
 Private Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
+
+Public Sub ChangeProgressBarStatus(ByRef lngProgressValue As Long, ByVal lngProgressValuePlus As Long)
+Attribute ChangeProgressBarStatus.VB_UserMemId = 1610809348
+
+    lngProgressValue = lngProgressValue + lngProgressValuePlus
+
+    If lngProgressValue > 10000 Then
+        lngProgressValue = 10000
+        Sleep 50
+    End If
+    ProgressBar1.Value = lngProgressValue
+
+    With ProgressBar1
+        .Value = lngProgressValue
+        .SetTaskBarProgressValue .Value, .Max
+    End With
+    
+    DoEvents
+End Sub
 
 Private Sub FontCharsetChange()
 
@@ -106,22 +124,4 @@ Private Sub Localise(strPathFile As String)
     FontCharsetChange
     ' Название формы
     Me.Caption = LocaliseString(strPathFile, strFormName, strFormName, Me.Caption)
-End Sub
-
-Public Sub ChangeProgressBarStatus(ByRef lngProgressValue As Long, ByVal lngProgressValuePlus As Long)
-
-    lngProgressValue = lngProgressValue + lngProgressValuePlus
-
-    If lngProgressValue > 10000 Then
-        lngProgressValue = 10000
-        Sleep 50
-    End If
-    ProgressBar1.Value = lngProgressValue
-
-    With ProgressBar1
-        .Value = lngProgressValue
-        .SetTaskBarProgressValue .Value, .Max
-    End With
-    
-    DoEvents
 End Sub

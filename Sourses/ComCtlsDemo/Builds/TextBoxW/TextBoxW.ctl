@@ -1045,7 +1045,9 @@ End If
 End Property
 
 Public Property Let Text(ByVal Value As String)
-If Me.Text = Value Then Exit Property
+If PropMaxLength > 0 Then Value = Left$(Value, PropMaxLength)
+Dim Changed As Boolean
+Changed = CBool(Me.Text <> Value)
 PropText = Value
 If TextBoxHandle <> 0 Then
     TextBoxChangeFrozen = True
@@ -1053,7 +1055,7 @@ If TextBoxHandle <> 0 Then
     TextBoxChangeFrozen = False
 End If
 UserControl.PropertyChanged "Text"
-RaiseEvent Change
+If Changed = True Then RaiseEvent Change
 End Property
 
 Public Property Get Default() As String
@@ -1424,11 +1426,11 @@ If TextBoxHandle = 0 Then TextBoxHandle = CreateWindowEx(dwExStyle, StrPtr("Edit
 If TextBoxHandle <> 0 Then
     If PropPasswordChar <> 0 And PropUseSystemPasswordChar = False Then SendMessage TextBoxHandle, EM_SETPASSWORDCHAR, PropPasswordChar, ByVal 0&
     SendMessage TextBoxHandle, EM_SETLIMITTEXT, PropMaxLength, ByVal 0&
+    SendMessage TextBoxHandle, WM_SETTEXT, 0, ByVal StrPtr(PropText)
 End If
 Set Me.Font = PropFont
 Me.VisualStyles = PropVisualStyles
 Me.Enabled = UserControl.Enabled
-Me.Text = PropText
 Me.Alignment = PropAlignment
 If Not PropCueBanner = vbNullString Then Me.CueBanner = PropCueBanner
 If PropNetAddressValidator = True Then Me.NetAddressType = PropNetAddressType
