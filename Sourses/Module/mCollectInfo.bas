@@ -28,11 +28,16 @@ End Type
 
 Private Const SP_ALTPLATFORM_FLAGS_VERSION_RANGE = &H1
 
-Public Function GetInfDriverStorePath(sInfPath As String) As String
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetInfDriverStorePath
+'! Description (Описание)  :   [Получение пути расположения драйвера по inf-файлу]
+'! Parameters  (Переменные):   sInfPath (String)
+'!--------------------------------------------------------------------------------
+Public Function GetInfDriverStorePath(ByVal sInfPath As String) As String
 
     Dim sBuffer     As String
-    Dim as12        As PSP_ALTPLATFORM_INFO_V2
-    Dim ret         As Long
+    Dim PSPAI       As PSP_ALTPLATFORM_INFO_V2
+    Dim lngRet      As Long
     Dim lngSizeBuff As Long
     Dim OSVI        As OSVERSIONINFOEX
     Dim SI          As SYSTEM_INFO
@@ -43,9 +48,9 @@ Public Function GetInfDriverStorePath(sInfPath As String) As String
         GetVersionEx OSVI
 
         ' Назначение полученных параметров для PSP_ALTPLATFORM_INFO_V2
-        With as12
-            .FirstValidatedMajorVersion = 6
-            .FirstValidatedMinorVersion = 0
+        With PSPAI
+            .FirstValidatedMajorVersion = 5
+            .FirstValidatedMinorVersion = 1
             .MajorVersion = OSVI.dwMajorVersion
             .MinorVersion = OSVI.dwMinorVersion
             .Platform = OSVI.dwPlatformID
@@ -60,14 +65,15 @@ Public Function GetInfDriverStorePath(sInfPath As String) As String
             .Reserved = 0
             .flags = SP_ALTPLATFORM_FLAGS_VERSION_RANGE
         End With
-
         If mbDebugStandart Then DebugMode "******GetInfDriverStorePath: " & sInfPath
-        ret = SetupGetInfDriverStoreLocationW(ByVal StrPtr(sInfPath), as12, StrPtr(vbNullString), ByVal 0&, 0&, lngSizeBuff)
-        sBuffer = String$(lngSizeBuff, 0)
-        ret = SetupGetInfDriverStoreLocationW(ByVal StrPtr(sInfPath), as12, StrPtr(vbNullString), ByVal StrPtr(sBuffer), Len(sBuffer), 0&)
-        GetInfDriverStorePath = TrimNull(sBuffer)
+        'lngRet = SetupGetInfDriverStoreLocationW(ByVal StrPtr(sInfPath & vbNullChar), PSPAI, StrPtr(vbNullString), ByVal 0&, 0&, lngSizeBuff)
+        'sBuffer = String$(MAX_PATH_UNICODE, 0)
+        sBuffer = FillNullChar(MAX_PATH_UNICODE)
+        lngRet = SetupGetInfDriverStoreLocationW(ByVal StrPtr(sInfPath & vbNullChar), PSPAI, StrPtr(vbNullString), ByVal StrPtr(sBuffer), Len(sBuffer), 0&)
 
-        If ret = 0 Then
+        GetInfDriverStorePath = TrimNull(sBuffer)
+        
+        If lngRet = 0 Then
             If mbDebugStandart Then DebugMode "******GetInfDriverStorePath: Err №" & Err.LastDllError & " - " & ApiErrorText(Err.LastDllError)
         Else
             If mbDebugStandart Then DebugMode "******GetInfDriverStorePath: ResultValue - " & GetInfDriverStorePath
@@ -78,6 +84,11 @@ Public Function GetInfDriverStorePath(sInfPath As String) As String
     End If
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ReadDrivers
+'! Description (Описание)  :   [Сбор информации о драйверах и занесение в массив arrHwidsLocal]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Sub ReadDrivers()
 
     Dim arr_CH()            As String
@@ -121,7 +132,7 @@ Public Sub ReadDrivers()
     DoEvents
     miPbNext = 100
     ' Изменяем прогресс
-    frmProgress.ProgressBar1.SetTaskBarProgressState PrbTaskBarStateInProgress
+    frmProgress.ctlProgressBar1.SetTaskBarProgressState PrbTaskBarStateInProgress
     frmProgress.ChangeProgressBarStatus miPbNext, 100
     
     '# list all class of drivers installed
@@ -269,7 +280,7 @@ Public Sub ReadDrivers()
     
     ' Финишируем прогресс
     frmProgress.ChangeProgressBarStatus 10000, 0
-    frmProgress.ProgressBar1.SetTaskBarProgressState PrbTaskBarStateNone
+    frmProgress.ctlProgressBar1.SetTaskBarProgressState PrbTaskBarStateNone
     
     DoEvents
     

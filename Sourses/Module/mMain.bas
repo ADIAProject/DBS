@@ -4,8 +4,8 @@ Option Explicit
 #Const mbIDE_DBSProject = True
 
 'Основные параметры программы
-Public Const strDateProgram         As String = "23/12/2016"
-Public Const strVerProgram          As String = "4.12.23"
+Public Const strDateProgram         As String = "09/01/2017"
+Public Const strVerProgram          As String = "5.01.09"
 
 'Основные переменные проекта (название, версия и т.д)
 Public strProductName               As String

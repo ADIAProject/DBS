@@ -2,10 +2,10 @@ VERSION 5.00
 Begin VB.Form frmMain 
    AutoRedraw      =   -1  'True
    Caption         =   "Drivers BackUp Solution"
-   ClientHeight    =   7185
-   ClientLeft      =   225
-   ClientTop       =   870
-   ClientWidth     =   12480
+   ClientHeight    =   7230
+   ClientLeft      =   120
+   ClientTop       =   750
+   ClientWidth     =   12765
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -18,17 +18,17 @@ Begin VB.Form frmMain
    Icon            =   "frmMain.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
-   ScaleHeight     =   7185
-   ScaleWidth      =   12480
-   StartUpPosition =   3  'Windows Default
+   ScaleHeight     =   7230
+   ScaleWidth      =   12765
+   StartUpPosition =   2  'CenterScreen
    Begin prjDIADBS.ctlUcStatusBar ctlUcStatusBar1 
       Align           =   2  'Align Bottom
       Height          =   705
       Left            =   0
       TabIndex        =   15
-      Top             =   6480
-      Width           =   12480
-      _ExtentX        =   22013
+      Top             =   6525
+      Width           =   12765
+      _ExtentX        =   22516
       _ExtentY        =   1244
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -41,14 +41,14 @@ Begin VB.Form frmMain
       EndProperty
       Theme           =   2
    End
-   Begin prjDIADBS.ProgressBar ProgressBar1 
+   Begin prjDIADBS.ProgressBar ctlProgressBar1 
       Align           =   2  'Align Bottom
       Height          =   495
       Left            =   0
-      Top             =   5985
+      Top             =   6030
       Visible         =   0   'False
-      Width           =   12480
-      _ExtentX        =   22013
+      Width           =   12765
+      _ExtentX        =   22516
       _ExtentY        =   873
       Max             =   10000
    End
@@ -56,8 +56,8 @@ Begin VB.Form frmMain
       Height          =   6120
       Left            =   0
       Top             =   0
-      Width           =   12495
-      _ExtentX        =   22040
+      Width           =   12800
+      _ExtentX        =   22569
       _ExtentY        =   10795
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -78,10 +78,10 @@ Begin VB.Form frmMain
       HeaderStyle     =   1
       Begin prjDIADBS.ctlJCFrames frGroup 
          Height          =   2100
-         Left            =   120
+         Left            =   100
          Top             =   75
-         Width           =   5895
-         _ExtentX        =   10398
+         Width           =   6100
+         _ExtentX        =   10769
          _ExtentY        =   3704
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -101,12 +101,12 @@ Begin VB.Form frmMain
          HeaderStyle     =   1
          GradientHeaderStyle=   2
          Begin prjDIADBS.CheckBoxW chkHideOther 
-            Height          =   400
-            Left            =   75
+            Height          =   405
+            Left            =   1920
             TabIndex        =   7
-            Top             =   1560
-            Width           =   3495
-            _ExtentX        =   6165
+            Top             =   840
+            Width           =   4095
+            _ExtentX        =   7223
             _ExtentY        =   714
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -121,13 +121,13 @@ Begin VB.Form frmMain
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp1 
-            Height          =   255
-            Left            =   75
+            Height          =   400
+            Left            =   120
             TabIndex        =   2
             Top             =   500
-            Width           =   1600
-            _ExtentX        =   2831
-            _ExtentY        =   450
+            Width           =   1700
+            _ExtentX        =   2990
+            _ExtentY        =   714
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
                Size            =   8.25
@@ -142,13 +142,13 @@ Begin VB.Form frmMain
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp2 
-            Height          =   255
-            Left            =   1800
+            Height          =   400
+            Left            =   120
             TabIndex        =   3
-            Top             =   500
-            Width           =   1600
-            _ExtentX        =   2831
-            _ExtentY        =   450
+            Top             =   840
+            Width           =   1700
+            _ExtentX        =   2990
+            _ExtentY        =   714
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
                Size            =   8.25
@@ -163,13 +163,13 @@ Begin VB.Form frmMain
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp3 
-            Height          =   255
-            Left            =   75
+            Height          =   400
+            Left            =   120
             TabIndex        =   4
-            Top             =   850
-            Width           =   1600
-            _ExtentX        =   2831
-            _ExtentY        =   450
+            Top             =   1200
+            Width           =   1700
+            _ExtentX        =   2990
+            _ExtentY        =   714
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
                Size            =   8.25
@@ -184,13 +184,13 @@ Begin VB.Form frmMain
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.OptionButtonW optGrp4 
-            Height          =   255
-            Left            =   1800
+            Height          =   400
+            Left            =   120
             TabIndex        =   5
-            Top             =   850
-            Width           =   1600
-            _ExtentX        =   2831
-            _ExtentY        =   450
+            Top             =   1560
+            Width           =   1700
+            _ExtentX        =   2990
+            _ExtentY        =   714
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
                Size            =   8.25
@@ -205,13 +205,13 @@ Begin VB.Form frmMain
             Transparent     =   -1  'True
          End
          Begin prjDIADBS.ctlJCbutton cmdCheckAll 
-            Height          =   510
-            Left            =   3720
+            Height          =   630
+            Left            =   1920
             TabIndex        =   8
-            Top             =   500
-            Width           =   2055
-            _ExtentX        =   3625
-            _ExtentY        =   900
+            Top             =   1320
+            Width           =   1995
+            _ExtentX        =   3519
+            _ExtentY        =   1111
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
                Size            =   8.25
@@ -231,13 +231,13 @@ Begin VB.Form frmMain
             ColorScheme     =   1
          End
          Begin prjDIADBS.ctlJCbutton cmdUnCheckAll 
-            Height          =   510
-            Left            =   3720
+            Height          =   630
+            Left            =   4020
             TabIndex        =   9
-            Top             =   1100
-            Width           =   2055
-            _ExtentX        =   3625
-            _ExtentY        =   900
+            Top             =   1320
+            Width           =   1965
+            _ExtentX        =   3466
+            _ExtentY        =   1111
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
                Size            =   8.25
@@ -257,12 +257,12 @@ Begin VB.Form frmMain
             ColorScheme     =   1
          End
          Begin prjDIADBS.CheckBoxW chkCheckAll 
-            Height          =   400
-            Left            =   75
+            Height          =   405
+            Left            =   1920
             TabIndex        =   6
-            Top             =   1200
-            Width           =   3495
-            _ExtentX        =   6165
+            Top             =   480
+            Width           =   4095
+            _ExtentX        =   7223
             _ExtentY        =   714
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -279,10 +279,10 @@ Begin VB.Form frmMain
       End
       Begin prjDIADBS.ctlJCFrames frBackUp 
          Height          =   2100
-         Left            =   6120
+         Left            =   6300
          Top             =   75
-         Width           =   6255
-         _ExtentX        =   11033
+         Width           =   6400
+         _ExtentX        =   11298
          _ExtentY        =   3704
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -306,8 +306,8 @@ Begin VB.Form frmMain
             Left            =   1800
             TabIndex        =   10
             Top             =   495
-            Width           =   4335
-            _ExtentX        =   7646
+            Width           =   4480
+            _ExtentX        =   7911
             _ExtentY        =   556
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -321,13 +321,13 @@ Begin VB.Form frmMain
             Style           =   2
          End
          Begin prjDIADBS.ctlJCbutton cmdStartBackUp 
-            Height          =   510
-            Left            =   3960
+            Height          =   540
+            Left            =   3900
             TabIndex        =   0
-            Top             =   925
-            Width           =   2175
-            _ExtentX        =   3836
-            _ExtentY        =   900
+            Top             =   930
+            Width           =   2400
+            _ExtentX        =   4233
+            _ExtentY        =   953
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
                Size            =   8.25
@@ -347,13 +347,13 @@ Begin VB.Form frmMain
             ColorScheme     =   1
          End
          Begin prjDIADBS.ctlJCbutton cmdBreak 
-            Height          =   510
-            Left            =   3960
+            Height          =   540
+            Left            =   3900
             TabIndex        =   1
             Top             =   1500
-            Width           =   2175
-            _ExtentX        =   3836
-            _ExtentY        =   900
+            Width           =   2400
+            _ExtentX        =   4233
+            _ExtentY        =   953
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
                Size            =   8.25
@@ -495,15 +495,16 @@ Begin VB.Form frmMain
                Italic          =   0   'False
                Strikethrough   =   0   'False
             EndProperty
+            BackStyle       =   0
             Caption         =   "Type of backup:"
          End
       End
       Begin prjDIADBS.ctlJCFrames frPanelLV 
          Height          =   3690
-         Left            =   120
+         Left            =   100
          Top             =   2280
-         Width           =   12255
-         _ExtentX        =   21616
+         Width           =   12600
+         _ExtentX        =   22225
          _ExtentY        =   6509
          BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
             Name            =   "Tahoma"
@@ -529,8 +530,8 @@ Begin VB.Form frmMain
             Left            =   60
             TabIndex        =   17
             Top             =   360
-            Width           =   12075
-            _ExtentX        =   21299
+            Width           =   12450
+            _ExtentX        =   21960
             _ExtentY        =   5741
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
                Name            =   "Tahoma"
@@ -671,13 +672,14 @@ Private strTableHwidHeader8       As String
 Private strTableHwidHeader9       As String
 Private strTableHwidHeader10      As String
 Private strTableHwidHeader11      As String
-Private arrSourceDisksFiles()     As String
-Private arrSourceDisksNames()     As String
+Private arrSourceDisksFiles_x()   As String
+Private arrSourceDisksNames_x()   As String
 Private lngFrameTime              As Long
 Private lngFrameCount             As Long
 Private lngBorderWidthX           As Long
 Private lngBorderWidthY           As Long
 Private strFormName               As String
+Private mbMassCheckinLV           As Boolean
 
 Public Property Get CaptionW() As String
     Dim lngLenStr As Long
@@ -733,7 +735,7 @@ Private Sub ChangeFrmMainCaption(Optional ByVal lngPercentage As Long)
     End Select
 
     If lngPercentage Mod 999 Then
-        If ProgressBar1.Visible Then
+        If ctlProgressBar1.Visible Then
             strProgressValue = (lngPercentage \ 10) & "% (" & ctlUcStatusBar1.PanelText(1) & ") - "
         End If
     End If
@@ -746,21 +748,35 @@ Private Sub ChangeFrmMainCaption(Optional ByVal lngPercentage As Long)
 
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkHideOther_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub chkHideOther_Click()
-
     chkCheckAll.Enabled = CBool(chkHideOther.Value)
-
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdBreak_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdBreak_Click()
-
     mbBreakUpdateDBAll = True
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdCheckAll_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdCheckAll_Click()
 
     Dim ii As Long
 
+    mbMassCheckinLV = True
+    
     With lvDevices.ListItems
 
         For ii = 1 To .count
@@ -773,20 +789,29 @@ Private Sub cmdCheckAll_Click()
 
     End With
 
+    mbMassCheckinLV = False
     FindCheckCountList
 End Sub
 
-'# do backup of selected drivers #
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdStartBackUp_Click
+'! Description (Описание)  :   [do backup of selected drivers]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdStartBackUp_Click()
-
-    ' Собственно бекап
     StartBackUp
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdUnCheckAll_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdUnCheckAll_Click()
 
     Dim ii As Long
 
+    mbMassCheckinLV = True
     With lvDevices.ListItems
 
         For ii = 1 To .count
@@ -799,9 +824,15 @@ Private Sub cmdUnCheckAll_Click()
 
     End With
 
+    mbMassCheckinLV = False
     FindCheckCountList
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub CollectDestPathFiles
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub CollectDestPathFiles(ByVal strPathInfFile As String)
 
     Dim arr1_SDN()               As String
@@ -875,13 +906,17 @@ Private Sub CollectDestPathFiles(ByVal strPathInfFile As String)
         arr2_SDF(lngArrCount, 2) = strDestPathTransform
     Next
     
-    arrSourceDisksFiles = arr2_SDF
-    arrSourceDisksNames = arr1_SDN
+    arrSourceDisksFiles_x = arr2_SDF
+    arrSourceDisksNames_x = arr1_SDN
     If mbDebugDetail Then DebugMode "***CollectDestPathFiles-Finish"
 End Sub
 
-' Имя архива 7z
-Private Function CollectDpName(ByVal strPCName As String) As String
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub CollectDPName
+'! Description (Описание)  :   [Собрать имя архива]
+'! Parameters  (Переменные):   strPCName (String)
+'!--------------------------------------------------------------------------------
+Private Function CollectDPName(ByVal strPCName As String) As String
 
     Dim strDpName       As String
     Dim strDPName_Part1 As String
@@ -900,9 +935,14 @@ Private Function CollectDpName(ByVal strPCName As String) As String
     strDPName_Part3 = SafeDir(strDPName_Part3)
     strDpName = "DP_" & strPCName & strDPName_Part1 & strDPName_Part2 & strDPName_Part3
     strDpName = SafeDir(strDpName)
-    CollectDpName = Replace$(strDpName, " ", "_")
+    CollectDPName = Replace$(strDpName, " ", "_")
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub CopyFile2Dest
+'! Description (Описание)  :   [Копирование файлов из секции inf в каталог назначения]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub CopyFile2Dest(ByRef arrZ() As String, _
                           ByVal strDestination As String, _
                           ByVal strDestFolderSection As String, _
@@ -916,19 +956,20 @@ Private Sub CopyFile2Dest(ByRef arrZ() As String, _
     Dim strFileNameTo       As String
     Dim strDestPath4File    As String
     Dim strDestinationTemp  As String
-    Dim DD                  As Long
+    Dim ii                  As Long
     Dim strExt              As String
     Dim strSpecDir          As String
     Dim strCustomDir        As String
     Dim lngOldValue         As Long
     Dim lngArrCount         As Long
+    Dim lngUbound           As Long
     Dim lngUBoundZ          As Long
     Dim lngUBoundFileName   As Long
 
     lngUBoundZ = UBound(arrZ)
 
-    For DD = 0 To lngUBoundZ
-        strFileName = arrZ(DD)
+    For ii = 0 To lngUBoundZ
+        strFileName = arrZ(ii)
 
         ' если пустое значение, то пропускаем
         If LenB(strFileName) Then
@@ -954,14 +995,12 @@ Private Sub CopyFile2Dest(ByRef arrZ() As String, _
                 If InStr(1, strFileName, ".") Then
 
                     ' Куда будет скопирован файл
-                    Dim lngUbound As Long
-
-                    lngUbound = UBound(arrSourceDisksFiles, 1)
+                    lngUbound = UBound(arrSourceDisksFiles_x, 1)
 
                     For lngArrCount = 1 To lngUbound
 
-                        If StrComp(arrSourceDisksFiles(lngArrCount, 1), strFileName, vbTextCompare) = 0 Then
-                            strDestinationTemp = arrSourceDisksFiles(lngArrCount, 2)
+                        If StrComp(arrSourceDisksFiles_x(lngArrCount, 1), strFileName, vbTextCompare) = 0 Then
+                            strDestinationTemp = arrSourceDisksFiles_x(lngArrCount, 2)
                             strDestinationTemp = PathCollect4Dest(strDestinationTemp, strDestination)
                             Exit For
                         Else
@@ -1129,6 +1168,11 @@ Private Sub CreateMenuLng()
 
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function DefineFolderBackUp
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Function DefineFolderBackUp() As String
 
     Dim ii                As Long
@@ -1164,6 +1208,11 @@ Private Function DefineFolderBackUp() As String
     End If
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function DoZip
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strPackFolder As String, ByVal strDpName As String
+'!--------------------------------------------------------------------------------
 Private Function DoZip(ByVal strPackFolder As String, ByVal strDpName As String) As Boolean
 
     Dim cmdString             As String
@@ -1287,9 +1336,14 @@ Private Function DoZip(ByVal strPackFolder As String, ByVal strDpName As String)
     End If
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function ExpandArchNamebyEnvironment
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   strArchName As String
+'!--------------------------------------------------------------------------------
 Private Function ExpandArchNamebyEnvironment(ByVal strArchName As String) As String
 
-    Dim r               As String
+    Dim strRet          As String
     Dim strDPName_OSVer As String
     Dim strDPName_OSBit As String
     Dim strDPName_DATE  As String
@@ -1309,14 +1363,14 @@ Private Function ExpandArchNamebyEnvironment(ByVal strArchName As String) As Str
         strDPName_DATE = Replace$(CStr(Date), ".", "-")
         strDPName_DATE = SafeDir(strDPName_DATE)
         ' Замена макросов значениями
-        r = strArchName
-        r = Replace$(r, "%PCNAME%", strCompName)
-        r = Replace$(r, "%PCMODEL%", Replace$(strCompModel, " ", "_"))
-        r = Replace$(r, "%OSVer%", strDPName_OSVer)
-        r = Replace$(r, "%OSBit%", strDPName_OSBit)
-        r = Replace$(r, "%DATE%", strDPName_DATE)
-        r = Trim$(r)
-        ExpandArchNamebyEnvironment = r
+        strRet = strArchName
+        strRet = Replace$(strRet, "%PCNAME%", strCompName)
+        strRet = Replace$(strRet, "%PCMODEL%", Replace$(strCompModel, " ", "_"))
+        strRet = Replace$(strRet, "%OSVer%", strDPName_OSVer)
+        strRet = Replace$(strRet, "%OSBit%", strDPName_OSBit)
+        strRet = Replace$(strRet, "%DATE%", strDPName_DATE)
+        strRet = Trim$(strRet)
+        ExpandArchNamebyEnvironment = strRet
     Else
         ExpandArchNamebyEnvironment = strArchName
     End If
@@ -1326,7 +1380,7 @@ End Function
 '! Procedure   (Функция)   :   Function FindCheckCountList
 '! Description (Описание)  :   [Поиск выделенных строк]
 '! Parameters  (Переменные):
-'!------------------------------------------------------------------------------
+'!--------------------------------------------------------------------------------
 Private Function FindCheckCountList() As Long
 
     Dim miCount As Integer
@@ -1362,10 +1416,16 @@ Private Function FindCheckCountList() As Long
             End If
         End With
     End If
+    cmdStartBackUp.ToolTipText = cmdStartBackUp.Caption
     
     FindCheckCountList = miCount
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function FindCopyCatFile
+'! Description (Описание)  :   [Поиск и копирование файла cat]
+'! Parameters  (Переменные):   ByVal strInfFilePath As String, ByVal strDestination As String
+'!--------------------------------------------------------------------------------
 Private Function FindCopyCatFile(ByVal strInfFilePath As String, ByVal strDestination As String) As String
 
     Dim strCatFile         As String
@@ -1373,7 +1433,7 @@ Private Function FindCopyCatFile(ByVal strInfFilePath As String, ByVal strDestin
     Dim strCatFile_ntx86   As String
     Dim strCatFile_ntamd64 As String
     Dim strCatFile_nt      As String
-    Dim strCatFilePath()   As FindListStruct
+    Dim strCatFilePath_x() As FindListStruct
     Dim strCatFileFromInf  As String
     Dim mbExitGoto         As Boolean
 
@@ -1408,43 +1468,47 @@ CopyCatAgain:
         
         ' ищем файл cat его по всей папке strSysDirCatRoot c именем из полученным из файла inf
         If FileExists(strCatFilePathTemp) = False Then
-            strCatFilePath = SearchFilesInRoot(strSysDirCatRoot, strCatFile, True, True)
+            strCatFilePath_x = SearchFilesInRoot(strSysDirCatRoot, strCatFile, True, True)
 
-            If LenB(strCatFilePath(0).FullPath) Then
-                CopyFileTo strCatFilePath(0).FullPath, BackslashAdd2Path(strDestination) & strCatFile
-                If mbDebugStandart Then DebugMode "***CatalogFile find in: " & strCatFilePath(0).FullPath
+            If LenB(strCatFilePath_x(0).FullPath) Then
+                CopyFileTo strCatFilePath_x(0).FullPath, BackslashAdd2Path(strDestination) & strCatFile
+                If mbDebugStandart Then DebugMode "***CatalogFile find in: " & strCatFilePath_x(0).FullPath
             End If
         End If
+        DoEvents
 
         ' ищем файл cat его по всей папке strSysDirCatRoot c именем аналогичным файлу inf
         If FileExists(strCatFilePathTemp) = False Then
-            strCatFilePath = SearchFilesInRoot(strSysDirCatRoot, strCatFileFromInf, True, True)
+            strCatFilePath_x = SearchFilesInRoot(strSysDirCatRoot, strCatFileFromInf, True, True)
 
-            If LenB(strCatFilePath(0).FullPath) Then
-                CopyFileTo strCatFilePath(0).FullPath, BackslashAdd2Path(strDestination) & strCatFile
-                If mbDebugStandart Then DebugMode "***CatalogFile find in: " & strCatFilePath(0).FullPath
+            If LenB(strCatFilePath_x(0).FullPath) Then
+                CopyFileTo strCatFilePath_x(0).FullPath, BackslashAdd2Path(strDestination) & strCatFile
+                If mbDebugStandart Then DebugMode "***CatalogFile find in: " & strCatFilePath_x(0).FullPath
             End If
         End If
+        DoEvents
 
         ' ищем файл cat его по всей папке strSysDirDRVStore
         If FileExists(strCatFilePathTemp) = False Then
-            strCatFilePath = SearchFilesInRoot(strSysDirDRVStore, strCatFile, True, True)
+            strCatFilePath_x = SearchFilesInRoot(strSysDirDRVStore, strCatFile, True, True)
 
-            If LenB(strCatFilePath(0).FullPath) Then
-                CopyFileTo strCatFilePath(0).FullPath, BackslashAdd2Path(strDestination) & strCatFile
-                If mbDebugStandart Then DebugMode "***CatalogFile find in: " & strCatFilePath(0).FullPath
+            If LenB(strCatFilePath_x(0).FullPath) Then
+                CopyFileTo strCatFilePath_x(0).FullPath, BackslashAdd2Path(strDestination) & strCatFile
+                If mbDebugStandart Then DebugMode "***CatalogFile find in: " & strCatFilePath_x(0).FullPath
             End If
         End If
+        DoEvents
 
         ' Если файл cat все еще не найден, то ищем его по всей папке windows
         If FileExists(strCatFilePathTemp) = False Then
-            strCatFilePath = SearchFilesInRoot(strWinDir, strCatFile, True, True)
+            strCatFilePath_x = SearchFilesInRoot(strWinDir, strCatFile, True, True)
 
-            If LenB(strCatFilePath(0).FullPath) Then
-                CopyFileTo strCatFilePath(0).FullPath, BackslashAdd2Path(strDestination) & strCatFile
-                If mbDebugStandart Then DebugMode "***CatalogFile find in: " & strCatFilePath(0).FullPath
+            If LenB(strCatFilePath_x(0).FullPath) Then
+                CopyFileTo strCatFilePath_x(0).FullPath, BackslashAdd2Path(strDestination) & strCatFile
+                If mbDebugStandart Then DebugMode "***CatalogFile find in: " & strCatFilePath_x(0).FullPath
             End If
         End If
+        DoEvents
 
         ' Если файл найден, то имя файла передаем обратно функции для дальнейшего использования
         If FileExists(strCatFilePathTemp) Then
@@ -1457,6 +1521,7 @@ CopyCatAgain:
                     If Not mbExitGoto Then
                         mbExitGoto = True
                         strCatFile = strCatFile_ntamd64
+                        DoEvents
                         GoTo CopyCatAgain
                     End If
                 End If
@@ -1469,19 +1534,27 @@ CopyCatAgain:
     End If
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub FontCharsetChange
+'! Description (Описание)  :   [Изменение шрифта для элементов]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub FontCharsetChange()
 
-    ' Выставляем шрифт
+    ' Выставляем шрифт формы
     With Me.Font
         .Name = strFontMainForm_Name
         .Size = lngFontMainForm_Size
         .Charset = lngFont_Charset
     End With
-
+    
+    ' Выставляем шрифт кнопок
     SetBtnFontProperties cmdCheckAll
     SetBtnFontProperties cmdUnCheckAll
     SetBtnFontProperties cmdStartBackUp
     SetBtnFontProperties cmdBreak
+        
+    ' Выставляем шрифт других элементов
     frGroup.Font.Charset = lngFont_Charset
     frBackUp.Font.Charset = lngFont_Charset
     frArchName.Font.Charset = lngFont_Charset
@@ -1489,6 +1562,11 @@ Private Sub FontCharsetChange()
     ctlUcStatusBar1.Font.Charset = lngFont_Charset
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Activate
+'! Description (Описание)  :   [Активация формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub Form_Activate()
 
     If mbFirstStart Then
@@ -1514,11 +1592,11 @@ Private Sub Form_Activate()
     mbFirstStart = False
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  Form_KeyDown
-'!  Переменные  :  KeyCode As Integer, Shift As Integer
-'!  Описание    :  обработка нажатий клавиш клавиатуры
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_KeyDown
+'! Description (Описание)  :   [обработка нажатий клавиш клавиатуры]
+'! Parameters  (Переменные):   KeyCode As Integer, Shift As Integer
+'!--------------------------------------------------------------------------------
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
 
     ' Выход из программы по "Escape"
@@ -1572,6 +1650,11 @@ Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
     End If
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Load
+'! Description (Описание)  :   [Событие загрузки формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub Form_Load()
 
     Dim ii  As Long
@@ -1630,6 +1713,12 @@ Private Sub Form_Load()
         ' Устанавливаем галочку на автовыборе языка
         mnuLangStart.Checked = Not mbAutoLanguage
     End If
+    
+    ' Выставляем внешний вид кнопки
+    SetBtnStyle cmdCheckAll
+    SetBtnStyle cmdUnCheckAll
+    SetBtnStyle cmdStartBackUp
+    SetBtnStyle cmdBreak
     
     ' Выставляем шрифт
     FontCharsetChange
@@ -1716,9 +1805,6 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     End If
 
     ' Выгружаем из памяти форму и другие компоненты
-    ' прочие компоненты
-    'lvDevices.Destroy
-    'Set lvDevices = Nothing
     Set frmMain = Nothing
 
     ' Выгружаем из памяти формы
@@ -1738,13 +1824,40 @@ Private Sub Form_Resize()
     With Me
 
         If .WindowState <> vbMinimized Then
-            If IsWinVistaOrLater Then
-                frGroup.Left = 100
-                frBackUp.Left = frGroup.Left + frGroup.Width + 120
-            Else
-                frGroup.Left = 120
-                frBackUp.Left = frGroup.Left + frGroup.Width + 220
+'            If IsWinVistaOrLater Then
+'                frGroup.Left = 100
+'                frBackUp.Left = frGroup.Left + frGroup.Width + 120
+'            Else
+'                frGroup.Left = 120
+'                frBackUp.Left = frGroup.Left + frGroup.Width + 220
+'            End If
+            If .Width < lngMainFormWidthMin Then
+                .Width = lngMainFormWidthMin
+                .Enabled = False
+                .Enabled = True
+    
+                Exit Sub
+    
             End If
+    
+            If .Height < lngMainFormHeightMin Then
+                .Height = lngMainFormHeightMin
+                .Enabled = False
+                .Enabled = True
+    
+                Exit Sub
+    
+            End If
+
+            frPanel.Height = .Height - ctlUcStatusBar1.Height - lngBorderWidthY
+
+        'If strOSCurrentVersion >= "6.0" And .WindowState <> vbMaximized Then
+            'frPanel.Width = .Width - lngBorderWidthX
+        'Else
+            frPanel.Left = -20
+            frPanel.Width = .Width
+        'End If
+
 
             ctlUcStatusBar1.PanelWidth(1) = (Me.Width \ Screen.TwipsPerPixelX)
             ListViewResize
@@ -1795,49 +1908,49 @@ Private Sub ListViewResize()
     Dim lngLVTop            As Long
 
     With Me
-        frPanel.Height = .Height - ctlUcStatusBar1.Height - lngBorderWidthY
-
-        If strOSCurrentVersion >= "6.0" And .WindowState <> vbMaximized Then
-            frPanel.Width = .Width - lngBorderWidthX
-        Else
-            frPanel.Width = .Width
-        End If
+'        frPanel.Height = .Height - ctlUcStatusBar1.Height - lngBorderWidthY
+'
+'        'If strOSCurrentVersion >= "6.0" And .WindowState <> vbMaximized Then
+'            'frPanel.Width = .Width - lngBorderWidthX
+'        'Else
+'            frPanel.Left = -lngBorderWidthX
+'            frPanel.Width = .Width
+        'End If
 
         lngLVPanelTop = frGroup.Top + frGroup.Height + 80
         lngLVPanelLeft = frGroup.Left
         lngLVPanelHeight = frPanel.Height - lngLVPanelTop - 120
         lngLVPanelWidhtTemp = frBackUp.Left + frBackUp.Width - frGroup.Left
 
-        If strOSCurrentVersion >= "6.0" And .WindowState <> vbMaximized Then
-            lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2.9
-        ElseIf strOSCurrentVersion >= "6.0" And .WindowState = vbMaximized Then
-            lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2
-        Else
-            lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2
-        End If
+        'If strOSCurrentVersion >= "6.0" And .WindowState <> vbMaximized Then
+        lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2
+        'ElseIf strOSCurrentVersion >= "6.0" And .WindowState = vbMaximized Then
+            'lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2
+        'Else
+            'lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2
+        'End If
 
         If lngLVPanelWidht < lngLVPanelWidhtTemp Then
             lngLVPanelWidht = lngLVPanelWidhtTemp
         End If
-
-        With frPanelLV
-            .Top = lngLVPanelTop
-            .Left = lngLVPanelLeft
-            .Height = lngLVPanelHeight
-            .Width = lngLVPanelWidht
-            lngLVTop = .TextBoxHeight * Screen.TwipsPerPixelY + 45
-            lngLVHeight = .Height - lngLVTop - 60
-            lngLVWidht = .Width - 120
-            lblWait.Left = 100
-            lblWait.Width = .Width - 200
-        End With
-
-        If Not (lvDevices Is Nothing) Then
-            lvDevices.Move 60, lngLVTop, lngLVWidht, lngLVHeight
-        End If
-        
-
     End With
+    
+    With frPanelLV
+        .Top = lngLVPanelTop
+        .Left = lngLVPanelLeft
+        .Height = lngLVPanelHeight
+        .Width = lngLVPanelWidht
+        lngLVTop = .TextBoxHeight * Screen.TwipsPerPixelY + 45
+        lngLVHeight = .Height - lngLVTop - 60
+        lngLVWidht = .Width - 120
+        lblWait.Left = 100
+        lblWait.Width = .Width - 200
+    End With
+
+    If Not (lvDevices Is Nothing) Then
+        lvDevices.Move 60, lngLVTop, lngLVWidht, lngLVHeight
+    End If
+        
 End Sub
 
 '[SourceDisksNames.x86]
@@ -1943,11 +2056,12 @@ End Sub
 Private Sub LoadIconImage()
 
     If mbDebugDetail Then DebugMode "LoadIconImage-Start"
-    '--------------------- Остальные Иконки
+    '--------------------- Иконки кнопок
     LoadIconImage2Object cmdStartBackUp, "BTN_STARTBACKUP", strPathImageMainWork
     LoadIconImage2Object cmdBreak, "BTN_BREAK", strPathImageMainWork
     LoadIconImage2Object cmdCheckAll, "BTN_CHECKMARK", strPathImageMainWork
     LoadIconImage2Object cmdUnCheckAll, "BTN_UNCHECKMARK", strPathImageMainWork
+    '--------------------- Остальные Иконки
     LoadIconImage2Object frBackUp, "FRAME_BACKUP", strPathImageMainWork
     LoadIconImage2Object frGroup, "FRAME_GROUP", strPathImageMainWork
     LoadIconImage2Object frPanelLV, "FRAME_LIS", strPathImageMainWork
@@ -2235,7 +2349,7 @@ Private Sub Localise(ByVal strPathFile As String)
     FontCharsetChange
     ' Название формы
     Me.CaptionW = LocaliseString(strPathFile, strFormName, strFormName, Me.Caption)
-    'Кнопки
+    'frGroup
     frGroup.Caption = LocaliseString(strPathFile, strFormName, "frGroup", frGroup.Caption)
     optGrp1.Caption = LocaliseString(strPathFile, strFormName, "optGrp1", optGrp1.Caption)
     optGrp2.Caption = LocaliseString(strPathFile, strFormName, "optGrp2", optGrp2.Caption)
@@ -2247,9 +2361,11 @@ Private Sub Localise(ByVal strPathFile As String)
     cmdUnCheckAll.Caption = LocaliseString(strPathFile, strFormName, "cmdUnCheckAll", cmdUnCheckAll.Caption)
     chkCheckAll.Caption = LocaliseString(strPathFile, strFormName, "chkCheckAll", chkCheckAll.Caption)
     cmdBreak.Caption = LocaliseString(strPathFile, strFormName, "cmdBreak", cmdBreak.Caption)
+    'frBackUp
     frBackUp.Caption = LocaliseString(strPathFile, strFormName, "frBackUp", frBackUp.Caption)
     cmdStartBackUp.Caption = LocaliseString(strPathFile, strFormName, "cmdStartBackUp", cmdStartBackUp.Caption)
     lblTypeBackUp.Caption = LocaliseString(strPathFile, strFormName, "lblTypeBackUp", lblTypeBackUp.Caption)
+    'frPanelLV
     frPanelLV.Caption = LocaliseString(strPathFile, strFormName, "frPanelLV", frPanelLV.Caption)
     strTableHwidHeader1 = LocaliseString(strPathFile, strFormName, "TableHeader1", "*Наименование устройства*")
     strTableHwidHeader2 = LocaliseString(strPathFile, strFormName, "TableHeader2", "*Дата драйвера*")
@@ -2342,7 +2458,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub lvDevices_ColumnClick
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Сортировка списка при щелчке по колонке]
 '! Parameters  (Переменные):   ColumnHeader (LvwColumnHeader)
 '!--------------------------------------------------------------------------------
 Private Sub lvDevices_ColumnClick(ByVal ColumnHeader As LvwColumnHeader)
@@ -2427,12 +2543,16 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub lvDevices_ItemCheck
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Выбор элемента списка]
 '! Parameters  (Переменные):   Item (LvwListItem)
 '                              Checked (Boolean)
 '!--------------------------------------------------------------------------------
 Private Sub lvDevices_ItemCheck(ByVal item As LvwListItem, ByVal Checked As Boolean)
-    FindCheckCountList
+    If Not mbFirstStart Then
+        If Not mbMassCheckinLV Then
+            FindCheckCountList
+        End If
+    End If
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2452,36 +2572,41 @@ Private Sub lvDevices_ItemDblClick(ByVal item As LvwListItem, ByVal Button As In
 
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  mnuAbout_Click
-'!  Переменные  :
-'!  Описание    :  Меню - О программе
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub mnuAbout_Click
+'! Description (Описание)  :   [Меню - О программе]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub mnuAbout_Click()
 
     frmAbout.Show vbModal, Me
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  mnuCheckUpd_Click
-'!  Переменные  :
-'!  Описание    :  Меню - Проверить обновление
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub mnuCheckUpd_Click
+'! Description (Описание)  :   [Меню - Проверить обновление]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub mnuCheckUpd_Click()
 
     CheckUpd False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub mnuDonate_Click
+'! Description (Описание)  :   [Меню - Помощь проекту]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub mnuDonate_Click()
 
     frmDonate.Show vbModal, Me
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  mnuHistory_Click
-'!  Переменные  :
-'!  Описание    :  Меню - История изменений
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub mnuHistory_Click
+'! Description (Описание)  :   [Меню - История изменений]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub mnuHistory_Click()
 
     Dim cmdString       As String
@@ -2497,16 +2622,31 @@ Private Sub mnuHistory_Click()
     RunUtilsShell cmdString, False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub mnuHomePageForum_Click
+'! Description (Описание)  :   [Меню - Домашняя страница форум]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub mnuHomePageForum_Click()
 
     RunUtilsShell strQuotes & strUrl_MainWWWForum & strQuotes, False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub mnuHomePage_Click
+'! Description (Описание)  :   [Меню - Домашняя страница]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub mnuHomePage_Click()
 
     RunUtilsShell strQuotes & strUrl_MainWWWSite & strQuotes, False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub mnuLangStart_Click
+'! Description (Описание)  :   [Меню - Язык]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub mnuLangStart_Click()
 
     mnuLangStart.Checked = Not mnuLangStart.Checked
@@ -2514,7 +2654,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub mnuLang_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Меню - выбор языка]
 '! Parameters  (Переменные):   Index (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub mnuLang_Click(Index As Integer)
@@ -2558,11 +2698,11 @@ Private Sub mnuLang_Click(Index As Integer)
 
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  mnuLinks_Click
-'!  Переменные  :
-'!  Описание    :  Меню - Ссылки
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub mnuLinks_Click
+'! Description (Описание)  :   [Меню - Ссылки]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub mnuLinks_Click()
 
     Dim cmdString       As String
@@ -2578,49 +2718,54 @@ Private Sub mnuLinks_Click()
     RunUtilsShell cmdString, False
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  mnuModulesVersion_Click
-'!  Переменные  :
-'!  Описание    :  Меню - Версии модулей
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub mnuModulesVersion_Click
+'! Description (Описание)  :   [Меню - Версии модулей]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub mnuModulesVersion_Click()
 
     VerModules
 End Sub
 
-'! -----------------------------------------------------------
-'!  Функция     :  mnuOptions_Click
-'!  Переменные  :
-'!  Описание    :  Меню - Настройки
-'! -----------------------------------------------------------
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub mnuOptions_Click
+'! Description (Описание)  :   [Меню - Настройки]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub mnuOptions_Click()
+    ctlUcStatusBar1.PanelText(1) = strMessages(146)
+    ChangeStatusBarText strMessages(146)
 
-    Dim ii As Long
-
-    frmOptions.Show vbModal, Me
+    If IsFormLoaded("frmOptions") = False Then
+        frmOptions.Show vbModal, Me
+    Else
+        frmOptions.FormLoadAction
+        frmOptions.Show vbModal, Me
+    End If
 
     If mbRestartProgram Then
-
-        For ii = Forms.count - 1 To 1 Step -1
-
-            If Forms(ii).Name <> "frmMain" Then
-                Unload Forms(ii)
-            End If
-
-        Next
-        Set frmMain = Nothing
-        
-        ' принудительный выход
-        ShellExecute Me.hWnd, "open", App.EXEName, vbNullString, strAppPath, SW_SHOWNORMAL
-        End
+        ShellExecute Me.hWnd, "open", strAppEXEName, vbNullString, strAppPath, SW_SHOWNORMAL
+        Unload Me
     End If
+
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub mnuOsZoneNet_Click
+'! Description (Описание)  :   [Меню - Форум]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub mnuOsZoneNet_Click()
 
     RunUtilsShell strQuotes & "http://forum.oszone.net/thread-190814.html" & strQuotes, False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub mnuReCollectHWID_Click
+'! Description (Описание)  :   [Меню - Обновить оборудование]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub mnuReCollectHWID_Click()
 
     ReCollectHWID
@@ -2629,6 +2774,11 @@ Private Sub mnuReCollectHWID_Click()
     FindCheckCountList
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub OpenDeviceProp
+'! Description (Описание)  :   [Открыть свойства устройства]
+'! Parameters  (Переменные):   strHwid (String)
+'!--------------------------------------------------------------------------------
 Private Sub OpenDeviceProp(ByVal strHwid As String)
 
     Dim cmdString       As String
@@ -2643,6 +2793,11 @@ Private Sub OpenDeviceProp(ByVal strHwid As String)
     If mbDebugStandart Then DebugMode "cmdString: " & nRetShellEx
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub optArchCustom_Click
+'! Description (Описание)  :   [Выбор режима имени архива]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub optArchCustom_Click()
 
     Dim strTempString As String
@@ -2655,24 +2810,34 @@ Private Sub optArchCustom_Click()
         If LenB(SafeDir(strTempString)) Then
             .Text = strTempString
         Else
-            .Text = CollectDpName(strCompName)
+            .Text = CollectDPName(strCompName)
         End If
     End With
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub optArchModelPC_Click
+'! Description (Описание)  :   [Выбор режима имени архива]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub optArchModelPC_Click()
 
     With txtArchName
-        .Text = CollectDpName(strCompModel)
+        .Text = CollectDPName(strCompModel)
         .Locked = True
         .Enabled = False
     End With
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub optArchNamePC_Click
+'! Description (Описание)  :   [Выбор режима имени архива]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub optArchNamePC_Click()
 
     With txtArchName
-        .Text = CollectDpName(strCompName)
+        .Text = CollectDPName(strCompName)
         .Locked = True
         .Enabled = False
     End With
@@ -2680,7 +2845,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub optGrp1_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Выбор режима просмотра списка стройств - Microsoft]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub optGrp1_Click()
@@ -2691,7 +2856,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub optGrp2_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Выбор режима просмотра списка стройств - Все]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub optGrp2_Click()
@@ -2702,7 +2867,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub optGrp3_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Выбор режима просмотра списка стройств - OEM]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub optGrp3_Click()
@@ -2713,7 +2878,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub optGrp4_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Выбор режима просмотра списка стройств - Ничего]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Sub optGrp4_Click()
@@ -2725,7 +2890,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ReCollectHWID
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Обновление списка оборудования - читаем реестр заново]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ReCollectHWID()
@@ -2739,7 +2904,7 @@ Private Sub ReCollectHWID()
     DoEvents
     
     ' повторно собираем данные
-    ProgressBar1.SetTaskBarProgressState PrbTaskBarStateInProgress
+    ctlProgressBar1.SetTaskBarProgressState PrbTaskBarStateInProgress
     frmProgress.Show vbModal, Me
     
     ' А теперь перестраиваем список драйверов
@@ -2749,7 +2914,7 @@ Private Sub ReCollectHWID()
     lvDevices.Visible = True
     BlockControl False
     
-    ProgressBar1.SetTaskBarProgressState PrbTaskBarStateNone
+    ctlProgressBar1.SetTaskBarProgressState PrbTaskBarStateNone
     
     ChangeStatusBarText strMessages(5)
     
@@ -2757,7 +2922,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ReNewLVlist
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Перестроить лист оборудования с заданным фильтром]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Sub ReNewLVlist()
@@ -2770,6 +2935,11 @@ Attribute ReNewLVlist.VB_UserMemId = 1610809398
     lblWait.Visible = False
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function SearchSectInSect
+'! Description (Описание)  :   [Поиск секций в inf-файле]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Function SearchSectInSect(ByRef arrZ() As String) As String()
 
     Dim strFileName      As String
@@ -2822,7 +2992,11 @@ Private Function SearchSectInSect(ByRef arrZ() As String) As String()
     SearchSectInSect = strSectionList
 End Function
 
-' Режим при старте
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SelectStartArchName
+'! Description (Описание)  :   [Режим имени архива при старте]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub SelectStartArchName()
 
     Select Case lngArchNameMode
@@ -2857,7 +3031,11 @@ Private Sub SelectStartArchName()
     End Select
 End Sub
 
-' Режим при старте
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SelectStartArchName
+'! Description (Описание)  :   [Режим фильтра при старте]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub SelectStartMode()
 
     Select Case miStartMode
@@ -2892,6 +3070,31 @@ Private Sub SelectStartMode()
     End Select
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SetBtnStyle
+'! Description (Описание)  :   [Установка свойств стиля для кнопки]
+'! Parameters  (Переменные):   ctlObject (Object)
+'!--------------------------------------------------------------------------------
+Private Sub SetBtnStyle(ctlObject As Object)
+    
+    With ctlObject
+        .ButtonStyle = lngStatusBtnStyle
+        .ColorScheme = lngStatusBtnStyleColor
+        
+        If lngStatusBtnStyleColor = 3 Then
+            .BackColor = lngStatusBtnBackColor
+        End If
+        
+        .ForeColor = lngFontBtn_Color
+    End With
+    
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub StartBackUp
+'! Description (Описание)  :   [Процедура запуска бекапа, по нажатию кнопки]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub StartBackUp()
 
     Dim destDir               As String
@@ -2934,6 +3137,7 @@ Private Sub StartBackUp()
     Dim strFileNameInf        As String
     Dim mbCompare             As Boolean
     Dim mbBackUPedFiles       As Boolean
+    Dim lngUBoundZ2           As Long
 
     If mbDebugDetail Then DebugMode "cmdStartBackUp_Click-Start"
     lngTimeScriptRun = 0
@@ -2990,7 +3194,7 @@ Private Sub StartBackUp()
         If LenB(Trim$(txtArchName)) Then
             destDir = BackslashAdd2Path(destDirDialog) & txtArchName
         Else
-            destDir = BackslashAdd2Path(destDirDialog) & CollectDpName(strCompName)
+            destDir = BackslashAdd2Path(destDirDialog) & CollectDPName(strCompName)
         End If
 
         If mbDebugStandart Then DebugMode "***StartBackUp: Destination directory: " & destDir
@@ -3003,11 +3207,12 @@ Private Sub StartBackUp()
 
         lvCountCheck = FindCheckCountList
         ' Отображаем ProgressBar
-        With ProgressBar1
+        With ctlProgressBar1
             .Value = 0
             .Visible = True
             .SetTaskBarProgressState PrbTaskBarStateInProgress
             .SetTaskBarProgressValue .Value, .Max
+            ChangeFrmMainCaption .Value
         End With
         
         miPbInterval = Round(10000 / lvCountCheck)
@@ -3143,7 +3348,7 @@ Private Sub StartBackUp()
                             If LenB(strFileNameInf) Then
                                 If FileExists(strFileNameInf) Then
     
-                                    'Сравнение файлов но Hash SHA1-сумме
+                                    'Сравнение файлов найденного в DriverStore и Windows\inf по Hash SHA1-сумме
                                     mbCompare = CompareFilesByHashCAPICOM(strFileNameInf, strInfFile2Path)
     
                                     If mbCompare Then
@@ -3176,8 +3381,6 @@ Private Sub StartBackUp()
                         If mbDebugStandart Then DebugMode "***" & strStatusMsgTemp & "Analizing '[DestinationDirs]'"
                         arr_Z2 = LoadIniSectionKeys("DestinationDirs", strInfFile2Path)
     
-                        Dim lngUBoundZ2 As Long
-    
                         lngUBoundZ2 = UBound(arr_Z2)
     
                         For lngArrCount = 0 To lngUBoundZ2
@@ -3193,6 +3396,7 @@ Private Sub StartBackUp()
     
                         Next
                         DoEvents
+                        
                         ' Дополнительный анализ секций на параметр CopyFiles
                         ChangeStatusBarText strStatusMsgTemp & vbNewLine & "Analyzing CopyFiles '" & strInfSection & "'"
                         If mbDebugStandart Then DebugMode "***" & strStatusMsgTemp & "Analizing section by CopyFiles: " & strInfSection
@@ -3250,9 +3454,10 @@ Private Sub StartBackUp()
                         miPbNext = 10000
                     End If
     
-                    With ProgressBar1
+                    With ctlProgressBar1
                         .Value = miPbNext
                         .SetTaskBarProgressValue .Value, .Max
+                        ChangeFrmMainCaption .Value
                     End With
                     
                     mbBackUPedFiles = True
@@ -3288,11 +3493,12 @@ Private Sub StartBackUp()
             '# type of backup #
             Select Case cmbTypeBackUp.ListIndex
 
-                    '# create ZIP #
+                '# create ZIP #
                 Case 1
-                    With ProgressBar1
+                    With ctlProgressBar1
                         .Value = 9000
                         .SetTaskBarProgressValue .Value, .Max
+                        ChangeFrmMainCaption .Value
                     End With
 
                     ChangeStatusBarText "Zipping driver files..."
@@ -3310,9 +3516,10 @@ Private Sub StartBackUp()
                     MousePointer = 0
                     lngTimeScriptFinish = GetTimeStop(lngTimeScriptRun)
                     strAllTimeScriptRun = CalculateTime(lngTimeScriptFinish, True)
-                    With ProgressBar1
+                    With ctlProgressBar1
                         .Value = 10000
                         .SetTaskBarProgressValue .Value, .Max
+                        ChangeFrmMainCaption .Value
                     End With
 
                     If mbDoZip Then
@@ -3323,11 +3530,12 @@ Private Sub StartBackUp()
                         MsgBox strMessages(12), vbInformation + vbOKOnly, strProductName
                     End If
 
-                    '# create ZIP-SFX with DPInst #
+                '# create ZIP-SFX with DPInst #
                 Case 2
-                    With ProgressBar1
+                    With ctlProgressBar1
                         .Value = 9000
                         .SetTaskBarProgressValue .Value, .Max
+                        ChangeFrmMainCaption .Value
                     End With
                     ChangeStatusBarText "Zipping driver files..."
                     str7zFileArchivePath = BackslashAdd2Path(destDirDialog) & txtArchName & ".exe"
@@ -3355,9 +3563,10 @@ Private Sub StartBackUp()
                     End If
 
                 Case Else
-                    With ProgressBar1
+                    With ctlProgressBar1
                         .Value = 10000
                         .SetTaskBarProgressValue .Value, .Max
+                        ChangeFrmMainCaption .Value
                     End With
                     ChangeStatusBarText strMessages(67) & " " & strAllTimeScriptRun, , True
                     MsgBox strMessages(10), vbInformation + vbOKOnly, strProductName
@@ -3365,7 +3574,9 @@ Private Sub StartBackUp()
         End If
 
         '# show info of end process #
-        ProgressBar1.Visible = False
+        ctlProgressBar1.Visible = False
+        ChangeFrmMainCaption
+        ctlProgressBar1.SetTaskBarProgressState PrbTaskBarStateNone
     End If
 
     MousePointer = 0
@@ -3379,12 +3590,15 @@ Private Sub StartBackUp()
         If mbDebugStandart Then DebugMode "BlockListOnBackup: FALSE"
         lvDevices.Refresh
     End If
-
-    ProgressBar1.SetTaskBarProgressState PrbTaskBarStateNone
         
     If mbDebugStandart Then DebugMode "cmdStartBackUp_Click-Finish"
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function StringCleaner
+'! Description (Описание)  :   [Чистка строки для пути назначения]
+'! Parameters  (Переменные):   strString (String)
+'!--------------------------------------------------------------------------------
 Private Function StringCleaner(ByVal strString As String) As String
 
     Dim strString_x() As String
@@ -3414,6 +3628,11 @@ Private Function StringCleaner(ByVal strString As String) As String
     StringCleaner = strString
 End Function
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub txtArchName_KeyPress
+'! Description (Описание)  :   [Событие нажатия клавиш в тексте имени архивного файла]
+'! Parameters  (Переменные):   KeyAscii (Integer)
+'!--------------------------------------------------------------------------------
 Private Sub txtArchName_KeyPress(KeyAscii As Integer)
 
     Dim sTemplate As String
@@ -3432,18 +3651,18 @@ End Sub
 '!--------------------------------------------------------------------------------
 Public Sub UnloadAllForms(Optional FormToIgnore As String = vbNullString)
 
-    Dim F As Form
+    Dim objForm As Form
 
-    For Each F In Forms
+    For Each objForm In Forms
 
-        If Not F Is Nothing Then
-            If StrComp(F.Name, FormToIgnore, vbTextCompare) <> 0 Then
-                Unload F
-                Set F = Nothing
+        If Not objForm Is Nothing Then
+            If StrComp(objForm.Name, FormToIgnore, vbTextCompare) <> 0 Then
+                Unload objForm
+                Set objForm = Nothing
             End If
         End If
 
-    Next F
+    Next objForm
 
 End Sub
 

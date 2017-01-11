@@ -390,7 +390,7 @@ Begin VB.Form frmOptions
          Height          =   255
          Left            =   3720
          TabIndex        =   16
-         Top             =   1800
+         Top             =   2140
          Width           =   4575
          _ExtentX        =   8070
          _ExtentY        =   450
@@ -410,7 +410,7 @@ Begin VB.Form frmOptions
          Height          =   375
          Left            =   3720
          TabIndex        =   17
-         Top             =   2040
+         Top             =   1800
          Width           =   4455
          _ExtentX        =   7858
          _ExtentY        =   661
@@ -2767,28 +2767,14 @@ Public Property Let CaptionW(ByVal NewValue As String)
 End Property
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub ChangeButtonProperties
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub ChangeButtonProperties()
-
-    SetBtnFontProperties cmdFutureButton
-
-End Sub
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub chkButtonDisable_Click
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub chkButtonDisable_Click()
-    If chkButtonDisable.Value = 1 Then
-        cmdFutureButton.Enabled = True
-    Else
-        cmdFutureButton.Enabled = False
-    End If
+    cmdFutureButton.Enabled = CBool(chkButtonDisable.Value)
 End Sub
+
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub chkDebugLog2AppPath_Click
@@ -2850,6 +2836,15 @@ Private Sub chkFormSizeSave_Click()
         chkFormMaximaze.Value = vbUnchecked
     End If
 
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub chkHideOther_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub chkHideOther_Click()
+    chkCheckAll.Enabled = CBool(chkHideOther.Value)
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2952,7 +2947,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmbButtonStyleColor_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmbButtonStyleColor_GotFocus()
@@ -2961,7 +2956,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmbButtonStyleColor_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmbButtonStyleColor_LostFocus()
@@ -2997,7 +2992,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmbButtonStyle_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmbButtonStyle_GotFocus()
@@ -3006,7 +3001,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmbButtonStyle_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmbButtonStyle_LostFocus()
@@ -3030,7 +3025,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmbImageMain_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmbImageMain_GotFocus()
@@ -3039,7 +3034,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmbImageMain_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmbImageMain_LostFocus()
@@ -3055,7 +3050,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmbTypeBackUp_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmbTypeBackUp_GotFocus()
@@ -3065,7 +3060,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmbTypeBackUp_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmbTypeBackUp_LostFocus()
@@ -3253,6 +3248,17 @@ Private Sub cmdSuppressWizard_Click()
 End Sub
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub ctlStatusBtnBackColor_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub ctlStatusBtnBackColor_Click()
+    If cmbButtonStyleColor.ListIndex = 3 Then
+        cmdFutureButton.BackColor = ctlStatusBtnBackColor.Value
+    End If
+End Sub
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub DebugCtlEnable
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):   mbEnable (Boolean)
@@ -3310,21 +3316,11 @@ Public Sub FormLoadAction()
     ' Заполнить опции
     ReadOptions
     ' установить опции шрифта и цвета для будущей кнопки
-    cmdFutureButton.ForeColor = lngFontBtn_Color
     SetBtnStatusFontProperties cmdFutureButton
+    ' установить опции стиля для будущей кнопки
+    SetBtnStyle cmdFutureButton
 
     DoEvents
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub ctlStatusBtnBackColor_Click
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub ctlStatusBtnBackColor_Click()
-    If cmbButtonStyleColor.ListIndex = 3 Then
-        cmdFutureButton.BackColor = ctlStatusBtnBackColor.Value
-    End If
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -3446,11 +3442,15 @@ Private Sub InitializeObjectProperties()
 
     cmbButtonStyle.ListIndex = lngStatusBtnStyle
     cmbButtonStyleColor.ListIndex = lngStatusBtnStyleColor
+    ctlStatusBtnBackColor.Value = lngStatusBtnBackColor
 
-    ' изменение шрифта и текста
-    ChangeButtonProperties
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub LoadComboBtnStyle
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub LoadComboBtnStyle()
     
     With cmbButtonStyle
@@ -3581,6 +3581,7 @@ Private Sub LoadList_lvOS()
 
     With lvOS
         .ListItems.Clear
+        .ColumnHeaders.Clear
 
         If .ColumnHeaders.count = 0 Then
             .ColumnHeaders.Add 1, , strTableOSHeader1, 80 * Screen.TwipsPerPixelX
@@ -3644,7 +3645,6 @@ Private Sub LoadSkinListCombo(cmbName As Object, strImagePath As String)
     End With
 
 End Sub
-
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub Localise
@@ -3910,7 +3910,6 @@ Private Sub lvOS_ItemDblClick(ByVal item As LvwListItem, ByVal Button As Integer
     TransferOSData
 End Sub
 
-
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ReadOptions
 '! Description (Описание)  :   [Читаем настройки программы и заполняем поля]
@@ -3939,6 +3938,10 @@ Private Sub ReadOptions()
     ' Режим при старте
     LoadComboList
     LoadStartMode
+    ' Параметры выделения при старте
+    chkCheckAll.Value = Abs(mbCheckAllGroup)
+    chkHideOther.Value = Abs(mbListOnlyGroup)
+    
     'MainForm
     txtFormHeight.Value = lngMainFormHeight
     txtFormWidth.Value = lngMainFormWidth
@@ -3987,10 +3990,8 @@ Private Sub ReadOptions()
     ' Имя архива при старте
     SelectStartArchName
     txtArchNameShablon.Text = strArchNameCustom
-    ' Инициализация параметров для изменения шрифта и цвета
+    ' Инициализация параметров для изменения шрифта и цвета элементов
     InitializeObjectProperties
-    
-    'ucFontButton.
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -4140,6 +4141,9 @@ Private Sub SaveOptions()
     IniWriteStrPrivate "Button", "FontBold", Abs(mbFontBtn_Bold), strSysIniTemp
     IniWriteStrPrivate "Button", "FontColor", CStr(cmdFutureButton.ForeColor), strSysIniTemp
     IniWriteStrPrivate "Button", "Style", cmbButtonStyle.ListIndex, strSysIniTemp
+    IniWriteStrPrivate "Button", "StyleColor", cmbButtonStyleColor.ListIndex, strSysIniTemp
+    IniWriteStrPrivate "Button", "BackColor", ctlStatusBtnBackColor.Value, strSysIniTemp
+    
     ' Приводим Ini файл к читабельному виду
     NormIniFile strSysIniTemp
 End Sub
@@ -4191,6 +4195,26 @@ Private Sub SelectStartMode()
 End Sub
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub SetBtnStyle
+'! Description (Описание)  :   [Установка свойств стиля для кнопки]
+'! Parameters  (Переменные):   ctlObject (Object)
+'!--------------------------------------------------------------------------------
+Private Sub SetBtnStyle(ctlObject As Object)
+    
+    With ctlObject
+        .ButtonStyle = lngStatusBtnStyle
+        .ColorScheme = lngStatusBtnStyleColor
+        
+        If lngStatusBtnStyleColor = 3 Then
+            .BackColor = lngStatusBtnBackColor
+        End If
+        
+        .ForeColor = lngFontBtn_Color
+    End With
+    
+End Sub
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub TempCtlEnable
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):   mbEnable (Boolean)
@@ -4225,8 +4249,35 @@ Private Sub TransferOSData()
 End Sub
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub optArchCustom_Click
+'! Description (Описание)  :   [Выбор режима имени архива]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub optArchCustom_Click()
+    txtArchNameShablon.Enabled = optArchCustom.Value
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub optArchModelPC_Click
+'! Description (Описание)  :   [Выбор режима имени архива]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub optArchModelPC_Click()
+    txtArchNameShablon.Enabled = optArchCustom.Value
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub optArchNamePC_Click
+'! Description (Описание)  :   [Выбор режима имени архива]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub optArchNamePC_Click()
+    txtArchNameShablon.Enabled = optArchCustom.Value
+End Sub
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub txtArchNameShablon_GotFocus
-'! Description (Описание)  :   []
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub txtArchNameShablon_GotFocus()
@@ -4235,8 +4286,8 @@ Private Sub txtArchNameShablon_GotFocus()
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub txtArchNameShablon_GotFocus
-'! Description (Описание)  :   []
+'! Procedure   (Функция)   :   Sub txtArchNameShablon_LostFocus
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub txtArchNameShablon_LostFocus()
@@ -4246,7 +4297,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub txtCmdStringDPInst_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub txtCmdStringDPInst_GotFocus()
@@ -4255,7 +4306,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub txtCmdStringDPInst_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub txtCmdStringDPInst_LostFocus()
@@ -4264,7 +4315,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub txtDebugLogName_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub txtDebugLogName_GotFocus()
@@ -4273,7 +4324,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub txtDebugLogName_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub txtDebugLogName_LostFocus()
@@ -4359,7 +4410,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucArchPathSFXConfigEn_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucArchPathSFXConfigEn_GotFocus()
@@ -4369,7 +4420,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucArchPathSFXConfigEn_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucArchPathSFXConfigEn_LostFocus()
@@ -4401,7 +4452,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucArchPathSFXConfig_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucArchPathSFXConfig_GotFocus()
@@ -4411,7 +4462,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucArchPathSFXConfig_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucArchPathSFXConfig_LostFocus()
@@ -4443,7 +4494,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucArchPathSFX_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucArchPathSFX_GotFocus()
@@ -4453,7 +4504,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucArchPathSFX_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucArchPathSFX_LostFocus()
@@ -4488,7 +4539,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucArch64Path_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucArch64Path_GotFocus()
@@ -4497,7 +4548,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucArch64Path_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucArch64Path_LostFocus()
@@ -4531,7 +4582,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucArch86Path_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucArch86Path_GotFocus()
@@ -4540,7 +4591,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucArch86Path_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucArch86Path_LostFocus()
@@ -4572,7 +4623,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucDebugLogPath_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucDebugLogPath_GotFocus()
@@ -4581,7 +4632,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucDebugLogPath_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucDebugLogPath_LostFocus()
@@ -4615,7 +4666,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucDPInst64Path_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucDPInst64Path_GotFocus()
@@ -4624,7 +4675,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucDPInst64Path_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucDPInst64Path_LostFocus()
@@ -4658,7 +4709,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucDPInst86Path_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucDPInst86Path_GotFocus()
@@ -4667,7 +4718,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucDPInst86Path_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucDPInst86Path_LostFocus()
@@ -4699,7 +4750,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucTempPath_GotFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент в фокусе]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucTempPath_GotFocus()
@@ -4708,7 +4759,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ucTempPath_LostFocus
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ucTempPath_LostFocus()

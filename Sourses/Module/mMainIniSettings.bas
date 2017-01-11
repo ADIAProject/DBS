@@ -87,18 +87,18 @@ Public lngFreeSpaceSysDrive              As Long        ' Свободное место на жес
 'Public mbExMenu                           As Boolean ' Расширенное меню
 
 '-------------------- Константы размеров форм и кнопок  ------------------'
-Public Const lngMainFormWidthMin         As Long = 9350     ' Минимальные значения размеров формы
+Public Const lngMainFormWidthMin         As Long = 13000    ' Минимальные значения размеров формы
 Public Const lngMainFormHeightMin        As Long = 6500     ' Минимальные значения размеров формы
-Public Const lngButtonWidthMin           As Long = 1500     ' Минимальные значения размеров кнопки - Ширина
-Public Const lngButtonHeightMin          As Long = 350      ' Минимальные значения размеров кнопки - Высота
-Private Const lngMainFormWidthDef        As Long = 11800    ' Дефолтные значения размеров формы
+'Public Const lngButtonWidthMin           As Long = 1500     ' Минимальные значения размеров кнопки - Ширина
+'Public Const lngButtonHeightMin          As Long = 350      ' Минимальные значения размеров кнопки - Высота
+Private Const lngMainFormWidthDef        As Long = 13000    ' Дефолтные значения размеров формы
 Private Const lngMainFormHeightDef       As Long = 8400     ' Дефолтные значения размеров формы
-Private Const lngButtonWidthDef          As Long = 2150     ' Дефолтные значения размеров кнопки - Ширина
-Private Const lngButtonHeightDef         As Long = 550      ' Дефолтные значения размеров кнопки - Высота
-Private Const lngButtonLeftDef           As Long = 100      ' Дефолтные значения размеров кнопки - Отступ слева для кнопки
-Private Const lngButtonTopDef            As Long = 100      ' Дефолтные значения размеров кнопки - Отступ сверху для кнопки
-Private Const lngBtn2BtnLeftDef          As Long = 100      ' Дефолтные значения размеров кнопки - Интервал между кнопками по горизонтали
-Private Const lngBtn2BtnTopDef           As Long = 100      ' Дефолтные значения размеров кнопки - Интервал между кнопками по вертикали
+'Private Const lngButtonWidthDef          As Long = 2150     ' Дефолтные значения размеров кнопки - Ширина
+'Private Const lngButtonHeightDef         As Long = 550      ' Дефолтные значения размеров кнопки - Высота
+'Private Const lngButtonLeftDef           As Long = 100      ' Дефолтные значения размеров кнопки - Отступ слева для кнопки
+'Private Const lngButtonTopDef            As Long = 100      ' Дефолтные значения размеров кнопки - Отступ сверху для кнопки
+'Private Const lngBtn2BtnLeftDef          As Long = 100      ' Дефолтные значения размеров кнопки - Интервал между кнопками по горизонтали
+'Private Const lngBtn2BtnTopDef           As Long = 100      ' Дефолтные значения размеров кнопки - Интервал между кнопками по вертикали
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub CreateIni
@@ -133,7 +133,6 @@ Public Sub CreateIni()
         IniWriteStrPrivate "Main", "CheckAllGroup", "1", strSysIni
         IniWriteStrPrivate "Main", "ListOnlyGroup", "1", strSysIni
         IniWriteStrPrivate "Main", "BlockListOnBackup", "1", strSysIni
-        IniWriteStrPrivate "Main", "CalculateHashMode", "1", strSysIni
         IniWriteStrPrivate "Main", "ArchMode", "0", strSysIni
 
         'Секция Debug
@@ -350,7 +349,6 @@ Public Function GetMainIniParam() As Boolean
             If mbDebugStandart Then DebugMode "Alternative TempPath not Exist. Use Windows Temp"
         End If
     End If
-
 
     mbLoadIniTmpAfterRestart = GetIniValueBoolean(strSysIni, "Main", "LoadIniTmpAfterRestart", 0)
     mbDisableDEP = GetIniValueBoolean(strSysIni, "Main", "DisableDEP", 1)

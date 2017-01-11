@@ -742,6 +742,7 @@ Private Const LVNI_SELECTED As Long = &H2
 Private Const LVNI_CUT As Long = &H4
 Private Const LVNI_DROPHILITED As Long = &H8
 Private Const LVNI_VISIBLEORDER As Long = &H10
+Private Const LVNI_VISIBLEONLY As Long = &H40
 Private Const LVNI_ABOVE As Long = &H100
 Private Const LVNI_BELOW As Long = &H200
 Private Const LVNI_TOLEFT As Long = &H400
@@ -827,7 +828,6 @@ Private Const HDFT_HASNOVALUE As Long = &H8000&
 Private Const HDF_RTLREADING As Long = &H4
 Private Const HDF_SORTDOWN As Long = &H200
 Private Const HDF_SORTUP As Long = &H400
-Private Const HDF_FIXEDWIDTH As Long = &H100
 Private Const HDF_SPLITBUTTON As Long = &H1000000
 Private Const HDF_CHECKBOX As Long = &H40
 Private Const HDF_CHECKED As Long = &H80
@@ -909,6 +909,7 @@ Private Const LVCFMT_LEFT As Long = &H0
 Private Const LVCFMT_RIGHT As Long = &H1
 Private Const LVCFMT_CENTER As Long = &H2
 Private Const LVCFMT_JUSTIFYMASK As Long = &H3
+Private Const LVCFMT_FIXED_WIDTH As Long = &H100
 Private Const LVCFMT_IMAGE As Long = &H800
 Private Const LVCFMT_BITMAP_ON_RIGHT As Long = &H1000
 Private Const LVCFMT_COL_HAS_IMAGES As Long = &H8000&
@@ -4021,7 +4022,7 @@ If ListViewHandle <> 0 Then
         With LVC
         .Mask = LVCF_FMT
         SendMessage ListViewHandle, LVM_GETCOLUMN, Index - 1, ByVal VarPtr(LVC)
-        FColumnHeaderResizable = Not CBool((.fmt And HDF_FIXEDWIDTH) = HDF_FIXEDWIDTH)
+        FColumnHeaderResizable = Not CBool((.fmt And LVCFMT_FIXED_WIDTH) = LVCFMT_FIXED_WIDTH)
         End With
     Else
         FColumnHeaderResizable = Resizable
@@ -4037,9 +4038,9 @@ If ListViewHandle <> 0 And ComCtlsSupportLevel() >= 2 Then
     .Mask = LVCF_FMT
     SendMessage ListViewHandle, LVM_GETCOLUMN, Index - 1, ByVal VarPtr(LVC)
     If Value = True Then
-        If (.fmt And HDF_FIXEDWIDTH) = HDF_FIXEDWIDTH Then .fmt = .fmt And Not HDF_FIXEDWIDTH
+        If (.fmt And LVCFMT_FIXED_WIDTH) = LVCFMT_FIXED_WIDTH Then .fmt = .fmt And Not LVCFMT_FIXED_WIDTH
     Else
-        If Not (.fmt And HDF_FIXEDWIDTH) = HDF_FIXEDWIDTH Then .fmt = .fmt Or HDF_FIXEDWIDTH
+        If Not (.fmt And LVCFMT_FIXED_WIDTH) = LVCFMT_FIXED_WIDTH Then .fmt = .fmt Or LVCFMT_FIXED_WIDTH
     End If
     SendMessage ListViewHandle, LVM_SETCOLUMN, Index - 1, ByVal VarPtr(LVC)
     End With
@@ -5226,11 +5227,12 @@ If ListViewHandle <> 0 Then
             Case Else
                 If PropGroupView = False Or ComCtlsSupportLevel() = 0 Then
                     ' Not supported if ComCtlsSupportLevel() >= 1 and group view property is set to true.
-                    Dim LVRC As RECT, iItemResult As Long
+                    Dim LVRC As RECT, iItemResult As Long, Flags As Long
                     SendMessage ListViewHandle, LVM_GETVIEWRECT, 0, ByVal VarPtr(LVRC)
                     SetRect LVRC, 0, 0, (LVRC.Right - LVRC.Left), (LVRC.Bottom - LVRC.Top)
                     iItem = SendMessage(ListViewHandle, LVM_GETNEXTITEM, -1, ByVal LVNI_ALL)
                     iItemResult = -1
+                    If ComCtlsSupportLevel() >= 2 Then Flags = LVNI_ALL Or LVNI_VISIBLEONLY Else Flags = LVNI_ALL
                     Do While iItem > -1
                         SetRect RC, LVIR_BOUNDS, 0, 0, 0
                         SendMessage ListViewHandle, LVM_GETITEMRECT, iItem, ByVal VarPtr(RC)
@@ -5244,7 +5246,7 @@ If ListViewHandle <> 0 Then
                                 End If
                             End If
                         End If
-                        iItem = SendMessage(ListViewHandle, LVM_GETNEXTITEM, iItem, ByVal LVNI_ALL Or &H40)
+                        iItem = SendMessage(ListViewHandle, LVM_GETNEXTITEM, iItem, ByVal Flags)
                     Loop
                     If iItemResult > -1 Then
                         ' Now try to move top-left to get the topmost visible list item.
