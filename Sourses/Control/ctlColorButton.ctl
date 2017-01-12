@@ -97,10 +97,10 @@ Option Explicit
 'API-Declaration
 '---------------------------------------------------------
 Private Type RECT
-    Left                                As Long
-    Top                                 As Long
-    Right                               As Long
-    Bottom                              As Long
+    Left                        As Long
+    Top                         As Long
+    Right                       As Long
+    Bottom                      As Long
 End Type
 
 ' --Formatting Text Consts
@@ -118,14 +118,14 @@ Private Const DT_VCENTER        As Long = &H4
 Private Const DT_SINGLELINE     As Long = &H20
 Private Const DT_WORD_ELLIPSIS  As Long = &H40000
 
-Private Const DI_NORMAL                 As Long = &H3
-Private Const BF_RECT                   As Long = &HF
-Private Const BDR_SUNKENOUTER           As Long = &H2
-Private Const BDR_RAISEDINNER           As Long = &H4
-Private Const BDR_RAISED                As Long = &H5
-Private Const GWL_EXSTYLE               As Integer = -20
-Private Const WS_EX_TOPMOST             As Long = &H8
-Private Const WS_EX_TOOLWINDOW          As Long = &H80
+Private Const DI_NORMAL         As Long = &H3
+Private Const BF_RECT           As Long = &HF
+Private Const BDR_SUNKENOUTER   As Long = &H2
+Private Const BDR_RAISEDINNER   As Long = &H4
+Private Const BDR_RAISED        As Long = &H5
+Private Const GWL_EXSTYLE       As Integer = -20
+Private Const WS_EX_TOPMOST     As Long = &H8
+Private Const WS_EX_TOOLWINDOW  As Long = &H80
 
 Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
@@ -200,7 +200,27 @@ Public Event MouseOut()
 Public Event DropDownOpen()
 Public Event DropDownClose()
 
-Implements OLEGuids.IOleInPlaceActiveObjectVB
+'Implements OLEGuids.IOleInPlaceActiveObjectVB
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub UserControl_Initialize
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub UserControl_Initialize()
+Attribute UserControl_Initialize.VB_UserMemId = 1610809363
+    m_nBorderColor = RGB(8, 36, 107)
+    m_nFillColor = RGB(181, 190, 214)
+    m_nDarkFillColor = RGB(132, 146, 181)
+    m_nShadowColor = VBColorToRGB(vbButtonShadow)
+    m_nBackColor = vbButtonFace
+    m_nForbiddenColor = vbButtonFace
+    m_UseForbiddenColor = False
+    m_Style = ColorButtonStyles.ColorRectAndIconAbove
+    m_ColorPalette = ColorPalettes.System
+    m_DropDownCaption = Def_DropDownCaption
+    Flag = True
+End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Property BackColor
@@ -208,7 +228,6 @@ Implements OLEGuids.IOleInPlaceActiveObjectVB
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Property Get BackColor() As OLE_COLOR
-Attribute BackColor.VB_UserMemId = 1745027079
     BackColor = m_nBackColor
 End Property
 
@@ -230,7 +249,6 @@ End Property
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Property Get ColorPalette() As ColorPalettes
-Attribute ColorPalette.VB_UserMemId = 1745027078
     ColorPalette = m_ColorPalette
 End Property
 
@@ -273,7 +291,6 @@ End Property
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Property Get DropDownCaption() As String
-Attribute DropDownCaption.VB_UserMemId = 1745027077
     DropDownCaption = m_DropDownCaption
 End Property
 
@@ -394,6 +411,7 @@ End Property
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub DrawAllColors()
+Attribute DrawAllColors.VB_UserMemId = 1610809349
 
 Dim ii                                  As Integer
 Dim J                                   As Integer
@@ -445,6 +463,7 @@ End Sub
 '                              Transparent (Boolean)
 '!--------------------------------------------------------------------------------
 Public Sub DrawRectangle(ByVal lngHDc As Long, ByVal X As Long, ByVal Y As Long, ByVal Cx As Long, ByVal Cy As Long, Optional ByVal PenColor As Long = 0, Optional ByVal BrushColor As Long = &HFFFFFF, Optional ByVal Transparent As Boolean)
+Attribute DrawRectangle.VB_UserMemId = 1610809350
 
 Dim hPen                                As Long
 Dim hBrush                              As Long
@@ -475,6 +494,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub DrawSelectedColor()
+Attribute DrawSelectedColor.VB_UserMemId = 1610809351
 
     If m_Style = ColorRectAndIconAbove Then
         DrawRectangle UserControl.hDC, 3, 15, 16, 3, VBColorToRGB(m_nSelectedColor), VBColorToRGB(m_nSelectedColor)
@@ -726,32 +746,8 @@ Private Sub InitColorArray()
 
 End Sub
 
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub Redraw
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub Redraw()
-    UserControl.Cls
-    UserControl.BackColor = m_nBackColor
-    DrawSelectedColor
-    UserControl.Refresh
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function VBColorToRGB
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   VBColor (Long)
-'!--------------------------------------------------------------------------------
-Public Function VBColorToRGB(ByVal VBColor As Long) As Long
-
-    If OleTranslateColor(VBColor, 0, VBColorToRGB) Then
-        VBColorToRGB = VBColor
-    End If
-
-End Function
-
 Private Sub IOleInPlaceActiveObjectVB_TranslateAccelerator(ByRef Handled As Boolean, ByRef RetVal As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal Shift As Long)
+Attribute IOleInPlaceActiveObjectVB_TranslateAccelerator.VB_UserMemId = 1610809358
     On Error Resume Next
     Dim This As OLEGuids.IOleInPlaceActiveObjectVB
     
@@ -768,6 +764,7 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub picDropDown_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Attribute picDropDown_MouseDown.VB_UserMemId = 1610809359
 
 Dim RC                                  As RECT
 Dim ii                                  As Integer
@@ -826,6 +823,7 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub picDropDown_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Attribute picDropDown_MouseMove.VB_UserMemId = 1610809360
 
 Dim RC                                  As RECT
 Dim ii                                  As Integer
@@ -887,6 +885,7 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub picDropDown_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Attribute picDropDown_MouseUp.VB_UserMemId = 1610809361
 
 Dim ii                                  As Integer
 Dim J                                   As Integer
@@ -936,11 +935,24 @@ Dim J                                   As Integer
 End Sub
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Redraw
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub Redraw()
+    UserControl.Cls
+    UserControl.BackColor = m_nBackColor
+    DrawSelectedColor
+    UserControl.Refresh
+End Sub
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UserControl_ExitFocus
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_ExitFocus()
+Attribute UserControl_ExitFocus.VB_UserMemId = 1610809362
 
 'Hide dropdown window
     If picDropDown.Visible Then
@@ -955,25 +967,6 @@ Private Sub UserControl_ExitFocus()
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub UserControl_Initialize
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub UserControl_Initialize()
-    m_nBorderColor = RGB(8, 36, 107)
-    m_nFillColor = RGB(181, 190, 214)
-    m_nDarkFillColor = RGB(132, 146, 181)
-    m_nShadowColor = VBColorToRGB(vbButtonShadow)
-    m_nBackColor = vbButtonFace
-    m_nForbiddenColor = vbButtonFace
-    m_UseForbiddenColor = False
-    m_Style = ColorButtonStyles.ColorRectAndIconAbove
-    m_ColorPalette = ColorPalettes.System
-    m_DropDownCaption = Def_DropDownCaption
-    Flag = True
-End Sub
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UserControl_MouseDown
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):   Button (Integer)
@@ -982,6 +975,7 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Attribute UserControl_MouseDown.VB_UserMemId = 1610809364
 
     If Not Button <> 1 Then
         If X > 0 And X < 23 And Y > 0 And Y < 23 Then
@@ -1008,6 +1002,7 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Attribute UserControl_MouseMove.VB_UserMemId = 1610809365
 
     If Not Button <> 0 Then
         If X < 0 Or Y < 0 Or X > UserControl.ScaleWidth Or Y > UserControl.ScaleHeight Then
@@ -1046,6 +1041,7 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Attribute UserControl_MouseUp.VB_UserMemId = 1610809366
 
     If Not Button <> 1 Then
         If X > 0 And X < 23 And Y > 0 And Y < 23 Then
@@ -1080,6 +1076,7 @@ End Sub
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+Attribute UserControl_ReadProperties.VB_UserMemId = 1610809367
 
     With PropBag
         Value = .ReadProperty("Value", &H0)
@@ -1100,6 +1097,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Resize()
+Attribute UserControl_Resize.VB_UserMemId = 1610809368
 
     On Error Resume Next
 
@@ -1114,6 +1112,7 @@ End Sub
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+Attribute UserControl_WriteProperties.VB_UserMemId = 1610809369
 
     With PropBag
         .WriteProperty "Value", Value, &H0
@@ -1127,3 +1126,16 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     End With
 
 End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function VBColorToRGB
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   VBColor (Long)
+'!--------------------------------------------------------------------------------
+Public Function VBColorToRGB(ByVal VBColor As Long) As Long
+
+    If OleTranslateColor(VBColor, 0, VBColorToRGB) Then
+        VBColorToRGB = VBColor
+    End If
+
+End Function

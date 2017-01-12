@@ -311,6 +311,20 @@ Private OldDr   As eBtnState
 Private OldFont As String
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub UserControl_Initialize
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub UserControl_Initialize()
+Attribute UserControl_Initialize.VB_UserMemId = 1610809422
+    CloseMe = False
+    SetWindowLong PicList.hWnd, GWL_EXSTYLE, WS_EX_TOOLWINDOW
+    SetParent PicList.hWnd, 0
+    SetWindowLong PicPreview.hWnd, GWL_EXSTYLE, WS_EX_TOOLWINDOW
+    SetParent PicPreview.hWnd, 0
+End Sub
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Property BackColor
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
@@ -1610,6 +1624,222 @@ Private Sub mgSort(ByVal pStart As Long, ByVal pEnd As Long)
 End Sub
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub PicList_KeyDown
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   KeyCode (Integer)
+'                              Shift (Integer)
+'!--------------------------------------------------------------------------------
+Private Sub PicList_KeyDown(KeyCode As Integer, Shift As Integer)
+Attribute PicList_KeyDown.VB_UserMemId = 1610809406
+    UserControl_KeyDown KeyCode, Shift
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub PicList_KeyPress
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   KeyAscii (Integer)
+'!--------------------------------------------------------------------------------
+Private Sub PicList_KeyPress(KeyAscii As Integer)
+Attribute PicList_KeyPress.VB_UserMemId = 1610809407
+    UserControl_KeyPress KeyAscii
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub PicList_KeyUp
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   KeyCode (Integer)
+'                              Shift (Integer)
+'!--------------------------------------------------------------------------------
+Private Sub PicList_KeyUp(KeyCode As Integer, Shift As Integer)
+Attribute PicList_KeyUp.VB_UserMemId = 1610809408
+    UserControl_KeyUp KeyCode, Shift
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub PicList_LostFocus
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub PicList_LostFocus()
+Attribute PicList_LostFocus.VB_UserMemId = 1610809409
+    PicList.Visible = False
+    PicPreview.Visible = False
+    TmrFocus.Enabled = False
+    CloseMe = True
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub PicList_MouseDown
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Button (Integer)
+'                              Shift (Integer)
+'                              X (Single)
+'                              Y (Single)
+'!--------------------------------------------------------------------------------
+Private Sub PicList_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Attribute PicList_MouseDown.VB_UserMemId = 1610809410
+
+    Dim TI As Integer
+
+    TI = Int(Y \ (mComboFontSize * 2))
+
+    If TI < mRecentCount Then
+        mListPos = mRecent(TI).fIndex
+    Else
+        mListPos = fList(TI - mRecentCount).fIndex
+    End If
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub PicList_MouseMove
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Button (Integer)
+'                              Shift (Integer)
+'                              X (Single)
+'                              Y (Single)
+'!--------------------------------------------------------------------------------
+Private Sub PicList_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Attribute PicList_MouseMove.VB_UserMemId = 1610809411
+    On Local Error Resume Next
+
+    Dim tFont As String
+    Dim TI    As Integer
+
+    TI = Int(Y \ (mComboFontSize * 2))
+    fPos = TI
+
+    If TmrAutoText.Enabled = False Then
+        SelBox.Move 0, CLng(Y \ (mComboFontSize * 2)) * (mComboFontSize * 2), PicList.ScaleWidth + 2, (mComboFontSize * 2) + 2
+
+        If TI < mRecentCount Then
+            tFont = mRecent(TI).fName
+        Else
+            tFont = fList(TI - mRecentCount).fName
+        End If
+
+        ShowFont tFont
+        DoEvents
+    End If
+
+    If TmrAutoText.Enabled = True Then
+
+        Exit Sub
+
+    End If
+
+    Do
+        GetCursorPos MouseCoords
+
+        If WindowFromPoint(MouseCoords.X, MouseCoords.Y) = PicList.hWnd Then
+            If mUseMouseWheel = True Then
+                GetMessage Msg, Parent.hWnd, 0, 0
+                DispatchMessage Msg
+                TranslateMessage Msg
+                DoEvents
+
+                With Msg
+
+                    If .nMsg = WM_MOUSEWHEEL Then
+                        If VScroll1.Value < VScroll1.Max And Sgn(.wParam) < 0 Then
+                            If VScroll1.Value + 3 > VScroll1.Max Then
+                                VScroll1.Value = VScroll1.Max
+                            Else
+                                VScroll1.Value = VScroll1.Value + 3
+                            End If
+
+                        Else
+
+                            If VScroll1.Value - 3 < 0 Then
+                                VScroll1.Value = 0
+                            Else
+                                VScroll1.Value = VScroll1.Value - 3
+                            End If
+                        End If
+                    End If
+
+                End With
+
+            End If
+
+        ElseIf CloseMe = False Then
+
+            If WindowFromPoint(MouseCoords.X, MouseCoords.Y) = UserControl.hWnd Then Exit Do
+            GetMessage Msg, Parent.hWnd, 0, 0
+            DispatchMessage Msg
+            TranslateMessage Msg
+            DoEvents
+
+            If Msg.nMsg = 513 Then
+                CloseMe = True
+
+                Exit Do
+
+            End If
+
+        Else
+
+            Exit Do
+
+        End If
+
+        DoEvents
+    Loop
+
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub PicList_MouseUp
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   Button (Integer)
+'                              Shift (Integer)
+'                              X (Single)
+'                              Y (Single)
+'!--------------------------------------------------------------------------------
+Private Sub PicList_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Attribute PicList_MouseUp.VB_UserMemId = 1610809412
+    SetRecents mListFont(mListPos), mListPos
+    PicList.Visible = False
+    PicPreview.Visible = False
+    TmrFocus.Enabled = False
+    DrawControl , True
+    CloseMe = True
+    RaiseEvent SelectedFontChanged(mListFont(mListPos))
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub PicPreview_KeyDown
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   KeyCode (Integer)
+'                              Shift (Integer)
+'!--------------------------------------------------------------------------------
+Private Sub PicPreview_KeyDown(KeyCode As Integer, Shift As Integer)
+Attribute PicPreview_KeyDown.VB_UserMemId = 1610809413
+    UserControl_KeyDown KeyCode, Shift
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub PicPreview_KeyPress
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   KeyAscii (Integer)
+'!--------------------------------------------------------------------------------
+Private Sub PicPreview_KeyPress(KeyAscii As Integer)
+Attribute PicPreview_KeyPress.VB_UserMemId = 1610809414
+    UserControl_KeyPress KeyAscii
+End Sub
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub PicPreview_KeyUp
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):   KeyCode (Integer)
+'                              Shift (Integer)
+'!--------------------------------------------------------------------------------
+Private Sub PicPreview_KeyUp(KeyCode As Integer, Shift As Integer)
+Attribute PicPreview_KeyUp.VB_UserMemId = 1610809415
+    UserControl_KeyUp KeyCode, Shift
+End Sub
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function ReadValue
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):   MyHkey (HkeyLoc)
@@ -1996,217 +2226,12 @@ Private Sub SwapStrings(String1 As String, String2 As String)
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub PicList_KeyDown
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   KeyCode (Integer)
-'                              Shift (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub PicList_KeyDown(KeyCode As Integer, Shift As Integer)
-    UserControl_KeyDown KeyCode, Shift
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub PicList_KeyPress
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   KeyAscii (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub PicList_KeyPress(KeyAscii As Integer)
-    UserControl_KeyPress KeyAscii
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub PicList_KeyUp
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   KeyCode (Integer)
-'                              Shift (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub PicList_KeyUp(KeyCode As Integer, Shift As Integer)
-    UserControl_KeyUp KeyCode, Shift
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub PicList_LostFocus
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub PicList_LostFocus()
-    PicList.Visible = False
-    PicPreview.Visible = False
-    TmrFocus.Enabled = False
-    CloseMe = True
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub PicList_MouseDown
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Button (Integer)
-'                              Shift (Integer)
-'                              X (Single)
-'                              Y (Single)
-'!--------------------------------------------------------------------------------
-Private Sub PicList_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-
-    Dim TI As Integer
-
-    TI = Int(Y \ (mComboFontSize * 2))
-
-    If TI < mRecentCount Then
-        mListPos = mRecent(TI).fIndex
-    Else
-        mListPos = fList(TI - mRecentCount).fIndex
-    End If
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub PicList_MouseMove
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Button (Integer)
-'                              Shift (Integer)
-'                              X (Single)
-'                              Y (Single)
-'!--------------------------------------------------------------------------------
-Private Sub PicList_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    On Local Error Resume Next
-
-    Dim tFont As String
-    Dim TI    As Integer
-
-    TI = Int(Y \ (mComboFontSize * 2))
-    fPos = TI
-
-    If TmrAutoText.Enabled = False Then
-        SelBox.Move 0, CLng(Y \ (mComboFontSize * 2)) * (mComboFontSize * 2), PicList.ScaleWidth + 2, (mComboFontSize * 2) + 2
-
-        If TI < mRecentCount Then
-            tFont = mRecent(TI).fName
-        Else
-            tFont = fList(TI - mRecentCount).fName
-        End If
-
-        ShowFont tFont
-        DoEvents
-    End If
-
-    If TmrAutoText.Enabled = True Then
-
-        Exit Sub
-
-    End If
-
-    Do
-        GetCursorPos MouseCoords
-
-        If WindowFromPoint(MouseCoords.X, MouseCoords.Y) = PicList.hWnd Then
-            If mUseMouseWheel = True Then
-                GetMessage Msg, Parent.hWnd, 0, 0
-                DispatchMessage Msg
-                TranslateMessage Msg
-                DoEvents
-
-                With Msg
-
-                    If .nMsg = WM_MOUSEWHEEL Then
-                        If VScroll1.Value < VScroll1.Max And Sgn(.wParam) < 0 Then
-                            If VScroll1.Value + 3 > VScroll1.Max Then
-                                VScroll1.Value = VScroll1.Max
-                            Else
-                                VScroll1.Value = VScroll1.Value + 3
-                            End If
-
-                        Else
-
-                            If VScroll1.Value - 3 < 0 Then
-                                VScroll1.Value = 0
-                            Else
-                                VScroll1.Value = VScroll1.Value - 3
-                            End If
-                        End If
-                    End If
-
-                End With
-
-            End If
-
-        ElseIf CloseMe = False Then
-
-            If WindowFromPoint(MouseCoords.X, MouseCoords.Y) = UserControl.hWnd Then Exit Do
-            GetMessage Msg, Parent.hWnd, 0, 0
-            DispatchMessage Msg
-            TranslateMessage Msg
-            DoEvents
-
-            If Msg.nMsg = 513 Then
-                CloseMe = True
-
-                Exit Do
-
-            End If
-
-        Else
-
-            Exit Do
-
-        End If
-
-        DoEvents
-    Loop
-
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub PicList_MouseUp
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   Button (Integer)
-'                              Shift (Integer)
-'                              X (Single)
-'                              Y (Single)
-'!--------------------------------------------------------------------------------
-Private Sub PicList_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    SetRecents mListFont(mListPos), mListPos
-    PicList.Visible = False
-    PicPreview.Visible = False
-    TmrFocus.Enabled = False
-    DrawControl , True
-    CloseMe = True
-    RaiseEvent SelectedFontChanged(mListFont(mListPos))
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub PicPreview_KeyDown
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   KeyCode (Integer)
-'                              Shift (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub PicPreview_KeyDown(KeyCode As Integer, Shift As Integer)
-    UserControl_KeyDown KeyCode, Shift
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub PicPreview_KeyPress
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   KeyAscii (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub PicPreview_KeyPress(KeyAscii As Integer)
-    UserControl_KeyPress KeyAscii
-End Sub
-
-'!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub PicPreview_KeyUp
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   KeyCode (Integer)
-'                              Shift (Integer)
-'!--------------------------------------------------------------------------------
-Private Sub PicPreview_KeyUp(KeyCode As Integer, Shift As Integer)
-    UserControl_KeyUp KeyCode, Shift
-End Sub
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub TmrAutoText_Timer
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub TmrAutoText_Timer()
+Attribute TmrAutoText_Timer.VB_UserMemId = 1610809416
     mAutoText = vbNullString
     TmrAutoText.Enabled = False
 End Sub
@@ -2217,6 +2242,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub TmrFocus_Timer()
+Attribute TmrFocus_Timer.VB_UserMemId = 1610809417
 
     Dim Focus As Long
 
@@ -2238,6 +2264,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub TmrOver_Timer()
+Attribute TmrOver_Timer.VB_UserMemId = 1610809418
 
     Dim Pos As POINTAPI
     Dim WFP As Long
@@ -2258,6 +2285,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Click()
+Attribute UserControl_Click.VB_UserMemId = 1610809419
     RaiseEvent Click
 End Sub
 
@@ -2267,6 +2295,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_DblClick()
+Attribute UserControl_DblClick.VB_UserMemId = 1610809420
     RaiseEvent DblClick
 End Sub
 
@@ -2276,6 +2305,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_GotFocus()
+Attribute UserControl_GotFocus.VB_UserMemId = 1610809421
 
     If mShowFocus = True Then
         FocusBox.Visible = True
@@ -2286,24 +2316,12 @@ Private Sub UserControl_GotFocus()
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub UserControl_Initialize
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):
-'!--------------------------------------------------------------------------------
-Private Sub UserControl_Initialize()
-    CloseMe = False
-    SetWindowLong PicList.hWnd, GWL_EXSTYLE, WS_EX_TOOLWINDOW
-    SetParent PicList.hWnd, 0
-    SetWindowLong PicPreview.hWnd, GWL_EXSTYLE, WS_EX_TOOLWINDOW
-    SetParent PicPreview.hWnd, 0
-End Sub
-
-'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub UserControl_InitProperties
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_InitProperties()
+Attribute UserControl_InitProperties.VB_UserMemId = 1610809423
     mEnabled = True
     mPreviewText = Ambient.DisplayName
     mBorderStyle = sSunken
@@ -2343,6 +2361,7 @@ End Sub
 '                              Shift (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
+Attribute UserControl_KeyDown.VB_UserMemId = 1610809424
 
     Dim kCode As String
     Dim fI    As Integer
@@ -2452,6 +2471,7 @@ End Sub
 '! Parameters  (Переменные):   KeyAscii (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_KeyPress(KeyAscii As Integer)
+Attribute UserControl_KeyPress.VB_UserMemId = 1610809425
     RaiseEvent KeyPress(KeyAscii)
 End Sub
 
@@ -2462,6 +2482,7 @@ End Sub
 '                              Shift (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
+Attribute UserControl_KeyUp.VB_UserMemId = 1610809426
     RaiseEvent KeyUp(KeyCode, Shift)
 End Sub
 
@@ -2471,6 +2492,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_LostFocus()
+Attribute UserControl_LostFocus.VB_UserMemId = 1610809427
     FocusBox.Visible = False
 End Sub
 
@@ -2483,6 +2505,7 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Attribute UserControl_MouseDown.VB_UserMemId = 1610809428
     On Local Error Resume Next
 
     If Button = 1 Then
@@ -2515,6 +2538,7 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Attribute UserControl_MouseMove.VB_UserMemId = 1610809429
 
     If Button = 0 Then
         DrawControl bOver, True
@@ -2533,6 +2557,7 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Attribute UserControl_MouseUp.VB_UserMemId = 1610809430
 
     If Button = 1 Then
         If inRct = True Then DrawControl bUp
@@ -2548,6 +2573,7 @@ End Sub
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+Attribute UserControl_ReadProperties.VB_UserMemId = 1610809431
 
     With PropBag
         mEnabled = .ReadProperty("Enabled", True)
@@ -2604,6 +2630,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Resize()
+Attribute UserControl_Resize.VB_UserMemId = 1610809432
 
     Dim tBdr As Single
     Dim v    As Integer
@@ -2645,6 +2672,7 @@ End Sub
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+Attribute UserControl_WriteProperties.VB_UserMemId = 1610809433
 
     With PropBag
         .WriteProperty "Enabled", mEnabled, True
@@ -2688,6 +2716,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub VScroll1_Change()
+Attribute VScroll1_Change.VB_UserMemId = 1610809434
 
     Dim tFont As String
 
@@ -2709,6 +2738,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub VScroll1_GotFocus()
+Attribute VScroll1_GotFocus.VB_UserMemId = 1610809435
     PicList.SetFocus
 End Sub
 
@@ -2719,5 +2749,6 @@ End Sub
 '                              Shift (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub VScroll1_KeyDown(KeyCode As Integer, Shift As Integer)
+Attribute VScroll1_KeyDown.VB_UserMemId = 1610809436
     UserControl_KeyDown KeyCode, Shift
 End Sub

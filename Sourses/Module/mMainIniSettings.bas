@@ -180,23 +180,10 @@ Public Sub CreateIni()
         IniWriteStrPrivate "OS_2", "drpFolder", "drivers\2k_xp_2003\x64\", strSysIni
         IniWriteStrPrivate "OS_2", "is64bit", "1", strSysIni
 
-
-
-
-
-
-
-
-
         'Секция OS_3
         IniWriteStrPrivate "OS_3", "Ver", "6.0;6.1;6.2;6.3;6.4;10.0", strSysIni
         IniWriteStrPrivate "OS_3", "drpFolder", "drivers\vista_7_8_10\x32\", strSysIni
         IniWriteStrPrivate "OS_3", "is64bit", "0", strSysIni
-
-
-
-
-
 
         'Секция OS_4
         IniWriteStrPrivate "OS_4", "Ver", "6.0;6.1;6.2;6.3;6.4;10.0", strSysIni

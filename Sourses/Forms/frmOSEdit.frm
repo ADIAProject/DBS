@@ -142,6 +142,7 @@ Begin VB.Form frmOSEdit
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackStyle       =   0
       Caption         =   "Путь до каталога с пакетами драйверов"
    End
    Begin prjDIADBS.LabelW lblOSVer 
@@ -188,7 +189,7 @@ End Property
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmdExit_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Выход без сохранения]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdExit_Click()
@@ -197,18 +198,17 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmdOK_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Сохранить и выйти]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdOK_Click()
-
     SaveOptions
     Unload Me
 End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub FontCharsetChange
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Изменение шрифта формы]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub FontCharsetChange()
@@ -310,12 +310,12 @@ Private Sub SaveOptions()
         ii = lngLastIdOS + 1
 
         With frmOptions.lvOS.ListItems.Add(, , txtOSVer)
-            .SubItems(1) = ucPathDRP.Path
+            .SubItems(2) = ucPathDRP.Path
 
             If chk64bit.Value Then
-                .SubItems(2) = "1"
+                .SubItems(1) = "1"
             Else
-                .SubItems(2) = "1"
+                .SubItems(1) = "1"
             End If
         End With
 
@@ -324,13 +324,12 @@ Private Sub SaveOptions()
         With frmOptions.lvOS
             ii = .SelectedItem.Index
             .ListItems.item(ii).Text = txtOSVer
-            .ListItems.item(ii).SubItems(1) = ucPathDRP.Path
+            .ListItems.item(ii).SubItems(2) = ucPathDRP.Path
 
             If chk64bit.Value Then
-                    .ListItems.item(ii).SubItems(2) = "1"
+                .ListItems.item(ii).SubItems(1) = "1"
             Else
-
-                    .ListItems.item(ii).SubItems(2) = "0"
+                .ListItems.item(ii).SubItems(1) = "0"
             End If
         End With
 
@@ -378,17 +377,19 @@ Private Sub ucPathDRP_Click()
 
     Dim strTempPath As String
 
-    If ucPathDRP.FileCount Then
-        strTempPath = ucPathDRP.FileName
+    With ucPathDRP
+        strTempPath = .Path
 
         If InStr(1, strTempPath, strAppPath, vbTextCompare) Then
             strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
         End If
-    End If
-
-    If LenB(strTempPath) Then
-        ucPathDRP.Path = strTempPath
-    End If
+    
+        If LenB(strTempPath) Then
+            .Path = strTempPath
+        End If
+    End With
+    
+    txtOSVer_Change
 
 End Sub
 

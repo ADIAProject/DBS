@@ -36,8 +36,8 @@ Attribute GetImageFromFile.VB_UserMemId = 1610612740
     
     If FileExists(strFilePicture) Then
         Set GetImageFromFile = cStdPictureEx.LoadPicture(strFilePicture)
-        
     Else
+
         If Not mbSilentRun Then
             If mbDebugDetail Then DebugMode vbTab & "GetImageFromFile: Path to picture: " & strFilePicture & " not Exist. Standard picture Will is used"
         End If
@@ -115,6 +115,7 @@ End Sub
 '                              strPicturePath (String)
 '!--------------------------------------------------------------------------------
 Private Sub LoadImageFromFile2JCbutton(ByVal btnName As ctlJCbutton, ByVal strPicturePath As String)
+Attribute LoadImageFromFile2JCbutton.VB_UserMemId = 1610612738
     Dim objPictTmp As StdPicture
     
     If mbDebugDetail Then DebugMode str2VbTab & "LoadImageFromFile2JCbutton: PicturePath=" & strPicturePath
@@ -162,6 +163,7 @@ End Sub
 '                              PicturePath (String)
 '!--------------------------------------------------------------------------------
 Private Sub LoadImageFromFile2JCFrames(ByVal objName As ctlJCFrames, ByVal PicturePath As String)
+Attribute LoadImageFromFile2JCFrames.VB_UserMemId = 1610612739
     If mbDebugDetail Then DebugMode str2VbTab & "LoadImageFromFile2JCFrames: PicturePath=" & PicturePath
 
     If FileExists(PicturePath) Then

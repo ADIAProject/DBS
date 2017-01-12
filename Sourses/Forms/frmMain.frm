@@ -734,9 +734,9 @@ Private Sub ChangeFrmMainCaption(Optional ByVal lngPercentage As Long)
             strFrmMainCaptionTempDate = " (Date Build: "
     End Select
 
-    If lngPercentage Mod 999 Then
+    If lngPercentage Mod 9999 Then
         If ctlProgressBar1.Visible Then
-            strProgressValue = (lngPercentage \ 10) & "% (" & ctlUcStatusBar1.PanelText(1) & ") - "
+            strProgressValue = (lngPercentage \ 100) & "% (" & ctlUcStatusBar1.PanelText(1) & ") - "
         End If
     End If
 
@@ -2164,6 +2164,7 @@ Private Sub LoadList_Device(Optional ByVal lngMode As Long = 0)
     With lvDevices
         .Redraw = False
         .ListItems.Clear
+        .ColumnHeaders.Clear
 
         If .ColumnHeaders.count = 0 Then
             .ColumnHeaders.Add 1, , strTableHwidHeader1
@@ -2378,23 +2379,26 @@ Private Sub Localise(ByVal strPathFile As String)
     strTableHwidHeader9 = LocaliseString(strPathFile, strFormName, "TableHeader9", "*HWID*")
     strTableHwidHeader10 = LocaliseString(strPathFile, strFormName, "TableHeader10", "-ID Класса-")
     strTableHwidHeader11 = LocaliseString(strPathFile, strFormName, "TableHeader11", "-ID Экземпляра устройства-")
+    '  Вызов основной функции для вывода Caption меню с поддержкой Unicode
+    Call LocaliseMenu(strPathFile)
     ' Меню
-    mnuReCollectHWID.Caption = LocaliseString(strPathFile, strFormName, "mnuReCollectHWID", mnuReCollectHWID.Caption)
-    mnuOptions.Caption = LocaliseString(strPathFile, strFormName, "mnuOptions", mnuOptions.Caption)
-    mnuMainAbout.Caption = LocaliseString(strPathFile, strFormName, "mnuMainAbout", mnuMainAbout.Caption)
-    mnuLinks.Caption = LocaliseString(strPathFile, strFormName, "mnuLinks", mnuLinks.Caption)
-    mnuHistory.Caption = LocaliseString(strPathFile, strFormName, "mnuHistory", mnuHistory.Caption)
-    mnuHelp.Caption = LocaliseString(strPathFile, strFormName, "mnuHelp", mnuHelp.Caption)
-    mnuHomePage.Caption = LocaliseString(strPathFile, strFormName, "mnuHomePage", mnuHomePage.Caption)
-    mnuHomePageForum.Caption = LocaliseString(strPathFile, strFormName, "mnuHomePageForum", mnuHomePageForum.Caption)
-    mnuOsZoneNet.Caption = LocaliseString(strPathFile, strFormName, "mnuOsZoneNet", mnuOsZoneNet.Caption)
-    mnuCheckUpd.Caption = LocaliseString(strPathFile, strFormName, "mnuCheckUpd", mnuCheckUpd.Caption)
-    mnuDonate.Caption = LocaliseString(strPathFile, strFormName, "mnuDonate", mnuDonate.Caption)
-    'mnuLicence.Caption = LocaliseString(StrPathFile, strFormName, "mnuLicence", mnuLicence.Caption)
-    mnuAbout.Caption = LocaliseString(strPathFile, strFormName, "mnuAbout", mnuAbout.Caption)
-    mnuModulesVersion.Caption = LocaliseString(strPathFile, strFormName, "mnuModulesVersion", mnuModulesVersion.Caption)
-    mnuMainLang.Caption = LocaliseString(strPathFile, strFormName, "mnuMainLang", mnuMainLang.Caption)
-    mnuLangStart.Caption = LocaliseString(strPathFile, strFormName, "mnuLangStart", mnuLangStart.Caption)
+'    mnuReCollectHWID.Caption = LocaliseString(strPathFile, strFormName, "mnuReCollectHWID", mnuReCollectHWID.Caption)
+'    mnuOptions.Caption = LocaliseString(strPathFile, strFormName, "mnuOptions", mnuOptions.Caption)
+'    mnuMainAbout.Caption = LocaliseString(strPathFile, strFormName, "mnuMainAbout", mnuMainAbout.Caption)
+'    mnuLinks.Caption = LocaliseString(strPathFile, strFormName, "mnuLinks", mnuLinks.Caption)
+'    mnuHistory.Caption = LocaliseString(strPathFile, strFormName, "mnuHistory", mnuHistory.Caption)
+'    mnuHelp.Caption = LocaliseString(strPathFile, strFormName, "mnuHelp", mnuHelp.Caption)
+'    mnuHomePage.Caption = LocaliseString(strPathFile, strFormName, "mnuHomePage", mnuHomePage.Caption)
+'    mnuHomePageForum.Caption = LocaliseString(strPathFile, strFormName, "mnuHomePageForum", mnuHomePageForum.Caption)
+'    mnuOsZoneNet.Caption = LocaliseString(strPathFile, strFormName, "mnuOsZoneNet", mnuOsZoneNet.Caption)
+'    mnuCheckUpd.Caption = LocaliseString(strPathFile, strFormName, "mnuCheckUpd", mnuCheckUpd.Caption)
+'    mnuDonate.Caption = LocaliseString(strPathFile, strFormName, "mnuDonate", mnuDonate.Caption)
+'    'mnuLicence.Caption = LocaliseString(StrPathFile, strFormName, "mnuLicence", mnuLicence.Caption)
+'    mnuAbout.Caption = LocaliseString(strPathFile, strFormName, "mnuAbout", mnuAbout.Caption)
+'    mnuModulesVersion.Caption = LocaliseString(strPathFile, strFormName, "mnuModulesVersion", mnuModulesVersion.Caption)
+'    mnuMainLang.Caption = LocaliseString(strPathFile, strFormName, "mnuMainLang", mnuMainLang.Caption)
+'    mnuLangStart.Caption = LocaliseString(strPathFile, strFormName, "mnuLangStart", mnuLangStart.Caption)
+    
     LoadComboList
     ChangeFrmMainCaption
     frArchName.Caption = LocaliseString(strPathFile, strFormName, "frArchName", frArchName.Caption)
@@ -2557,7 +2561,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub lvDevices_ItemDblClick
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Двойной клик по записи - вызов свойства устройства]
 '! Parameters  (Переменные):   Item (LvwListItem)
 '                              Button (Integer)
 '!--------------------------------------------------------------------------------
@@ -2588,7 +2592,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub mnuCheckUpd_Click()
-
     CheckUpd False
 End Sub
 
@@ -2598,7 +2601,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub mnuDonate_Click()
-
     frmDonate.Show vbModal, Me
 End Sub
 
@@ -2609,17 +2611,15 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub mnuHistory_Click()
 
-    Dim cmdString       As String
     Dim strFilePathTemp As String
 
-    strFilePathTemp = strAppPath & "\Tools\DocsDBS\" & strPCLangCurrentID & "\history.txt"
+    strFilePathTemp = strAppPathBackSL & strToolsDocs_Path & "\" & strPCLangCurrentID & "\history.txt"
 
     If FileExists(strFilePathTemp) = False Then
-        strFilePathTemp = strAppPath & "\Tools\DocsDBS\0409\history.txt"
+        strFilePathTemp = strAppPathBackSL & strToolsDocs_Path & "\0409\history.txt"
     End If
 
-    cmdString = strQuotes & strFilePathTemp & strQuotes
-    RunUtilsShell cmdString, False
+    RunUtilsShell strFilePathTemp, False
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2628,7 +2628,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub mnuHomePageForum_Click()
-
     RunUtilsShell strQuotes & strUrl_MainWWWForum & strQuotes, False
 End Sub
 
@@ -2638,7 +2637,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub mnuHomePage_Click()
-
     RunUtilsShell strQuotes & strUrl_MainWWWSite & strQuotes, False
 End Sub
 
@@ -2648,7 +2646,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub mnuLangStart_Click()
-
     mnuLangStart.Checked = Not mnuLangStart.Checked
 End Sub
 
@@ -2659,13 +2656,13 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub mnuLang_Click(Index As Integer)
 
-    Dim iii                    As Long
+    Dim ii                     As Long
     Dim strPathLng             As String
     Dim strPCLangCurrentIDTemp As String
     Dim strPCLangCurrentID_x() As String
 
-    For iii = mnuLang.LBound To mnuLang.UBound
-        mnuLang(iii).Checked = iii = Index
+    For ii = mnuLang.LBound To mnuLang.UBound
+        mnuLang(ii).Checked = ii = Index
     Next
 
     strPathLng = arrLanguage(0, Index)
@@ -2705,17 +2702,15 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub mnuLinks_Click()
 
-    Dim cmdString       As String
     Dim strFilePathTemp As String
 
-    strFilePathTemp = strAppPath & "\Tools\DocsDBS\" & strPCLangCurrentID & "\Links.html"
+    strFilePathTemp = strAppPathBackSL & strToolsDocs_Path & "\" & strPCLangCurrentID & "\Links.html"
 
     If FileExists(strFilePathTemp) = False Then
-        strFilePathTemp = strAppPath & "\Tools\DocsDBS\0409\Links.html"
+        strFilePathTemp = strAppPathBackSL & strToolsDocs_Path & "\0409\Links.html"
     End If
 
-    cmdString = strQuotes & strFilePathTemp & strQuotes
-    RunUtilsShell cmdString, False
+    RunUtilsShell strFilePathTemp, False
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2724,7 +2719,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub mnuModulesVersion_Click()
-
     VerModules
 End Sub
 
@@ -2757,7 +2751,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub mnuOsZoneNet_Click()
-
     RunUtilsShell strQuotes & "http://forum.oszone.net/thread-190814.html" & strQuotes, False
 End Sub
 
@@ -2789,6 +2782,7 @@ Private Sub OpenDeviceProp(ByVal strHwid As String)
     cmdStringParams = "devmgr.dll,DeviceProperties_RunDLL /DeviceID " & strHwid
     If mbDebugStandart Then DebugMode "cmdString: " & cmdString
     If mbDebugStandart Then DebugMode "cmdStringParams: " & cmdStringParams
+    
     nRetShellEx = ShellEx(cmdString, essSW_SHOWNORMAL, cmdStringParams)
     If mbDebugStandart Then DebugMode "cmdString: " & nRetShellEx
 End Sub
@@ -2827,6 +2821,7 @@ Private Sub optArchModelPC_Click()
         .Locked = True
         .Enabled = False
     End With
+    
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2841,6 +2836,7 @@ Private Sub optArchNamePC_Click()
         .Locked = True
         .Enabled = False
     End With
+    
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2943,10 +2939,10 @@ End Sub
 Private Function SearchSectInSect(ByRef arrZ() As String) As String()
 
     Dim strFileName      As String
-    Dim d                As Long
     Dim strFileNameSect  As String
     Dim strFileName_x()  As String
     Dim strSectionList() As String
+    Dim d                As Long
     Dim n                As Long
     Dim ii               As Long
     Dim miMaxCountArr    As Long
@@ -3140,8 +3136,6 @@ Private Sub StartBackUp()
     Dim lngUBoundZ2           As Long
 
     If mbDebugDetail Then DebugMode "cmdStartBackUp_Click-Start"
-    lngTimeScriptRun = 0
-    strAllTimeScriptRun = vbNullString
     lngTimeScriptRun = GetTimeStart
 
     '# Если есть выделенные строки
@@ -3156,6 +3150,7 @@ Private Sub StartBackUp()
             Else
                 .InitDir = PathCollect(DefineFolderBackUp)
             End If
+            
             If IsWinXPOrLater Then
                 .flags = CdlBIFNewDialogStyle Or CdlBIFUAHint
             Else

@@ -5,14 +5,17 @@ Option Explicit
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function BackslashAdd2Path
-'! Description (Описание)  :   [Добавление слэша на конце]
+'! Description (Описание)  :   [Добавление слэша на конце пути каталога]
 '! Parameters  (Переменные):   strPath (String)
 '!--------------------------------------------------------------------------------
 Public Function BackslashAdd2Path(ByVal strPath As String) As String
 Attribute BackslashAdd2Path.VB_UserMemId = 1610612737
-    strPath = strPath & str2vbNullChar
-    PathAddBackslash strPath
-    BackslashAdd2Path = TrimNull(strPath)
+    If LenB(strPath) Then
+        strPath = strPath & str2vbNullChar
+        'Api function
+        PathAddBackslash strPath
+        BackslashAdd2Path = TrimNull(strPath)
+    End If
 End Function
 
 '!--------------------------------------------------------------------------------

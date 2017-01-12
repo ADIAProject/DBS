@@ -348,7 +348,7 @@ Option Explicit
 Private strTranslatorName As String
 Private strTranslatorUrl  As String
 Private strFormName       As String
-Private strCreditList()   As String
+Private strCreditList_x() As String
 Private lngCurCredit      As Long
 
 Private Const strUrlOsZoneNetThread As String = "http://forum.oszone.net/thread-139908.html"
@@ -582,9 +582,9 @@ Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL A
         .Visible = True
     End With
 
-    ReDim Preserve strCreditList(0 To lngCurCredit)
+    ReDim Preserve strCreditList_x(0 To lngCurCredit)
 
-    strCreditList(lngCurCredit) = creditURL
+    strCreditList_x(lngCurCredit) = creditURL
     lngCurCredit = lngCurCredit + 1
 End Sub
 
@@ -622,8 +622,8 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub lblThanks_Click(Index As Integer)
 
-    If LenB(strCreditList(Index)) Then
-        RunUtilsShell strCreditList(Index), False
+    If LenB(strCreditList_x(Index)) Then
+        RunUtilsShell strCreditList_x(Index), False
     End If
 
 End Sub
