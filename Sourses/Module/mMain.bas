@@ -1,8 +1,6 @@
 Attribute VB_Name = "mMain"
 Option Explicit
 
-#Const mbIDE_DBSProject = True
-
 'Основные параметры программы
 Public Const strDateProgram         As String = "09/01/2017"
 Public Const strVerProgram          As String = "5.01.09"
@@ -14,7 +12,7 @@ Public strProductVersion            As String
 Public Const strProjectName         As String = "DBS"
 Public Const strUrl_MainWWWSite     As String = "http://adia-project.net/"                   ' Домашний сайт проекта
 Public Const strUrl_MainWWWForum    As String = "http://adia-project.net/forum/index.php"    ' Домашний форум проекта
-Public Const strUrlOsZoneNetThread  As String = "http://forum.oszone.net/thread-190814.html" ' Топик программы на сайте Oszone.net
+Public Const strUrlOsZoneNetThread  As String = "http://forum.oszone.net/thread-190814.html" ' Топик программы DBS на сайте Oszone.net
 
 'Константы путей основных каталогов и файла настроек (вынесены отдельно для универсальности кода под разные проекты)
 Public Const strToolsLang_Path      As String = "Tools\DBS\Lang"         ' Каталог с языковыми файлами
@@ -29,77 +27,32 @@ Public Const strEULA_MD5RTF_Eng     As String = "0cbd9d50eec41b26d24c5465c4be70b
 Public Const strDONATE_MD5RTF       As String = "97f8178b2af5ba9377f76baf4ff71f78"
 Public Const strDONATE_MD5RTF_Eng   As String = "59bbfbf6decbf91023da434cbe940d33"
 
-#If Not mbIDE_DBSProject Then
+'Описание структуры массива информации по HWID (для DBS)
+Public Type arrHwidsStructDBS
+    i0_DriverDesc               As String           ' Описание устройтва
+    i1_DriverDate               As String           ' Дата драйвера
+    i2_DriverVersion            As String           ' Версия драйвера
+    i3_ProviderName             As String           ' Производитель драйвера устройства
+    i4_ClassName                As String           ' Класс устроства
+    i5_Class                    As String           ' Имя класса устройства
+    i6_InfPath                  As String           ' Производитель драйвера устройства
+    i7_InfSection               As String           ' Секция inf-файла в которой найден HWID
+    i8_MatchingDeviceId         As String           ' Совместимые драйвера
+    i9_ClassID                  As String           ' ID Класса устройства
+End Type
 
-    'Описание структуры массива информации по HWID
-    Public Type arrHwidsStruct
-        HWID                            As String           ' HWID устройства (обрезанный без "сессии" устройства)
-        HWIDOrig                        As String           ' HWID устройства полный
-        HWIDCutting                     As String           ' HWID устройства обрезанный до первой /
-        HWIDCompat                      As String           ' HWID Совместимый (другой вариант написания)
-        HWIDMatches                     As String           ' HWID Список подходящих (другие варианты написания в порядке совместимости)
-        DevName                         As String           ' Имя устройства
-        Provider                        As String           ' Производитель драйвера устройства
-        Status                          As Long             ' Статус устройства
-        VerLocal                        As String           ' Версия драйвера устройства
-        Description                     As String           ' Описание
-        PriznakSravnenia                As String           ' Результат сравнения драйверов по дате с базой индексов
-        InfSection                      As String           ' Секция inf-файла в которой найден HWID (используется для анализа совместимости)
-        InfName                         As String           ' Имя inf-файла драйвера
-        DPsList                         As String           ' Список пакетов драйверов в котором есть подходящий драйвер
-        DRVScore                        As Long             ' Балл найденного драйвера
-    End Type
-    
-    'Описание структуры массива для поддерживаемой ОС
-    Public Type arrOSStruct
-        Ver                             As String           ' Версия ОС
-        Name                            As String           ' Имя ОС
-        is64bit                         As Long             ' 64-битная ОС
-        drpFolder                       As String           ' Каталог с пакетами драйверов (относительный путь)
-        drpFolderFull                   As String           ' Каталог с пакетами драйверов (полный путь)
-        devIDFolder                     As String           ' Каталог с базой индексов (относительный путь)
-        devIDFolderFull                 As String           ' Каталог с базой индексов  (полный путь)
-        DPFolderNotExist                As Boolean          ' Каталог не сущестует
-        PathPhysX                       As String           ' Путь до файла Physx
-        PathLanguages                   As String           ' Путь до файла Languages
-        PathRuntimes                    As String           ' Путь до файла Runtimes
-        CntBtn                          As Long             ' Количество пакетов в текущей ОС
-        ExcludeFileName                 As String           ' Исключаемые имена пакетов драйверов
-    End Type
-    
-    'Массивы данных
-    Public arrHwidsLocal()              As arrHwidsStruct   ' Массив информации о драйверах устройств
-    Public arrOSList()                  As arrOSStruct      ' Массив поддерживаемых ОС
-#End If
+'Описание структуры массива для поддерживаемой ОС (для DBS)
+Public Type arrOSStructDBS
+    Ver                             As String           ' Версия ОС
+    is64bit                         As Long             ' 64-битная ОС
+    drpFolder                       As String           ' Каталог с пакетами драйверов (относительный путь)
+    drpFolderFull                   As String           ' Каталог с пакетами драйверов (полный путь)
+    DPFolderNotExist                As Boolean          ' Каталог не сущестует
+End Type
 
-#If mbIDE_DBSProject Then
-    'Описание структуры массива информации по HWID (для DBS)
-    Public Type arrHwidsStructDBS
-        i0_DriverDesc               As String           ' Описание устройтва
-        i1_DriverDate               As String           ' Дата драйвера
-        i2_DriverVersion            As String           ' Версия драйвера
-        i3_ProviderName             As String           ' Производитель драйвера устройства
-        i4_ClassName                As String           ' Класс устроства
-        i5_Class                    As String           ' Имя класса устройства
-        i6_InfPath                  As String           ' Производитель драйвера устройства
-        i7_InfSection               As String           ' Секция inf-файла в которой найден HWID
-        i8_MatchingDeviceId         As String           ' Совместимые драйвера
-        i9_ClassID                  As String           ' ID Класса устройства
-    End Type
-    
-    'Описание структуры массива для поддерживаемой ОС (для DBS)
-    Public Type arrOSStructDBS
-        Ver                             As String           ' Версия ОС
-        is64bit                         As Long             ' 64-битная ОС
-        drpFolder                       As String           ' Каталог с пакетами драйверов (относительный путь)
-        drpFolderFull                   As String           ' Каталог с пакетами драйверов (полный путь)
-        DPFolderNotExist                As Boolean          ' Каталог не сущестует
-    End Type
-
-    'Массивы данных
-    Public arrHwidsLocal()              As arrHwidsStructDBS   ' Массив информации о драйверах устройств
-    Public arrOSList()                  As arrOSStructDBS      ' Массив поддерживаемых ОС
-#End If
+'Массивы данных
+Public arrHwidsLocal()              As arrHwidsStructDBS   ' Массив информации о драйверах устройств
+Public arrOSList()                  As arrOSStructDBS      ' Массив поддерживаемых ОС
 
 'Пути до системных каталогов и других рабочих файлов
 Public strWorkTemp                  As String           ' Рабочий временный каталог

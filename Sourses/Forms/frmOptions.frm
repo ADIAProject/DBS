@@ -861,7 +861,7 @@ Begin VB.Form frmOptions
             Strikethrough   =   0   'False
          EndProperty
       End
-      Begin prjDIADBS.TextBoxW txtMacrosPCName 
+      Begin prjDIADBS.TextBoxW txtArchMacrosPCName 
          Height          =   255
          Left            =   480
          TabIndex        =   48
@@ -883,7 +883,7 @@ Begin VB.Form frmOptions
          Text            =   "frmOptions.frx":043A
          Locked          =   -1  'True
       End
-      Begin prjDIADBS.TextBoxW txtMacrosPCModel 
+      Begin prjDIADBS.TextBoxW txtArchMacrosPCModel 
          Height          =   255
          Left            =   480
          TabIndex        =   47
@@ -905,7 +905,7 @@ Begin VB.Form frmOptions
          Text            =   "frmOptions.frx":046A
          Locked          =   -1  'True
       End
-      Begin prjDIADBS.TextBoxW txtMacrosOSVER 
+      Begin prjDIADBS.TextBoxW txtArchMacrosOSVER 
          Height          =   255
          Left            =   480
          TabIndex        =   46
@@ -927,7 +927,7 @@ Begin VB.Form frmOptions
          Text            =   "frmOptions.frx":049C
          Locked          =   -1  'True
       End
-      Begin prjDIADBS.TextBoxW txtMacrosOSBIT 
+      Begin prjDIADBS.TextBoxW txtArchMacrosOSBIT 
          Height          =   255
          Left            =   480
          TabIndex        =   45
@@ -949,7 +949,7 @@ Begin VB.Form frmOptions
          Text            =   "frmOptions.frx":04CA
          Locked          =   -1  'True
       End
-      Begin prjDIADBS.TextBoxW txtMacrosDate 
+      Begin prjDIADBS.TextBoxW txtArchMacrosDate 
          Height          =   255
          Left            =   480
          TabIndex        =   44
@@ -996,7 +996,7 @@ Begin VB.Form frmOptions
          Height          =   255
          Left            =   480
          TabIndex        =   39
-         Top             =   765
+         Top             =   735
          Width           =   7635
          _ExtentX        =   13467
          _ExtentY        =   450
@@ -1033,7 +1033,7 @@ Begin VB.Form frmOptions
          Caption         =   "frmOptions.frx":05A2
          Transparent     =   -1  'True
       End
-      Begin prjDIADBS.LabelW lblMacrosDate 
+      Begin prjDIADBS.LabelW lblArchMacrosDate 
          Height          =   375
          Left            =   2400
          TabIndex        =   65
@@ -1053,7 +1053,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Дата создания резервной копии"
       End
-      Begin prjDIADBS.LabelW lblMacrosOSBit 
+      Begin prjDIADBS.LabelW lblArchMacrosOSBit 
          Height          =   375
          Left            =   2400
          TabIndex        =   66
@@ -1073,7 +1073,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Архитектура операционной системы, в виде x32[64]"
       End
-      Begin prjDIADBS.LabelW lblMacrosOSVer 
+      Begin prjDIADBS.LabelW lblArchMacrosOSVer 
          Height          =   375
          Left            =   2400
          TabIndex        =   67
@@ -1093,7 +1093,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Версия операционной системы в виде wnt5[6]"
       End
-      Begin prjDIADBS.LabelW lblMacrosPCModel 
+      Begin prjDIADBS.LabelW lblArchMacrosPCModel 
          Height          =   375
          Left            =   2400
          TabIndex        =   68
@@ -1113,7 +1113,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Модель компьютера/материнской платы"
       End
-      Begin prjDIADBS.LabelW lblMacrosParam 
+      Begin prjDIADBS.LabelW lblArchMacrosParam 
          Height          =   255
          Left            =   480
          TabIndex        =   69
@@ -1133,7 +1133,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Параметр"
       End
-      Begin prjDIADBS.LabelW lblMacrosDescription 
+      Begin prjDIADBS.LabelW lblArchMacrosDescription 
          Height          =   255
          Left            =   2400
          TabIndex        =   70
@@ -1153,7 +1153,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Описание  параметра"
       End
-      Begin prjDIADBS.LabelW lblMacrosPCName 
+      Begin prjDIADBS.LabelW lblArchMacrosPCName 
          Height          =   375
          Left            =   2400
          TabIndex        =   71
@@ -1173,7 +1173,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Краткое имя компьютера, без доменного суффикса"
       End
-      Begin prjDIADBS.LabelW lblMacrosType 
+      Begin prjDIADBS.LabelW lblArchMacrosType 
          Height          =   255
          Left            =   480
          TabIndex        =   72
@@ -2270,7 +2270,7 @@ Begin VB.Form frmOptions
          EndProperty
          Text            =   "frmOptions.frx":0FA6
       End
-      Begin prjDIADBS.TextBoxW txtMacrosDateDebug 
+      Begin prjDIADBS.TextBoxW txtDebugMacrosDate 
          Height          =   255
          Left            =   500
          TabIndex        =   108
@@ -2290,7 +2290,7 @@ Begin VB.Form frmOptions
          Text            =   "frmOptions.frx":0FEA
          Locked          =   -1  'True
       End
-      Begin prjDIADBS.TextBoxW txtMacrosOSBITDebug 
+      Begin prjDIADBS.TextBoxW txtDebugMacrosOSBIT 
          Height          =   255
          Left            =   500
          TabIndex        =   109
@@ -2310,7 +2310,7 @@ Begin VB.Form frmOptions
          Text            =   "frmOptions.frx":1016
          Locked          =   -1  'True
       End
-      Begin prjDIADBS.TextBoxW txtMacrosOSVERDebug 
+      Begin prjDIADBS.TextBoxW txtDebugMacrosOSVER 
          Height          =   255
          Left            =   500
          TabIndex        =   110
@@ -2330,7 +2330,7 @@ Begin VB.Form frmOptions
          Text            =   "frmOptions.frx":1044
          Locked          =   -1  'True
       End
-      Begin prjDIADBS.TextBoxW txtMacrosPCModelDebug 
+      Begin prjDIADBS.TextBoxW txtDebugMacrosPCModel 
          Height          =   255
          Left            =   500
          TabIndex        =   111
@@ -2350,7 +2350,7 @@ Begin VB.Form frmOptions
          Text            =   "frmOptions.frx":1072
          Locked          =   -1  'True
       End
-      Begin prjDIADBS.TextBoxW txtMacrosPCNameDebug 
+      Begin prjDIADBS.TextBoxW txtDebugMacrosPCName 
          Height          =   255
          Left            =   500
          TabIndex        =   112
@@ -2486,7 +2486,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Уровень отладки:"
       End
-      Begin prjDIADBS.LabelW lblMacrosDateDebug 
+      Begin prjDIADBS.LabelW lblDebugMacrosDate 
          Height          =   375
          Left            =   2400
          TabIndex        =   77
@@ -2506,7 +2506,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Дата и время создания лог-файла"
       End
-      Begin prjDIADBS.LabelW lblMacrosOSBitDebug 
+      Begin prjDIADBS.LabelW lblDebugMacrosOSBit 
          Height          =   375
          Left            =   2400
          TabIndex        =   78
@@ -2526,7 +2526,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Архитектура операционной системы, в виде x32[64]"
       End
-      Begin prjDIADBS.LabelW lblMacrosOSVerDebug 
+      Begin prjDIADBS.LabelW lblDebugMacrosOSVer 
          Height          =   375
          Left            =   2400
          TabIndex        =   79
@@ -2546,7 +2546,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Версия операционной системы в виде wnt5[6]"
       End
-      Begin prjDIADBS.LabelW lblMacrosPCModelDebug 
+      Begin prjDIADBS.LabelW lblDebugMacrosPCModel 
          Height          =   375
          Left            =   2400
          TabIndex        =   80
@@ -2566,7 +2566,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Модель компьютера/материнской платы"
       End
-      Begin prjDIADBS.LabelW lblMacrosParamDebug 
+      Begin prjDIADBS.LabelW lblDebugMacrosParam 
          Height          =   255
          Left            =   500
          TabIndex        =   81
@@ -2586,7 +2586,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Параметр"
       End
-      Begin prjDIADBS.LabelW lblMacrosDescriptionDebug 
+      Begin prjDIADBS.LabelW lblDebugMacrosDescription 
          Height          =   255
          Left            =   2400
          TabIndex        =   82
@@ -2606,7 +2606,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Описание  параметра"
       End
-      Begin prjDIADBS.LabelW lblMacrosPCNameDebug 
+      Begin prjDIADBS.LabelW lblDebugMacrosPCName 
          Height          =   375
          Left            =   2400
          TabIndex        =   86
@@ -2626,7 +2626,7 @@ Begin VB.Form frmOptions
          BackStyle       =   0
          Caption         =   "Краткое имя компьютера, без доменного суффикса"
       End
-      Begin prjDIADBS.LabelW lblMacrosTypeDebug 
+      Begin prjDIADBS.LabelW lblDebugMacrosType 
          Height          =   255
          Left            =   240
          TabIndex        =   87
@@ -3587,8 +3587,8 @@ Private Sub LoadList_lvOS()
         .ColumnHeaders.Clear
 
         If .ColumnHeaders.count = 0 Then
-            .ColumnHeaders.Add 1, , strTableOSHeader1, 80 * Screen.TwipsPerPixelX
-            .ColumnHeaders.Add 2, , strTableOSHeader2, 150 * Screen.TwipsPerPixelX
+            .ColumnHeaders.Add 1, , strTableOSHeader1, 150 * Screen.TwipsPerPixelX
+            .ColumnHeaders.Add 2, , strTableOSHeader2, 60 * Screen.TwipsPerPixelX
             .ColumnHeaders.Add 3, , strTableOSHeader3, 150 * Screen.TwipsPerPixelX
         End If
 
@@ -3597,9 +3597,6 @@ Private Sub LoadList_lvOS()
             With .ListItems.Add(, , arrOSList(ii).Ver)
                 .SubItems(1) = arrOSList(ii).is64bit
                 .SubItems(2) = arrOSList(ii).drpFolder
-
-
-
             End With
 
         Next
@@ -3611,7 +3608,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub LoadStartMode
-'! Description (Описание)  :   [Построение спиcка ОС]
+'! Description (Описание)  :   [Режимы работы при старте]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub LoadStartMode()
@@ -3627,23 +3624,23 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub LoadSkinListCombo
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Загрузка списка скинов]
 '! Parameters  (Переменные):   cmbName (ComboBox)
 '                              strImagePath (String)
 '!--------------------------------------------------------------------------------
 Private Sub LoadSkinListCombo(cmbName As Object, strImagePath As String)
 
-    Dim strListFolderTemp() As FindListStruct
-    Dim ii                  As Integer
+    Dim strListFolder() As FindListStruct
+    Dim ii              As Integer
 
     strListFolderTemp = SearchFoldersInRoot(strImagePath, "*")
 
     With cmbName
         .Clear
 
-        For ii = 0 To UBound(strListFolderTemp)
-            .AddItem strListFolderTemp(ii).Name, ii
-        Next
+        For ii = 0 To UBound(strListFolder)
+            .AddItem strListFolder(ii).Name, ii
+        Next ii
 
     End With
 
@@ -3656,9 +3653,6 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub Localise(ByVal strPathFile As String)
 
-    Dim strFormNameMain As String
-
-    strFormNameMain = frmMain.Name
     ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
     FontCharsetChange
     ' Название формы
@@ -3695,14 +3689,14 @@ Private Sub Localise(ByVal strPathFile As String)
     lblDebugLogName.Caption = LocaliseString(strPathFile, strFormName, "lblDebugLogName", lblDebugLogName.Caption)
     lblDebugLogLevel.Caption = LocaliseString(strPathFile, strFormName, "lblDebugLogLevel", lblDebugLogLevel.Caption)
     lblDebugLogPath.Caption = LocaliseString(strPathFile, strFormName, "lblDebugLogPath", lblDebugLogPath.Caption)
-    lblMacrosTypeDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosTypeDebug", lblMacrosTypeDebug.Caption)
-    lblMacrosParamDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosParamDebug", lblMacrosParamDebug.Caption)
-    lblMacrosDescriptionDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosDescriptionDebug", lblMacrosDescriptionDebug.Caption)
-    lblMacrosPCNameDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosPCNameDebug", lblMacrosPCNameDebug.Caption)
-    lblMacrosPCModelDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosPCModelDebug", lblMacrosPCModelDebug.Caption)
-    lblMacrosOSVerDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosOSVerDebug", lblMacrosOSVerDebug.Caption)
-    lblMacrosOSBitDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosOSBitDebug", lblMacrosOSBitDebug.Caption)
-    lblMacrosDateDebug.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosDateDebug", lblMacrosDateDebug.Caption)
+    lblDebugMacrosType.Caption = LocaliseString(strPathFile, strFormName, "lblDebugMacrosType", lblDebugMacrosType.Caption)
+    lblDebugMacrosParam.Caption = LocaliseString(strPathFile, strFormName, "lblDebugMacrosParam", lblDebugMacrosParam.Caption)
+    lblDebugMacrosDescription.Caption = LocaliseString(strPathFile, strFormName, "lblDebugMacrosDescription", lblDebugMacrosDescription.Caption)
+    lblDebugMacrosPCName.Caption = LocaliseString(strPathFile, strFormName, "lblDebugMacrosPCName", lblDebugMacrosPCName.Caption)
+    lblDebugMacrosPCModel.Caption = LocaliseString(strPathFile, strFormName, "lblDebugMacrosPCModel", lblDebugMacrosPCModel.Caption)
+    lblDebugMacrosOSVer.Caption = LocaliseString(strPathFile, strFormName, "lblDebugMacrosOSVer", lblDebugMacrosOSVer.Caption)
+    lblDebugMacrosOSBit.Caption = LocaliseString(strPathFile, strFormName, "lblDebugMacrosOSBit", lblDebugMacrosOSBit.Caption)
+    lblDebugMacrosDate.Caption = LocaliseString(strPathFile, strFormName, "lblDebugMacrosDate", lblDebugMacrosDate.Caption)
     'frOS
     frOS.Caption = LocaliseString(strPathFile, strFormName, "frOS", frOS.Caption)
     cmdAddOS.Caption = LocaliseString(strPathFile, strFormName, "cmdAddOS", cmdAddOS.Caption)
@@ -3747,14 +3741,14 @@ Private Sub Localise(ByVal strPathFile As String)
     optArchModelPC.Caption = LocaliseString(strPathFile, strFormName, "optArchModelPC", optArchModelPC.Caption)
     optArchCustom.Caption = LocaliseString(strPathFile, strFormName, "optArchCustom", optArchCustom.Caption)
     lblArchShablon.Caption = LocaliseString(strPathFile, strFormName, "lblArchShablon", lblArchShablon.Caption)
-    lblMacrosType.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosType", lblMacrosType.Caption)
-    lblMacrosParam.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosParam", lblMacrosParam.Caption)
-    lblMacrosDescription.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosDescription", lblMacrosDescription.Caption)
-    lblMacrosPCName.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosPCName", lblMacrosPCName.Caption)
-    lblMacrosPCModel.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosPCModel", lblMacrosPCModel.Caption)
-    lblMacrosOSVer.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosOSVer", lblMacrosOSVer.Caption)
-    lblMacrosOSBit.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosOSBit", lblMacrosOSBit.Caption)
-    lblMacrosDate.Caption = LocaliseString(strPathFile, strFormName, "lblMacrosDate", lblMacrosDate.Caption)
+    lblArchMacrosType.Caption = LocaliseString(strPathFile, strFormName, "lblArchMacrosType", lblArchMacrosType.Caption)
+    lblArchMacrosParam.Caption = LocaliseString(strPathFile, strFormName, "lblArchMacrosParam", lblArchMacrosParam.Caption)
+    lblArchMacrosDescription.Caption = LocaliseString(strPathFile, strFormName, "lblArchMacrosDescription", lblArchMacrosDescription.Caption)
+    lblArchMacrosPCName.Caption = LocaliseString(strPathFile, strFormName, "lblArchMacrosPCName", lblArchMacrosPCName.Caption)
+    lblArchMacrosPCModel.Caption = LocaliseString(strPathFile, strFormName, "lblArchMacrosPCModel", lblArchMacrosPCModel.Caption)
+    lblArchMacrosOSVer.Caption = LocaliseString(strPathFile, strFormName, "lblArchMacrosOSVer", lblArchMacrosOSVer.Caption)
+    lblArchMacrosOSBit.Caption = LocaliseString(strPathFile, strFormName, "lblArchMacrosOSBit", lblArchMacrosOSBit.Caption)
+    lblArchMacrosDate.Caption = LocaliseString(strPathFile, strFormName, "lblArchMacrosDate", lblArchMacrosDate.Caption)
     'frMainTools
     frMainTools.Caption = LocaliseString(strPathFile, strFormName, "frMainTools", frMainTools.Caption)
     cmdPathDefault.Caption = LocaliseString(strPathFile, strFormName, "cmdPathDefault", cmdPathDefault.Caption)

@@ -599,9 +599,8 @@ Begin VB.Form frmMain
       Begin VB.Menu mnuHelp 
          Caption         =   "Справка по работе"
          Shortcut        =   {F1}
-         Visible         =   0   'False
       End
-      Begin VB.Menu mnuSep9 
+      Begin VB.Menu mnuSep1 
          Caption         =   "-"
       End
       Begin VB.Menu mnuHomePage 
@@ -613,23 +612,26 @@ Begin VB.Form frmMain
       Begin VB.Menu mnuOsZoneNet 
          Caption         =   "Обсуждение программы на OsZone.net"
       End
-      Begin VB.Menu mnuSep10 
+      Begin VB.Menu mnuSep2 
          Caption         =   "-"
       End
       Begin VB.Menu mnuCheckUpd 
          Caption         =   "Проверить обновление программы"
       End
-      Begin VB.Menu mnuSep11 
+      Begin VB.Menu mnuSep3 
          Caption         =   "-"
       End
       Begin VB.Menu mnuModulesVersion 
          Caption         =   "Модули..."
       End
-      Begin VB.Menu mnuSep12 
+      Begin VB.Menu mnuSep4 
          Caption         =   "-"
       End
       Begin VB.Menu mnuDonate 
          Caption         =   "Поблагодарить автора..."
+      End
+      Begin VB.Menu mnuLicence 
+         Caption         =   "Лицензионное соглашение"
       End
       Begin VB.Menu mnuAbout 
          Caption         =   "О программе..."
@@ -640,7 +642,7 @@ Begin VB.Form frmMain
       Begin VB.Menu mnuLangStart 
          Caption         =   "Использовать выбранный язык при запуске (отмена автовыбора)"
       End
-      Begin VB.Menu mnuSep17 
+      Begin VB.Menu mnuSep5 
          Caption         =   "-"
       End
       Begin VB.Menu mnuLang 
@@ -679,7 +681,7 @@ Private lngFrameCount             As Long
 Private lngBorderWidthX           As Long
 Private lngBorderWidthY           As Long
 Private strFormName               As String
-Private mbMassCheckinLV           As Boolean
+Private mbMassCheckInLV           As Boolean
 
 Public Property Get CaptionW() As String
     Dim lngLenStr As Long
@@ -722,6 +724,8 @@ End Sub
 Private Sub ChangeFrmMainCaption(Optional ByVal lngPercentage As Long)
 
     Dim strProgressValue As String
+    Dim strStatusBarText As String
+    Dim lngRet           As Long
 
     Select Case strPCLangCurrentID
 
@@ -736,7 +740,16 @@ Private Sub ChangeFrmMainCaption(Optional ByVal lngPercentage As Long)
 
     If lngPercentage Mod 9999 Then
         If ctlProgressBar1.Visible Then
-            strProgressValue = (lngPercentage \ 100) & "% (" & ctlUcStatusBar1.PanelText(1) & ") - "
+            strStatusBarText = ctlUcStatusBar1.PanelText(1)
+            lngRet = InStr(strStatusBarText, ":")
+            If lngRet Then
+                strStatusBarText = Left$(strStatusBarText, lngRet - 1)
+            End If
+            lngRet = InStr(strStatusBarText, ".")
+            If lngRet Then
+                strStatusBarText = Left$(strStatusBarText, lngRet - 1)
+            End If
+            strProgressValue = (lngPercentage \ 100) & "% (" & strStatusBarText & ") - "
         End If
     End If
 
@@ -775,7 +788,7 @@ Private Sub cmdCheckAll_Click()
 
     Dim ii As Long
 
-    mbMassCheckinLV = True
+    mbMassCheckInLV = True
     
     With lvDevices.ListItems
 
@@ -789,7 +802,7 @@ Private Sub cmdCheckAll_Click()
 
     End With
 
-    mbMassCheckinLV = False
+    mbMassCheckInLV = False
     FindCheckCountList
 End Sub
 
@@ -811,7 +824,7 @@ Private Sub cmdUnCheckAll_Click()
 
     Dim ii As Long
 
-    mbMassCheckinLV = True
+    mbMassCheckInLV = True
     With lvDevices.ListItems
 
         For ii = 1 To .count
@@ -824,7 +837,7 @@ Private Sub cmdUnCheckAll_Click()
 
     End With
 
-    mbMassCheckinLV = False
+    mbMassCheckInLV = False
     FindCheckCountList
 End Sub
 
@@ -1250,6 +1263,12 @@ Private Function DoZip(ByVal strPackFolder As String, ByVal strDpName As String)
         strDPInstPath = GetPathNameFromPath(strDPInstExePath)
         If mbDebugStandart Then DebugMode "******CopyFiles DPINST : " & strDPInstPath
         ChangeStatusBarText "Copying files from DPInst folder: " & strDPInstPath
+        'Изменяем прогресс на caption
+        With ctlProgressBar1
+            .Value = 9100
+            .SetTaskBarProgressValue .Value, .Max
+            ChangeFrmMainCaption .Value
+        End With
         lngNumFilesFromFolder = rgbCopyFiles(strDPInstPath, strPackFolder, ALL_FILES)
         If mbDebugStandart Then DebugMode "******CopyFiles - count files: " & lngNumFilesFromFolder
     End If
@@ -1258,7 +1277,14 @@ Private Function DoZip(ByVal strPackFolder As String, ByVal strDpName As String)
     '..\7za.exe a ..\out\%1 -mmt=off -m0=BCJ2 -m1=LZMA2:d%dict%m:fb273 -m2=LZMA2:d512k -m3=LZMA2:d512k -mb0:1 -mb0s1:2 -mb0s2:3 *.ini -ir!*.inf
     cmdString = strQuotes & strArh7zExePath & strQuotes & " a " & strQuotes & strDpName7z & strQuotes & " " & strArh7zParam1
     ChangeStatusBarText strMessages(97) & " " & strDpName7z, "Compressing...: " & cmdString
-
+    'Изменяем прогресс на caption
+    With ctlProgressBar1
+        .Value = 9200
+        .SetTaskBarProgressValue .Value, .Max
+        ChangeFrmMainCaption .Value
+    End With
+    
+    
     If RunAndWait(cmdString, strPackFolder, vbHide) = False Then
         MsgBox strMessages(13) & vbNewLine & vbNewLine & cmdString, vbInformation, strProductName
         DoZip = False
@@ -1280,6 +1306,12 @@ Private Function DoZip(ByVal strPackFolder As String, ByVal strDpName As String)
     '..\7za.exe a ..\out\%1 -mmt=off -m0=BCJ2 -m1=LZMA2:d%dict%m:fb273 -m2=LZMA2:d512k -m3=LZMA2:d512k -mb0:1 -mb0s1:2 -mb0s2:3 -xr!*.inf -x!*.ini
     cmdString = strQuotes & strArh7zExePath & strQuotes & " a " & strQuotes & strDpName7z & strQuotes & " " & strArh7zParam2
     ChangeStatusBarText strMessages(97) & " " & strDpName7z, "Compressing...: " & cmdString
+    'Изменяем прогресс на caption
+    With ctlProgressBar1
+        .Value = 9300
+        .SetTaskBarProgressValue .Value, .Max
+        ChangeFrmMainCaption .Value
+    End With
 
     If RunAndWait(cmdString, strPackFolder, vbHide) = False Then
         MsgBox strMessages(13) & vbNewLine & vbNewLine & cmdString, vbInformation, strProductName
@@ -1312,6 +1344,12 @@ Private Function DoZip(ByVal strPackFolder As String, ByVal strDpName As String)
         End Select
 
         ChangeStatusBarText strMessages(97) & " " & strDpName, "Creating SFX...: " & cmdString
+        'Изменяем прогресс на caption
+        With ctlProgressBar1
+            .Value = 9900
+            .SetTaskBarProgressValue .Value, .Max
+            ChangeFrmMainCaption .Value
+        End With
 
         If RunAndWait(cmdString, strWorkTemp, vbHide) = False Then
             MsgBox strMessages(13) & vbNewLine & vbNewLine & cmdString, vbInformation, strProductName
@@ -2349,8 +2387,8 @@ Private Sub Localise(ByVal strPathFile As String)
     ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
     FontCharsetChange
     ' Название формы
-    Me.CaptionW = LocaliseString(strPathFile, strFormName, strFormName, Me.Caption)
-    'frGroup
+    ChangeFrmMainCaption
+    ' frGroup
     frGroup.Caption = LocaliseString(strPathFile, strFormName, "frGroup", frGroup.Caption)
     optGrp1.Caption = LocaliseString(strPathFile, strFormName, "optGrp1", optGrp1.Caption)
     optGrp2.Caption = LocaliseString(strPathFile, strFormName, "optGrp2", optGrp2.Caption)
@@ -2362,11 +2400,11 @@ Private Sub Localise(ByVal strPathFile As String)
     cmdUnCheckAll.Caption = LocaliseString(strPathFile, strFormName, "cmdUnCheckAll", cmdUnCheckAll.Caption)
     chkCheckAll.Caption = LocaliseString(strPathFile, strFormName, "chkCheckAll", chkCheckAll.Caption)
     cmdBreak.Caption = LocaliseString(strPathFile, strFormName, "cmdBreak", cmdBreak.Caption)
-    'frBackUp
+    ' frBackUp
     frBackUp.Caption = LocaliseString(strPathFile, strFormName, "frBackUp", frBackUp.Caption)
     cmdStartBackUp.Caption = LocaliseString(strPathFile, strFormName, "cmdStartBackUp", cmdStartBackUp.Caption)
     lblTypeBackUp.Caption = LocaliseString(strPathFile, strFormName, "lblTypeBackUp", lblTypeBackUp.Caption)
-    'frPanelLV
+    ' frPanelLV
     frPanelLV.Caption = LocaliseString(strPathFile, strFormName, "frPanelLV", frPanelLV.Caption)
     strTableHwidHeader1 = LocaliseString(strPathFile, strFormName, "TableHeader1", "*Наименование устройства*")
     strTableHwidHeader2 = LocaliseString(strPathFile, strFormName, "TableHeader2", "*Дата драйвера*")
@@ -2379,32 +2417,15 @@ Private Sub Localise(ByVal strPathFile As String)
     strTableHwidHeader9 = LocaliseString(strPathFile, strFormName, "TableHeader9", "*HWID*")
     strTableHwidHeader10 = LocaliseString(strPathFile, strFormName, "TableHeader10", "-ID Класса-")
     strTableHwidHeader11 = LocaliseString(strPathFile, strFormName, "TableHeader11", "-ID Экземпляра устройства-")
-    '  Вызов основной функции для вывода Caption меню с поддержкой Unicode
-    Call LocaliseMenu(strPathFile)
-    ' Меню
-'    mnuReCollectHWID.Caption = LocaliseString(strPathFile, strFormName, "mnuReCollectHWID", mnuReCollectHWID.Caption)
-'    mnuOptions.Caption = LocaliseString(strPathFile, strFormName, "mnuOptions", mnuOptions.Caption)
-'    mnuMainAbout.Caption = LocaliseString(strPathFile, strFormName, "mnuMainAbout", mnuMainAbout.Caption)
-'    mnuLinks.Caption = LocaliseString(strPathFile, strFormName, "mnuLinks", mnuLinks.Caption)
-'    mnuHistory.Caption = LocaliseString(strPathFile, strFormName, "mnuHistory", mnuHistory.Caption)
-'    mnuHelp.Caption = LocaliseString(strPathFile, strFormName, "mnuHelp", mnuHelp.Caption)
-'    mnuHomePage.Caption = LocaliseString(strPathFile, strFormName, "mnuHomePage", mnuHomePage.Caption)
-'    mnuHomePageForum.Caption = LocaliseString(strPathFile, strFormName, "mnuHomePageForum", mnuHomePageForum.Caption)
-'    mnuOsZoneNet.Caption = LocaliseString(strPathFile, strFormName, "mnuOsZoneNet", mnuOsZoneNet.Caption)
-'    mnuCheckUpd.Caption = LocaliseString(strPathFile, strFormName, "mnuCheckUpd", mnuCheckUpd.Caption)
-'    mnuDonate.Caption = LocaliseString(strPathFile, strFormName, "mnuDonate", mnuDonate.Caption)
-'    'mnuLicence.Caption = LocaliseString(StrPathFile, strFormName, "mnuLicence", mnuLicence.Caption)
-'    mnuAbout.Caption = LocaliseString(strPathFile, strFormName, "mnuAbout", mnuAbout.Caption)
-'    mnuModulesVersion.Caption = LocaliseString(strPathFile, strFormName, "mnuModulesVersion", mnuModulesVersion.Caption)
-'    mnuMainLang.Caption = LocaliseString(strPathFile, strFormName, "mnuMainLang", mnuMainLang.Caption)
-'    mnuLangStart.Caption = LocaliseString(strPathFile, strFormName, "mnuLangStart", mnuLangStart.Caption)
-    
-    LoadComboList
-    ChangeFrmMainCaption
+    ' frArchName
     frArchName.Caption = LocaliseString(strPathFile, strFormName, "frArchName", frArchName.Caption)
     optArchNamePC.Caption = LocaliseString(strPathFile, strFormName, "optArchNamePC", optArchNamePC.Caption)
     optArchModelPC.Caption = LocaliseString(strPathFile, strFormName, "optArchModelPC", optArchModelPC.Caption)
     optArchCustom.Caption = LocaliseString(strPathFile, strFormName, "optArchCustom", optArchCustom.Caption)
+    ' Меню - Вызов основной функции для вывода Caption меню с поддержкой Unicode
+    Call LocaliseMenu(strPathFile)
+    ' Типы архивов
+    LoadComboList
     'загружаем программные сообщения
     LocaliseMessage strPCLangCurrentPath
 End Sub
@@ -2429,27 +2450,27 @@ Private Sub LocaliseMenu(ByVal strPathFile As String)
 ' 3    mnuSep11 - "-"
 ' 4    mnuHomePage1 - "Домашная страница программы"
 ' 5    mnuHomePage - "Обсуждение программы на OsZone.net"
-' 6    mnuDriverPacks - "Посетить сайт driverpacks.net"
-' 7    mnuDriverPacksOnMySite - "Скачать пакеты драйверов..."
-' 8    mnuSep12 - "-"
-' 9    mnuCheckUpd - "Проверить обновление программы"
-' 10   mnuSep13 - "-"
-' 11   mnuModulesVersion - "Модули..."
-' 12   mnuSep14 - "-"
-' 13   mnuDonate - "Поблагодарить автора..."
-' 14   mnuLicence - "Лицензионное соглашение..."
-' 15   mnuAbout - "О программе..."
+' 6    mnuOsZoneNet
+' 7    mnuSep12 - "-"
+' 8    mnuCheckUpd - "Проверить обновление программы"
+' 9   mnuSep13 - "-"
+' 10   mnuModulesVersion - "Модули..."
+' 11   mnuSep14 - "-"
+' 12   mnuDonate - "Поблагодарить автора..."
+' 13   mnuLicence - "Лицензионное соглашение..."
+' 14   mnuAbout - "О программе..."
     SetUniMenu -1, 2, -1, mnuMainAbout, LocaliseString(strPathFile, strFormName, "mnuMainAbout", mnuMainAbout.Caption)
     SetUniMenu 2, 0, -1, mnuLinks, LocaliseString(strPathFile, strFormName, "mnuLinks", mnuLinks.Caption)
     SetUniMenu 2, 1, -1, mnuHistory, LocaliseString(strPathFile, strFormName, "mnuHistory", mnuHistory.Caption)
     SetUniMenu 2, 2, -1, mnuHelp, LocaliseString(strPathFile, strFormName, "mnuHelp", mnuHelp.Caption), , "F1"
-    SetUniMenu 2, 4, -1, mnuHomePageForum, LocaliseString(strPathFile, strFormName, "mnuHomePageForum", mnuHomePageForum.Caption)
-    SetUniMenu 2, 5, -1, mnuHomePage, LocaliseString(strPathFile, strFormName, "mnuHomePage", mnuHomePage.Caption)
-    SetUniMenu 2, 9, -1, mnuCheckUpd, LocaliseString(strPathFile, strFormName, "mnuCheckUpd", mnuCheckUpd.Caption)
-    SetUniMenu 2, 11, -1, mnuModulesVersion, LocaliseString(strPathFile, strFormName, "mnuModulesVersion", mnuModulesVersion.Caption)
-    SetUniMenu 2, 13, -1, mnuDonate, LocaliseString(strPathFile, strFormName, "mnuDonate", mnuDonate.Caption)
-    'SetUniMenu 2, 14, -1, mnuLicence, LocaliseString(strPathFile, strFormName, "mnuLicence", mnuLicence.Caption)
-    SetUniMenu 2, 15, -1, mnuAbout, LocaliseString(strPathFile, strFormName, "mnuAbout", mnuAbout.Caption)
+    SetUniMenu 2, 4, -1, mnuHomePage, LocaliseString(strPathFile, strFormName, "mnuHomePage", mnuHomePage.Caption)
+    SetUniMenu 2, 5, -1, mnuHomePageForum, LocaliseString(strPathFile, strFormName, "mnuHomePageForum", mnuHomePageForum.Caption)
+    SetUniMenu 2, 6, -1, mnuOsZoneNet, LocaliseString(strPathFile, strFormName, "mnuOsZoneNet", mnuOsZoneNet.Caption)
+    SetUniMenu 2, 8, -1, mnuCheckUpd, LocaliseString(strPathFile, strFormName, "mnuCheckUpd", mnuCheckUpd.Caption)
+    SetUniMenu 2, 10, -1, mnuModulesVersion, LocaliseString(strPathFile, strFormName, "mnuModulesVersion", mnuModulesVersion.Caption)
+    SetUniMenu 2, 12, -1, mnuDonate, LocaliseString(strPathFile, strFormName, "mnuDonate", mnuDonate.Caption)
+    SetUniMenu 2, 13, -1, mnuLicence, LocaliseString(strPathFile, strFormName, "mnuLicence", mnuLicence.Caption)
+    SetUniMenu 2, 14, -1, mnuAbout, LocaliseString(strPathFile, strFormName, "mnuAbout", mnuAbout.Caption)
     
 '3  mnuMainLang - "Язык"
 ' 0    mnuLangStart - "Использовать выбранный язык при запуске (отмена автовыбора)"
@@ -2553,7 +2574,7 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub lvDevices_ItemCheck(ByVal item As LvwListItem, ByVal Checked As Boolean)
     If Not mbFirstStart Then
-        If Not mbMassCheckinLV Then
+        If Not mbMassCheckInLV Then
             FindCheckCountList
         End If
     End If
@@ -2582,7 +2603,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub mnuAbout_Click()
-
     frmAbout.Show vbModal, Me
 End Sub
 
@@ -2628,7 +2648,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub mnuHomePageForum_Click()
-    RunUtilsShell strQuotes & strUrl_MainWWWForum & strQuotes, False
+    RunUtilsShell strUrl_MainWWWForum, False
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2637,7 +2657,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub mnuHomePage_Click()
-    RunUtilsShell strQuotes & strUrl_MainWWWSite & strQuotes, False
+    RunUtilsShell strUrl_MainWWWSite, False
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2695,6 +2715,15 @@ Private Sub mnuLang_Click(Index As Integer)
 
 End Sub
 
+'! Procedure   (Функция)   :   Sub mnuLicence_Click
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Private Sub mnuLicence_Click()
+    frmLicence.Show vbModal, Me
+End Sub
+
+
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub mnuLinks_Click
 '! Description (Описание)  :   [Меню - Ссылки]
@@ -2751,7 +2780,7 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub mnuOsZoneNet_Click()
-    RunUtilsShell strQuotes & "http://forum.oszone.net/thread-190814.html" & strQuotes, False
+    RunUtilsShell strUrlOsZoneNetThread, False
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -3210,7 +3239,12 @@ Private Sub StartBackUp()
             ChangeFrmMainCaption .Value
         End With
         
-        miPbInterval = Round(10000 / lvCountCheck)
+        If cmbTypeBackUp.ListIndex = 0 Then
+            miPbInterval = Round(10000 / lvCountCheck)
+        Else
+            miPbInterval = Round(9000 / lvCountCheck)
+        End If
+
         miPbNext = 0
         '# loop all drivers in grid #
         nn = -1
@@ -3445,8 +3479,14 @@ Private Sub StartBackUp()
                     '# show progress #
                     miPbNext = miPbNext + miPbInterval
     
-                    If miPbNext > 10000 Then
-                        miPbNext = 10000
+                    If cmbTypeBackUp.ListIndex = 0 Then
+                        If miPbNext > 10000 Then
+                            miPbNext = 10000
+                        End If
+                    Else
+                        If miPbNext > 9000 Then
+                            miPbNext = 9000
+                        End If
                     End If
     
                     With ctlProgressBar1
@@ -3511,6 +3551,7 @@ Private Sub StartBackUp()
                     MousePointer = 0
                     lngTimeScriptFinish = GetTimeStop(lngTimeScriptRun)
                     strAllTimeScriptRun = CalculateTime(lngTimeScriptFinish, True)
+                    ChangeStatusBarText strMessages(67) & " " & strAllTimeScriptRun, , True
                     With ctlProgressBar1
                         .Value = 10000
                         .SetTaskBarProgressValue .Value, .Max
@@ -3518,10 +3559,8 @@ Private Sub StartBackUp()
                     End With
 
                     If mbDoZip Then
-                        ChangeStatusBarText strMessages(67) & " " & strAllTimeScriptRun, , True
                         MsgBox strMessages(10) & vbNewLine & str7zFileArchivePath, vbInformation + vbOKOnly, strProductName
                     Else
-                        ChangeStatusBarText strMessages(67) & " " & strAllTimeScriptRun, , True
                         MsgBox strMessages(12), vbInformation + vbOKOnly, strProductName
                     End If
 
@@ -3548,22 +3587,26 @@ Private Sub StartBackUp()
                     MousePointer = 0
                     lngTimeScriptFinish = GetTimeStop(lngTimeScriptRun)
                     strAllTimeScriptRun = CalculateTime(lngTimeScriptFinish, True)
-
-                    If mbDoZip Then
-                        ChangeStatusBarText strMessages(67) & " " & strAllTimeScriptRun, , True
-                        MsgBox strMessages(10) & vbNewLine & str7zFileArchivePath, vbInformation + vbOKOnly, strProductName
-                    Else
-                        ChangeStatusBarText strMessages(67) & " " & strAllTimeScriptRun, , True
-                        MsgBox strMessages(12), vbInformation + vbOKOnly, strProductName
-                    End If
-
-                Case Else
+                    ChangeStatusBarText strMessages(67) & " " & strAllTimeScriptRun, , True
                     With ctlProgressBar1
                         .Value = 10000
                         .SetTaskBarProgressValue .Value, .Max
                         ChangeFrmMainCaption .Value
                     End With
+
+                    If mbDoZip Then
+                        MsgBox strMessages(10) & vbNewLine & str7zFileArchivePath, vbInformation + vbOKOnly, strProductName
+                    Else
+                        MsgBox strMessages(12), vbInformation + vbOKOnly, strProductName
+                    End If
+
+                Case Else
                     ChangeStatusBarText strMessages(67) & " " & strAllTimeScriptRun, , True
+                    With ctlProgressBar1
+                        .Value = 10000
+                        .SetTaskBarProgressValue .Value, .Max
+                        ChangeFrmMainCaption .Value
+                    End With
                     MsgBox strMessages(10), vbInformation + vbOKOnly, strProductName
             End Select
         End If

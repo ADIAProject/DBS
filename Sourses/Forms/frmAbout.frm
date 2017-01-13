@@ -351,8 +351,6 @@ Private strFormName       As String
 Private strCreditList_x() As String
 Private lngCurCredit      As Long
 
-Private Const strUrlOsZoneNetThread As String = "http://forum.oszone.net/thread-139908.html"
-
 Public Property Get CaptionW() As String
     Dim lngLenStr As Long
     
