@@ -1,10 +1,9 @@
 VERSION 5.00
 Begin VB.Form frmAbout 
-   BorderStyle     =   3  'Fixed Dialog
    Caption         =   "О программе..."
    ClientHeight    =   7305
-   ClientLeft      =   45
-   ClientTop       =   540
+   ClientLeft      =   120
+   ClientTop       =   615
    ClientWidth     =   9645
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -235,7 +234,6 @@ Begin VB.Form frmAbout
       MousePointer    =   4
       BackStyle       =   0
       Caption         =   "Благодарности:"
-      AutoSize        =   -1  'True
       WordWrap        =   0   'False
    End
    Begin prjDIADBS.LabelW lblAuthor 
@@ -363,14 +361,18 @@ Public Property Let CaptionW(ByVal NewValue As String)
     DefWindowProc Me.hWnd, WM_SETTEXT, 0, ByVal StrPtr(NewValue & vbNullChar)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdCheckUpd_Click
+'! Description (Описание)  :   [Запуск формы проверки обновления]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdCheckUpd_Click()
-
     CheckUpd False
 End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmdDonate_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Запуск формы Donate]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdDonate_Click()
@@ -387,8 +389,8 @@ Private Sub cmdExit_Click()
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub cmdSoftGetNet_Click
-'! Description (Описание)  :   [type_description_here]
+'! Procedure   (Функция)   :   Sub cmdHomePage_Click
+'! Description (Описание)  :   [Переход на домашнюю страницу]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdHomePage_Click()
@@ -397,7 +399,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmdLicence_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Показ лицензионного соглашения]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdLicence_Click()
@@ -406,7 +408,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmdOsZoneNet_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Переход на форум OsZone.net]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdOsZoneNet_Click()
@@ -415,7 +417,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ctlAquaButton1_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Переход на сайт программы]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ctlAquaButton_Click()
@@ -424,7 +426,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub FontCharsetChange
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Изменение шрифта формы]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub FontCharsetChange()
@@ -440,7 +442,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub Form_KeyDown
-'! Description (Описание)  :   [обработка нажатий клавиш клавиатуры]
+'! Description (Описание)  :   [Обработка нажатий клавиш клавиатуры]
 '! Parameters  (Переменные):   KeyCode (Integer)
 '                              Shift (Integer)
 '!--------------------------------------------------------------------------------
@@ -513,6 +515,11 @@ Private Sub Form_Load()
     lblMailTo.ToolTipText = "roman-novosib@ngs.ru"
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Unload
+'! Description (Описание)  :   [Выгрузка формы]
+'! Parameters  (Переменные):   Cancel (Integer)
+'!--------------------------------------------------------------------------------
 Private Sub Form_Unload(Cancel As Integer)
     cmdHomePage.UnsetPopupMenu
 End Sub
@@ -587,8 +594,8 @@ Private Sub GenerateThankyou(ByVal thxText As String, Optional ByVal creditURL A
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub ctlAquaButton1_Click
-'! Description (Описание)  :   [type_description_here]
+'! Procedure   (Функция)   :   Sub lblAuthor_Click
+'! Description (Описание)  :   [Переход на сайт разработчика]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub lblAuthor_Click()
@@ -628,7 +635,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub lblTranslator_MouseDown
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Переход на сайт переводчика, или отправка почты]
 '! Parameters  (Переменные):   Button (Integer)
 '                              Shift (Integer)
 '                              X (Single)
@@ -646,7 +653,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub LoadThankYou
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Загрузка списка благодарностей]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub LoadThankYou()
@@ -689,7 +696,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub LoadTranslator
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Загрузка сведений о переводчике]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub LoadTranslator()
@@ -757,7 +764,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub mnuContextLink_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Список действий для выпадающего меню кнопки]
 '! Parameters  (Переменные):   Index (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub mnuContextLink_Click(Index As Integer)

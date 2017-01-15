@@ -20,7 +20,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Note: this file has been modified for use within Drivers Installer Assistant.
+'Note: this file has been modified for use within Drivers Installer Assistant and Drivers BackUp Solution.
 'This code was originally written by Leandro I. Ascierto
 'You may download the original version of this code from the following link (good as of 21 Mar '10):
 'http://leandroascierto.com/blog/scrollcontrol/
@@ -164,7 +164,6 @@ Private mX As Single
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Initialize()
-Attribute UserControl_Initialize.VB_UserMemId = 1610809358
 
     SI.cbSize = Len(SI)
     SI.fMask = SIF_ALL
@@ -179,7 +178,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Terminate()
-Attribute UserControl_Terminate.VB_UserMemId = 1610809366
 
     On Error Resume Next
 
@@ -489,7 +487,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_InitProperties()
-Attribute UserControl_InitProperties.VB_UserMemId = 1610809359
     m_AutoScrollToFocus = True
     m_UseHandsCursor = True
 End Sub
@@ -503,7 +500,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute UserControl_MouseDown.VB_UserMemId = 1610809360
 
     If m_UseHandsCursor Then
         If Button = 1 Then
@@ -524,7 +520,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute UserControl_MouseMove.VB_UserMemId = 1610809361
 
     If m_UseHandsCursor = False Then
 
@@ -582,7 +577,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute UserControl_MouseUp.VB_UserMemId = 1610809362
 
     If m_UseHandsCursor Then
         If Button = 1 Then
@@ -600,7 +594,6 @@ End Sub
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-Attribute UserControl_ReadProperties.VB_UserMemId = 1610809363
 
     With PropBag
         Me.BackColor = .ReadProperty("BackColor", vbButtonFace)
@@ -650,7 +643,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Resize()
-Attribute UserControl_Resize.VB_UserMemId = 1610809364
 
     On Error Resume Next
 
@@ -663,7 +655,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Show()
-Attribute UserControl_Show.VB_UserMemId = 1610809365
     Me.Refresh
     CheckScroll
 End Sub
@@ -674,7 +665,6 @@ End Sub
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-Attribute UserControl_WriteProperties.VB_UserMemId = 1610809367
 
     With PropBag
         .WriteProperty "BackColor", UserControl.BackColor, vbButtonFace
@@ -701,7 +691,6 @@ End Sub
 '                              lParamUser (Long)
 '!--------------------------------------------------------------------------------
 Private Sub z_WndProc1(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal lng_hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef lParamUser As Long)
-Attribute z_WndProc1.VB_UserMemId = 1610809368
 
     '*************************************************************************************************
     '* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually

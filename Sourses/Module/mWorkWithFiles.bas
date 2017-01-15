@@ -1,6 +1,6 @@
 Attribute VB_Name = "mWorkWithFiles"
 Option Explicit
-' Not add to project (if not DBS) - option for compile
+' Not add to project (DBS/DIA) - option for compiler
 #Const mbIDE_DBSProject = True
 
 '!--------------------------------------------------------------------------------
@@ -383,14 +383,14 @@ End Sub
 '! Parameters  (Переменные):   strDir (String)
 '!--------------------------------------------------------------------------------
 Private Function DelTree(ByVal strDir As String) As Long
-Attribute DelTree.VB_UserMemId = 1610612748
 
-    Dim X          As Long
-    Dim intAttr    As Integer
-    Dim strAllDirs As String
-    Dim strFile    As String
-    Dim ret        As Long
-    Dim retLasrErr As Long
+    Dim lngNullCharPos  As Long
+    Dim lngRetDel       As Long
+    Dim intAttr         As Integer
+    Dim strAllDirs      As String
+    Dim strFile         As String
+    Dim ret             As Long
+    Dim retLasrErr      As Long
 
     DelTree = -1
 
@@ -447,13 +447,13 @@ Attribute DelTree.VB_UserMemId = 1610612748
                 Loop
 
                 Do While Len(strAllDirs)
-                    X = InStr(strAllDirs, vbNullChar)
-                    strFile = Left$(strAllDirs, X - 1)
-                    strAllDirs = Mid$(strAllDirs, X + 1)
-                    X = DelTree(strDir & strFile)
-
-                    If X Then
-                        DelTree = X
+                    lngNullCharPos = InStr(strAllDirs, vbNullChar)
+                    strFile = Left$(strAllDirs, lngNullCharPos - 1)
+                    strAllDirs = Mid$(strAllDirs, lngNullCharPos + 1)
+                    
+                    lngRetDel = DelTree(strDir & strFile)
+                    If lngRetDel Then
+                        DelTree = lngRetDel
                     End If
 
                 Loop
@@ -687,7 +687,6 @@ End Sub
 '                              strData (String)
 '!--------------------------------------------------------------------------------
 Private Sub FileWriteDataAPIUni(ByVal sFilePath As String, ByVal strData As String)
-Attribute FileWriteDataAPIUni.VB_UserMemId = 1610612756
     Dim fHandle         As Long
     Dim fSuccess        As Long
     Dim lBytesWritten   As Long
@@ -736,7 +735,6 @@ End Sub
 '                              sStringOut (String)
 '!--------------------------------------------------------------------------------
 Private Sub FileWriteDataAppend(ByVal sFileName As String, Optional ByVal sStringOut As String)
-Attribute FileWriteDataAppend.VB_UserMemId = 1610612757
 
     Dim fNum As Integer
     

@@ -137,8 +137,8 @@ Public Sub CreateIni()
 
         'Секция Debug
         IniWriteStrPrivate "Debug", "DebugEnable", "1", strSysIni
-        IniWriteStrPrivate "Debug", "DebugLogPath", "%WINDIR%\Logs\DBSLog\", strSysIni
-        IniWriteStrPrivate "Debug", "DebugLogName", "DBS-LOG_%DATE%.txt", strSysIni
+        IniWriteStrPrivate "Debug", "DebugLogPath", "%WINDIR%\Logs\" & strProjectName & "Log\", strSysIni
+        IniWriteStrPrivate "Debug", "DebugLogName", strProjectName & "-LOG_%DATE%.txt", strSysIni
         IniWriteStrPrivate "Debug", "CleenHistory", "1", strSysIni
         IniWriteStrPrivate "Debug", "DetailMode", "1", strSysIni
         IniWriteStrPrivate "Debug", "DebugLog2AppPath", "0", strSysIni
@@ -234,11 +234,11 @@ Public Function GetMainIniParam() As Boolean
     'strThisBuildBy = "www.SamLab.Ws"
     '[Debug]
     ' Путь до лог файла
-    strDebugLogPathTemp = GetIniValueString(strSysIni, "Debug", "DebugLogPath", "%WINDIR%\Logs\DBSLog\")
-    strDebugLogPath = PathCollect(GetIniValueString(strSysIni, "Debug", "DebugLogPath", "%WINDIR%\Logs\DBSLog\"))
+    strDebugLogPathTemp = GetIniValueString(strSysIni, "Debug", "DebugLogPath", "%WINDIR%\Logs\" & strProjectName & "Log\")
+    strDebugLogPath = PathCollect(GetIniValueString(strSysIni, "Debug", "DebugLogPath", "%WINDIR%\Logs\" & strProjectName & "Log\"))
     ' Имя лог-файла
-    strDebugLogNameTemp = GetIniValueString(strSysIni, "Debug", "DebugLogName", "DBS-LOG_%DATE%.txt")
-    strDebugLogName = ExpandFileNameByEnvironment(GetIniValueString(strSysIni, "Debug", "DebugLogName", "DIA-LOG_%DATE%.txt"))
+    strDebugLogNameTemp = GetIniValueString(strSysIni, "Debug", "DebugLogName", strProjectName & "-LOG_%DATE%.txt")
+    strDebugLogName = ExpandFileNameByEnvironment(GetIniValueString(strSysIni, "Debug", "DebugLogName", strProjectName & "-LOG_%DATE%.txt"))
     ' Записывать время в лог-файл
     mbDebugTime2File = GetIniValueBoolean(strSysIni, "Debug", "Time2File", 0)
     ' Создавать лог-файл в подпапке "logs" программы
@@ -262,7 +262,7 @@ Public Function GetMainIniParam() As Boolean
         End If
 
     Else
-        strDebugLogFullPath = strAppPathBackSL & "logs\" & strDebugLogName
+        strDebugLogFullPath = strAppPathBackSL & "Logs\" & strDebugLogName
 
         If mbDebugStandart Then
             If Not LogNotOnCDRoom(strAppPathBackSL) Then
@@ -519,7 +519,7 @@ Public Function GetMainIniParam() As Boolean
             If arrOSList(ii).drpFolder <> "No Key" Then
                 If PathExists(PathCollect(arrOSList(ii).drpFolder)) = False Then
                     If mbDebugStandart Then DebugMode "Not find folder for package driver backup" & vbNewLine & "aey IN: " & arrOSList(ii).Ver & " is64bit:" & arrOSList(ii).is64bit & vbNewLine & vbNewLine & "Folder is not Exist: " & vbNewLine & PathCollect(arrOSList(ii).drpFolder)
-                    arrOSList(ii).DPFolderNotExist = "DriverPack folder is not Exist"
+                    arrOSList(ii).DPFolderNotExist = True
                 End If
 
             Else

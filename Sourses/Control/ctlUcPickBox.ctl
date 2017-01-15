@@ -2569,7 +2569,7 @@ Private Function ShowOpen(ByVal sFilter As String, ByVal sInitPath As String) As
             '   Retry Flag
 GoAgain:
             
-            If Len(.FileName) And Not m_MultiSelect Then
+            If LenB(.FileName) And Not m_MultiSelect Then
     
                 '   This is a first time through, so the Offset will be zero. This is the
                 '   case when MultiSelect = False and this is our first file selected.
@@ -2580,7 +2580,7 @@ GoAgain:
     
                 ShowOpen.sLastDirectory = Left$(.FileName, .FileOffset)
                 ShowOpen.nFilesSelected = 1
-                'ShowOpen.sFiles(1) = Mid$(.FileName, .FileOffset + 1, Len(.FileName) - .FileOffset)
+                'ShowOpen.sFiles(1) = Mid$(.FileName, .FileOffset + 1, LenB(.FileName) - .FileOffset)
                 ShowOpen.sFiles(1) = .FileName
             ElseIf Len(.FileName) > .FileOffset Then
                 '   See if we have an offset by the dialog and see if this matches the position of

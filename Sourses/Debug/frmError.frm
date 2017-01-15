@@ -152,6 +152,7 @@ Begin VB.Form frmError
    End
    Begin VB.CommandButton cmdExit 
       Caption         =   "Close program"
+      Default         =   -1  'True
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -299,7 +300,6 @@ End Sub
 
 'Создание файла error.log
 Private Sub cmdCreateFile_Click()
-Attribute cmdCreateFile_Click.VB_UserMemId = 1610809346
 Dim iFile       As Integer
 Dim strErrText  As String
 
@@ -347,7 +347,6 @@ End Sub
 
     
 Private Sub cmdEmail_Click()
-Attribute cmdEmail_Click.VB_UserMemId = 1610809348
     If FileExists(sFile) = 0 Then
         cmdCreateFile_Click
     End If
@@ -357,7 +356,6 @@ Attribute cmdEmail_Click.VB_UserMemId = 1610809348
 End Sub
 
 Private Sub cmdExit_Click()
-Attribute cmdExit_Click.VB_UserMemId = 1610809349
     Me.Hide
     giAction_ = 0
 End Sub
@@ -384,13 +382,11 @@ Dim sFileName As String
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-Attribute Form_QueryUnload.VB_UserMemId = 1610809350
     Set frmError = Nothing
 End Sub
 
 'Чтение стека процедур из таблицы
 Private Function StackText() As String
-Attribute StackText.VB_UserMemId = 1610809347
 Dim ii As Integer
 Dim iii As Integer
 

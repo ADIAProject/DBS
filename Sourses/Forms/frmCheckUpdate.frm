@@ -383,7 +383,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmdExit_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Выход из формы]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdExit_Click()
@@ -392,7 +392,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmdHistory_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Открыть историю изменений]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdHistory_Click()
@@ -410,7 +410,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub cmdUpdateFull_Click
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Открыть ссылку на скачивание полной версии]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdUpdateFull_Click()
@@ -428,7 +428,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub FontCharsetChange
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Изменяем шрифт формы]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub FontCharsetChange()
@@ -444,7 +444,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub Form_Activate
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Активация формы]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub Form_Activate()
@@ -500,7 +500,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub Form_Load
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Загрузка формы]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub Form_Load()
@@ -527,6 +527,7 @@ Private Sub Form_Load()
     DoEvents
     lblWait.Left = 100
     lblWait.Width = Me.Width - 200
+    
     LoadIconImage2Object cmdExit, "BTN_EXIT", strPathImageMainWork
     LoadIconImage2Object cmdUpdate, "BTN_UPDATE", strPathImageMainWork
     LoadIconImage2Object cmdUpdateFull, "BTN_UPDATEFULL", strPathImageMainWork
@@ -549,6 +550,11 @@ Private Sub Form_Load()
 
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Unload
+'! Description (Описание)  :   [Событие выгрузки формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub Form_Unload(Cancel As Integer)
     cmdUpdate.UnsetPopupMenu
     cmdUpdateFull.UnsetPopupMenu
@@ -743,8 +749,8 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub Localise
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   StrPathFile (String)
+'! Description (Описание)  :   [Загрузка локализованных сообщений]
+'! Parameters  (Переменные):   strPathFile (String)
 '!--------------------------------------------------------------------------------
 Private Sub Localise(ByVal strPathFile As String)
     ' Выставляем шрифт элементов (действует только на те для которых не поддерживается Юникод)
@@ -759,16 +765,17 @@ Private Sub Localise(ByVal strPathFile As String)
     cmdExit.Caption = LocaliseString(strPathFile, strFormName, "cmdExit", cmdExit.Caption)
     ' Лейблы
     lblVersion.Caption = LocaliseString(strPathFile, strFormName, "lblVersion", lblVersion.Caption) & strSpace & strVersion & " (" & strDateProg & ")"
-    ' Меню
-    LocaliseMenu strPathFile
-
+    lblVersionList.Caption = LocaliseString(strPathFile, strFormName, "lblVersionList", lblVersionList.Caption)
+    lblWait.Caption = LocaliseString(strPathFile, strFormName, "lblWait", lblWait.Caption)
+    
     If InStr(1, strRelease, "beta", vbTextCompare) Then
         lblVersion.Caption = lblVersion.Caption & " This version may be Unstable!!!"
         lblVersion.ForeColor = vbRed
     End If
+    
+    ' Меню
+    LocaliseMenu strPathFile
 
-    lblVersionList.Caption = LocaliseString(strPathFile, strFormName, "lblVersionList", lblVersionList.Caption)
-    lblWait.Caption = LocaliseString(strPathFile, strFormName, "lblWait", lblWait.Caption)
 End Sub
 
 '!--------------------------------------------------------------------------------

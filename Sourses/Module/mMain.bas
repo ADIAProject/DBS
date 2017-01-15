@@ -2,8 +2,8 @@ Attribute VB_Name = "mMain"
 Option Explicit
 
 'Основные параметры программы
-Public Const strDateProgram         As String = "09/01/2017"
-Public Const strVerProgram          As String = "5.01.09"
+Public Const strDateProgram         As String = "15/01/2017"
+Public Const strVerProgram          As String = "5.1.15"
 
 'Основные переменные проекта (название, версия и т.д)
 Public strProductName               As String
@@ -73,8 +73,8 @@ Public strInfDir                    As String           ' c:\Windows\inf\
 'Переменные и маркеры используемые в коде программы
 Public mbFirstStart                 As Boolean          ' Флаг указывающий окочание запуска программы
 Public mbIsDriveCDRoom              As Boolean          ' Флаг, указывающий что рабочий диск является CDRoom
-Public mbAddInList                  As Boolean 'режим работы с элементом listview - либо изменние либо добавление
-Public lngLastIdOS                     As Long 'номер последнего элемента в списке ОС
+Public mbAddInList                  As Boolean          ' режим работы с элементом listview - либо изменние либо добавление
+Public lngLastIdOS                  As Long             ' номер последнего элемента в списке ОС
 Public mbRestartProgram             As Boolean          ' Маркер перезапуска программы
 Public mbCheckAllGroup              As Boolean
 Public mbListOnlyGroup              As Boolean
@@ -91,7 +91,7 @@ Public strCompModel                 As String
 Public strMB_Model                  As String
 Public strMB_Manufacturer           As String
 Public strCompName                  As String
-Public mbIsNotebok                  As Boolean ' Этот компьютер является ноутбуком
+Public mbIsNotebok                  As Boolean          ' Этот компьютер является ноутбуком
 
 
 
@@ -173,7 +173,7 @@ Private Sub Main()
     ' Проверяем работает ли программа в режиме IDE
     ' Программа уже запущена???
     If App.PrevInstance And Not InIDE() Then
-        MsgBoxEx "Found a running application 'Drivers Installer Assistant'. If you restart the program from the settings menu, then save the settings, the program waits until the previous session..." & str2vbNewLine & _
+        MsgBoxEx "Found a running application '" & App.ProductName & "'. If you restart the program from the settings menu, then save the settings, the program waits until the previous session..." & str2vbNewLine & _
                                     "This window will close automatically in 5 seconds. Please wait or click OK", vbExclamation + vbSystemModal, strProductName, 6
         ShowPrevInstance
     Else
@@ -224,8 +224,10 @@ Private Sub Main()
 
     'загружаем программные сообщения
     LocaliseMessage strPCLangCurrentPath
+    
     ' Получение настроек из ini-файла
     If Not GetMainIniParam Then
+        MsgBox strMessages(7) & vbNewLine & "GetMainIniParam", vbInformation, strProductName
         GoTo ExitSub
     End If
 

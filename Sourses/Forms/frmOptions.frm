@@ -3431,7 +3431,7 @@ Private Sub Form_Resize()
     If Me.WindowState <> vbMinimized Then
         SetTrayIcon NIM_DELETE, Me.hWnd, 0&, vbNullString
     Else
-        SetTrayIcon NIM_ADD, Me.hWnd, Me.Icon, "Drivers Installer Assistant"
+        SetTrayIcon NIM_ADD, Me.hWnd, Me.Icon, App.ProductName
     End If
 
 End Sub
@@ -3630,16 +3630,16 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub LoadSkinListCombo(cmbName As Object, strImagePath As String)
 
-    Dim strListFolder() As FindListStruct
-    Dim ii              As Integer
+    Dim strListFolder_x() As FindListStruct
+    Dim ii                As Integer
 
-    strListFolderTemp = SearchFoldersInRoot(strImagePath, "*")
+    strListFolder_x = SearchFoldersInRoot(strImagePath, "*")
 
     With cmbName
         .Clear
 
-        For ii = 0 To UBound(strListFolder)
-            .AddItem strListFolder(ii).Name, ii
+        For ii = 0 To UBound(strListFolder_x)
+            .AddItem strListFolder_x(ii).Name, ii
         Next ii
 
     End With
@@ -4014,7 +4014,7 @@ Private Sub SaveOptions()
         End If
 
     ElseIf mbIsDriveCDRoom And mbLoadIniTmpAfterRestart Then
-        strSysIniTemp = strWinTemp & "Settings_DBS_TMP.ini"
+        strSysIniTemp = strWinTemp & "Settings_" & strProjectName & "_TMP.ini"
         SaveSetting App.ProductName, "Settings", "LOAD_INI_TMP", True
         SaveSetting App.ProductName, "Settings", "LOAD_INI_TMP_PATH", strSysIniTemp
     Else
@@ -4059,7 +4059,7 @@ Private Sub SaveOptions()
     ' Секция Debug
     IniWriteStrPrivate "Debug", "DebugEnable", chkDebug.Value, strSysIniTemp
     IniWriteStrPrivate "Debug", "DebugLogPath", ucDebugLogPath.Path, strSysIniTemp
-    strLogNameTemp = "DBS-LOG_%DATE%.txt"
+    strLogNameTemp = strProjectName & "-LOG_%DATE%.txt"
 
     If LenB(txtDebugLogName.Text) Then
         If InStr(txtDebugLogName.Text, strDot) Then
@@ -4329,58 +4329,58 @@ Private Sub txtDebugLogName_LostFocus()
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub txtMacrosDate_DblClick
-'! Description (Описание)  :   [type_description_here]
+'! Procedure   (Функция)   :   Sub txtArchMacrosDate_DblClick
+'! Description (Описание)  :   [Элемент вне фокуса]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Private Sub txtMacrosDate_DblClick()
+Private Sub txtArchMacrosDate_DblClick()
 
-    txtMacrosDate.SelStart = 0
-    txtMacrosDate.SelLength = Len(txtMacrosDate.Text)
+    txtArchMacrosDate.SelStart = 0
+    txtArchMacrosDate.SelLength = Len(txtArchMacrosDate.Text)
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub txtMacrosOSBit_DblClick
+'! Procedure   (Функция)   :   Sub txtArchMacrosOSBit_DblClick
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Private Sub txtMacrosOSBit_DblClick()
+Private Sub txtArchMacrosOSBit_DblClick()
 
-    txtMacrosOSBIT.SelStart = 0
-    txtMacrosOSBIT.SelLength = Len(txtMacrosOSBIT.Text)
+    txtArchMacrosOSBIT.SelStart = 0
+    txtArchMacrosOSBIT.SelLength = Len(txtArchMacrosOSBIT.Text)
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub txtMacrosOSVer_DblClick
+'! Procedure   (Функция)   :   Sub txtArchMacrosOSVer_DblClick
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Private Sub txtMacrosOSVer_DblClick()
+Private Sub txtArchMacrosOSVer_DblClick()
 
-    txtMacrosOSVER.SelStart = 0
-    txtMacrosOSVER.SelLength = Len(txtMacrosOSVER.Text)
+    txtArchMacrosOSVER.SelStart = 0
+    txtArchMacrosOSVER.SelLength = Len(txtArchMacrosOSVER.Text)
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub txtMacrosPCModel_DblClick
+'! Procedure   (Функция)   :   Sub txtArchMacrosPCModel_DblClick
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Private Sub txtMacrosPCModel_DblClick()
+Private Sub txtArchMacrosPCModel_DblClick()
 
-    txtMacrosPCModel.SelStart = 0
-    txtMacrosPCModel.SelLength = Len(txtMacrosPCModel.Text)
+    txtArchMacrosPCModel.SelStart = 0
+    txtArchMacrosPCModel.SelLength = Len(txtArchMacrosPCModel.Text)
 End Sub
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Sub txtMacrosPCName_DblClick
+'! Procedure   (Функция)   :   Sub txtArchMacrosPCName_DblClick
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Private Sub txtMacrosPCName_DblClick()
+Private Sub txtArchMacrosPCName_DblClick()
 
-    txtMacrosPCName.SelStart = 0
-    txtMacrosPCName.SelLength = Len(txtMacrosPCName.Text)
+    txtArchMacrosPCName.SelStart = 0
+    txtArchMacrosPCName.SelLength = Len(txtArchMacrosPCName.Text)
 End Sub
 
 '!--------------------------------------------------------------------------------

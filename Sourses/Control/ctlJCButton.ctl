@@ -25,7 +25,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Note: this file has been modified for use within Drivers Installer Assistant.
+'Note: this file has been modified for use within Drivers Installer Assistant and Drivers BackUp Solution.
 
 'This code was originally written by Juned Chhipa.
 
@@ -612,7 +612,6 @@ Private m_bInitThemed           As Boolean
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Initialize()
-Attribute UserControl_Initialize.VB_UserMemId = 1610809420
 
     Dim ii As Long
 
@@ -636,7 +635,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Terminate()
-Attribute UserControl_Terminate.VB_UserMemId = 1610809432
 
     On Error GoTo Crash:
 
@@ -1038,7 +1036,6 @@ End Property
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Property Get HasUxTheme() As Boolean
-Attribute HasUxTheme.VB_UserMemId = 1745027091
 
     If Not (m_bInitThem) Then
         m_bHasUxTheme = APIFunctionPresent("IsAppThemed", "uxtheme.dll")
@@ -1066,7 +1063,6 @@ End Property
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Property Get IsThemed() As Boolean
-Attribute IsThemed.VB_UserMemId = 1745027090
 
     On Error Resume Next
 
@@ -1585,7 +1581,6 @@ End Sub
 '                              lBackColorTo (Long)
 '!--------------------------------------------------------------------------------
 Private Function BlendColors(ByVal lBackColorFrom As Long, ByVal lBackColorTo As Long) As Long
-Attribute BlendColors.VB_UserMemId = 1610809368
     BlendColors = RGB(((lBackColorFrom And &HFF) + (lBackColorTo And &HFF)) / 2, (((lBackColorFrom \ &H100) And &HFF) + ((lBackColorTo \ &H100) And &HFF)) / 2, (((lBackColorFrom \ &H10000) And &HFF) + ((lBackColorTo \ &H10000) And &HFF)) / 2)
 End Function
 
@@ -1595,7 +1590,6 @@ End Function
 '! Parameters  (Переменные):   lFontSize (Long)
 '!--------------------------------------------------------------------------------
 Private Function BuildSymbolFont(ByVal lFontSize As Long) As Long
-Attribute BuildSymbolFont.VB_UserMemId = 1610809369
 
     Const SYMBOL_CHARSET As Integer = 2
 
@@ -1620,7 +1614,6 @@ End Function
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub CalcPicRects()
-Attribute CalcPicRects.VB_UserMemId = 1610809370
 
     If Not m_Picture Is Nothing Then
 
@@ -1757,7 +1750,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub CreateRegion()
-Attribute CreateRegion.VB_UserMemId = 1610809371
 
     If m_lButtonRgn Then
         DeleteObject m_lButtonRgn
@@ -1787,7 +1779,6 @@ End Sub
 '! Parameters  (Переменные):   Color (Byte)
 '!--------------------------------------------------------------------------------
 Private Function Darken(ByVal Color As Byte) As Byte
-Attribute Darken.VB_UserMemId = 1610809372
     Darken = (217& * Color) \ 255
 End Function
 
@@ -1797,7 +1788,6 @@ End Function
 '! Parameters  (Переменные):   vState (enumButtonStates)
 '!--------------------------------------------------------------------------------
 Private Sub DrawButton_Gel(ByVal vState As enumButtonStates)
-Attribute DrawButton_Gel.VB_UserMemId = 1610809405
 
     '****************************************************************************
     ' Draws a Gelbutton                                                         *
@@ -1870,7 +1860,6 @@ End Sub
 '! Parameters  (Переменные):   vState (enumButtonStates)
 '!--------------------------------------------------------------------------------
 Private Sub DrawButton_Office2003(ByVal vState As enumButtonStates)
-Attribute DrawButton_Office2003.VB_UserMemId = 1610809406
 
     Dim bColor As Long
 
@@ -1921,7 +1910,6 @@ End Sub
 '! Parameters  (Переменные):   vState (enumButtonStates)
 '!--------------------------------------------------------------------------------
 Private Sub DrawButton_OfficeXP(ByVal vState As enumButtonStates)
-Attribute DrawButton_OfficeXP.VB_UserMemId = 1610809407
 
     Dim lpRect      As RECT
     Dim bColor      As Long
@@ -1993,7 +1981,6 @@ End Sub
 '! Parameters  (Переменные):   vState (enumButtonStates)
 '!--------------------------------------------------------------------------------
 Private Sub DrawButton_Outlook2007(ByVal vState As enumButtonStates)
-Attribute DrawButton_Outlook2007.VB_UserMemId = 1610809408
 
     Dim bColor As Long
 
@@ -2049,7 +2036,6 @@ End Sub
 '! Parameters  (Переменные):   vState (enumButtonStates)
 '!--------------------------------------------------------------------------------
 Private Sub DrawButton_Standard(ByVal vState As enumButtonStates)
-Attribute DrawButton_Standard.VB_UserMemId = 1610809409
 
     '****************************************************************************
     ' Draws  four different styles in one procedure                             *
@@ -2181,7 +2167,6 @@ End Sub
 '! Parameters  (Переменные):   vState (enumButtonStates)
 '!--------------------------------------------------------------------------------
 Private Sub DrawButton_Vista(ByVal vState As enumButtonStates)
-Attribute DrawButton_Vista.VB_UserMemId = 1610809410
 
     '*************************************************************************
     '* Draws a cool Vista Aero Style Button                                  *
@@ -2306,7 +2291,6 @@ End Sub
 '! Parameters  (Переменные):   vState (enumButtonStates)
 '!--------------------------------------------------------------------------------
 Private Sub DrawButton_VistaToolbar(ByVal vState As enumButtonStates)
-Attribute DrawButton_VistaToolbar.VB_UserMemId = 1610809411
 
     Dim lpRect As RECT
 
@@ -2360,7 +2344,6 @@ End Sub
 '! Parameters  (Переменные):   vState (enumButtonStates)
 '!--------------------------------------------------------------------------------
 Private Sub DrawButton_WindowsTheme(ByVal vState As enumButtonStates)
-Attribute DrawButton_WindowsTheme.VB_UserMemId = 1610809412
 
     Dim tmpState As Long
 
@@ -2406,7 +2389,6 @@ End Sub
 '! Parameters  (Переменные):   vState (enumButtonStates)
 '!--------------------------------------------------------------------------------
 Private Sub DrawButton_WinXP(ByVal vState As enumButtonStates)
-Attribute DrawButton_WinXP.VB_UserMemId = 1610809413
 
     '****************************************************************************
     '* Windows XP Button                                                        *
@@ -2625,7 +2607,6 @@ End Sub
 '! Parameters  (Переменные):   vState (enumButtonStates)
 '!--------------------------------------------------------------------------------
 Private Sub DrawButton_XPToolbar(ByVal vState As enumButtonStates)
-Attribute DrawButton_XPToolbar.VB_UserMemId = 1610809414
 
     Dim lpRect As RECT
     Dim bColor As Long
@@ -2716,7 +2697,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub DrawCaptionEffect()
-Attribute DrawCaptionEffect.VB_UserMemId = 1610809373
 
     '****************************************************************************
     '* Draws the caption with/without unicode along with the special effects    *
@@ -2768,7 +2748,6 @@ End Sub
 '                              OffsetY (Long)
 '!--------------------------------------------------------------------------------
 Private Sub DrawCaptionEx(lpRect As RECT, lColor As Long, OffsetX As Long, OffsetY As Long)
-Attribute DrawCaptionEx.VB_UserMemId = 1610809374
 
     Dim tRect         As RECT
     Dim lOldForeColor As Long
@@ -2805,7 +2784,6 @@ End Sub
 '! Parameters  (Переменные):   Color (Long)
 '!--------------------------------------------------------------------------------
 Private Sub DrawCorners(Color As Long)
-Attribute DrawCorners.VB_UserMemId = 1610809375
     '****************************************************************************
     '* Draws four Corners of the button specified by Color                      *
     '****************************************************************************
@@ -2832,7 +2810,6 @@ End Sub
 '                              GradientDirection (GradientDirectionCts)
 '!--------------------------------------------------------------------------------
 Private Sub DrawGradientEx(ByVal X As Long, ByVal Y As Long, ByVal lngWidth As Long, ByVal lngHeight As Long, ByVal Color1 As Long, ByVal Color2 As Long, ByVal GradientDirection As GradientDirectionCts)
-Attribute DrawGradientEx.VB_UserMemId = 1610809376
 
     Dim uBIH    As BITMAPINFOHEADER
     Dim lBits() As Long
@@ -2983,7 +2960,6 @@ End Sub
 '! Parameters  (Переменные):   vState (enumButtonStates)
 '!--------------------------------------------------------------------------------
 Private Sub DrawInstallShieldButton(ByVal vState As enumButtonStates)
-Attribute DrawInstallShieldButton.VB_UserMemId = 1610809377
 
     '****************************************************************************
     '* I saw this style while installing JetAudio in my PC.                     *
@@ -3062,7 +3038,6 @@ End Sub
 '                              Color (Long)
 '!--------------------------------------------------------------------------------
 Private Sub DrawLineApi(ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long, ByVal Color As Long)
-Attribute DrawLineApi.VB_UserMemId = 1610809378
 
     Dim PT      As POINTAPI
     Dim hPen    As Long
@@ -3082,7 +3057,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub DrawPicShadow()
-Attribute DrawPicShadow.VB_UserMemId = 1610809379
 
     '  Still not satisfied results for picture shadows
     Dim lShadowClr As Long
@@ -3108,7 +3082,6 @@ End Sub
 '                              lBrushColor (Long = -1)
 '!--------------------------------------------------------------------------------
 Private Sub DrawPicture(lpRect As RECT, Optional lBrushColor As Long = -1)
-Attribute DrawPicture.VB_UserMemId = 1610809380
 
     '****************************************************************************
     ' draw the picture by calling the TransBlt routines                         *
@@ -3138,7 +3111,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub DrawPicwithCaption()
-Attribute DrawPicwithCaption.VB_UserMemId = 1610809381
 
     Dim lpRect     As RECT
     Dim pRECT      As RECT
@@ -3441,7 +3413,6 @@ End Sub
 '                              Color (Long)
 '!--------------------------------------------------------------------------------
 Private Sub DrawRectangle(ByVal X As Long, ByVal Y As Long, ByVal lngWidth As Long, ByVal lngHeight As Long, ByVal Color As Long)
-Attribute DrawRectangle.VB_UserMemId = 1610809382
 
     Dim brect  As RECT
     Dim hBrush As Long
@@ -3464,7 +3435,6 @@ End Sub
 '! Parameters  (Переменные):   eArrow (enumSymbol)
 '!--------------------------------------------------------------------------------
 Private Sub DrawSymbol(ByVal eArrow As enumSymbol)
-Attribute DrawSymbol.VB_UserMemId = 1610809383
 
     Dim hNewFont As Long
     Dim hOldFont As Long
@@ -3486,7 +3456,6 @@ End Sub
 '                              vState (Long)
 '!--------------------------------------------------------------------------------
 Private Function DrawTheme(sClass As String, ByVal iPart As Long, ByVal vState As Long) As Boolean
-Attribute DrawTheme.VB_UserMemId = 1610809384
 
     Dim hTheme    As Long
     Dim lResult   As Boolean
@@ -3517,7 +3486,6 @@ End Function
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub InitThemeColors()
-Attribute InitThemeColors.VB_UserMemId = 1610809385
 
     Select Case m_ButtonStyle
 
@@ -3536,7 +3504,6 @@ End Sub
 '! Parameters  (Переменные):   obj (Object)
 '!--------------------------------------------------------------------------------
 Private Function Is32BitBMP(obj As Object) As Boolean
-Attribute Is32BitBMP.VB_UserMemId = 1610809386
 
     Dim uBI As BITMAP
 
@@ -3553,7 +3520,6 @@ End Function
 '! Parameters  (Переменные):   Color (Byte)
 '!--------------------------------------------------------------------------------
 Private Function Lighten(ByVal Color As Byte) As Byte
-Attribute Lighten.VB_UserMemId = 1610809387
 
     Dim lColor As Long
 
@@ -3573,7 +3539,6 @@ End Function
 '! Parameters  (Переменные):   PropertyName (String)
 '!--------------------------------------------------------------------------------
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
-Attribute mFont_FontChanged.VB_UserMemId = 1610809415
     Set UserControl.Font = mFont
     Refresh
     RedrawButton
@@ -3587,7 +3552,6 @@ End Sub
 '                              LF (LOGFONT)
 '!--------------------------------------------------------------------------------
 Private Sub OLEFontToLogFont(ByVal Font As StdFont, ByRef LF As LOGFONT)
-Attribute OLEFontToLogFont.VB_UserMemId = 1610809388
 
     Dim FontName As String
 
@@ -3618,7 +3582,6 @@ End Sub
 '                              lpRect (RECT)
 '!--------------------------------------------------------------------------------
 Private Sub PaintRect(ByVal lColor As Long, lpRect As RECT)
-Attribute PaintRect.VB_UserMemId = 1610809389
 
     Dim hOldBrush As Long
     Dim hBrush    As Long
@@ -3636,7 +3599,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub RedrawButton()
-Attribute RedrawButton.VB_UserMemId = 1610809390
 
     'Clears usercontrol
     UserControl.Cls
@@ -3721,7 +3683,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub SetAccessKey()
-Attribute SetAccessKey.VB_UserMemId = 1610809391
 
     Dim ii As Long
 
@@ -3792,7 +3753,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub SetThemeColors()
-Attribute SetThemeColors.VB_UserMemId = 1610809394
 
     With m_bColors
 
@@ -3892,7 +3852,6 @@ End Sub
 '                              PercentInDecimal (Single)
 '!--------------------------------------------------------------------------------
 Private Function ShiftColor(ByVal Color As Long, ByVal PercentInDecimal As Single) As Long
-Attribute ShiftColor.VB_UserMemId = 1610809395
 
     '****************************************************************************
     '* This routine shifts a color value specified by PercentInDecimal          *
@@ -3956,7 +3915,6 @@ End Function
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ShowPopupMenu()
-Attribute ShowPopupMenu.VB_UserMemId = 1610809396
 
     '* Shows a popupmenu
     '* Inspired from Noel Dacara's dcbutton
@@ -4034,7 +3992,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ShowPopupMenuRBT()
-Attribute ShowPopupMenuRBT.VB_UserMemId = 1610809397
 
     ' /--Show the dropdown menu
     If Not (mnuRightButton Is Nothing) Then
@@ -4065,7 +4022,6 @@ End Sub
 '! Parameters  (Переменные):   lng_hWnd (Long)
 '!--------------------------------------------------------------------------------
 Private Sub TrackMouseLeave(ByVal lng_hWnd As Long)
-Attribute TrackMouseLeave.VB_UserMemId = 1610809398
 
     Dim TME As TRACKMOUSEEVENT_STRUCT
 
@@ -4103,7 +4059,6 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Sub TransBlt(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long, ByVal DstW As Long, ByVal DstH As Long, ByVal SrcPic As StdPicture, Optional ByVal transColor As Long = -1, Optional ByVal BrushColor As Long = -1, Optional ByVal _
                             MonoMask As Boolean = False, Optional ByVal isGreyscale As Boolean = False)
-Attribute TransBlt.VB_UserMemId = 1610809399
 
     Dim b           As Long
     Dim H           As Long
@@ -4343,7 +4298,6 @@ End Sub
 '                              isGreyscale (Boolean = False)
 '!--------------------------------------------------------------------------------
 Private Sub TransBlt32(ByVal DstDC As Long, ByVal DstX As Long, ByVal DstY As Long, ByVal DstW As Long, ByVal DstH As Long, ByVal SrcPic As StdPicture, Optional ByVal BrushColor As Long = -1, Optional ByVal isGreyscale As Boolean = False)
-Attribute TransBlt32.VB_UserMemId = 1610809400
 
     Dim b           As Long
     Dim H           As Long
@@ -4556,7 +4510,6 @@ End Sub
 '                              HPALETTE (Long = 0)
 '!--------------------------------------------------------------------------------
 Private Function TranslateColor(ByVal clrColor As OLE_COLOR, Optional ByRef HPALETTE As Long = 0) As Long
-Attribute TranslateColor.VB_UserMemId = 1610809401
 
     If OleTranslateColor(clrColor, HPALETTE, TranslateColor) Then
         TranslateColor = CLR_INVALID
@@ -4642,7 +4595,6 @@ End Sub
 '! Parameters  (Переменные):   KeyAscii (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
-Attribute UserControl_AccessKeyPress.VB_UserMemId = 1610809416
 
     If m_bEnabled Then
 
@@ -4702,7 +4654,6 @@ End Sub
 '! Parameters  (Переменные):   PropertyName (String)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_AmbientChanged(PropertyName As String)
-Attribute UserControl_AmbientChanged.VB_UserMemId = 1610809417
     m_bDefault = Ambient.DisplayAsDefault
 
     If PropertyName = "DisplayAsDefault" Then
@@ -4721,7 +4672,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_DblClick()
-Attribute UserControl_DblClick.VB_UserMemId = 1610809418
 
     If m_bHandPointer Then
         SetCursor m_lCursor
@@ -4757,7 +4707,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_GotFocus()
-Attribute UserControl_GotFocus.VB_UserMemId = 1610809419
     m_bHasFocus = True
     
     If (m_bHasFocus Or m_bDefault) And (m_Buttonstate <> eStateDown And m_Buttonstate <> eStateOver) Then
@@ -4773,7 +4722,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_InitProperties()
-Attribute UserControl_InitProperties.VB_UserMemId = 1610809421
     'Initialize Properties for User Control
     'Called on designtime everytime a control is added
     m_ButtonStyle = eWindowsTheme
@@ -4803,7 +4751,6 @@ End Sub
 '                              Shift (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
-Attribute UserControl_KeyDown.VB_UserMemId = 1610809422
 
     Select Case KeyCode
 
@@ -4900,7 +4847,6 @@ End Sub
 '! Parameters  (Переменные):   KeyAscii (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_KeyPress(KeyAscii As Integer)
-Attribute UserControl_KeyPress.VB_UserMemId = 1610809423
     ' --Simply raise the event =)
     RaiseEvent KeyPress(KeyAscii)
 End Sub
@@ -4912,7 +4858,6 @@ End Sub
 '                              Shift (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
-Attribute UserControl_KeyUp.VB_UserMemId = 1610809424
 
     If KeyCode = vbKeySpace Then
         ReleaseCapture
@@ -4966,7 +4911,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_LostFocus()
-Attribute UserControl_LostFocus.VB_UserMemId = 1610809425
     m_bHasFocus = False
     m_bIsDown = False
     m_bIsSpaceBarDown = False
@@ -5006,7 +4950,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute UserControl_MouseDown.VB_UserMemId = 1610809426
     m_lDownButton = Button
     'Button pressed for Dblclick
     m_lDX = X
@@ -5062,7 +5005,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute UserControl_MouseMove.VB_UserMemId = 1610809427
 
     Dim lp As POINTAPI
 
@@ -5130,7 +5072,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute UserControl_MouseUp.VB_UserMemId = 1610809428
 
     If m_bHandPointer Then
         SetCursor m_lCursor
@@ -5182,7 +5123,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Paint()
-Attribute UserControl_Paint.VB_UserMemId = 1610809429
     ' --this routine typically called by Windows when another window covering
     '   this button is removed, or when the parent is moved/minimized/etc.
     RedrawButton
@@ -5194,7 +5134,6 @@ End Sub
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-Attribute UserControl_ReadProperties.VB_UserMemId = 1610809430
 
     With PropBag
         Set mFont = .ReadProperty("Font", Ambient.Font)
@@ -5295,7 +5234,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Resize()
-Attribute UserControl_Resize.VB_UserMemId = 1610809431
 
     ' --At least, a checkbox will also need this much of size!!!!
     If Height < 220 Then
@@ -5318,7 +5256,6 @@ End Sub
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-Attribute UserControl_WriteProperties.VB_UserMemId = 1610809433
 
     With PropBag
         .WriteProperty "Font", mFont, Ambient.Font
@@ -5370,7 +5307,6 @@ Private Sub z_myWndProc(ByVal bBefore As Boolean, _
                       ByVal wParam As Long, _
                       ByVal lParam As Long, _
                       ByRef lParamUser As Long)
-Attribute z_myWndProc.VB_UserMemId = 1610809434
 
 'Parameters:
 'bBefore  - Indicates whether the the message is being processed before or after the default handler - only really needed if a message is set to callback both before & after.

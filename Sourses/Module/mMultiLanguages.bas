@@ -1,7 +1,5 @@
 Attribute VB_Name = "mMultiLanguages"
-Option Explicit
-
-'Note: this file has been writen for use within Drivers Installer Assistant.
+'Note: this file has been writen for use within Drivers Installer Assistant and Drivers BackUp Solution.
 
 ' Модуль для организации поддержки многоязычности в программе
 ' В процессе обработки создается массив данных о языковых файлах arrLanguage() , данные беруться из секции [Lang]
@@ -17,6 +15,7 @@ Option Explicit
 
 ' данные вносятся в языковой файл в подсекции с именами form
 ' параметрами являются имена контролов
+Option Explicit
 
 Public mbMultiLanguage                As Boolean
 Public arrLanguage()                  As String     ' Массив данных о языковых файлах

@@ -163,7 +163,8 @@ Private Sub Form_Activate()
     End If
 
     ' Фиктивная пауза
-    Sleep 300
+    'Sleep 300
+    Me.Hide
     Unload Me
     Set frmProgress = Nothing
 End Sub

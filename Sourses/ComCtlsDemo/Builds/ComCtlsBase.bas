@@ -1094,15 +1094,21 @@ Dim AppForm As Form, CurrControl As Control
 For Each AppForm In Forms
     For Each CurrControl In AppForm.Controls
         Select Case TypeName(CurrControl)
-            Case "Animation", "DTPicker", "MonthView", "Slider", "StatusBar", "TabStrip", "ListBoxW", "ListView", "TreeView", "IPAddress", "ToolBar", "UpDown", "SpinBox", "Pager", "OptionButtonW", "CheckBoxW", "ComboBoxW", "CommandButtonW", "TextBoxW", "HotKey", "CoolBar", "LinkLabel", "CommandLink"
+            Case "Animation", "DTPicker", "MonthView", "Slider", "StatusBar", "TabStrip", "ListBoxW", "ListView", "TreeView", "IPAddress", "ToolBar", "UpDown", "SpinBox", "Pager", "OptionButtonW", "CheckBoxW", "CommandButtonW", "TextBoxW", "HotKey", "CoolBar", "LinkLabel", "CommandLink"
                 Call ComCtlsRemoveSubclass(CurrControl.hWnd)
                 Call ComCtlsRemoveSubclass(CurrControl.hWndUserControl)
             Case "ProgressBar", "FrameW", "ToolTip"
                 Call ComCtlsRemoveSubclass(CurrControl.hWnd)
+            Case "ComboBoxW"
+                Call ComCtlsRemoveSubclass(CurrControl.hWnd)
+                If CurrControl.hWndEdit <> 0 Then Call ComCtlsRemoveSubclass(CurrControl.hWndEdit)
+                If CurrControl.hWndList <> 0 Then Call ComCtlsRemoveSubclass(CurrControl.hWndList)
+                Call ComCtlsRemoveSubclass(CurrControl.hWndUserControl)
             Case "ImageCombo"
                 Call ComCtlsRemoveSubclass(CurrControl.hWnd)
-                Call ComCtlsRemoveSubclass(CurrControl.hWndCombo)
+                If CurrControl.hWndCombo <> 0 Then Call ComCtlsRemoveSubclass(CurrControl.hWndCombo)
                 If CurrControl.hWndEdit <> 0 Then Call ComCtlsRemoveSubclass(CurrControl.hWndEdit)
+                If CurrControl.hWndList <> 0 Then Call ComCtlsRemoveSubclass(CurrControl.hWndList)
                 Call ComCtlsRemoveSubclass(CurrControl.hWndUserControl)
             Case "RichTextBox", "MCIWnd", "SysInfo"
                 CurrControl.IDEStop ' Hidden
@@ -1134,7 +1140,7 @@ CopyMemory DOSHdr, ByVal hMod, LenB(DOSHdr)
 CopyMemory PEHdr, ByVal UnsignedAdd(hMod, DOSHdr.e_lfanew), LenB(PEHdr)
 Const IMAGE_NT_SIGNATURE As Long = &H4550
 If PEHdr.Magic = IMAGE_NT_SIGNATURE Then
-    lpIAT = PEHdr.DataDirectory(15).VirtualAddress + hMod
+    lpIAT = UnsignedAdd(PEHdr.DataDirectory(15).VirtualAddress, hMod)
     IATLen = PEHdr.DataDirectory(15).Size
     IATPos = lpIAT
     Do Until CLngToULng(IATPos) >= CLngToULng(UnsignedAdd(lpIAT, IATLen))

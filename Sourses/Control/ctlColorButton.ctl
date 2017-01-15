@@ -55,7 +55,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Note: this file has been modified for use within Drivers Installer Assistant.
+'Note: this file has been modified for use within Drivers Installer Assistant and Drivers BackUp Solution.
 'This code was originally written by Grid2000.com.
 'You may download the original version of this code from the following link (good as of June '12):
 ' http://www.freevbcode.com/ShowCode.Asp?ID=6638
@@ -208,7 +208,6 @@ Public Event DropDownClose()
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Initialize()
-Attribute UserControl_Initialize.VB_UserMemId = 1610809363
     m_nBorderColor = RGB(8, 36, 107)
     m_nFillColor = RGB(181, 190, 214)
     m_nDarkFillColor = RGB(132, 146, 181)
@@ -411,7 +410,6 @@ End Property
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub DrawAllColors()
-Attribute DrawAllColors.VB_UserMemId = 1610809349
 
 Dim ii                                  As Integer
 Dim J                                   As Integer
@@ -494,7 +492,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub DrawSelectedColor()
-Attribute DrawSelectedColor.VB_UserMemId = 1610809351
 
     If m_Style = ColorRectAndIconAbove Then
         DrawRectangle UserControl.hDC, 3, 15, 16, 3, VBColorToRGB(m_nSelectedColor), VBColorToRGB(m_nSelectedColor)
@@ -747,7 +744,6 @@ Private Sub InitColorArray()
 End Sub
 
 Private Sub IOleInPlaceActiveObjectVB_TranslateAccelerator(ByRef Handled As Boolean, ByRef RetVal As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal Shift As Long)
-Attribute IOleInPlaceActiveObjectVB_TranslateAccelerator.VB_UserMemId = 1610809358
     On Error Resume Next
     Dim This As OLEGuids.IOleInPlaceActiveObjectVB
     
@@ -764,7 +760,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub picDropDown_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute picDropDown_MouseDown.VB_UserMemId = 1610809359
 
 Dim RC                                  As RECT
 Dim ii                                  As Integer
@@ -823,7 +818,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub picDropDown_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute picDropDown_MouseMove.VB_UserMemId = 1610809360
 
 Dim RC                                  As RECT
 Dim ii                                  As Integer
@@ -885,7 +879,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub picDropDown_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute picDropDown_MouseUp.VB_UserMemId = 1610809361
 
 Dim ii                                  As Integer
 Dim J                                   As Integer
@@ -952,7 +945,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_ExitFocus()
-Attribute UserControl_ExitFocus.VB_UserMemId = 1610809362
 
 'Hide dropdown window
     If picDropDown.Visible Then
@@ -975,7 +967,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute UserControl_MouseDown.VB_UserMemId = 1610809364
 
     If Not Button <> 1 Then
         If X > 0 And X < 23 And Y > 0 And Y < 23 Then
@@ -1002,7 +993,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute UserControl_MouseMove.VB_UserMemId = 1610809365
 
     If Not Button <> 0 Then
         If X < 0 Or Y < 0 Or X > UserControl.ScaleWidth Or Y > UserControl.ScaleHeight Then
@@ -1041,7 +1031,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute UserControl_MouseUp.VB_UserMemId = 1610809366
 
     If Not Button <> 1 Then
         If X > 0 And X < 23 And Y > 0 And Y < 23 Then
@@ -1076,7 +1065,6 @@ End Sub
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-Attribute UserControl_ReadProperties.VB_UserMemId = 1610809367
 
     With PropBag
         Value = .ReadProperty("Value", &H0)
@@ -1097,7 +1085,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Resize()
-Attribute UserControl_Resize.VB_UserMemId = 1610809368
 
     On Error Resume Next
 
@@ -1112,7 +1099,6 @@ End Sub
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-Attribute UserControl_WriteProperties.VB_UserMemId = 1610809369
 
     With PropBag
         .WriteProperty "Value", Value, &H0

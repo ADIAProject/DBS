@@ -714,6 +714,10 @@ Private Sub BlockControl(ByVal mbEnable As Boolean)
     cmbTypeBackUp.Enabled = Not mbEnable
     frPanelLV.Enabled = Not mbEnable
     chkCheckAll.Enabled = Not mbEnable
+    mnuReCollectHWID.Enabled = Not mbEnable
+    mnuOptions.Enabled = Not mbEnable
+    mnuMainAbout.Enabled = Not mbEnable
+    mnuMainLang.Enabled = Not mbEnable
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -1419,7 +1423,7 @@ End Function
 '! Description (Описание)  :   [Поиск выделенных строк]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Private Function FindCheckCountList() As Long
+Private Function FindCheckCountList(Optional ByVal mbOnlyCollect As Boolean = False) As Long
 
     Dim miCount As Integer
     Dim ii      As Integer
@@ -1432,29 +1436,31 @@ Private Function FindCheckCountList() As Long
 
     Next
     
-    cmdStartBackUp.Caption = LocaliseString(strPCLangCurrentPath, Me.Name, "cmdStartBackUp", "Start Backup")
-
-    If miCount Then
-
-        With cmdStartBackUp
-
-            If Not .Enabled Then
-                .Enabled = True
-            End If
-
-            .Caption = .Caption & " (" & miCount & ")"
-        End With
-
-    Else
-
-        With cmdStartBackUp
-
-            If .Enabled Then
-                .Enabled = False
-            End If
-        End With
+    If Not mbOnlyCollect Then
+        cmdStartBackUp.Caption = LocaliseString(strPCLangCurrentPath, Me.Name, "cmdStartBackUp", "Start Backup")
+    
+        If miCount Then
+    
+            With cmdStartBackUp
+    
+                If Not .Enabled Then
+                    .Enabled = True
+                End If
+    
+                .Caption = .Caption & " (" & miCount & ")"
+            End With
+    
+        Else
+    
+            With cmdStartBackUp
+    
+                If .Enabled Then
+                    .Enabled = False
+                End If
+            End With
+        End If
+        cmdStartBackUp.ToolTipText = cmdStartBackUp.Caption
     End If
-    cmdStartBackUp.ToolTipText = cmdStartBackUp.Caption
     
     FindCheckCountList = miCount
 End Function
@@ -1831,7 +1837,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     If mbLoadIniTmpAfterRestart Then
         SaveSetting App.ProductName, "Settings", "LOAD_INI_TMP_PATH", "-"
 
-        If StrComp(GetFileNameFromPath(strSysIni), "Settings_DBS_TMP.ini", vbTextCompare) = 0 Then
+        If StrComp(GetFileNameFromPath(strSysIni), "Settings_" & strProjectName & "_TMP.ini", vbTextCompare) = 0 Then
             DeleteFiles strSysIni
         End If
     End If
@@ -2793,6 +2799,10 @@ Private Sub mnuReCollectHWID_Click()
     ReCollectHWID
     ' Режим при старте
     SelectStartMode
+    ' Показ списка
+    lblWait.Visible = False
+    lvDevices.Visible = True
+    
     FindCheckCountList
 End Sub
 
@@ -2935,8 +2945,6 @@ Private Sub ReCollectHWID()
     ' А теперь перестраиваем список драйверов
     LoadListbyMode
     ListViewResize
-    lblWait.Visible = False
-    lvDevices.Visible = True
     BlockControl False
     
     ctlProgressBar1.SetTaskBarProgressState PrbTaskBarStateNone
@@ -3167,8 +3175,9 @@ Private Sub StartBackUp()
     If mbDebugDetail Then DebugMode "cmdStartBackUp_Click-Start"
     lngTimeScriptRun = GetTimeStart
 
+    lvCountCheck = FindCheckCountList(True)
     '# Если есть выделенные строки
-    If FindCheckCountList = 0 Then
+    If lvCountCheck = 0 Then
         MsgBox strMessages(6), vbInformation + vbOKOnly, strProductName
     Else
 
@@ -3229,7 +3238,6 @@ Private Sub StartBackUp()
             DelRecursiveFolder destDir
         End If
 
-        lvCountCheck = FindCheckCountList
         ' Отображаем ProgressBar
         With ctlProgressBar1
             .Value = 0

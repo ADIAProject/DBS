@@ -1,6 +1,5 @@
 VERSION 5.00
 Begin VB.Form frmDonate 
-   BorderStyle     =   5  'Sizable ToolWindow
    Caption         =   "Поблагодарить автора"
    ClientHeight    =   6315
    ClientLeft      =   60
@@ -18,6 +17,7 @@ Begin VB.Form frmDonate
    Icon            =   "frmDonate.frx":0000
    KeyPreview      =   -1  'True
    LinkTopic       =   "Form1"
+   MinButton       =   0   'False
    ScaleHeight     =   6315
    ScaleWidth      =   9480
    StartUpPosition =   2  'CenterScreen
@@ -216,7 +216,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdExit_Click()
-Attribute cmdExit_Click.VB_UserMemId = 1610809349
     Unload Me
 End Sub
 
@@ -226,7 +225,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdPayPal_Click()
-Attribute cmdPayPal_Click.VB_UserMemId = 1610809350
     RunUtilsShell "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=10349042", False
 End Sub
 
@@ -236,7 +234,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdSMSCoin_Click()
-Attribute cmdSMSCoin_Click.VB_UserMemId = 1610809351
 
     Select Case strPCLangCurrentID
 
@@ -256,7 +253,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub cmdYandexMoney_Click()
-Attribute cmdYandexMoney_Click.VB_UserMemId = 1610809352
     RunUtilsShell "https://money.yandex.ru/embed/shop.xml?uid=41001626648736&amp;writer=seller&amp;targets=donate+to+adia-project&amp;default-sum=50&amp;button-text=04&amp;comment=on&amp;hint=%22Please,%20write%20your%20comments%22", False
 End Sub
 
@@ -282,7 +278,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub Form_Activate()
-Attribute Form_Activate.VB_UserMemId = 1610809353
     LoadDonate
 End Sub
 
@@ -293,7 +288,6 @@ End Sub
 '                              Shift (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
-Attribute Form_KeyDown.VB_UserMemId = 1610809354
 
     If KeyCode = vbKeyEscape Then
         Unload Me
@@ -307,7 +301,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub Form_Load()
-Attribute Form_Load.VB_UserMemId = 1610809355
     SetupVisualStyles Me
 
     With Me
@@ -339,7 +332,6 @@ End Sub
 '                              UnloadMode (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-Attribute Form_QueryUnload.VB_UserMemId = 1610809356
     Set frmDonate = Nothing
 End Sub
 
@@ -349,7 +341,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub Form_Resize()
-Attribute Form_Resize.VB_UserMemId = 1610809357
 
     On Error Resume Next
 

@@ -1,8 +1,57 @@
 List of revisions:
 
+14-Jan-2017
+- The Locked property in the ComboBoxW control works now like the original VB ComboBox.
+  So, beside the locking of the edit control, the list portion is locked as well.
+  The drop-down list can be shown but no item can be selected by mouse or key from the user.
+  That also means that now the Locked property is available when having the style set to 'DropDownList'.
+- Same ComboBoxW improvements implemented into the ImageCombo control.
+
+13-Jan-2017
+- 16-bit barrier for thumb scrolling circumvented in the ComboBoxW control. (like as for the ListBoxW control)
+- Included the ScrollTrack property in the ComboBoxW control.
+- .hWndList in the ComboBoxW control is now working on Windows 2000.
+  Message CB_GETCOMBOBOXINFO is not supported on Windows 2000. (similar issue as 29-Feb-2016 update)
+  Thus the message got replaced by the API GetComboBoxInfo in user32.dll.
+
+10-Jan-2017
+- Bugfix for the 32-bit thumb scrolling support in the ListBoxW control.
+  It now also works in a multi-column list box or when doing a 'HorizontalExtent' scrolling.
+
+09-Jan-2017
+- 16-bit barrier for thumb scrolling circumvented in the ListBoxW control. (standard windows list box limitation)
+- Included the ScrollTrack property in the ListBoxW control.
+
+08-Jan-2017
+- Some minor internal improvements.
+
+07-Jan-2017
+- Included the InsertMark/InsertMarkColor property and HitTestInsertMark function in the ListBoxW control.
+  The InsertMark property and the HitTestInsertMark function have both an optional 'After' parameter.
+- Bugfix that NewIndex property was not initialized with -1 in the ListBoxW control. (no bug in ComboBoxW control)
+
+04-Jan-2017
+- Fixed a bug that when setting the Text property by code it did not respect the MaxLength property in the TextBoxW, ComboBoxW and ImageCombo control.
+- Some other minor internal improvements.
+
+02-Jan-2017
+- Included the Scroll event in the ListBoxW control.
+  It will be fired whenever the TopIndex have been changed, either by code or by user action.
+
+30-Dec-2016
+- Bugfix in the Value property in the CheckBoxW and OptionButtonW control. (related to 23-Dec-2016 update)
+
+29-Dec-2016
+- The default value of the WantReturn property was wrong declared in ReadProperties/WriteProperties in the RichTextBox control.
+
+27-Dec-2016
+- Internal improvement in the key events (such as KeyDown) and some mouse events.
+  It is also necessary to replace the Common.bas module. (included the GetShiftStateFromMsg/GetMouseStateFromMsg function)
+- Renamed OLEGetDragEffect to OLEStartDrag in the RichTextBox control. (also Button/Shift parameter are removed as anyway always zero)
+
 26-Dec-2016
-- Internal improvement in the mouse events.
-  It is necessary to replace the Common.bas module. (new function GetShiftStateFromParam and GetMouseStateFromParam)
+- Internal improvement in the mouse events. The correct button value will be passed now in case left and right button are "swapped". (windows setting)
+  It is also necessary to replace the Common.bas module. (included the GetShiftStateFromParam/GetMouseStateFromParam function)
 
 23-Dec-2016
 - Bugfix that the Click event was not fired when changing the Value property by code in the CheckBoxW and OptionButtonW control.

@@ -42,11 +42,21 @@ Private Const RGN_XOR  As Long = 3
 Private Const RGN_COPY As Long = 5
 Private Const RGN_DIFF As Long = 4
 Private Const HWND_NOTOPMOST = -2
+Private Const HWND_TOPMOST       As Long = -&H1
+Private Const SWP_NOMOVE         As Long = &H2
+Private Const SWP_NOSIZE         As Long = &H1
+Private Const SWP_NOACTIVATE     As Long = &H10
+
 Private Const TOPMOST_FLAGS = SWP_NOMOVE Or SWP_NOSIZE
 Private Const SWP_FLAGS = SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOSIZE
 
 '[Function]
 Private Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
+Private Declare Function CreateRectRgn Lib "gdi32.dll" (ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Long
+Private Declare Function CombineRgn Lib "gdi32.dll" (ByVal hDestRgn As Long, ByVal hSrcRgn1 As Long, ByVal hSrcRgn2 As Long, ByVal nCombineMode As Long) As Long
+Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
+Private Declare Function SetWindowRgn Lib "user32.dll" (ByVal hWnd As Long, ByVal hRgn As Long, ByVal bRedraw As Boolean) As Long
+Private Declare Function SetWindowPos Lib "user32.dll" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal Cx As Long, ByVal Cy As Long, ByVal wFlags As Long) As Long
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function AnimateForm
