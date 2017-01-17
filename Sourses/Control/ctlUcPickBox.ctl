@@ -1550,7 +1550,10 @@ Private Sub cmdPick_Click()
                             .txtResult.Text = m_Path
                         End If
                     End If
+                    .txtResult.SetFocus
+                    
                     RaiseEvent PathChanged
+                    RaiseEvent Click
                 End If
 
             Case [ucOpen], [ucSave]
@@ -2580,7 +2583,7 @@ GoAgain:
     
                 ShowOpen.sLastDirectory = Left$(.FileName, .FileOffset)
                 ShowOpen.nFilesSelected = 1
-                'ShowOpen.sFiles(1) = Mid$(.FileName, .FileOffset + 1, LenB(.FileName) - .FileOffset)
+                'ShowOpen.sFiles(1) = Mid$(.FileName, .FileOffset + 1, Len(.FileName) - .FileOffset)
                 ShowOpen.sFiles(1) = .FileName
             ElseIf Len(.FileName) > .FileOffset Then
                 '   See if we have an offset by the dialog and see if this matches the position of

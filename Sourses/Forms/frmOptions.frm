@@ -68,7 +68,7 @@ Begin VB.Form frmOptions
          Height          =   255
          Left            =   500
          TabIndex        =   5
-         Top             =   3900
+         Top             =   3950
          Width           =   7920
          _ExtentX        =   13970
          _ExtentY        =   450
@@ -878,7 +878,6 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         BackColor       =   -2147483633
          BorderStyle     =   0
          Text            =   "frmOptions.frx":043A
          Locked          =   -1  'True
@@ -900,7 +899,6 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         BackColor       =   -2147483633
          BorderStyle     =   0
          Text            =   "frmOptions.frx":046A
          Locked          =   -1  'True
@@ -922,7 +920,6 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         BackColor       =   -2147483633
          BorderStyle     =   0
          Text            =   "frmOptions.frx":049C
          Locked          =   -1  'True
@@ -944,7 +941,6 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         BackColor       =   -2147483633
          BorderStyle     =   0
          Text            =   "frmOptions.frx":04CA
          Locked          =   -1  'True
@@ -966,7 +962,6 @@ Begin VB.Form frmOptions
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         BackColor       =   -2147483633
          BorderStyle     =   0
          Text            =   "frmOptions.frx":04F8
          Locked          =   -1  'True
@@ -3116,6 +3111,7 @@ End Sub
 Private Sub cmdExit_Click()
     Me.Hide
     ChangeStatusBarText cmdExit.Caption
+    frmMain.SetFocus
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -3186,6 +3182,7 @@ Private Sub cmdOK_Click()
     End If
 
     Me.Hide
+    frmMain.SetFocus
 End Sub
 
 '!--------------------------------------------------------------------------------

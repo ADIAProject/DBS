@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form frmOSEdit 
-   BorderStyle     =   3  'Fixed Dialog
+   BorderStyle     =   1  'Fixed Single
    Caption         =   "Редактирование записи"
    ClientHeight    =   2220
    ClientLeft      =   45

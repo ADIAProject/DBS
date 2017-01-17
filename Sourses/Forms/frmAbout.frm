@@ -1,9 +1,10 @@
 VERSION 5.00
 Begin VB.Form frmAbout 
+   BorderStyle     =   1  'Fixed Single
    Caption         =   "О программе..."
    ClientHeight    =   7305
-   ClientLeft      =   120
-   ClientTop       =   615
+   ClientLeft      =   45
+   ClientTop       =   540
    ClientWidth     =   9645
    BeginProperty Font 
       Name            =   "Tahoma"

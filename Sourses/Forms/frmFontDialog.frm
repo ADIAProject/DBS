@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin VB.Form frmFontDialog 
-   BorderStyle     =   3  'Fixed Dialog
+   BorderStyle     =   1  'Fixed Single
    Caption         =   "Locate Font and Color ..."
    ClientHeight    =   2625
    ClientLeft      =   45

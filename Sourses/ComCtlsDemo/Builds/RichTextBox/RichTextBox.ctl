@@ -270,9 +270,9 @@ Attribute MouseUp.VB_Description = "Occurs when the user releases the mouse butt
 Attribute MouseUp.VB_UserMemId = -607
 Public Event OLECompleteDrag()
 Attribute OLECompleteDrag.VB_Description = "Occurs at the OLE drag/drop source control after a drag/drop has been completed or canceled."
-Public Event OLEGetDropEffect(Effect As Long, Button As Integer, Shift As Integer)
+Public Event OLEGetDropEffect(ByRef Effect As Long, ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
 Attribute OLEGetDropEffect.VB_Description = "Occurs during an OLE drag/drop operation to specify the effect of which indicates what the result of the drop operation would be."
-Public Event OLEStartDrag(AllowedEffects As Long)
+Public Event OLEStartDrag(ByRef AllowedEffects As Long)
 Attribute OLEStartDrag.VB_Description = "Occurs when an OLE drag/drop operation is initiated."
 Public Event OLEGetContextMenu(ByVal SelType As Integer, ByVal LpOleObject As Long, ByVal SelStart As Long, ByVal SelEnd As Long, ByRef hMenu As Long)
 Attribute OLEGetContextMenu.VB_Description = "This is a request to provide a popup menu to use on a right-click. The rich text box control destroys the popup menu when it is finished."
@@ -298,6 +298,7 @@ Private Declare Function EnableWindow Lib "user32" (ByVal hWnd As Long, ByVal fE
 Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByVal lprcUpdate As Long, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
 Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorW" (ByVal hInstance As Long, ByVal lpCursorName As Any) As Long
 Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
+Private Declare Function GetMessagePos Lib "user32" () As Long
 Private Declare Function ScreenToClient Lib "user32" (ByVal hWnd As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function GetScrollPos Lib "user32" (ByVal hWnd As Long, ByVal nBar As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
@@ -3258,7 +3259,12 @@ Friend Sub FIRichEditOleCallback_GetDragDropEffect(ByVal Drag As Boolean, ByVal 
 If Drag = True Then
     RaiseEvent OLEStartDrag(dwEffect) ' AllowedEffects
 Else
-    RaiseEvent OLEGetDropEffect(dwEffect, GetMouseStateFromParam(KeyState), GetShiftStateFromParam(KeyState))  ' Effect
+    Dim Pos As Long, P As POINTAPI
+    Pos = GetMessagePos()
+    P.X = Get_X_lParam(Pos)
+    P.Y = Get_Y_lParam(Pos)
+    ScreenToClient UserControl.hWnd, P
+    RaiseEvent OLEGetDropEffect(dwEffect, GetMouseStateFromParam(KeyState), GetShiftStateFromParam(KeyState), UserControl.ScaleX(P.X, vbPixels, vbContainerPosition), UserControl.ScaleY(P.Y, vbPixels, vbContainerPosition))
 End If
 End Sub
 

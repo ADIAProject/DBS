@@ -1,10 +1,11 @@
 VERSION 5.00
 Begin VB.Form frmProgress 
    AutoRedraw      =   -1  'True
+   BorderStyle     =   1  'Fixed Single
    Caption         =   "Сбор информации о драйверах. Пожалуйста подождите..."
    ClientHeight    =   615
-   ClientLeft      =   120
-   ClientTop       =   510
+   ClientLeft      =   45
+   ClientTop       =   435
    ClientWidth     =   8235
    BeginProperty Font 
       Name            =   "Tahoma"

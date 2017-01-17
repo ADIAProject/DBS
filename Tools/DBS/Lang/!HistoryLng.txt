@@ -1,2 +1,4 @@
 2012_09_20=Added in section 	[Messages]		strMessages20; strMessages21; strMessages22; strMessages25; 
 
+2017_01_16=Added Section [frmFontDialog]
+	   Reorder Section  [frmOptions]

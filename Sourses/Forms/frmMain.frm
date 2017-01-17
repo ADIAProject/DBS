@@ -20,12 +20,12 @@ Begin VB.Form frmMain
    LinkTopic       =   "Form1"
    ScaleHeight     =   7230
    ScaleWidth      =   12765
-   StartUpPosition =   2  'CenterScreen
    Begin prjDIADBS.ctlUcStatusBar ctlUcStatusBar1 
       Align           =   2  'Align Bottom
       Height          =   705
       Left            =   0
       TabIndex        =   15
+      TabStop         =   0   'False
       Top             =   6525
       Width           =   12765
       _ExtentX        =   22516
@@ -39,7 +39,6 @@ Begin VB.Form frmMain
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Theme           =   2
    End
    Begin prjDIADBS.ProgressBar ctlProgressBar1 
       Align           =   2  'Align Bottom
@@ -543,6 +542,7 @@ Begin VB.Form frmMain
                Strikethrough   =   0   'False
             EndProperty
             VisualTheme     =   1
+            OLEDragDropScroll=   0   'False
             Redraw          =   0   'False
             View            =   3
             Arrange         =   1
@@ -550,9 +550,9 @@ Begin VB.Form frmMain
             FullRowSelect   =   -1  'True
             GridLines       =   -1  'True
             LabelEdit       =   2
+            LabelWrap       =   0   'False
             Checkboxes      =   -1  'True
             HideSelection   =   0   'False
-            ShowLabelTips   =   -1  'True
             HoverSelection  =   -1  'True
             HotTracking     =   -1  'True
             HighlightHot    =   -1  'True
@@ -1616,10 +1616,20 @@ Private Sub Form_Activate()
     If mbFirstStart Then
         If mbStartMaximazed Then
             Me.WindowState = vbMaximized
+            DoEvents
+        ElseIf mbChangeResolution Then
+            Me.WindowState = vbMaximized
+            DoEvents
         End If
 
         DoEvents
 
+        ' Выгрузка формы Показ Лицензионного соглашения, если есть
+        If IsFormLoaded("frmLicence") Then
+            Unload frmLicence
+            Set frmLicence = Nothing
+        End If
+            
         ' Проверка обновлений при старте
         If mbUpdateCheck Then
             ChangeStatusBarText strMessages(58)
@@ -1710,7 +1720,7 @@ Private Sub Form_Load()
     With Me
         ' изменяем иконки формы и приложения
         ' Icon for Exe-file
-        SetIcon .hWnd, "APPICON", True
+        SetIcon .hWnd, "APPICO", True
         SetIcon .hWnd, "FRMMAIN", False
         ' Смена заголовка формы
         strFormName = .Name
@@ -1783,11 +1793,11 @@ Private Sub Form_Load()
     ' Подсчет кол-ва выделенных
     FindCheckCountList
 
-    '    If lngFrameTime < 0 Then lngFrameTime = 1
-    '    If lngFrameCount < 1 Then lngFrameCount = 20
-    If Me.WindowState <> vbMinimized Then
-        AnimateForm Me, aLoad, eZoomOut, lngFrameTime, lngFrameCount
-    End If
+'    If lngFrameTime < 0 Then lngFrameTime = 1
+'    If lngFrameCount < 1 Then lngFrameCount = 20
+'    If Me.WindowState <> vbMinimized Then
+'        AnimateForm Me, aLoad, eFoldOut, lngFrameTime, lngFrameCount
+'    End If
 
     If mbDebugStandart Then DebugMode "FrmMainLoad-Finish" & vbNewLine & _
               "======================================================================="
@@ -1813,7 +1823,6 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 
         'Чистим если только не перезапуск программы
         If Not mbRestartProgram Then
-            'Me.Hide
             DelTemp
         End If
     End If
@@ -1842,11 +1851,11 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         End If
     End If
 
-    If lngFrameTime < 0 Then lngFrameTime = 2
-    If lngFrameCount < 1 Then lngFrameCount = 40
-    If Me.WindowState <> vbMinimized Then
-        AnimateForm Me, aUnload, eZoomOut, lngFrameTime, lngFrameCount
-    End If
+'    If lngFrameTime < 0 Then lngFrameTime = 2
+'    If lngFrameCount < 1 Then lngFrameCount = 40
+'    If Me.WindowState <> vbMinimized Then
+'        AnimateForm Me, aUnload, eZoomOut, lngFrameTime, lngFrameCount
+'    End If
 
     ' Выгружаем из памяти форму и другие компоненты
     Set frmMain = Nothing
@@ -1866,15 +1875,9 @@ End Sub
 Private Sub Form_Resize()
 
     With Me
-
         If .WindowState <> vbMinimized Then
-'            If IsWinVistaOrLater Then
-'                frGroup.Left = 100
-'                frBackUp.Left = frGroup.Left + frGroup.Width + 120
-'            Else
-'                frGroup.Left = 120
-'                frBackUp.Left = frGroup.Left + frGroup.Width + 220
-'            End If
+
+            ' Применение минимального размера по ширине
             If .Width < lngMainFormWidthMin Then
                 .Width = lngMainFormWidthMin
                 .Enabled = False
@@ -1884,6 +1887,7 @@ Private Sub Form_Resize()
     
             End If
     
+            ' Применение минимального размера по высоте
             If .Height < lngMainFormHeightMin Then
                 .Height = lngMainFormHeightMin
                 .Enabled = False
@@ -1893,20 +1897,31 @@ Private Sub Form_Resize()
     
             End If
 
-            frPanel.Height = .Height - ctlUcStatusBar1.Height - lngBorderWidthY
+            If Not (frPanel Is Nothing) Then
+                frPanel.Top = 0
+                frPanel.Left = -20
+                frPanel.Height = .Height - ctlUcStatusBar1.Height - lngBorderWidthY
+                frPanel.Width = .Width
+            End If
 
-        'If strOSCurrentVersion >= "6.0" And .WindowState <> vbMaximized Then
-            'frPanel.Width = .Width - lngBorderWidthX
-        'Else
-            frPanel.Left = -20
-            frPanel.Width = .Width
-        'End If
+            If Not (ctlUcStatusBar1 Is Nothing) Then
+                If ctlUcStatusBar1.PanelCount = 1 Then
+                    ctlUcStatusBar1.PanelWidth(1) = (.Width \ Screen.TwipsPerPixelX)
+                    ctlUcStatusBar1.Refresh
+                End If
+            End If
 
-
-            ctlUcStatusBar1.PanelWidth(1) = (Me.Width \ Screen.TwipsPerPixelX)
+            ' Изменение размеров lvDevices
             ListViewResize
+            
+            ' Удаление иконки в трее если есть
+            SetTrayIcon NIM_DELETE, Me.hWnd, 0&, vbNullString
+        Else
+            ' Добавляеи иконку в трей
+            SetTrayIcon NIM_ADD, Me.hWnd, Me.Icon, "Drivers BackUp Solution"
         End If
     End With
+
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -1922,7 +1937,7 @@ Private Sub FRMStateSave()
 
     ' Если настройка активна, то выполняем сохранение
     miHeight = CLng(Me.Height)
-    miWidth = vbNullString & CLng(Me.Width) & vbNullString
+    miWidth = CLng(Me.Width)
 
     If Me.WindowState = vbMaximized Then
         miWindowState = 1
@@ -1937,7 +1952,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub ListViewResize
-'! Description (Описание)  :   [Изменение размера панели с ListView]
+'! Description (Описание)  :   [Изменение размера панели с ListView и самого ListView]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub ListViewResize()
@@ -1952,118 +1967,40 @@ Private Sub ListViewResize()
     Dim lngLVTop            As Long
 
     With Me
-'        frPanel.Height = .Height - ctlUcStatusBar1.Height - lngBorderWidthY
-'
-'        'If strOSCurrentVersion >= "6.0" And .WindowState <> vbMaximized Then
-'            'frPanel.Width = .Width - lngBorderWidthX
-'        'Else
-'            frPanel.Left = -lngBorderWidthX
-'            frPanel.Width = .Width
-        'End If
-
+        ' Расчет размеров frPanelLV
         lngLVPanelTop = frGroup.Top + frGroup.Height + 80
         lngLVPanelLeft = frGroup.Left
         lngLVPanelHeight = frPanel.Height - lngLVPanelTop - 120
         lngLVPanelWidhtTemp = frBackUp.Left + frBackUp.Width - frGroup.Left
-
-        'If strOSCurrentVersion >= "6.0" And .WindowState <> vbMaximized Then
         lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2
-        'ElseIf strOSCurrentVersion >= "6.0" And .WindowState = vbMaximized Then
-            'lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2
-        'Else
-            'lngLVPanelWidht = .Width - lngBorderWidthX - lngLVPanelLeft * 2
-        'End If
 
         If lngLVPanelWidht < lngLVPanelWidhtTemp Then
             lngLVPanelWidht = lngLVPanelWidhtTemp
         End If
     End With
     
-    With frPanelLV
-        .Top = lngLVPanelTop
-        .Left = lngLVPanelLeft
-        .Height = lngLVPanelHeight
-        .Width = lngLVPanelWidht
-        lngLVTop = .TextBoxHeight * Screen.TwipsPerPixelY + 45
-        lngLVHeight = .Height - lngLVTop - 60
-        lngLVWidht = .Width - 120
-        lblWait.Left = 100
-        lblWait.Width = .Width - 200
-    End With
-
+    If Not (frPanelLV Is Nothing) Then
+        With frPanelLV
+            .Top = lngLVPanelTop
+            .Left = lngLVPanelLeft
+            .Height = lngLVPanelHeight
+            .Width = lngLVPanelWidht
+            ' Расчет размеров lvDevices
+            lngLVTop = .TextBoxHeight * Screen.TwipsPerPixelY + 45
+            lngLVHeight = .Height - lngLVTop - 60
+            lngLVWidht = .Width - 120
+            lblWait.Left = 100
+            lblWait.Width = .Width - 200
+        End With
+    End If
+    
+    ' Изменение размеров lvDevices
     If Not (lvDevices Is Nothing) Then
         lvDevices.Move 60, lngLVTop, lngLVWidht, lngLVHeight
     End If
+
         
 End Sub
-
-'[SourceDisksNames.x86]
-'1 = %DiskId%,,,.\B_32846
-'
-'[SourceDisksNames.ia64]
-'1 = %DiskID%,,,.\B_32846
-'[SourceDisksFiles]
-'ati2cqag.dll = 1
-'ati2dvag.dll = 1
-'[SourceDisksNames.x86]
-'1 = %CD%,,,
-'2 = %CD%,,,"drivers\dot4\Win2000"
-'3 = %CD%,,,"drivers\dot4\WinxP"
-'
-'[SourceDisksNames]
-'1 = %CD%,,,
-'
-'[SourceDisksFiles.x86]
-'; Driver
-'HPZius12.sys = 2
-'; Co-Installer for w2k/XP, thunk for 9X
-'HPZc3212.dll = 1
-'HPZuci12.dll = 1
-'Hppaufd0.sys = 3
-'
-'[SourceDisksFiles]
-'; Driver
-'HPZius12.sys = 1,Drivers\dot4\win98
-'; Co-Installer for w2k/XP, thunk for 9X
-'HPZc3212.dll = 1,Drivers\dot4\win98
-'HPZuci12.dll = 1,Drivers\dot4\win98
-'[SourceDisksNames]
-'0 = %SRCDISK1%, "fjwia.cab", 0000-0000
-'[SourceDisksFiles]
-'fi4120.dll = 0
-'[SourceDisksNames.x86]
-'0=%DiskName%
-'[SourceDisksNames.amd64]
-'0=%DiskName%
-'
-'[SourceDisksFiles.x86]
-'rimsptsk.sys=0,,
-'snymsico.dll=0,,
-'
-'[SourceDisksFiles.amd64]
-'rimspx64.sys=0,,
-'snymsico.dll=0,,
-'[SourceDisksNames]
-'1 = %SrcDiskId%,,,
-'
-'[SourceDisksFiles.x86] ; files for x86
-'sncduvc.sys = 1
-'snp2uvc.sys = 1
-'vsnp2uvc.dll = 1
-'rsnp2uvc.dll = 1
-'csnp2uvc.dll = 1
-'PLFSet.dll = 1
-'
-'[SourceDisksFiles.amd64] ; files for AMD64
-'sncduvc.sys = 1,.\x64,
-'snp2uvc.sys = 1,.\x64,
-'vsnp2uvc.dll = 1
-'rsnp2uvc.dll = 1
-'csnp2uvc.dll = 1,.\x64,
-'vsnpvc64.dll = 1,.\x64,
-'rsnpvc64.dll = 1,.\x64,
-'PLFSet.dll = 1
-'CheckIniSectionExists SekName, IniFileName
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub LoadComboList
@@ -2446,7 +2383,7 @@ Private Sub LocaliseMenu(ByVal strPathFile As String)
 '0  mnuReCollectHWID - "Обновить информацию"
     SetUniMenu -1, 0, -1, mnuReCollectHWID, LocaliseString(strPathFile, strFormName, "mnuReCollectHWID", mnuReCollectHWID.Caption)
 
-'1  mnuOptions - "Параметры" - Shortcut^O
+'1  mnuOptions - "Параметры"
     SetUniMenu -1, 1, -1, mnuOptions, LocaliseString(strPathFile, strFormName, "mnuOptions", mnuOptions.Caption), , "Ctrl+O"
        
 '2  mnuMainAbout - "Справка"

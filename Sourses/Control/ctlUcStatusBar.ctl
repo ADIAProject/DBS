@@ -426,7 +426,6 @@ End Enum
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Initialize()
-Attribute UserControl_Initialize.VB_UserMemId = 1610809383
     m_bIsWinXpOrLater = IsWinXPOrLater
     
     Set m_cSubclass = New cSelfSubHookCallback
@@ -438,7 +437,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Terminate()
-Attribute UserControl_Terminate.VB_UserMemId = 1610809396
 
     Dim ii As Long
 
@@ -1734,6 +1732,24 @@ Sub_ErrHandler:
 End Sub
 
 '!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property hDC
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get hDC()
+    hDC = UserControl.hDC
+End Property
+
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property hWnd
+'! Description (Описание)  :   [type_description_here]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Property Get hWnd()
+    hWnd = UserControl.hWnd
+End Property
+
+'!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Sub PaintGradients
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
@@ -2659,7 +2675,6 @@ End Function
 '                              Shift (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub txtEdit_KeyUp(KeyCode As Integer, Shift As Integer)
-Attribute txtEdit_KeyUp.VB_UserMemId = 1610809379
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -2699,7 +2714,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub txtEdit_LostFocus()
-Attribute txtEdit_LostFocus.VB_UserMemId = 1610809380
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -2738,7 +2752,6 @@ End Function
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Click()
-Attribute UserControl_Click.VB_UserMemId = 1610809381
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -2766,7 +2779,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_DblClick()
-Attribute UserControl_DblClick.VB_UserMemId = 1610809382
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -2829,7 +2841,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_InitProperties()
-Attribute UserControl_InitProperties.VB_UserMemId = 1610809384
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -2859,7 +2870,6 @@ End Sub
 '                              Shift (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
-Attribute UserControl_KeyDown.VB_UserMemId = 1610809385
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -2882,7 +2892,6 @@ End Sub
 '! Parameters  (Переменные):   KeyAscii (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_KeyPress(KeyAscii As Integer)
-Attribute UserControl_KeyPress.VB_UserMemId = 1610809386
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -2906,7 +2915,6 @@ End Sub
 '                              Shift (Integer)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
-Attribute UserControl_KeyUp.VB_UserMemId = 1610809387
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -2929,7 +2937,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_LostFocus()
-Attribute UserControl_LostFocus.VB_UserMemId = 1610809388
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -2959,7 +2966,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute UserControl_MouseDown.VB_UserMemId = 1610809389
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -2995,7 +3001,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute UserControl_MouseMove.VB_UserMemId = 1610809390
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -3028,7 +3033,6 @@ End Sub
 '                              Y (Single)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
-Attribute UserControl_MouseUp.VB_UserMemId = 1610809391
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -3052,7 +3056,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Paint()
-Attribute UserControl_Paint.VB_UserMemId = 1610809392
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -3075,7 +3078,6 @@ End Sub
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-Attribute UserControl_ReadProperties.VB_UserMemId = 1610809393
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -3138,7 +3140,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Resize()
-Attribute UserControl_Resize.VB_UserMemId = 1610809394
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -3174,7 +3175,6 @@ End Sub
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_Show()
-Attribute UserControl_Show.VB_UserMemId = 1610809395
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -3197,7 +3197,6 @@ End Sub
 '! Parameters  (Переменные):   PropBag (PropertyBag)
 '!--------------------------------------------------------------------------------
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-Attribute UserControl_WriteProperties.VB_UserMemId = 1610809397
 
     '   Handle Any Errors
     On Error GoTo Sub_ErrHandler
@@ -3238,7 +3237,6 @@ End Sub
 '                              lParamUser (Long)
 '!--------------------------------------------------------------------------------
 Private Sub z_WndProc1(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal lng_hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef lParamUser As Long)
-Attribute z_WndProc1.VB_UserMemId = 1610809398
 
     '*************************************************************************************************
     '* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
