@@ -3088,8 +3088,8 @@ Private Sub StartBackUp()
     Dim lngTimeScriptRun      As Currency
     Dim lngTimeScriptFinish   As Currency
     Dim strAllTimeScriptRun   As String
-    Dim miPbInterval          As Long
-    Dim miPbNext              As Long
+    Dim miPBInterval          As Long
+    Dim miPBNext              As Long
     Dim strDriverDesc         As String
     Dim strClass              As String
     Dim strInfSection         As String
@@ -3185,12 +3185,12 @@ Private Sub StartBackUp()
         End With
         
         If cmbTypeBackUp.ListIndex = 0 Then
-            miPbInterval = Round(10000 / lvCountCheck)
+            miPBInterval = Round(10000 / lvCountCheck)
         Else
-            miPbInterval = Round(9000 / lvCountCheck)
+            miPBInterval = Round(9000 / lvCountCheck)
         End If
 
-        miPbNext = 0
+        miPBNext = 0
         '# loop all drivers in grid #
         nn = -1
         numCat = 1
@@ -3422,20 +3422,20 @@ Private Sub StartBackUp()
                     End If
     
                     '# show progress #
-                    miPbNext = miPbNext + miPbInterval
+                    miPBNext = miPBNext + miPBInterval
     
                     If cmbTypeBackUp.ListIndex = 0 Then
-                        If miPbNext > 10000 Then
-                            miPbNext = 10000
+                        If miPBNext > 10000 Then
+                            miPBNext = 10000
                         End If
                     Else
-                        If miPbNext > 9000 Then
-                            miPbNext = 9000
+                        If miPBNext > 9000 Then
+                            miPBNext = 9000
                         End If
                     End If
     
                     With ctlProgressBar1
-                        .Value = miPbNext
+                        .Value = miPBNext
                         .SetTaskBarProgressValue .Value, .Max
                         ChangeFrmMainCaption .Value
                     End With

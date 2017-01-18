@@ -1,5 +1,7 @@
 Attribute VB_Name = "mResource"
 Option Explicit
+' Not add to project (DBS/DIA) - option for compiler
+#Const mbIDE_DBSProject = True
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function ExtractResource
@@ -46,18 +48,6 @@ Attribute ExtractResourceAll.VB_UserMemId = 1610612738
 
     If mbDebugStandart Then DebugMode vbTab & "ExtractResourceAll - *****************Check Next File********************"
 
-    If ExtractResource("TABCTL32.OCX", strPathOcxTo) = False Then
-        If MsgBox("Extract OCX or DLL: 'TABCTL32.OCX' - False" & str2vbNewLine & strMessages(134), vbYesNo + vbQuestion, strProductName) = vbNo Then
-
-            End
-
-        End If
-
-        ExtractResourceAll = False
-    End If
-
-    If mbDebugStandart Then DebugMode vbTab & "ExtractResourceAll - *****************Check Next File********************"
-
     If ExtractResource("vbscript.dll", strPathOcxTo) = False Then
         If MsgBox("Extract OCX or DLL: 'vbscript.dll' - False" & str2vbNewLine & strMessages(134), vbYesNo + vbQuestion, strProductName) = vbNo Then
 
@@ -68,17 +58,21 @@ Attribute ExtractResourceAll.VB_UserMemId = 1610612738
         ExtractResourceAll = False
     End If
 
-'    if mbDebugStandart then DebugMode vbTab & "ExtractResourceAll - *****************Check Next File********************"
-'
-'    If ExtractResource("capicom.dll", strPathOcxTo) = False Then
-'        If MsgBox("Extract OCX or DLL: capicom.dll' - False" & str2vbNewLine & strMessages(20), vbYesNo + vbQuestion, strProductName) = vbNo Then
-'            End
-'
-'        End If
-'
-'        ExtractResourceAll = False
-'
-'    End If
+    #If mbIDE_DBSProject Then
+    'DBSProject
+        If mbDebugStandart Then DebugMode vbTab & "ExtractResourceAll - *****************Check Next File********************"
+    
+        If ExtractResource("capicom.dll", strPathOcxTo) = False Then
+            If MsgBox("Extract OCX or DLL: capicom.dll' - False" & str2vbNewLine & strMessages(134), vbYesNo + vbQuestion, strProductName) = vbNo Then
+                End
+    
+            End If
+    
+            ExtractResourceAll = False
+    
+        End If
+    #End If
+    
     If mbDebugStandart Then DebugMode "ExtractResourceAll - End"
 End Function
 

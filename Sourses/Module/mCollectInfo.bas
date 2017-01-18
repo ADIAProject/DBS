@@ -99,8 +99,8 @@ Public Sub ReadDrivers()
     Dim jj                  As Long
     Dim hh                  As Long
     Dim miMaxCountArr       As Long
-    Dim miPbInterval        As Long
-    Dim miPbNext            As Long
+    Dim miPBInterval        As Long
+    Dim miPBNext            As Long
     Dim strClassID          As String
     Dim strProviderName     As String
     Dim strClassName        As String
@@ -130,29 +130,29 @@ Public Sub ReadDrivers()
     On Error Resume Next
 
     DoEvents
-    miPbNext = 100
+    miPBNext = 100
     ' Изменяем прогресс
     frmProgress.ctlProgressBar1.SetTaskBarProgressState PrbTaskBarStateInProgress
-    frmProgress.ChangeProgressBarStatus miPbNext, 100
+    frmProgress.ChangeProgressBarStatus miPBNext
     
     '# list all class of drivers installed
     If mbDebugStandart Then DebugMode "***ReadDrivers: ListKey - HKEY_LOCAL_MACHINE\" & strControlSet & "\Control\Class"
     arr_Z = ListKey(HKEY_LOCAL_MACHINE, strControlSet & "\Control\Class", False)
     If mbDebugStandart Then DebugMode "***ReadDrivers: ListKey Class - " & UBound(arr_Z)
     ' Изменяем прогресс
-    frmProgress.ChangeProgressBarStatus miPbNext, 1000
-    miMaxCountArr = 200
-    ' максимальное кол-во элементов в массиве
+    frmProgress.ChangeProgressBarStatus miPBNext, 900
+    
+    ' максимальное кол-во элементов в массиве arr_CH
+    miMaxCountArr = 500
     ReDim arr_CH(miMaxCountArr) As String
 
     ' Переменная для прогресса
-    If UBound(arr_Z) > 0 Then
-        miPbInterval = Round(2000 / UBound(arr_Z))
-    Else
-        miPbInterval = 1900
-    End If
-
     lngUBoundZ = UBound(arr_Z)
+    If lngUBoundZ > 0 Then
+        miPBInterval = Round(2000 / lngUBoundZ)
+    Else
+        miPBInterval = 1900
+    End If
 
     For ii = 0 To lngUBoundZ
         arr_U = ListKey(HKEY_LOCAL_MACHINE, strControlSet & "\Control\Class\" & arr_Z(ii), False)
@@ -175,10 +175,10 @@ Public Sub ReadDrivers()
 
             If mbDebugDetail Then DebugMode "******ReadDrivers: ListKey Result - " & arr_CH(nn)
             nn = nn + 1
-        Next
+        Next jj
         ' Изменяем прогресс
-        frmProgress.ChangeProgressBarStatus miPbNext, miPbInterval
-    Next
+        frmProgress.ChangeProgressBarStatus miPBNext, miPBInterval
+    Next ii
 
     If nn > 0 Then
         ReDim Preserve arr_CH(nn - 1)
@@ -189,20 +189,19 @@ Public Sub ReadDrivers()
     If mbDebugStandart Then DebugMode "***ReadDrivers-Start: ListKey Result- " & UBound(arr_CH)
     '# get all info of each instaled driver #
     hh = 0
+    ' максимальное кол-во элементов в массиве arrHwidsLocal
     miMaxCountArr = 200
-    ' максимальное кол-во элементов в массиве
     ReDim arrHwidsLocal(miMaxCountArr)
     If mbDebugStandart Then DebugMode "***ReadDrivers: Collect Full Info"
     If mbDebugStandart Then DebugMode "*****************************************"
 
     ' Переменная для прогресса
-    If UBound(arr_CH) > 0 Then
-        miPbInterval = Round(7000 / UBound(arr_CH))
-    Else
-        miPbInterval = 6500
-    End If
-
     lngUBoundCH = UBound(arr_CH)
+    If lngUBoundCH > 0 Then
+        miPBInterval = Round(7000 / lngUBoundCH)
+    Else
+        miPBInterval = 6500
+    End If
 
     For ii = 0 To lngUBoundCH
 
@@ -275,12 +274,12 @@ Public Sub ReadDrivers()
         End If
 
         ' Изменяем прогресс
-        frmProgress.ChangeProgressBarStatus miPbNext, miPbInterval
+        frmProgress.ChangeProgressBarStatus miPBNext, miPBInterval
     Next
     
     ' Финишируем прогресс
-    frmProgress.ChangeProgressBarStatus 10000, 0
     frmProgress.ctlProgressBar1.SetTaskBarProgressState PrbTaskBarStateNone
+    frmProgress.ChangeProgressBarStatus 10000
     
     DoEvents
     

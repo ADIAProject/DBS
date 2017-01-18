@@ -46,19 +46,17 @@ Private strFormName         As String
 Private strFormCaptionTemp  As String
 
 Private Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
+Private Declare Function DeleteMenu Lib "user32.dll" (ByVal hMenu As Long, ByVal nPosition As Long, ByVal wFlags As Long) As Long
+Private Declare Function GetSystemMenu Lib "user32.dll" (ByVal hWnd As Long, ByVal bRevert As Long) As Long
+Private Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function SetWindowLong Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function ShowWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
 
-Private Declare Function DeleteMenu Lib "user32" (ByVal hMenu As Long, ByVal nPosition As Long, ByVal wFlags As Long) As Long
-Private Declare Function GetSystemMenu Lib "user32" (ByVal hWnd As Long, ByVal bRevert As Long) As Long
-Private Const MF_BYPOSITION = &H400&
-
+Private Const MF_BYPOSITION     As Long = &H400&
 Private Const WS_EX_APPWINDOW   As Long = &H40000
 Private Const GWL_EXSTYLE       As Long = (-20)
 Private Const SW_HIDE           As Long = 0
 Private Const SW_SHOW           As Long = 5
-
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
 
 Private m_bActivated As Boolean
 
@@ -102,7 +100,7 @@ End Sub
 '! Description (Описание)  :   [type_description_here]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Public Sub ChangeProgressBarStatus(ByRef lngProgressValue As Long, ByVal lngProgressValuePlus As Long)
+Public Sub ChangeProgressBarStatus(ByRef lngProgressValue As Long, Optional ByVal lngProgressValuePlus As Long = 0)
 Attribute ChangeProgressBarStatus.VB_UserMemId = 1610809348
 
     lngProgressValue = lngProgressValue + lngProgressValuePlus
