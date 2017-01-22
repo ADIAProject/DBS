@@ -1055,6 +1055,7 @@ Private PropGroupView As Boolean
 Private PropGroupSubsetCount As Long
 Private PropUseColumnChevron As Boolean
 Private PropUseColumnFilterBar As Boolean
+Private PropAutoSelectFirstItem As Boolean
 
 Private Sub IOleInPlaceActiveObjectVB_TranslateAccelerator(ByRef Handled As Boolean, ByRef RetVal As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal Shift As Long)
 If wMsg = WM_KEYDOWN Or wMsg = WM_KEYUP Then
@@ -1227,6 +1228,7 @@ PropGroupView = False
 PropGroupSubsetCount = 0
 PropUseColumnChevron = False
 PropUseColumnFilterBar = False
+PropAutoSelectFirstItem = True
 If Ambient.UserMode = True Then
     Call ComCtlsSetSubclass(UserControl.hWnd, Me, 5)
 Else
@@ -1299,6 +1301,7 @@ PropGroupView = .ReadProperty("GroupView", False)
 PropGroupSubsetCount = .ReadProperty("GroupSubsetCount", 0)
 PropUseColumnChevron = .ReadProperty("UseColumnChevron", False)
 PropUseColumnFilterBar = .ReadProperty("UseColumnFilterBar", PropUseColumnFilterBar)
+PropAutoSelectFirstItem = .ReadProperty("AutoSelectFirstItem", True)
 End With
 If Ambient.UserMode = True Then
     Call ComCtlsSetSubclass(UserControl.hWnd, Me, 5)
@@ -1372,6 +1375,7 @@ With PropBag
 .WriteProperty "GroupSubsetCount", PropGroupSubsetCount, 0
 .WriteProperty "UseColumnChevron", PropUseColumnChevron, False
 .WriteProperty "UseColumnFilterBar", PropUseColumnFilterBar, False
+.WriteProperty "AutoSelectFirstItem", PropAutoSelectFirstItem, True
 End With
 End Sub
 
@@ -3270,6 +3274,16 @@ If ListViewHandle <> 0 Then
     End If
 End If
 UserControl.PropertyChanged "UseColumnFilterBar"
+End Property
+
+Public Property Get AutoSelectFirstItem() As Boolean
+Attribute AutoSelectFirstItem.VB_Description = "Returns/sets a value that determines whether or not the first item will be selected automatically."
+AutoSelectFirstItem = PropAutoSelectFirstItem
+End Property
+
+Public Property Let AutoSelectFirstItem(ByVal Value As Boolean)
+PropAutoSelectFirstItem = Value
+UserControl.PropertyChanged "AutoSelectFirstItem"
 End Property
 
 Public Property Get ListItems() As LvwListItems
@@ -6618,7 +6632,17 @@ Select Case wMsg
             Select Case NM.Code
                 Case LVN_INSERTITEM
                     If ListViewListItemsControl = 0 Then
-                        Me.FListItemSelected(1) = True
+                        Dim LVI As LVITEM
+                        With LVI
+                        If PropAutoSelectFirstItem = True Then
+                            .StateMask = LVIS_SELECTED Or LVIS_FOCUSED
+                            .State = LVIS_SELECTED Or LVIS_FOCUSED
+                        Else
+                            .StateMask = LVIS_FOCUSED
+                            .State = LVIS_FOCUSED
+                        End If
+                        End With
+                        SendMessage ListViewHandle, LVM_SETITEMSTATE, 0, ByVal VarPtr(LVI)
                         ListViewFocusIndex = 1
                     End If
                     ListViewListItemsControl = ListViewListItemsControl + 1

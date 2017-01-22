@@ -38,7 +38,7 @@ Begin VB.Form frmError
       EndProperty
       Height          =   615
       Left            =   4200
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   5400
       Width           =   2655
    End
@@ -55,7 +55,7 @@ Begin VB.Form frmError
       EndProperty
       Height          =   615
       Left            =   75
-      TabIndex        =   6
+      TabIndex        =   2
       ToolTipText     =   "Создать файл с описанием ошибки"
       Top             =   5400
       Width           =   1380
@@ -73,7 +73,7 @@ Begin VB.Form frmError
       EndProperty
       Height          =   615
       Left            =   1560
-      TabIndex        =   5
+      TabIndex        =   3
       ToolTipText     =   "Не забудьте прикрепить к письму созданный файл error.log"
       Top             =   5400
       Width           =   2580
@@ -91,7 +91,7 @@ Begin VB.Form frmError
       EndProperty
       Height          =   1680
       Left            =   75
-      TabIndex        =   8
+      TabIndex        =   13
       Top             =   840
       Width           =   8500
       Begin VB.TextBox lblErrDescr 
@@ -108,7 +108,7 @@ Begin VB.Form frmError
          Left            =   75
          MultiLine       =   -1  'True
          ScrollBars      =   2  'Vertical
-         TabIndex        =   9
+         TabIndex        =   0
          Top             =   600
          Width           =   8325
       End
@@ -126,7 +126,7 @@ Begin VB.Form frmError
          EndProperty
          Height          =   315
          Left            =   75
-         TabIndex        =   11
+         TabIndex        =   10
          Top             =   240
          Width           =   3705
       End
@@ -145,7 +145,7 @@ Begin VB.Form frmError
          ForeColor       =   &H000000FF&
          Height          =   330
          Left            =   3960
-         TabIndex        =   10
+         TabIndex        =   11
          Top             =   240
          Width           =   1410
       End
@@ -164,14 +164,14 @@ Begin VB.Form frmError
       EndProperty
       Height          =   615
       Left            =   6960
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   5400
       Width           =   1575
    End
    Begin MSFlexGridLib.MSFlexGrid MSFlexGrid1 
       Height          =   2450
       Left            =   75
-      TabIndex        =   0
+      TabIndex        =   1
       Top             =   2895
       Width           =   8505
       _ExtentX        =   15002
@@ -205,7 +205,7 @@ Begin VB.Form frmError
       EndProperty
       Height          =   330
       Left            =   75
-      TabIndex        =   13
+      TabIndex        =   6
       Top             =   75
       Width           =   5355
    End
@@ -224,7 +224,7 @@ Begin VB.Form frmError
       ForeColor       =   &H000000FF&
       Height          =   360
       Left            =   5520
-      TabIndex        =   12
+      TabIndex        =   7
       Top             =   75
       Width           =   3015
    End
@@ -243,7 +243,7 @@ Begin VB.Form frmError
       ForeColor       =   &H000000FF&
       Height          =   360
       Left            =   4800
-      TabIndex        =   3
+      TabIndex        =   9
       Top             =   450
       Width           =   3735
    End
@@ -261,7 +261,7 @@ Begin VB.Form frmError
       EndProperty
       Height          =   330
       Left            =   75
-      TabIndex        =   2
+      TabIndex        =   8
       Top             =   450
       Width           =   4635
    End
@@ -279,7 +279,7 @@ Begin VB.Form frmError
       EndProperty
       Height          =   375
       Left            =   75
-      TabIndex        =   1
+      TabIndex        =   12
       Top             =   2520
       Width           =   8415
    End

@@ -26,7 +26,7 @@ Begin VB.Form frmAbout
    Begin prjDIADBS.ctlJCbutton cmdHomePage 
       Height          =   650
       Left            =   7320
-      TabIndex        =   10
+      TabIndex        =   4
       Top             =   5505
       Width           =   2205
       _ExtentX        =   3889
@@ -53,7 +53,7 @@ Begin VB.Form frmAbout
    Begin prjDIADBS.ctlJCbutton cmdOsZoneNet 
       Height          =   650
       Left            =   4980
-      TabIndex        =   9
+      TabIndex        =   3
       Top             =   5505
       Width           =   2205
       _ExtentX        =   3889
@@ -76,7 +76,7 @@ Begin VB.Form frmAbout
    Begin prjDIADBS.ctlJCbutton cmdCheckUpd 
       Height          =   650
       Left            =   1320
-      TabIndex        =   11
+      TabIndex        =   5
       Top             =   6300
       Width           =   2205
       _ExtentX        =   3889
@@ -100,7 +100,7 @@ Begin VB.Form frmAbout
    Begin prjDIADBS.ctlJCbutton cmdLicence 
       Height          =   650
       Left            =   2460
-      TabIndex        =   8
+      TabIndex        =   2
       Top             =   5505
       Width           =   2205
       _ExtentX        =   3889
@@ -123,7 +123,7 @@ Begin VB.Form frmAbout
    Begin prjDIADBS.ctlJCbutton cmdDonate 
       Height          =   650
       Left            =   120
-      TabIndex        =   7
+      TabIndex        =   1
       Top             =   5505
       Width           =   2200
       _ExtentX        =   3889
@@ -148,7 +148,7 @@ Begin VB.Form frmAbout
       Default         =   -1  'True
       Height          =   650
       Left            =   6120
-      TabIndex        =   12
+      TabIndex        =   0
       Top             =   6300
       Width           =   2205
       _ExtentX        =   3889
@@ -172,7 +172,7 @@ Begin VB.Form frmAbout
    Begin prjDIADBS.ctlJCbutton ctlAquaButton 
       Height          =   1995
       Left            =   75
-      TabIndex        =   1
+      TabIndex        =   6
       Top             =   120
       Width           =   2100
       _ExtentX        =   3704
@@ -196,7 +196,7 @@ Begin VB.Form frmAbout
    Begin prjDIADBS.LabelW lblTranslator 
       Height          =   315
       Left            =   105
-      TabIndex        =   4
+      TabIndex        =   10
       Top             =   2820
       Width           =   9435
       _ExtentX        =   16642
@@ -218,7 +218,7 @@ Begin VB.Form frmAbout
       Height          =   195
       Index           =   0
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   11
       Top             =   3180
       Width           =   2505
       _ExtentX        =   4419
@@ -240,7 +240,7 @@ Begin VB.Form frmAbout
    Begin prjDIADBS.LabelW lblAuthor 
       Height          =   375
       Left            =   105
-      TabIndex        =   3
+      TabIndex        =   9
       Top             =   2520
       Width           =   9435
       _ExtentX        =   16642
@@ -260,7 +260,7 @@ Begin VB.Form frmAbout
    Begin prjDIADBS.LabelW lblInfo 
       Height          =   1095
       Left            =   2280
-      TabIndex        =   2
+      TabIndex        =   8
       Top             =   1440
       Width           =   7275
       _ExtentX        =   12832
@@ -281,7 +281,7 @@ Begin VB.Form frmAbout
    Begin prjDIADBS.LabelW lblNameProg 
       Height          =   1305
       Left            =   2280
-      TabIndex        =   0
+      TabIndex        =   7
       Top             =   45
       Width           =   7260
       _ExtentX        =   12806
@@ -302,7 +302,7 @@ Begin VB.Form frmAbout
    Begin prjDIADBS.LabelW lblMailTo 
       Height          =   240
       Left            =   105
-      TabIndex        =   6
+      TabIndex        =   12
       Top             =   5160
       Width           =   3525
       _ExtentX        =   6218

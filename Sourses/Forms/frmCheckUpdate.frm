@@ -26,7 +26,7 @@ Begin VB.Form frmCheckUpdate
    Begin prjDIADBS.ComboBoxW cmbVersions 
       Height          =   315
       Left            =   5100
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   450
       Width           =   1455
       _ExtentX        =   2566
@@ -47,7 +47,7 @@ Begin VB.Form frmCheckUpdate
       Default         =   -1  'True
       Height          =   650
       Left            =   9345
-      TabIndex        =   10
+      TabIndex        =   2
       Top             =   5160
       Width           =   1935
       _ExtentX        =   3413
@@ -71,7 +71,7 @@ Begin VB.Form frmCheckUpdate
    Begin prjDIADBS.ctlJCbutton cmdHistory 
       Height          =   650
       Left            =   4700
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   5160
       Width           =   2175
       _ExtentX        =   3836
@@ -95,7 +95,7 @@ Begin VB.Form frmCheckUpdate
    Begin prjDIADBS.ctlJCbutton cmdUpdateFull 
       Height          =   650
       Left            =   2415
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   5160
       Width           =   2175
       _ExtentX        =   3836
@@ -122,7 +122,7 @@ Begin VB.Form frmCheckUpdate
    Begin prjDIADBS.ctlJCbutton cmdUpdate 
       Height          =   650
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   5160
       Width           =   2175
       _ExtentX        =   3836
@@ -149,7 +149,7 @@ Begin VB.Form frmCheckUpdate
    Begin prjDIADBS.ctlJCbutton cmdDonate 
       Height          =   650
       Left            =   6990
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   5160
       Width           =   2220
       _ExtentX        =   3916
@@ -173,7 +173,7 @@ Begin VB.Form frmCheckUpdate
    Begin prjDIADBS.RichTextBox rtfDescription 
       Height          =   4275
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   0
       Top             =   800
       Visible         =   0   'False
       Width           =   11130
@@ -198,7 +198,7 @@ Begin VB.Form frmCheckUpdate
    Begin prjDIADBS.LabelW lblWait 
       Height          =   375
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   10
       Top             =   2640
       Width           =   11160
       _ExtentX        =   0
@@ -219,7 +219,7 @@ Begin VB.Form frmCheckUpdate
    Begin prjDIADBS.LabelW lblVersionList 
       Height          =   315
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   8
       Top             =   450
       Width           =   4965
       _ExtentX        =   8758
@@ -240,7 +240,7 @@ Begin VB.Form frmCheckUpdate
    Begin prjDIADBS.LabelW lblWWW 
       Height          =   315
       Left            =   8100
-      TabIndex        =   3
+      TabIndex        =   9
       Top             =   450
       Width           =   3060
       _ExtentX        =   5398
@@ -263,7 +263,7 @@ Begin VB.Form frmCheckUpdate
    Begin prjDIADBS.LabelW lblVersion 
       Height          =   315
       Left            =   120
-      TabIndex        =   0
+      TabIndex        =   7
       Top             =   45
       Width           =   11085
       _ExtentX        =   0

@@ -24,7 +24,7 @@ Begin VB.Form frmMain
       Align           =   2  'Align Bottom
       Height          =   705
       Left            =   0
-      TabIndex        =   15
+      TabIndex        =   16
       TabStop         =   0   'False
       Top             =   6525
       Width           =   12765
@@ -102,7 +102,7 @@ Begin VB.Form frmMain
          Begin prjDIADBS.CheckBoxW chkHideOther 
             Height          =   405
             Left            =   1920
-            TabIndex        =   7
+            TabIndex        =   12
             Top             =   840
             Width           =   4095
             _ExtentX        =   7223
@@ -122,7 +122,7 @@ Begin VB.Form frmMain
          Begin prjDIADBS.OptionButtonW optGrp1 
             Height          =   400
             Left            =   120
-            TabIndex        =   2
+            TabIndex        =   7
             Top             =   500
             Width           =   1700
             _ExtentX        =   2990
@@ -143,7 +143,7 @@ Begin VB.Form frmMain
          Begin prjDIADBS.OptionButtonW optGrp2 
             Height          =   400
             Left            =   120
-            TabIndex        =   3
+            TabIndex        =   8
             Top             =   840
             Width           =   1700
             _ExtentX        =   2990
@@ -164,7 +164,7 @@ Begin VB.Form frmMain
          Begin prjDIADBS.OptionButtonW optGrp3 
             Height          =   400
             Left            =   120
-            TabIndex        =   4
+            TabIndex        =   9
             Top             =   1200
             Width           =   1700
             _ExtentX        =   2990
@@ -185,7 +185,7 @@ Begin VB.Form frmMain
          Begin prjDIADBS.OptionButtonW optGrp4 
             Height          =   400
             Left            =   120
-            TabIndex        =   5
+            TabIndex        =   10
             Top             =   1560
             Width           =   1700
             _ExtentX        =   2990
@@ -206,7 +206,7 @@ Begin VB.Form frmMain
          Begin prjDIADBS.ctlJCbutton cmdCheckAll 
             Height          =   630
             Left            =   1920
-            TabIndex        =   8
+            TabIndex        =   13
             Top             =   1320
             Width           =   1995
             _ExtentX        =   3519
@@ -232,7 +232,7 @@ Begin VB.Form frmMain
          Begin prjDIADBS.ctlJCbutton cmdUnCheckAll 
             Height          =   630
             Left            =   4020
-            TabIndex        =   9
+            TabIndex        =   14
             Top             =   1320
             Width           =   1965
             _ExtentX        =   3466
@@ -258,7 +258,7 @@ Begin VB.Form frmMain
          Begin prjDIADBS.CheckBoxW chkCheckAll 
             Height          =   405
             Left            =   1920
-            TabIndex        =   6
+            TabIndex        =   11
             Top             =   480
             Width           =   4095
             _ExtentX        =   7223
@@ -302,10 +302,10 @@ Begin VB.Form frmMain
          GradientHeaderStyle=   2
          Begin prjDIADBS.ComboBoxW cmbTypeBackUp 
             Height          =   315
-            Left            =   1800
-            TabIndex        =   10
+            Left            =   1785
+            TabIndex        =   2
             Top             =   495
-            Width           =   4480
+            Width           =   4485
             _ExtentX        =   7911
             _ExtentY        =   556
             BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -398,7 +398,7 @@ Begin VB.Form frmMain
             Begin prjDIADBS.TextBoxW txtArchName 
                Height          =   350
                Left            =   120
-               TabIndex        =   14
+               TabIndex        =   6
                Top             =   725
                Width           =   3615
                _ExtentX        =   0
@@ -416,7 +416,7 @@ Begin VB.Form frmMain
             Begin prjDIADBS.OptionButtonW optArchModelPC 
                Height          =   255
                Left            =   1800
-               TabIndex        =   13
+               TabIndex        =   4
                Top             =   360
                Width           =   1995
                _ExtentX        =   3519
@@ -437,7 +437,7 @@ Begin VB.Form frmMain
             Begin prjDIADBS.OptionButtonW optArchNamePC 
                Height          =   255
                Left            =   1800
-               TabIndex        =   12
+               TabIndex        =   3
                Top             =   50
                Width           =   1995
                _ExtentX        =   3519
@@ -458,7 +458,7 @@ Begin VB.Form frmMain
             Begin prjDIADBS.OptionButtonW optArchCustom 
                Height          =   325
                Left            =   120
-               TabIndex        =   11
+               TabIndex        =   5
                Top             =   325
                Width           =   1635
                _ExtentX        =   2884
@@ -480,7 +480,7 @@ Begin VB.Form frmMain
          Begin prjDIADBS.LabelW lblTypeBackUp 
             Height          =   405
             Left            =   75
-            TabIndex        =   16
+            TabIndex        =   17
             Top             =   495
             Width           =   1725
             _ExtentX        =   3043
@@ -527,7 +527,7 @@ Begin VB.Form frmMain
          Begin prjDIADBS.ListView lvDevices 
             Height          =   3255
             Left            =   60
-            TabIndex        =   17
+            TabIndex        =   15
             Top             =   360
             Width           =   12450
             _ExtentX        =   21960
@@ -551,6 +551,7 @@ Begin VB.Form frmMain
             GridLines       =   -1  'True
             LabelEdit       =   2
             LabelWrap       =   0   'False
+            Sorted          =   -1  'True
             Checkboxes      =   -1  'True
             HideSelection   =   0   'False
             HoverSelection  =   -1  'True

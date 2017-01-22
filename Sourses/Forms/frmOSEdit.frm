@@ -44,7 +44,7 @@ Begin VB.Form frmOSEdit
    Begin prjDIADBS.CheckBoxW chk64bit 
       Height          =   210
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   1440
       Width           =   4215
       _ExtentX        =   4683
@@ -64,7 +64,7 @@ Begin VB.Form frmOSEdit
    Begin prjDIADBS.ctlUcPickBox ucPathDRP 
       Height          =   315
       Left            =   2880
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   720
       Width           =   5415
       _ExtentX        =   10398
@@ -78,7 +78,7 @@ Begin VB.Form frmOSEdit
    Begin prjDIADBS.ctlJCbutton cmdOK 
       Height          =   750
       Left            =   6480
-      TabIndex        =   2
+      TabIndex        =   4
       Top             =   1320
       Width           =   1815
       _ExtentX        =   3201
