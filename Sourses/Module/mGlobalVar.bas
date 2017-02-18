@@ -33,8 +33,9 @@ Public Sub GetMyAppProperties()
     On Error Resume Next
     strProductName = App.ProductName & " v." & strProductVersion & " @" & App.CompanyName
     If Error.Number = 326 Then
-        strProductName = "Drivers BackUp Solution" & " v." & strProductVersion & " @" & "Romeo91 (www.adia-project.net)"
+        strProductName = strProjectNameFull & " v." & strProductVersion & " @" & "Romeo91 (www.adia-project.net)"
     End If
+
 End Sub
 
 '!--------------------------------------------------------------------------------

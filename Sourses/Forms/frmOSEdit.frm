@@ -69,11 +69,14 @@ Begin VB.Form frmOSEdit
       Width           =   5415
       _ExtentX        =   10398
       _ExtentY        =   556
+      UseAutoForeColor=   0   'False
       DefaultExt      =   ""
       Enabled         =   0   'False
       FileFlags       =   524288
       Filters         =   "Supported files|*.*|All Files (*.*)"
       UseDialogText   =   0   'False
+      Locked          =   -1  'True
+      QualifyPaths    =   -1  'True
    End
    Begin prjDIADBS.ctlJCbutton cmdOK 
       Height          =   750
@@ -175,6 +178,11 @@ Option Explicit
 
 Private strFormName As String
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Get CaptionW
+'! Description (Описание)  :   [Получение Caption-формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get CaptionW() As String
     Dim lngLenStr As Long
     
@@ -183,6 +191,11 @@ Public Property Get CaptionW() As String
     DefWindowProc Me.hWnd, WM_GETTEXT, Len(CaptionW) + 1, ByVal StrPtr(CaptionW)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Let CaptionW
+'! Description (Описание)  :   [Изменение Caption-формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Let CaptionW(ByVal NewValue As String)
     DefWindowProc Me.hWnd, WM_SETTEXT, 0, ByVal StrPtr(NewValue & vbNullChar)
 End Property
@@ -380,8 +393,8 @@ Private Sub ucPathDRP_Click()
     With ucPathDRP
         strTempPath = .Path
 
-        If InStr(1, strTempPath, strAppPath, vbTextCompare) Then
-            strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
+        If InStr(1, strTempPath, strAppPathBackSL, vbTextCompare) Then
+            strTempPath = Replace$(strTempPath, strAppPathBackSL, vbNullString, , , vbTextCompare)
         End If
     
         If LenB(strTempPath) Then

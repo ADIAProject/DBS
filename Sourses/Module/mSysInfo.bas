@@ -3,6 +3,7 @@ Attribute VB_Name = "mSysInfo"
 ' а также модели компьтера/ноутбука/материнской платы
 Option Explicit
 
+' Not add to project (DBS/DIA) - option for compiler
 #Const mbIDE_DBSProject = True
 ' Программные переменные
 Public strOSArchitecture        As String        ' Архитетуктура ОС
@@ -131,8 +132,17 @@ Attribute GetMBInfo.VB_UserMemId = 1610612739
     Dim mbMB_Model         As Boolean
     Dim mbMB_Manufacturer  As Boolean
 
-    strMB_Manufacturer = GetMB_Manufacturer()
-    strMB_Model = GetMB_Model()
+    ' Получаем производителя PC, через реестр, если невозможно, то через WMI
+    strMB_Manufacturer = GetMB_ManufacturerReg
+    If LenB(strMB_Manufacturer) = 0 Then
+        strMB_Manufacturer = GetMB_ManufacturerWMI
+    End If
+    
+    ' Получаем модель PC
+    strMB_Model = GetMB_ModelReg
+    If LenB(strMB_Model) = 0 Then
+        strMB_Model = GetMB_ModelWMI
+    End If
     
     mbMB_Model = LenB(strMB_Model)
     mbMB_Manufacturer = LenB(strMB_Manufacturer)
@@ -157,11 +167,11 @@ Attribute GetMBInfo.VB_UserMemId = 1610612739
 End Function
 
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function GetMB_Manufacturer
+'! Procedure   (Функция)   :   Function GetMB_ManufacturerWMI
 '! Description (Описание)  :   [Получение производителя материнской платы, используется WMI]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Public Function GetMB_Manufacturer() As String
+Public Function GetMB_ManufacturerWMI() As String
 
     Dim colItems           As Object
     Dim objItem            As Object
@@ -176,10 +186,11 @@ Public Function GetMB_Manufacturer() As String
 
     ' получение данных из Win32_ComputerSystem - чаще всего есть если Ноутбук
     Set objWMIService = CreateObject("winmgmts:\\.\root\CIMV2")
+    If Err.Number = 429 Then Exit Function
+    
     Set colItems = objWMIService.ExecQuery("SELECT * FROM Win32_ComputerSystem", "WQL", wbemFlagReturnImmediately + wbemFlagForwardOnly)
 
     For Each objItem In colItems
-
         sAnsComputerSystem = sAnsComputerSystem & objItem.Manufacturer
     Next
 
@@ -191,7 +202,7 @@ Public Function GetMB_Manufacturer() As String
     Next
 
     ' итог
-    If StrComp(sAnsComputerSystem, "System manufacturer", vbTextCompare) = 0 Then
+    If StrComp(LCase$(sAnsComputerSystem), "system manufacturer") = 0 Then
         strTemp = Trim$(sAnsBaseBoard)
         mbIsNotebook = False
     Else
@@ -203,22 +214,71 @@ Public Function GetMB_Manufacturer() As String
     Set objRegExp = New RegExp
 
     With objRegExp
-'        .Pattern = "/(, inc.)|(inc.)|(corporation)|(corp.)|(computer)|(co., ltd.)|(co., ltd)|(co.,ltd)|(co.)|(ltd)|(international)|(Technology)/ig"
         .Pattern = "/(, inc.)|(inc.)|(corporation)|(corp.)|(computer)|(co., ltd.)|(co., ltd)|(co.,ltd)|(co.)|(ltd)|(international)|(CO., LTD.)|(ELECTRONICS)|(Technology)/ig"
         .IgnoreCase = True
         .Global = True
         'Заменяем найденные значения " "
-        GetMB_Manufacturer = Trim$(.Replace(strTemp, strSpace))
+        GetMB_ManufacturerWMI = Trim$(.Replace(strTemp, strSpace))
     End With
+    
+    Set objRegExp = Nothing
 
 End Function
 
+'How define PC manufacturing from Reestr
+'[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SystemInformation]
+'"SystemManufacturer"="Hewlett-Packard"
+'"SystemProductName"="HP Compaq Pro 6300 MT"
+'[HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS]
+'"BaseBoardManufacturer"="ASUSTeK COMPUTER INC."
+'"BaseBoardProduct"="P8H67-M LX"
+'"SystemManufacturer"="System manufacturer"
+'"SystemProductName"="System Product Name"
 '!--------------------------------------------------------------------------------
-'! Procedure   (Функция)   :   Function GetMB_Model
+'! Procedure   (Функция)   :   Function GetMB_ManufacturerReg
+'! Description (Описание)  :   [Получение производителя материнской платы, используется реестр]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Function GetMB_ManufacturerReg() As String
+
+    Dim regParam      As String
+    Dim objRegExp     As RegExp
+    Dim strTemp       As String
+
+    regParam = GetRegString(HKEY_LOCAL_MACHINE, "SYSTEM\CurrentControlSet\Control\SystemInformation", "SystemManufacturer")
+    
+    ' итог
+    If StrComp(LCase$(regParam), "system manufacturer") = 0 Then
+        ' Если стандартное значение, то определяем по другой веткее реестра
+        regParam = GetRegString(HKEY_LOCAL_MACHINE, "HARDWARE\DESCRIPTION\System\BIOS", "BaseBoardManufacturer")
+        strTemp = Trim$(regParam)
+        mbIsNotebook = False
+    Else
+        strTemp = Trim$(regParam)
+        mbIsNotebook = True
+    End If
+
+    ' удаляем лишние символы в наименовании
+    Set objRegExp = New RegExp
+
+    With objRegExp
+        .Pattern = "/(, inc.)|(inc.)|(corporation)|(corp.)|(computer)|(co., ltd.)|(co., ltd)|(co.,ltd)|(co.)|(ltd)|(international)|(CO., LTD.)|(ELECTRONICS)|(Technology)/ig"
+        .IgnoreCase = True
+        .Global = True
+        'Заменяем найденные значения " "
+        GetMB_ManufacturerReg = Trim$(.Replace(strTemp, strSpace))
+    End With
+    
+    Set objRegExp = Nothing
+
+End Function
+
+'!-------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetMB_ModelWMI
 '! Description (Описание)  :   [Получение модели материнской платы, используется WMI]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Public Function GetMB_Model() As String
+Public Function GetMB_ModelWMI() As String
 
     Dim colItems           As Object
     Dim objItem            As Object
@@ -234,10 +294,11 @@ Public Function GetMB_Model() As String
 
     ' получение данных из Win32_ComputerSystem - чаще всего есть если Ноутбук
     Set objWMIService = CreateObject("winmgmts:\\.\root\CIMV2")
+    If Err.Number = 429 Then Exit Function
+    
     Set colItems = objWMIService.ExecQuery("SELECT * FROM Win32_ComputerSystem", "WQL", wbemFlagReturnImmediately + wbemFlagForwardOnly)
 
     For Each objItem In colItems
-
         sAnsComputerSystem = sAnsComputerSystem & objItem.Model
     Next
 
@@ -245,12 +306,11 @@ Public Function GetMB_Model() As String
     Set colItems = objWMIService.ExecQuery("SELECT * FROM Win32_BaseBoard", "WQL", wbemFlagReturnImmediately + wbemFlagForwardOnly)
 
     For Each objItem In colItems
-
         sAnsBaseBoard = sAnsBaseBoard & objItem.Product
     Next
 
     ' итог
-    If StrComp(sAnsComputerSystem, "System Product Name", vbTextCompare) = 0 Then
+    If StrComp(LCase$(sAnsComputerSystem), "system product name") = 0 Then
         strTemp = Trim$(sAnsBaseBoard)
         mbIsNotebook = False
     Else
@@ -268,8 +328,58 @@ Public Function GetMB_Model() As String
         .IgnoreCase = True
         .Global = True
         'Заменяем найденные значения " "
-        GetMB_Model = Trim$(.Replace(strTemp, strSpace))
+        GetMB_ModelWMI = Trim$(.Replace(strTemp, strSpace))
     End With
+    
+    Set objRegExp = Nothing
+
+End Function
+
+' How define PC manufacturing from Reestr
+'[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SystemInformation]
+'"SystemManufacturer"="Hewlett-Packard"
+'"SystemProductName"="HP Compaq Pro 6300 MT"
+'[HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS]
+'"BaseBoardManufacturer"="ASUSTeK COMPUTER INC."
+'"BaseBoardProduct"="P8H67-M LX"
+'"SystemManufacturer"="System manufacturer"
+'"SystemProductName"="System Product Name"
+'!-------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function GetMB_ModelReg
+'! Description (Описание)  :   [Получение модели материнской платы, используется реестр]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
+Public Function GetMB_ModelReg() As String
+
+    Dim regParam      As String
+    Dim objRegExp     As RegExp
+    Dim strTemp       As String
+
+    regParam = GetRegString(HKEY_LOCAL_MACHINE, "SYSTEM\CurrentControlSet\Control\SystemInformation", "SystemProductName")
+    
+    ' итог
+    If StrComp(LCase$(regParam), "system product name") = 0 Then
+        ' Если стандартное значение, то определяем по другой веткее реестра
+        regParam = GetRegString(HKEY_LOCAL_MACHINE, "HARDWARE\DESCRIPTION\System\BIOS", "BaseBoardProduct")
+        strTemp = Trim$(regParam)
+        mbIsNotebook = False
+    Else
+        strTemp = Trim$(regParam)
+        mbIsNotebook = True
+    End If
+
+    ' удаляем лишние символы в наименовании
+    Set objRegExp = New RegExp
+
+    With objRegExp
+        .Pattern = "/(, inc.)|(inc.)|(corporation)|(corp.)|(computer)|(co., ltd.)|(co., ltd)|(co.,ltd)|(co.)|(ltd)|(international)|(CO., LTD.)|(ELECTRONICS)|(Technology)/ig"
+        .IgnoreCase = True
+        .Global = True
+        'Заменяем найденные значения " "
+        GetMB_ModelReg = Trim$(.Replace(strTemp, strSpace))
+    End With
+    
+    Set objRegExp = Nothing
 
 End Function
 
@@ -292,7 +402,11 @@ Dim TotalBytesUsed      As Currency
     
 End Function
 
-' уточнение про "статус" компьютер-ноутбук по корпусу или батарее
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   GetSystemDiskFreeSpace
+'! Description (Описание)  :   [уточнение про "статус" компьютер-ноутбук по корпусу или батарее]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Sub IsPCisNotebook()
     
     If mbIsNotebook Then
@@ -307,6 +421,8 @@ Public Sub IsPCisNotebook()
     
         ' получение данных из Win32_SystemEnclosure - тип корпуса
         Set objWMIService = CreateObject("winmgmts:\\.\root\CIMV2")
+        If Err.Number = 429 Then Exit Sub
+        
         Set colItems = objWMIService.ExecQuery("Select * from Win32_SystemEnclosure", "WQL", wbemFlagReturnImmediately + wbemFlagForwardOnly)
         
         For Each objItem In colItems
@@ -356,7 +472,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   IsUserAnAdministrator
-'! Description (Описание)  :   [Определения свободного места на системном диске]
+'! Description (Описание)  :   [Пользователь является администратором]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Public Function IsUserAnAdministrator() As Boolean
@@ -537,6 +653,7 @@ Attribute IsWinXPOrLater.VB_UserMemId = 1610612746
     End If
 End Function
 
+'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\WinPE
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function OSInfo
 '! Description (Описание)  :   [Получение расширенной информации о версии Windows]
@@ -597,6 +714,13 @@ Attribute OSInfo.VB_UserMemId = 1610612749
                     Else
                         OSN = "Server 2012 R2"
                     End If
+                ElseIf .dwMinorVersion = 4 Then
+
+                    If .wProductType = VER_NT_WORKSTATION Then
+                        OSN = "10 (Beta)"
+                    Else
+                        OSN = "Server 2014 (Beta)"
+                    End If
                 End If
 
             ElseIf .dwMajorVersion = 10 Then
@@ -606,7 +730,7 @@ Attribute OSInfo.VB_UserMemId = 1610612749
                     If .wProductType = VER_NT_WORKSTATION Then
                         OSN = "10"
                     Else
-                        OSN = "Server 2014"
+                        OSN = "Server 2016"
                     End If
 
                 ElseIf .dwMinorVersion = 1 Then
@@ -614,7 +738,7 @@ Attribute OSInfo.VB_UserMemId = 1610612749
                     If .wProductType = VER_NT_WORKSTATION Then
                         OSN = "10.1 ?"
                     Else
-                        OSN = "Server 2014 R2 ?"
+                        OSN = "Server 2016 R2 ?"
                     End If
 
                 Else

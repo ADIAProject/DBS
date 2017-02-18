@@ -91,11 +91,6 @@ hWndCombo As Long
 hWndItem As Long
 hWndList As Long
 End Type
-Private Type NMHDR
-hWndFrom As Long
-IDFrom As Long
-Code As Long
-End Type
 Public Event Click()
 Attribute Click.VB_Description = "Occurs when the user presses and then releases a mouse button over an object."
 Attribute Click.VB_UserMemId = -600
@@ -181,7 +176,6 @@ Private Declare Function GetScrollInfo Lib "user32" (ByVal hWnd As Long, ByVal w
 Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorW" (ByVal hInstance As Long, ByVal lpCursorName As Any) As Long
 Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
 Private Declare Function DragDetect Lib "user32" (ByVal hWnd As Long, ByVal PX As Integer, ByVal PY As Integer) As Long
-Private Declare Function ReleaseCapture Lib "user32" () As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
@@ -211,9 +205,6 @@ Private Const WM_MBUTTONDOWN As Long = &H207
 Private Const WM_MBUTTONUP As Long = &H208
 Private Const WM_RBUTTONDOWN As Long = &H204
 Private Const WM_RBUTTONUP As Long = &H205
-Private Const WM_LBUTTONDBLCLK As Long = &H203
-Private Const WM_MBUTTONDBLCLK As Long = &H209
-Private Const WM_RBUTTONDBLCLK As Long = &H206
 Private Const WM_SIZE As Long = &H5
 Private Const WM_MOUSEMOVE As Long = &H200
 Private Const WM_COMMAND As Long = &H111
@@ -2321,7 +2312,6 @@ Select Case wMsg
     Case WM_SHOWWINDOW
         If ComboBoxHandle = 0 Then Call CreateComboBox
     Case WM_COMMAND
-        Dim hWndFocus As Long
         Select Case HiWord(wParam)
             Case CBN_SELCHANGE
                 Dim SelIndex As Long

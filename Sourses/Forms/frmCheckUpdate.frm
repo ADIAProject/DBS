@@ -338,6 +338,11 @@ Option Explicit
 Private mbFirstStartUpdate As Boolean
 Private strFormName        As String
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Get CaptionW
+'! Description (Описание)  :   [Получение Caption-формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get CaptionW() As String
     Dim lngLenStr As Long
     
@@ -346,6 +351,11 @@ Public Property Get CaptionW() As String
     DefWindowProc Me.hWnd, WM_GETTEXT, Len(CaptionW) + 1, ByVal StrPtr(CaptionW)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Let CaptionW
+'! Description (Описание)  :   [Изменение Caption-формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Let CaptionW(ByVal NewValue As String)
     DefWindowProc Me.hWnd, WM_SETTEXT, 0, ByVal StrPtr(NewValue & vbNullChar)
 End Property

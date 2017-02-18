@@ -4234,7 +4234,7 @@ Friend Property Let FColumnHeaderFilterValue(ByVal Index As Long, ByVal Value As
 If ListViewHandle <> 0 Then
     ListViewHeaderHandle = Me.hWndHeader
     If ListViewHeaderHandle <> 0 Then
-        Dim HDI As HDITEM, ErrVal As Long
+        Dim HDI As HDITEM
         With HDI
         .Mask = HDI_FILTER
         SendMessage ListViewHeaderHandle, HDM_GETITEM, Index - 1, ByVal VarPtr(HDI)

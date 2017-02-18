@@ -92,7 +92,7 @@ Begin VB.Form frmDonate
       BackColor       =   12244692
       Caption         =   "Donate via SMSCoin"
       CaptionEffects  =   0
-      PictureNormal   =   "frmDonate.frx":017E
+      PictureNormal   =   "frmDonate.frx":0168
       PictureAlign    =   2
       PicturePushOnHover=   -1  'True
       MaskColor       =   16645372
@@ -120,7 +120,7 @@ Begin VB.Form frmDonate
       Caption         =   "Donate via"
       CaptionEffects  =   0
       CaptionAlign    =   2
-      PictureNormal   =   "frmDonate.frx":1E58
+      PictureNormal   =   "frmDonate.frx":1E42
       PictureAlign    =   2
       PicturePushOnHover=   -1  'True
       MaskColor       =   16777215
@@ -148,7 +148,7 @@ Begin VB.Form frmDonate
       Caption         =   "Donate via"
       CaptionEffects  =   0
       CaptionAlign    =   2
-      PictureNormal   =   "frmDonate.frx":3F52
+      PictureNormal   =   "frmDonate.frx":3F3C
       PictureAlign    =   2
       PicturePushOnHover=   -1  'True
       MaskColor       =   16185078
@@ -167,6 +167,11 @@ Private lngFormWidthMin  As Long
 Private lngFormHeightMin As Long
 Private strFormName      As String
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Get CaptionW
+'! Description (Описание)  :   [Получение Caption-формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get CaptionW() As String
     Dim lngLenStr As Long
     
@@ -175,6 +180,11 @@ Public Property Get CaptionW() As String
     DefWindowProc Me.hWnd, WM_GETTEXT, Len(CaptionW) + 1, ByVal StrPtr(CaptionW)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Let CaptionW
+'! Description (Описание)  :   [Изменение Caption-формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Let CaptionW(ByVal NewValue As String)
     DefWindowProc Me.hWnd, WM_SETTEXT, 0, ByVal StrPtr(NewValue & vbNullChar)
 End Property

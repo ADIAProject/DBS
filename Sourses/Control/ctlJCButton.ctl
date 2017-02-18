@@ -535,7 +535,7 @@ Private Const DT_MULTILINE = (&H1)
 Private Const DT_NOPREFIX = &H800
 Private Const DT_DRAWFLAG As Long = DT_WORDBREAK Or DT_MULTILINE Or DT_NOPREFIX Or DT_VCENTER
 
-Private Declare Function DrawTextW Lib "user32.dll" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+Private Declare Function DrawTextW Lib "user32.dll" (ByVal hDC As Long, ByVal lpchText As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal uFormat As Long) As Long
 Private Declare Function DrawText Lib "user32.dll" Alias "DrawTextA" (ByVal hDC As Long, ByVal lpStr As String, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
 
 '*************************************************************
@@ -1808,7 +1808,7 @@ Private Sub DrawButton_Gel(ByVal vState As enumButtonStates)
         ' --Make a shining Upper Light
         DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.05), bColor, gdVertical
         DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.02), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.08)), gdVertical
-        DrawPicwithCaption
+        DrawPicWithCaption
         DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.2)
         DrawCorners ShiftColor(bColor, -0.23)
 
@@ -1827,7 +1827,7 @@ Private Sub DrawButton_Gel(ByVal vState As enumButtonStates)
             ' --Make a shining Upper Light
             DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.1), bColor, gdVertical
             DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.05), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.1)), gdVertical
-            DrawPicwithCaption
+            DrawPicWithCaption
             DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.33)
 
         Case eStateOver
@@ -1837,7 +1837,7 @@ Private Sub DrawButton_Gel(ByVal vState As enumButtonStates)
             ' --Make a shining Upper Light
             DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.15), bColor, gdVertical
             DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.05), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.2)), gdVertical
-            DrawPicwithCaption
+            DrawPicWithCaption
             DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.28)
 
         Case eStateDown
@@ -1847,7 +1847,7 @@ Private Sub DrawButton_Gel(ByVal vState As enumButtonStates)
             ' --Make a shining Upper Light
             DrawGradientEx 0, 0, lw, 5, ShiftColor(BlendColors(bColor, TranslateColor(vbWhite)), 0.1), bColor, gdVertical
             DrawGradientEx 0, 6, lw, lh - 1, ShiftColor(bColor, -0.08), BlendColors(TranslateColor(vbWhite), ShiftColor(bColor, 0.05)), gdVertical
-            DrawPicwithCaption
+            DrawPicWithCaption
             DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.36)
     End Select
 
@@ -1875,7 +1875,7 @@ Private Sub DrawButton_Office2003(ByVal vState As enumButtonStates)
             DrawGradientEx 0, 0, lw, lh, TranslateColor(&H8CD5FF), TranslateColor(&H55ADFF), gdVertical
         End If
 
-        DrawPicwithCaption
+        DrawPicWithCaption
         DrawRectangle 0, 0, lw, lh, TranslateColor(&H800000)
 
         Exit Sub
@@ -1896,7 +1896,7 @@ Private Sub DrawButton_Office2003(ByVal vState As enumButtonStates)
             DrawGradientEx 0, 0, lw, lh, TranslateColor(&H4E91FE), TranslateColor(&H8ED3FF), gdVertical
     End Select
 
-    DrawPicwithCaption
+    DrawPicWithCaption
 
     If m_Buttonstate <> eStateNormal Then
         DrawRectangle 0, 0, lw, lh, TranslateColor(&H800000)
@@ -1949,7 +1949,7 @@ Private Sub DrawButton_OfficeXP(ByVal vState As enumButtonStates)
             DrawRectangle 0, 0, lw, lh, BorderColor
         End If
 
-        DrawPicwithCaption
+        DrawPicWithCaption
 
         Exit Sub
 
@@ -1967,7 +1967,7 @@ Private Sub DrawButton_OfficeXP(ByVal vState As enumButtonStates)
             PaintRect ShiftColor(oColor, -0.08), lpRect
     End Select
 
-    DrawPicwithCaption
+    DrawPicWithCaption
 
     If m_Buttonstate <> eStateNormal Then
         DrawRectangle 0, 0, lw, lh, BorderColor
@@ -2000,7 +2000,7 @@ Private Sub DrawButton_Outlook2007(ByVal vState As enumButtonStates)
                 DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
             End If
     
-            DrawPicwithCaption
+            DrawPicWithCaption
     
             Exit Sub
         End If
@@ -2012,19 +2012,19 @@ Private Sub DrawButton_Outlook2007(ByVal vState As enumButtonStates)
             PaintRect bColor, m_ButtonRect
             DrawGradientEx 0, 0, lw, lh / 2.7, BlendColors(ShiftColor(bColor, 0.09), TranslateColor(vbWhite)), BlendColors(ShiftColor(bColor, 0.07), bColor), gdVertical
             DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), bColor, ShiftColor(bColor, 0.03), gdVertical
-            DrawPicwithCaption
+            DrawPicWithCaption
             DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
 
         Case eStateOver
             DrawGradientEx 0, 0, lw, lh / 2.7, TranslateColor(&HE1FFFF), TranslateColor(&HACEAFF), gdVertical
             DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), TranslateColor(&H67D7FF), TranslateColor(&H99E4FF), gdVertical
-            DrawPicwithCaption
+            DrawPicWithCaption
             DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
 
         Case eStateDown
             DrawGradientEx 0, 0, lw, lh / 2.7, TranslateColor(&H58C1FF), TranslateColor(&H51AFFF), gdVertical
             DrawGradientEx 0, lh / 2.7, lw, lh - (lh / 2.7), TranslateColor(&H468FFF), TranslateColor(&H5FD3FF), gdVertical
-            DrawPicwithCaption
+            DrawPicWithCaption
             DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.34)
     End Select
 
@@ -2057,7 +2057,7 @@ Private Sub DrawButton_Standard(ByVal vState As enumButtonStates)
             DrawEdge hDC, m_ButtonRect, BDR_RAISEDINNER, BF_RECT
         End If
 
-        DrawPicwithCaption
+        DrawPicWithCaption
 
         Exit Sub
 
@@ -2065,7 +2065,7 @@ Private Sub DrawButton_Standard(ByVal vState As enumButtonStates)
 
     If m_ButtonMode <> ebmCommandButton And m_bValue Then
         PaintRect ShiftColor(TranslateColor(m_bColors.tBackColor), 0.02), m_ButtonRect
-        DrawPicwithCaption
+        DrawPicWithCaption
 
         If m_ButtonStyle <> eFlatHover Then
             DrawEdge hDC, m_ButtonRect, BDR_SUNKEN95, BF_RECT
@@ -2084,7 +2084,7 @@ Private Sub DrawButton_Standard(ByVal vState As enumButtonStates)
         Case eStateNormal
             CreateRegion
             PaintRect TranslateColor(m_bColors.tBackColor), m_ButtonRect
-            DrawPicwithCaption
+            DrawPicWithCaption
 
             Select Case m_ButtonStyle
 
@@ -2097,7 +2097,7 @@ Private Sub DrawButton_Standard(ByVal vState As enumButtonStates)
 
         Case eStateOver
             PaintRect TranslateColor(m_bColors.tBackColor), m_ButtonRect
-            DrawPicwithCaption
+            DrawPicWithCaption
 
             Select Case m_ButtonStyle
 
@@ -2112,7 +2112,7 @@ Private Sub DrawButton_Standard(ByVal vState As enumButtonStates)
 
         Case eStateDown
             PaintRect TranslateColor(m_bColors.tBackColor), m_ButtonRect
-            DrawPicwithCaption
+            DrawPicWithCaption
 
             Select Case m_ButtonStyle
 
@@ -2190,7 +2190,7 @@ Private Sub DrawButton_Vista(ByVal vState As enumButtonStates)
         ' --Fill the button with disabled color
         SetRect lpRect, 0, 0, lw, lh
         PaintRect ShiftColor(bColor, 0.03), lpRect
-        DrawPicwithCaption
+        DrawPicWithCaption
         ' --Draws outside disabled color rectangle
         DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.25)
         DrawRectangle 1, 1, lw - 2, lh - 2, ShiftColor(bColor, 0.25)
@@ -2208,7 +2208,7 @@ Private Sub DrawButton_Vista(ByVal vState As enumButtonStates)
             DrawGradientEx 1, 1, lw - 1, lh, Color1, bColor, gdVertical
             ' --Draws a gradient in half region to give a glassy look
             DrawGradientEx 1, lh / 2, lw - 2, lh - 2, ShiftColor(bColor, -0.02), ShiftColor(bColor, -0.15), gdVertical
-            DrawPicwithCaption
+            DrawPicWithCaption
             ' --Draws border rectangle
             DrawRectangle 0, 0, lw, lh, TranslateColor(&H707070)
             'outer
@@ -2230,7 +2230,7 @@ Private Sub DrawButton_Vista(ByVal vState As enumButtonStates)
             'Right
             DrawGradientEx lw - 6, lh / 2, 5, lh - (lh / 2) - 1, ShiftColor(TranslateColor(&HFDE1AC), 0.01), TranslateColor(&HFAD68F), gdHorizontal
             'Right
-            DrawPicwithCaption
+            DrawPicWithCaption
             ' --Draws border rectangle
             DrawRectangle 0, 0, lw, lh, TranslateColor(&HA77532)
             'outer
@@ -2263,7 +2263,7 @@ Private Sub DrawButton_Vista(ByVal vState As enumButtonStates)
             'Right
             DrawGradientEx lw - 6, lh / 2, 5, lh - (lh / 2) - 1, ShiftColor(TranslateColor(&HF0D29A), -0.01), ShiftColor(TranslateColor(&HDCAB4E), 0.02), gdHorizontal
             'Right
-            DrawPicwithCaption
+            DrawPicWithCaption
     End Select
 
     ' --Draw a focus rectangle if button has focus
@@ -2301,7 +2301,7 @@ Private Sub DrawButton_VistaToolbar(ByVal vState As enumButtonStates)
     If Not m_bEnabled Then
         ' --Draw Disabled button
         PaintRect TranslateColor(m_bColors.tBackColor), m_ButtonRect
-        DrawPicwithCaption
+        DrawPicWithCaption
         DrawCorners TranslateColor(m_bColors.tBackColor)
 
         Exit Sub
@@ -2314,19 +2314,19 @@ Private Sub DrawButton_VistaToolbar(ByVal vState As enumButtonStates)
         SetRect lpRect, 0, 0, lw, lh
         ' --Simply fill the button with one color (No gradient effect here!!)
         PaintRect TranslateColor(m_bColors.tBackColor), lpRect
-        DrawPicwithCaption
+        DrawPicWithCaption
     ElseIf vState = eStateOver Then
         ' --Draws a gradient effect with the folowing colors
         DrawGradientEx 1, 1, lw - 2, lh - 2, TranslateColor(&HFDF9F1), TranslateColor(&HF8ECD0), gdVertical
         ' --Draws a gradient in half region to give a Light Effect
         DrawGradientEx 1, lh / 1.7, lw - 2, lh - 2, TranslateColor(&HF8ECD0), TranslateColor(&HF8ECD0), gdVertical
-        DrawPicwithCaption
+        DrawPicWithCaption
         ' --Draw outside borders
         DrawRectangle 0, 0, lw, lh, TranslateColor(&HCA9E61)
         DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite)
     ElseIf vState = eStateDown Then
         DrawGradientEx 1, 1, lw - 2, lh - 2, TranslateColor(&HF1DEB0), TranslateColor(&HF9F1DB), gdVertical
-        DrawPicwithCaption
+        DrawPicWithCaption
         ' --Draws outside borders
         DrawRectangle 0, 0, lw, lh, TranslateColor(&HCA9E61)
         DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite)
@@ -2352,7 +2352,7 @@ Private Sub DrawButton_WindowsTheme(ByVal vState As enumButtonStates)
     If Not m_bEnabled Then
         tmpState = 4
         DrawTheme "Button", 1, tmpState
-        DrawPicwithCaption
+        DrawPicWithCaption
 
         Exit Sub
 
@@ -2380,7 +2380,7 @@ Private Sub DrawButton_WindowsTheme(ByVal vState As enumButtonStates)
     End If
 
     DrawTheme "Button", 1, tmpState
-    DrawPicwithCaption
+    DrawPicWithCaption
 End Sub
 
 '!--------------------------------------------------------------------------------
@@ -2405,7 +2405,7 @@ Private Sub DrawButton_WinXP(ByVal vState As enumButtonStates)
     If Not m_bEnabled Then
         CreateRegion
         PaintRect BlendColors(GetSysColor(COLOR_BTNFACE), ShiftColor(bColor, 0.1)), m_ButtonRect
-        DrawPicwithCaption
+        DrawPicWithCaption
         DrawRectangle 0, 0, lw, lh, ShiftColor(bColor, -0.1)
         DrawCorners ShiftColor(bColor, -0.1)
 
@@ -2424,7 +2424,7 @@ Private Sub DrawButton_WinXP(ByVal vState As enumButtonStates)
                     ' --mimic the XP styles
                     DrawGradientEx 0, 0, lw, lh, ShiftColor(bColor, 0.07), bColor, gdVertical
                     DrawGradientEx 0, 0, lw, 4, ShiftColor(bColor, 0.1), ShiftColor(bColor, 0.08), gdVertical
-                    DrawPicwithCaption
+                    DrawPicWithCaption
                     DrawLineApi 1, lh - 2, lw - 2, lh - 2, ShiftColor(bColor, -0.09)
                     'BottomMost line
                     DrawLineApi 1, lh - 3, lw - 2, lh - 3, ShiftColor(bColor, -0.05)
@@ -2440,7 +2440,7 @@ Private Sub DrawButton_WinXP(ByVal vState As enumButtonStates)
                     ' --mimic the Silver XP style
                     DrawGradientEx 0, 0, lw, lh / 2, ShiftColor(bColor, 0.22), bColor, gdVertical
                     DrawGradientEx 0, lh / 2, lw, lh / 2, ShiftColor(bColor, -0.01), ShiftColor(bColor, -0.15), gdVertical
-                    DrawPicwithCaption
+                    DrawPicWithCaption
                     DrawLineApi lw - 2, 2, lw - 2, lh - 2, TranslateColor(vbWhite)
                     'Right Line
                     DrawLineApi 1, 1, 1, lh - 2, TranslateColor(vbWhite)
@@ -2454,12 +2454,12 @@ Private Sub DrawButton_WinXP(ByVal vState As enumButtonStates)
                 Case ecsBlue, ecsOliveGreen, ecsCustom
                     DrawGradientEx 0, 0, lw, lh, ShiftColor(bColor, 0.07), bColor, gdVertical
                     DrawGradientEx 0, 0, lw, 4, ShiftColor(bColor, 0.1), ShiftColor(bColor, 0.08), gdVertical
-                    DrawPicwithCaption
+                    DrawPicWithCaption
 
                 Case ecsSilver
                     DrawGradientEx 0, 0, lw, lh / 2, ShiftColor(bColor, 0.22), bColor, gdVertical
                     DrawGradientEx 0, lh / 2, lw, lh / 2, ShiftColor(bColor, -0.01), ShiftColor(bColor, -0.15), gdVertical
-                    DrawPicwithCaption
+                    DrawPicWithCaption
             End Select
 
             ' --Draw the ORANGE border lines....
@@ -2487,7 +2487,7 @@ Private Sub DrawButton_WinXP(ByVal vState As enumButtonStates)
                 Case ecsBlue, ecsOliveGreen, ecsCustom
                     PaintRect ShiftColor(bColor, -0.05), m_ButtonRect
                     'Paint with Darker color
-                    DrawPicwithCaption
+                    DrawPicWithCaption
                     DrawLineApi 1, 1, lw - 2, 1, ShiftColor(bColor, -0.16)
                     'Topmost Line
                     DrawLineApi 1, 2, lw - 2, 2, ShiftColor(bColor, -0.1)
@@ -2504,7 +2504,7 @@ Private Sub DrawButton_WinXP(ByVal vState As enumButtonStates)
                 Case ecsSilver
                     DrawGradientEx 0, 0, lw, lh - 6, ShiftColor(bColor, -0.2), ShiftColor(bColor, 0.05), gdVertical
                     DrawGradientEx 0, lh - 6, lw, lh - 1, ShiftColor(bColor, 0.08), TranslateColor(vbWhite), gdVertical
-                    DrawPicwithCaption
+                    DrawPicWithCaption
                     DrawRectangle 1, 1, lw - 2, lh - 2, TranslateColor(vbWhite)
             End Select
     End Select
@@ -2631,7 +2631,7 @@ Private Sub DrawButton_XPToolbar(ByVal vState As enumButtonStates)
         SetRect lpRect, 0, 0, lw, lh
         PaintRect TranslateColor(&HFEFEFE), lpRect
         m_bColors.tForeColor = TranslateColor(vbButtonText)
-        DrawPicwithCaption
+        DrawPicWithCaption
         DrawRectangle 0, 0, lw, lh, TranslateColor(&HAF987A)
         DrawCorners ShiftColor(TranslateColor(&HC1B3A0), -0.2)
 
@@ -2656,12 +2656,12 @@ Private Sub DrawButton_XPToolbar(ByVal vState As enumButtonStates)
         Case eStateNormal
             CreateRegion
             PaintRect bColor, m_ButtonRect
-            DrawPicwithCaption
+            DrawPicWithCaption
 
         Case eStateOver
             DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(&HFDFEFE), TranslateColor(&HEEF4F4), gdVertical
             DrawGradientEx 0, lh / 2, lw, lh / 2, TranslateColor(&HEEF4F4), TranslateColor(&HEAF1F1), gdVertical
-            DrawPicwithCaption
+            DrawPicWithCaption
             DrawLineApi lw - 2, 2, lw - 2, lh - 2, TranslateColor(&HE0E7EA)
             'right line
             DrawLineApi lw - 3, 2, lw - 3, lh - 2, TranslateColor(&HEAF0F0)
@@ -2677,7 +2677,7 @@ Private Sub DrawButton_XPToolbar(ByVal vState As enumButtonStates)
         Case eStateDown
             PaintRect TranslateColor(&HDDE4E5), m_ButtonRect
             'Paint with Darker color
-            DrawPicwithCaption
+            DrawPicWithCaption
             DrawLineApi 1, 1, lw - 2, 1, ShiftColor(TranslateColor(&HD1DADC), -0.02)
             'Topmost Line
             DrawLineApi 1, 2, lw - 2, 2, ShiftColor(TranslateColor(&HDAE1E3), -0.02)
@@ -2769,7 +2769,7 @@ Private Sub DrawCaptionEx(lpRect As RECT, lColor As Long, OffsetX As Long, Offse
     End Select
     
     If m_WindowsNT Then
-        DrawTextW hDC, StrPtr(m_Caption & vbNullChar), -1, tRect, dtTextDrawParams Or IIf(m_bRTL, DT_RTLREADING, 0)
+        DrawTextW hDC, StrPtr(m_Caption), -1, tRect, dtTextDrawParams Or IIf(m_bRTL, DT_RTLREADING, 0)
     Else
         DrawText hDC, m_Caption, -1, tRect, dtTextDrawParams Or IIf(m_bRTL, DT_RTLREADING, 0)
     End If
@@ -2986,7 +2986,7 @@ Private Sub DrawInstallShieldButton(ByVal vState As enumButtonStates)
             DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(vbWhite), TranslateColor(m_bColors.tBackColor), gdVertical
             ' --Draw Bottom Gradient
             DrawGradientEx 0, lh / 2, lw, lh, TranslateColor(m_bColors.tBackColor), TranslateColor(m_bColors.tBackColor), gdVertical
-            DrawPicwithCaption
+            DrawPicWithCaption
             ' --Draw Inner White Border
             DrawRectangle 1, 1, lw - 2, lh, TranslateColor(vbWhite)
             ' --Draw Outer Rectangle
@@ -2998,7 +2998,7 @@ Private Sub DrawInstallShieldButton(ByVal vState As enumButtonStates)
             DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(vbWhite), TranslateColor(m_bColors.tBackColor), gdVertical
             ' --Draw Bottom Gradient
             DrawGradientEx 0, lh / 2, lw, lh, TranslateColor(m_bColors.tBackColor), TranslateColor(m_bColors.tBackColor), gdVertical
-            DrawPicwithCaption
+            DrawPicWithCaption
             ' --Draw Inner White Border
             DrawRectangle 1, 1, lw - 2, lh, TranslateColor(vbWhite)
             ' --Draw Outer Rectangle
@@ -3010,7 +3010,7 @@ Private Sub DrawInstallShieldButton(ByVal vState As enumButtonStates)
             DrawGradientEx 0, 0, lw, lh / 2, TranslateColor(vbWhite), ShiftColor(TranslateColor(m_bColors.tBackColor), -0.1), gdVertical
             ' --Draw Bottom Gradient
             DrawGradientEx 0, lh / 2, lw, lh, ShiftColor(TranslateColor(m_bColors.tBackColor), -0.1), ShiftColor(TranslateColor(m_bColors.tBackColor), -0.05), gdVertical
-            DrawPicwithCaption
+            DrawPicWithCaption
             ' --Draw Inner White Border
             DrawRectangle 1, 1, lw - 2, lh, TranslateColor(vbWhite)
             ' --Draw Outer Rectangle
@@ -3110,7 +3110,7 @@ End Sub
 '! Description (Описание)  :   [Calculate Caption rects and draw the pictures and caption]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
-Private Sub DrawPicwithCaption()
+Private Sub DrawPicWithCaption()
 
     Dim lpRect     As RECT
     Dim pRECT      As RECT
@@ -3159,7 +3159,8 @@ Private Sub DrawPicwithCaption()
         Else
 
             If Not m_Picture Is Nothing Then
-                SetRect m_TextRect, PicW + 4, 0, lw - 20 - PicW, lh
+                'SetRect m_TextRect, PicW + 4, 0, lw - 20 - PicW, lh
+                SetRect m_TextRect, PicW + 4, 0, lw - PicW, lh
             Else
                 SetRect m_TextRect, 0, 0, lw - 20, lh
             End If
@@ -3173,10 +3174,19 @@ Private Sub DrawPicwithCaption()
             SetRect m_TextRect, 0, 0, lw - PicW, lh
         ElseIf m_PictureAlign = epLeftEdge Or m_PictureAlign = epLeftOfCaption Then
             If m_CheckExist Then
-                SetRect m_TextRect, 0, 0, lw - PicW - 16 - 4, lh
+                If Not m_Picture Is Nothing Then
+                    SetRect m_TextRect, PicW + 4, 0, lw - PicW - 4, lh
+                Else
+                    SetRect m_TextRect, 0, 0, lw - 20, lh
+                End If
             Else
-                SetRect m_TextRect, 0, 0, lw - PicW - 4, lh
+                If Not m_Picture Is Nothing Then
+                    SetRect m_TextRect, 0, 0, lw - PicW - 4, lh
+                Else
+                    SetRect m_TextRect, 0, 0, lw - 4, lh
+                End If
             End If
+                    
         Else
             SetRect m_TextRect, 0, 0, lw - 8, lh
         End If
@@ -3194,7 +3204,9 @@ Private Sub DrawPicwithCaption()
     
     ' --Calc rects for multiline
     If m_WindowsNT Then
-        DrawTextW hDC, StrPtr(m_Caption & vbNullChar), -1, m_TextRect, DT_CALCRECT Or dtTextDrawParams Or IIf(m_bRTL, DT_RTLREADING, 0)
+        'DrawTextW hDC, StrPtr(m_Caption & vbNullChar), -1, m_TextRect, DT_CALCRECT Or dtTextDrawParams Or IIf(m_bRTL, DT_RTLREADING, 0)
+        DrawTextW hDC, StrPtr(m_Caption), -1, m_TextRect, DT_CALCRECT Or dtTextDrawParams Or IIf(m_bRTL, DT_RTLREADING, 0)
+        'DrawText DIS.hDC, StrPtr(Text), -1, TextRect, DT_CALCRECT Or DT_WORDBREAK Or CLng(IIf((DIS.ItemState And ODS_NOACCEL) = ODS_NOACCEL, DT_HIDEPREFIX, 0))
     Else
         DrawText hDC, m_Caption, -1, m_TextRect, DT_CALCRECT Or dtTextDrawParams Or IIf(m_bRTL, DT_RTLREADING, 0)
     End If
@@ -3211,15 +3223,15 @@ Private Sub DrawPicwithCaption()
         Case ecCenterAlign
             If (lh - lpRect.Bottom) < 0 Then
                 If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                    OffsetRect lpRect, (lw - lpRect.Right + PicW + 4 - 16) \ 2, 1
+                    OffsetRect lpRect, (lw - lpRect.Right + 4 - 16) \ 2, 1
                 Else
-                    OffsetRect lpRect, (lw - lpRect.Right + PicW + 4) \ 2, 1
+                    OffsetRect lpRect, (lw - lpRect.Right + 4) \ 2, 1
                 End If
             Else
                 If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
-                    OffsetRect lpRect, (lw - lpRect.Right + PicW - 4 - 16) \ 2, (lh - lpRect.Bottom) \ 2
+                    OffsetRect lpRect, (lw - lpRect.Right - 4 - 16) \ 2, (lh - lpRect.Bottom) \ 2
                 Else
-                    OffsetRect lpRect, (lw - lpRect.Right + PicW + 4) \ 2, (lh - lpRect.Bottom) \ 2
+                    OffsetRect lpRect, (lw - lpRect.Right + 4) \ 2, (lh - lpRect.Bottom) \ 2
                 End If
             
             End If
@@ -3239,8 +3251,13 @@ Private Sub DrawPicwithCaption()
             Select Case m_PictureAlign
 
                 Case epLeftEdge, epLeftOfCaption
-                    .Left = PicW + 4
-                    .Right = lw - 4
+                    If m_CheckExist Then
+                        .Left = PicW + 8
+                        .Right = lw - 16
+                    Else
+                        .Left = PicW + 4
+                        .Right = lw - 4
+                    End If
                     
                     If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
                         .Right = lw - 4 - 16
@@ -3286,7 +3303,8 @@ Private Sub DrawPicwithCaption()
             End If
             
             If m_CheckExist Then
-                .Left = 16
+                '.Left = 16
+                .Left = .Left + 4
                 .Right = lw - 4
             End If
             
@@ -3305,7 +3323,6 @@ Private Sub DrawPicwithCaption()
         ' --For themed style, we are not able to draw borders
         ' --after drawing the caption. i mean the whole button is painted at once.
         'Code deleted by AdiaProject
-
         If m_bDropDownSep Or m_DropDownSymbol <> ebsNone Then
             .Right = lw - 16
         End If

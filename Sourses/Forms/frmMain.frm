@@ -684,6 +684,11 @@ Private lngBorderWidthY           As Long
 Private strFormName               As String
 Private mbMassCheckInLV           As Boolean
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Get CaptionW
+'! Description (Описание)  :   [Получение Caption-формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get CaptionW() As String
     Dim lngLenStr As Long
     
@@ -692,6 +697,11 @@ Public Property Get CaptionW() As String
     DefWindowProc Me.hWnd, WM_GETTEXT, Len(CaptionW) + 1, ByVal StrPtr(CaptionW)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Let CaptionW
+'! Description (Описание)  :   [Изменение Caption-формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Let CaptionW(ByVal NewValue As String)
     DefWindowProc Me.hWnd, WM_SETTEXT, 0, ByVal StrPtr(NewValue & vbNullChar)
 End Property
@@ -735,12 +745,12 @@ Private Sub ChangeFrmMainCaption(Optional ByVal lngPercentage As Long)
     Select Case strPCLangCurrentID
 
         Case "0419"
-            strFrmMainCaptionTemp = "Drivers Backup Solution"
-            strFrmMainCaptionTempDate = " (Дата релиза: "
+            strFrmMainCaptionTemp = strProjectNameFull
+            strFrmMainCaptionTempDate = " (Дата релиза: " & strDateProgram & ")"
 
         Case Else
-            strFrmMainCaptionTemp = "Drivers Backup Solution"
-            strFrmMainCaptionTempDate = " (Date Build: "
+            strFrmMainCaptionTemp = strProjectNameFull
+            strFrmMainCaptionTempDate = " (Date Build: " & strDateProgram & ")"
     End Select
 
     If lngPercentage Mod 9999 Then
@@ -759,9 +769,9 @@ Private Sub ChangeFrmMainCaption(Optional ByVal lngPercentage As Long)
     End If
 
     If LenB(strThisBuildBy) = 0 Then
-        Me.CaptionW = strProgressValue & strFrmMainCaptionTemp & " v." & strProductVersion & strFrmMainCaptionTempDate & " @" & App.CompanyName
+        Me.CaptionW = strProgressValue & strFrmMainCaptionTemp & " v." & strProductVersion & strFrmMainCaptionTempDate & " @" & App.CompanyName & " - " & strPCLangCurrentLangName
     Else
-        Me.CaptionW = strProgressValue & strFrmMainCaptionTemp & " v." & strProductVersion & strFrmMainCaptionTempDate & " " & strThisBuildBy
+        Me.CaptionW = strProgressValue & strFrmMainCaptionTemp & " v." & strProductVersion & strFrmMainCaptionTempDate & " " & strThisBuildBy & " - " & strPCLangCurrentLangName
     End If
 
 End Sub
@@ -936,12 +946,12 @@ End Sub
 '!--------------------------------------------------------------------------------
 Private Function CollectDPName(ByVal strPCName As String) As String
 
-    Dim strDpName       As String
+    Dim strDPName       As String
     Dim strDPName_Part1 As String
     Dim strDPName_Part2 As String
     Dim strDPName_Part3 As String
 
-    strDPName_Part1 = "_wnt" & Mid$(strOSCurrentVersion, 1, 1)
+    strDPName_Part1 = "_wnt" & OSCurrVersionStruct.VerMajor
 
     If mbIsWin64 Then
         strDPName_Part2 = "_x64_"
@@ -951,9 +961,9 @@ Private Function CollectDPName(ByVal strPCName As String) As String
 
     strDPName_Part3 = Replace$(CStr(Date), ".", "-")
     strDPName_Part3 = SafeDir(strDPName_Part3)
-    strDpName = "DP_" & strPCName & strDPName_Part1 & strDPName_Part2 & strDPName_Part3
-    strDpName = SafeDir(strDpName)
-    CollectDPName = Replace$(strDpName, " ", "_")
+    strDPName = "DP_" & strPCName & strDPName_Part1 & strDPName_Part2 & strDPName_Part3
+    strDPName = SafeDir(strDPName)
+    CollectDPName = Replace$(strDPName, " ", "_")
 End Function
 
 '!--------------------------------------------------------------------------------
@@ -1188,7 +1198,7 @@ End Sub
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function DefineFolderBackUp
-'! Description (Описание)  :   [type_description_here]
+'! Description (Описание)  :   [Определение каталога назначения для резервных копий]
 '! Parameters  (Переменные):
 '!--------------------------------------------------------------------------------
 Private Function DefineFolderBackUp() As String
@@ -1199,11 +1209,12 @@ Private Function DefineFolderBackUp() As String
     Dim str_x64           As String
 
     If mbBackFolderPredefine Then
-
+        
+        ' Просматриваем в цикле настройки
         For ii = 0 To UBound(arrOSList)
             str_x64 = arrOSList(ii).is64bit
             strDestFolderTemp = arrOSList(ii).drpFolder
-
+        
             If InStr(1, arrOSList(ii).Ver, strOSCurrentVersion) Then
                 If CBool(str_x64) = mbIsWin64 Then
                     strDestFolder = PathCollect(strDestFolderTemp)
@@ -1228,10 +1239,10 @@ End Function
 
 '!--------------------------------------------------------------------------------
 '! Procedure   (Функция)   :   Function DoZip
-'! Description (Описание)  :   [type_description_here]
-'! Parameters  (Переменные):   strPackFolder As String, ByVal strDpName As String
+'! Description (Описание)  :   [Создание архива с драйверами]
+'! Parameters  (Переменные):   strPackFolder As String, ByVal strDPName As String
 '!--------------------------------------------------------------------------------
-Private Function DoZip(ByVal strPackFolder As String, ByVal strDpName As String) As Boolean
+Private Function DoZip(ByVal strPackFolder As String, ByVal strDPName As String) As Boolean
 
     Dim cmdString             As String
     Dim strDpName7z           As String
@@ -1242,14 +1253,14 @@ Private Function DoZip(ByVal strPackFolder As String, ByVal strDpName As String)
     Dim lngNumFilesFromFolder As Long
 
     ' получаем расширение файла архива (exe или 7Z)
-    strDpNameExt = GetFileNameExtension(strDpName)
-    strDpNamewoExt = GetFileName_woExt(strDpName)
+    strDpNameExt = GetFileNameExtension(strDPName)
+    strDpNamewoExt = GetFileName_woExt(strDPName)
 
     If StrComp(strDpNameExt, "exe", vbTextCompare) = 0 Then
         strDpName7z = strDpNamewoExt & ".7z"
         mbCreateSFX = True
     Else
-        strDpName7z = strDpName
+        strDpName7z = strDPName
     End If
 
     ' Удаляем старые архивы если есть
@@ -1259,9 +1270,9 @@ Private Function DoZip(ByVal strPackFolder As String, ByVal strDpName As String)
     End If
 
     If mbCreateSFX Then
-        If FileExists(strDpName) Then
+        If FileExists(strDPName) Then
             If mbDebugStandart Then DebugMode "***DoZip: Clean previous drivers archive "
-            DeleteFiles strDpName
+            DeleteFiles strDPName
         End If
 
         ' Копируем файлы DPInst для автозапуска
@@ -1342,13 +1353,13 @@ Private Function DoZip(ByVal strPackFolder As String, ByVal strDpName As String)
         Select Case strPCLangCurrentID
 
             Case "0419"
-                cmdString = "cmd.exe /C copy /b " & strQuotes & strArh7zSFXPATH & strQuotes & " + " & strQuotes & strArh7zSFXConfigPath & strQuotes & " + " & strQuotes & strDpName7z & strQuotes & " " & strQuotes & strDpName & strQuotes
+                cmdString = "cmd.exe /C copy /b " & strQuotes & strArh7zSFXPATH & strQuotes & " + " & strQuotes & strArh7zSFXConfigPath & strQuotes & " + " & strQuotes & strDpName7z & strQuotes & " " & strQuotes & strDPName & strQuotes
 
             Case Else
-                cmdString = "cmd.exe /C copy /b " & strQuotes & strArh7zSFXPATH & strQuotes & " + " & strQuotes & strArh7zSFXConfigPathEn & strQuotes & " + " & strQuotes & strDpName7z & strQuotes & " " & strQuotes & strDpName & strQuotes
+                cmdString = "cmd.exe /C copy /b " & strQuotes & strArh7zSFXPATH & strQuotes & " + " & strQuotes & strArh7zSFXConfigPathEn & strQuotes & " + " & strQuotes & strDpName7z & strQuotes & " " & strQuotes & strDPName & strQuotes
         End Select
 
-        ChangeStatusBarText strMessages(97) & " " & strDpName, "Creating SFX...: " & cmdString
+        ChangeStatusBarText strMessages(97) & " " & strDPName, "Creating SFX...: " & cmdString
         'Изменяем прогресс на caption
         With ctlProgressBar1
             .Value = 9900
@@ -1359,10 +1370,10 @@ Private Function DoZip(ByVal strPackFolder As String, ByVal strDpName As String)
         If RunAndWait(cmdString, strWorkTemp, vbHide) = False Then
             MsgBox strMessages(13) & vbNewLine & vbNewLine & cmdString, vbInformation, strProductName
             DoZip = False
-            ChangeStatusBarText strMessages(13) & " " & strDpName, "Error on run : " & cmdString
+            ChangeStatusBarText strMessages(13) & " " & strDPName, "Error on run : " & cmdString
         Else
 
-            If FileExists(strDpName) Then
+            If FileExists(strDPName) Then
                 If FileExists(strDpName7z) Then
                     If mbDebugStandart Then DebugMode "***DoZip: Clean temp drivers archive "
                     DeleteFiles strDpName7z
@@ -1373,7 +1384,7 @@ Private Function DoZip(ByVal strPackFolder As String, ByVal strDpName As String)
             Else
                 MsgBox strMessages(13) & vbNewLine & vbNewLine & cmdString, vbInformation, strProductName
                 DoZip = False
-                ChangeStatusBarText strMessages(13) & " " & strDpName, "Error on run : " & cmdString
+                ChangeStatusBarText strMessages(13) & " " & strDPName, "Error on run : " & cmdString
             End If
         End If
     End If
@@ -1393,7 +1404,7 @@ Private Function ExpandArchNamebyEnvironment(ByVal strArchName As String) As Str
 
     If InStr(1, strArchName, "%") Then
         ' Макроподстановка версия ОС %OSVer%
-        strDPName_OSVer = "wnt" & Mid$(strOSCurrentVersion, 1, 1)
+        strDPName_OSVer = "wnt" & OSCurrVersionStruct.VerMajor
 
         ' Макроподстановка битность ОС %OSBit%
         If mbIsWin64 Then
@@ -1919,7 +1930,7 @@ Private Sub Form_Resize()
             SetTrayIcon NIM_DELETE, Me.hWnd, 0&, vbNullString
         Else
             ' Добавляеи иконку в трей
-            SetTrayIcon NIM_ADD, Me.hWnd, Me.Icon, "Drivers BackUp Solution"
+            SetTrayIcon NIM_ADD, Me.hWnd, Me.Icon, strProjectNameFull
         End If
     End With
 
@@ -3273,7 +3284,7 @@ Private Sub StartBackUp()
                         If mbDebugStandart Then DebugMode "***" & strStatusMsgTemp & "Analizing DRVSTORE"
                         ChangeStatusBarText strStatusMsgTemp & vbNewLine & "Analizing DriverStore folder"
     
-                        If strOSCurrentVersion < "6.0" Then
+                        If OSCurrVersionStruct.VerMajor = 5 Then
                             If LenB(strCatFileName4Inf) And IsWinXPOrLater Then
                                 If FileExists(BackslashAdd2Path(strDest) & strCatFileName4Inf) Then
                                     ' Сравнение файлов по Hash

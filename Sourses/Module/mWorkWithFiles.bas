@@ -503,8 +503,8 @@ Attribute ExpandFileNameByEnvironment.VB_UserMemId = 1610612749
 
     If InStr(strFileName, strPercent) Then
         ' Макроподстановка версия ОС %OSVer%
-        str_OSVer = "wnt" & Left$(strOSCurrentVersion, 1)
-
+        str_OSVer = "wnt" & OSCurrVersionStruct.VerMajor
+        
         ' Макроподстановка битность ОС %OSBit%
         If mbIsWin64 Then
             str_OSBit = "x64"

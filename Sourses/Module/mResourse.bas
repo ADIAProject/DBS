@@ -71,6 +71,16 @@ Attribute ExtractResourceAll.VB_UserMemId = 1610612738
             ExtractResourceAll = False
     
         End If
+    #Else
+        If ExtractResource("TABCTL32.OCX", strPathOcxTo) = False Then
+            If MsgBox("Extract OCX or DLL: 'TABCTL32.OCX' - False" & str2vbNewLine & strMessages(134), vbYesNo + vbQuestion, strProductName) = vbNo Then
+        
+                End
+        
+            End If
+        
+            ExtractResourceAll = False
+        End If
     #End If
     
     If mbDebugStandart Then DebugMode "ExtractResourceAll - End"

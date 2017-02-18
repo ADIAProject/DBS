@@ -97,6 +97,12 @@ wParam As Long
 Message As Long
 hWnd As Long
 End Type
+Private Type TRACKMOUSEEVENTSTRUCT
+cbSize As Long
+dwFlags As Long
+hWndTrack As Long
+dwHoverTime As Long
+End Type
 Private Type TMSG
 hWnd As Long
 Message As Long
@@ -141,6 +147,7 @@ Private Declare Function ImmAssociateContext Lib "imm32" (ByVal hWnd As Long, By
 Private Declare Function ImmGetConversionStatus Lib "imm32" (ByVal hIMC As Long, ByRef lpfdwConversion As Long, ByRef lpfdwSentence As Long) As Long
 Private Declare Function ImmSetConversionStatus Lib "imm32" (ByVal hIMC As Long, ByVal lpfdwConversion As Long, ByVal lpfdwSentence As Long) As Long
 Private Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As Any, ByVal bErase As Long) As Long
+Private Declare Function TrackMouseEvent Lib "user32" (ByRef lpEventTrack As TRACKMOUSEEVENTSTRUCT) As Long
 Private Declare Function GetSystemDefaultLangID Lib "kernel32" () As Integer
 Private Declare Function GetUserDefaultLangID Lib "kernel32" () As Integer
 Private Declare Function GetUserDefaultUILanguage Lib "kernel32" () As Integer
@@ -164,12 +171,10 @@ Private Declare Function RemoveWindowSubclass_W2K Lib "comctl32" Alias "#412" (B
 Private Declare Function DefSubclassProc_W2K Lib "comctl32" Alias "#413" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function VirtualAlloc Lib "kernel32" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal flAllocType As Long, ByVal flProtect As Long) As Long
 Private Declare Function VirtualProtect Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flNewProtect As Long, ByRef lpflOldProtect As Long) As Long
-Private Declare Function VirtualFree Lib "kernel32" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
 Private Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleW" (ByVal lpModuleName As Long) As Long
 Private Const MEM_COMMIT As Long = &H1000
 Private Const PAGE_EXECUTE_READWRITE As Long = &H40
-Private Const GWL_WNDPROC As Long = (-4)
 Private Const GWL_STYLE As Long = (-16)
 Private Const GWL_EXSTYLE As Long = (-20)
 Private Const WM_DESTROY As Long = &H2
@@ -390,6 +395,17 @@ Else
         ImmReleaseContext hWnd, hIMC
     End If
 End If
+End Sub
+
+Public Sub ComCtlsRequestMouseLeave(ByVal hWnd As Long)
+Const TME_LEAVE As Long = &H2
+Dim TME As TRACKMOUSEEVENTSTRUCT
+With TME
+.cbSize = LenB(TME)
+.hWndTrack = hWnd
+.dwFlags = TME_LEAVE
+End With
+TrackMouseEvent TME
 End Sub
 
 Public Sub ComCtlsCheckRightToLeft(ByRef Value As Boolean, ByVal UserControlValue As Boolean, ByVal ModeValue As CCRightToLeftModeConstants)

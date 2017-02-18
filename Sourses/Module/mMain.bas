@@ -2,14 +2,15 @@ Attribute VB_Name = "mMain"
 Option Explicit
 
 'Основные параметры программы
-Public Const strDateProgram         As String = "18/01/2017"
-Public Const strVerProgram          As String = "5.1.18"
+Public Const strDateProgram         As String = "18/02/2017"
+Public Const strVerProgram          As String = "5.2.18"
 
 'Основные переменные проекта (название, версия и т.д)
 Public strProductName               As String
 Public strProductVersion            As String
 'Основные константы проекта (название, сайты)
 Public Const strProjectName         As String = "DBS"
+Public Const strProjectNameFull     As String = "Drivers Backup Solution"
 Public Const strUrl_MainWWWSite     As String = "http://adia-project.net/"                   ' Домашний сайт проекта
 Public Const strUrl_MainWWWForum    As String = "http://adia-project.net/forum/index.php"    ' Домашний форум проекта
 Public Const strUrlOsZoneNetThread  As String = "http://forum.oszone.net/thread-190814.html" ' Топик программы DBS на сайте Oszone.net
@@ -139,7 +140,7 @@ Private Sub Main()
     ' Пользователь администратор?
 
     On Error Resume Next
-
+    
     dtStartTimeProg = GetTimeStart
 
     ' Запоминаем app.path и прочее в переменные

@@ -199,6 +199,7 @@ Begin VB.Form frmOptions
          Filters         =   "Supported files|*.*|All Files (*.*)"
          UseDialogText   =   0   'False
          Locked          =   -1  'True
+         QualifyPaths    =   -1  'True
       End
       Begin prjDIADBS.OptionButtonW optGrp1 
          Height          =   255
@@ -555,6 +556,7 @@ Begin VB.Form frmOptions
          Filters         =   "Supported files|*.exe|EXE Files (*.exe)"
          UseDialogText   =   0   'False
          Locked          =   -1  'True
+         QualifyPaths    =   -1  'True
       End
       Begin prjDIADBS.ctlUcPickBox ucDPInst64Path 
          Height          =   315
@@ -570,6 +572,7 @@ Begin VB.Form frmOptions
          Filters         =   "Supported files|*.exe|EXE Files (*.exe)"
          UseDialogText   =   0   'False
          Locked          =   -1  'True
+         QualifyPaths    =   -1  'True
       End
       Begin prjDIADBS.ctlUcPickBox ucArch86Path 
          Height          =   315
@@ -585,6 +588,7 @@ Begin VB.Form frmOptions
          Filters         =   "Supported files|*.exe|EXE Files (*.exe)"
          UseDialogText   =   0   'False
          Locked          =   -1  'True
+         QualifyPaths    =   -1  'True
       End
       Begin prjDIADBS.ctlJCbutton cmdPathDefault 
          Height          =   495
@@ -624,6 +628,8 @@ Begin VB.Form frmOptions
          Enabled         =   0   'False
          Filters         =   "Supported files|*.*|All Files (*.*)"
          UseDialogText   =   0   'False
+         Locked          =   -1  'True
+         QualifyPaths    =   -1  'True
       End
       Begin prjDIADBS.ctlUcPickBox ucArchPathSFXConfig 
          Height          =   315
@@ -638,6 +644,8 @@ Begin VB.Form frmOptions
          Enabled         =   0   'False
          Filters         =   "Supported files|*.*|All Files (*.*)"
          UseDialogText   =   0   'False
+         Locked          =   -1  'True
+         QualifyPaths    =   -1  'True
       End
       Begin prjDIADBS.ctlUcPickBox ucArchPathSFXConfigEn 
          Height          =   315
@@ -652,6 +660,8 @@ Begin VB.Form frmOptions
          Enabled         =   0   'False
          Filters         =   "Supported files|*.*|All Files (*.*)"
          UseDialogText   =   0   'False
+         Locked          =   -1  'True
+         QualifyPaths    =   -1  'True
       End
       Begin prjDIADBS.ctlUcPickBox ucArch64Path 
          Height          =   315
@@ -667,6 +677,7 @@ Begin VB.Form frmOptions
          Filters         =   "Supported files|*.exe|EXE Files (*.exe)"
          UseDialogText   =   0   'False
          Locked          =   -1  'True
+         QualifyPaths    =   -1  'True
       End
       Begin prjDIADBS.LabelW lblArc64 
          Height          =   255
@@ -2752,6 +2763,11 @@ Private cmbListTypeBackupElement2 As String
 Private cmbListTypeBackupElement3 As String
 Private strFormName               As String
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Get CaptionW
+'! Description (Описание)  :   [Получение Caption-формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Get CaptionW() As String
     Dim lngLenStr As Long
     
@@ -2760,6 +2776,11 @@ Public Property Get CaptionW() As String
     DefWindowProc Me.hWnd, WM_GETTEXT, Len(CaptionW) + 1, ByVal StrPtr(CaptionW)
 End Property
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Property Let CaptionW
+'! Description (Описание)  :   [Изменение Caption-формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Public Property Let CaptionW(ByVal NewValue As String)
     DefWindowProc Me.hWnd, WM_SETTEXT, 0, ByVal StrPtr(NewValue & vbNullChar)
 End Property
@@ -3316,6 +3337,7 @@ Public Sub FormLoadAction()
     ' Заполнить опции
     ReadOptions
     ' установить опции шрифта и цвета для будущей кнопки
+    cmdFutureButton.ForeColor = lngFontBtn_Color
     SetBtnStatusFontProperties cmdFutureButton
     ' установить опции стиля для будущей кнопки
     SetBtnStyle cmdFutureButton
@@ -3694,6 +3716,9 @@ Private Sub Localise(ByVal strPathFile As String)
     lblDebugMacrosOSVer.Caption = LocaliseString(strPathFile, strFormName, "lblDebugMacrosOSVer", lblDebugMacrosOSVer.Caption)
     lblDebugMacrosOSBit.Caption = LocaliseString(strPathFile, strFormName, "lblDebugMacrosOSBit", lblDebugMacrosOSBit.Caption)
     lblDebugMacrosDate.Caption = LocaliseString(strPathFile, strFormName, "lblDebugMacrosDate", lblDebugMacrosDate.Caption)
+    'frMainTools
+    frMainTools.Caption = LocaliseString(strPathFile, strFormName, "frMainTools", frMainTools.Caption)
+    cmdPathDefault.Caption = LocaliseString(strPathFile, strFormName, "cmdPathDefault", cmdPathDefault.Caption)
     'frOS
     frOS.Caption = LocaliseString(strPathFile, strFormName, "frOS", frOS.Caption)
     cmdAddOS.Caption = LocaliseString(strPathFile, strFormName, "cmdAddOS", cmdAddOS.Caption)
@@ -3746,9 +3771,7 @@ Private Sub Localise(ByVal strPathFile As String)
     lblArchMacrosOSVer.Caption = LocaliseString(strPathFile, strFormName, "lblArchMacrosOSVer", lblArchMacrosOSVer.Caption)
     lblArchMacrosOSBit.Caption = LocaliseString(strPathFile, strFormName, "lblArchMacrosOSBit", lblArchMacrosOSBit.Caption)
     lblArchMacrosDate.Caption = LocaliseString(strPathFile, strFormName, "lblArchMacrosDate", lblArchMacrosDate.Caption)
-    'frMainTools
-    frMainTools.Caption = LocaliseString(strPathFile, strFormName, "frMainTools", frMainTools.Caption)
-    cmdPathDefault.Caption = LocaliseString(strPathFile, strFormName, "cmdPathDefault", cmdPathDefault.Caption)
+
     ' Сообщения диалогов выбора файлов и каталогов
     ucArch86Path.ToolTipTexts(ucOpen) = strMessages(151)
     ucArch86Path.DialogMsg(ucOpen) = strMessages(151)
@@ -4392,8 +4415,8 @@ Private Sub ucArchPathSFXConfigEn_Click()
     If ucArchPathSFXConfigEn.FileCount > 0 Then
         strTempPath = ucArchPathSFXConfigEn.FileName
 
-        If InStr(1, strTempPath, strAppPath, vbTextCompare) > 0 Then
-            strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
+        If InStr(1, strTempPath, strAppPathBackSL, vbTextCompare) > 0 Then
+            strTempPath = Replace$(strTempPath, strAppPathBackSL, vbNullString, , , vbTextCompare)
         End If
     End If
 
@@ -4434,8 +4457,8 @@ Private Sub ucArchPathSFXConfig_Click()
     If ucArchPathSFXConfig.FileCount > 0 Then
         strTempPath = ucArchPathSFXConfig.FileName
 
-        If InStr(1, strTempPath, strAppPath, vbTextCompare) > 0 Then
-            strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
+        If InStr(1, strTempPath, strAppPathBackSL, vbTextCompare) > 0 Then
+            strTempPath = Replace$(strTempPath, strAppPathBackSL, vbNullString, , , vbTextCompare)
         End If
     End If
 
@@ -4476,8 +4499,8 @@ Private Sub ucArchPathSFX_Click()
     If ucArchPathSFX.FileCount > 0 Then
         strTempPath = ucArchPathSFX.FileName
 
-        If InStr(1, strTempPath, strAppPath, vbTextCompare) > 0 Then
-            strTempPath = Replace$(strTempPath, strAppPath, vbNullString, , , vbTextCompare)
+        If InStr(1, strTempPath, strAppPathBackSL, vbTextCompare) > 0 Then
+            strTempPath = Replace$(strTempPath, strAppPathBackSL, vbNullString, , , vbTextCompare)
         End If
     End If
 

@@ -101,7 +101,6 @@ Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExW" (By
 Private Declare Function SendMessage Lib "user32" Alias "SendMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
 Private Declare Function PostMessage Lib "user32" Alias "PostMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function SetFocusAPI Lib "user32" Alias "SetFocus" (ByVal hWnd As Long) As Long
 Private Declare Function GetFocus Lib "user32" () As Long
@@ -127,7 +126,6 @@ Private Const WS_EX_RTLREADING As Long = &H2000
 Private Const WM_MOUSEACTIVATE As Long = &H21, MA_NOACTIVATE As Long = &H3, MA_NOACTIVATEANDEAT As Long = &H4, HTBORDER As Long = 18
 Private Const SW_HIDE As Long = &H0
 Private Const WM_SETFOCUS As Long = &H7
-Private Const WM_KILLFOCUS As Long = &H8
 Private Const WM_COMMAND As Long = &H111
 Private Const WM_KEYDOWN As Long = &H100
 Private Const WM_KEYUP As Long = &H101
@@ -145,7 +143,6 @@ Private Const WM_HSCROLL As Long = &H114
 Private Const WM_VSCROLL As Long = &H115
 Private Const WM_CONTEXTMENU As Long = &H7B
 Private Const WM_NOTIFY As Long = &H4E
-Private Const WM_SHOWWINDOW As Long = &H18
 Private Const WM_SETFONT As Long = &H30
 Private Const WM_SETCURSOR As Long = &H20, HTCLIENT As Long = 1
 Private Const WM_GETTEXTLENGTH As Long = &HE
@@ -162,7 +159,6 @@ Private Const ES_CENTER As Long = &H1
 Private Const ES_RIGHT As Long = &H2
 Private Const H_MAX As Long = (&HFFFF + 1)
 Private Const UDN_FIRST As Long = (H_MAX - 721)
-Private Const UDN_LAST As Long = (H_MAX - 740)
 Private Const UDN_DELTAPOS As Long = (UDN_FIRST - 1)
 Private Const UDS_WRAP As Long = &H1
 Private Const UDS_SETBUDDYINT As Long = &H2

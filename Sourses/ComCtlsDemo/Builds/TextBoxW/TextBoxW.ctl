@@ -204,7 +204,6 @@ Private Declare Function SetCaretPos Lib "user32" (ByVal X As Long, ByVal Y As L
 Private Declare Function ShowCaret Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function DestroyCaret Lib "user32" () As Long
 Private Declare Function DragDetect Lib "user32" (ByVal hWnd As Long, ByVal PX As Integer, ByVal PY As Integer) As Long
-Private Declare Function ReleaseCapture Lib "user32" () As Long
 Private Const ICC_STANDARD_CLASSES As Long = &H4000
 Private Const RDW_UPDATENOW As Long = &H100, RDW_INVALIDATE As Long = &H1, RDW_ERASE As Long = &H4, RDW_ALLCHILDREN As Long = &H80
 Private Const GWL_STYLE As Long = (-16)
@@ -1754,7 +1753,7 @@ If TextBoxHandle <> 0 And PropNetAddressValidator = True Then
                         TextBoxNetAddressString = HiByte(HiWord(.sin_addr)) & "." & LoByte(HiWord(.sin_addr)) & "." & HiByte(LoWord(.sin_addr)) & "." & LoByte(LoWord(.sin_addr))
                         End With
                     Case NET_ADDRESS_IPV6
-                        Dim NETADDRINFO_IPV6 As NET_ADDRESS_INFO_IPV6, Buffer As String, Temp As String, i As Long, ii As Long
+                        Dim NETADDRINFO_IPV6 As NET_ADDRESS_INFO_IPV6, Buffer As String, Temp As String, i As Long
                         CopyMemory ByVal VarPtr(NETADDRINFO_IPV6), NETADDRINFO_UNSPECIFIED.Data(0), LenB(NETADDRINFO_IPV6)
                         With NETADDRINFO_IPV6
                         For i = 1 To 8

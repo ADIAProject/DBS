@@ -293,17 +293,24 @@ Option Explicit
 
 Private sFile As String
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdContinue_Click
+'! Description (Описание)  :   [Продолжение программы, даже при ошибке]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdContinue_Click()
     Me.Hide
     giAction_ = -1
 End Sub
 
-'Создание файла error.log
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdCreateFile_Click
+'! Description (Описание)  :   [Создание файла error.log]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdCreateFile_Click()
 Dim iFile       As Integer
 Dim strErrText  As String
-
-'On Error GoTo err
     
     strErrText = "Description error in program " & App.ProductName & vbCrLf & _
                  "====================================" & vbCrLf & vbCrLf & _
@@ -336,16 +343,17 @@ Dim strErrText  As String
     Print #iFile, strErrText
     Close #iFile
        
-    MsgBox "Error.log saved: " & vbNewLine & sFile _
-            & vbNewLine & vbNewLine & "Send error.log to author!"
+    MsgBox "Error.log saved: " & vbNewLine & _
+            sFile & vbNewLine & vbNewLine & _
+            "Send error.log to author!"
 
-Exit Sub
-'err:
-'    MsgBox "Error on create logfile: №" & err.Number & vbCrLf _
-'                & "Description: " & err.Description
 End Sub
 
-    
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdEmail_Click
+'! Description (Описание)  :   [Отправить E-mail]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdEmail_Click()
     If FileExists(sFile) = 0 Then
         cmdCreateFile_Click
@@ -355,11 +363,21 @@ Private Sub cmdEmail_Click()
                                 "?Subject=Error_" & Replace$(App.ProductName, " ", vbNullString) & "_" & App.Major & "." & App.Minor & "." & App.Revision, vbNullString, vbNullString, 1)
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub cmdExit_Click
+'! Description (Описание)  :   [Нажимаем выход]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub cmdExit_Click()
     Me.Hide
     giAction_ = 0
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_Load
+'! Description (Описание)  :   [Загрузка формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub Form_Load()
 Dim sFileName As String
 
@@ -381,11 +399,20 @@ Dim sFileName As String
     
 End Sub
 
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Sub Form_QueryUnload
+'! Description (Описание)  :   [Выход из формы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     Set frmError = Nothing
 End Sub
 
-'Чтение стека процедур из таблицы
+'!--------------------------------------------------------------------------------
+'! Procedure   (Функция)   :   Function StackText
+'! Description (Описание)  :   [Чтение стека процедур из таблицы]
+'! Parameters  (Переменные):
+'!--------------------------------------------------------------------------------
 Private Function StackText() As String
 Dim ii As Integer
 Dim iii As Integer
